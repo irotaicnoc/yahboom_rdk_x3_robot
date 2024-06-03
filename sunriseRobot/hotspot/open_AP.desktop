@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Exec=bash /root/sunriseRobot/hotspot/open_AP.sh
+Hidden=false
+NoDisplay=false
+X-GNOME-Autostart-enabled=true
+Name[en_US]=open AP
+Name=open AP
+Comment[en_US]=open AP
+Comment=open AP

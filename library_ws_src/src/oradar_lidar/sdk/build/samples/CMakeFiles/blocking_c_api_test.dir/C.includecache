@@ -1,0 +1,34 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../src/ord_lidar_c_api_driver.h
+stdio.h
+-
+stdlib.h
+-
+unistd.h
+-
+stdbool.h
+-
+ordlidar_protocol.h
+../src/ordlidar_protocol.h
+
+../src/ordlidar_protocol.h
+stdint.h
+-
+stdlib.h
+-
+
+/userdata/software/oradar_ws/src/oradar_lidar/sdk/samples/blocking_c_api_test.c
+stdio.h
+-
+signal.h
+-
+ord_lidar_c_api_driver.h
+/userdata/software/oradar_ws/src/oradar_lidar/sdk/samples/ord_lidar_c_api_driver.h
+
