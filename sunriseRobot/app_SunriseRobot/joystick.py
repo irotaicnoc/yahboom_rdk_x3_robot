@@ -4,7 +4,7 @@ import os
 import struct
 import sys
 import time
-import threading
+import smbus
 
 from SunriseRobotLib import SunriseRobot as Robot
 
@@ -28,6 +28,8 @@ class Joystick(object):
         self.__speed_x = 0
         self.__speed_y = 0
         self.__speed_z = 0
+        self.__light_effect = 0
+        self.__bus = smbus.SMBus(0)
 
         # Find the joystick device.
         print('Joystick Available devices:')
@@ -143,9 +145,19 @@ class Joystick(object):
             if self.__debug:
                 print("%s : %.3f" % (name, value))
 
+        # change light effect
         elif name == 'A':
             if self.__debug:
+                print(name, ":", value)
             if value == 1:
+                self.__light_effect = self.__light_effect + 1
+                if self.__light_effect > 4:
+                    self.__light_effect = 0
+                    self.__bus.write_byte_data(0x0d, 0x07, 0x00)
+                    time.sleep(.05)
+                else:
+                    self.__bus.write_byte_data(0x0d, 0x04, self.__light_effect)
+                    time.sleep(.05)
 
         elif name == 'B':
             if self.__debug:
@@ -162,10 +174,13 @@ class Joystick(object):
                 self.__robot.set_car_motion(0, 0, self.__speed_ctrl*5)
             else:
                 self.__robot.set_car_motion(0, 0, 0)
-        
+
+        # activate buzzer
         elif name == 'Y':
             if self.__debug:
                 print(name, ":", value)
+            # if value == 1:
+            self.__robot.set_beep(value)
 
         elif name == 'L1':
             if self.__debug:
