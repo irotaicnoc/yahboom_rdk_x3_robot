@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # coding=utf-8
-import time
 import os
 import sys
+import time
 import Adafruit_SSD1306 as SSD
 
 from PIL import Image
@@ -40,8 +40,7 @@ class OLED:
     # Initialize OLED, return True on success, False on failure
     def begin(self):
         try:
-            self.__oled = SSD.SSD1306_128_32(
-                rst=None, i2c_bus=self.__i2c_bus, gpio=1)
+            self.__oled = SSD.SSD1306_128_32(rst=None, i2c_bus=self.__i2c_bus, gpio=1)
             self.__oled.begin()
             self.__oled.clear()
             self.__oled.display()
@@ -96,7 +95,6 @@ class OLED:
     def refresh(self):
         self.__oled.image(self.__image)
         self.__oled.display()
-
 
     # 读取CPU占用率
     # Read the CPU usage rate
@@ -194,7 +192,6 @@ class OLED:
             ip = 'x.x.x.x'
         return ip
 
-
     # oled主要运行函数，在while循环里调用，可实现热插拔功能。
     # Oled mainly runs functions that are called in a while loop and can be hot-pluggable
     def main_program(self):
@@ -228,6 +225,7 @@ class OLED:
             if self.__debug:
                 print("!!!---OLED refresh error---!!!")
             return False
+
 
 def close_rgb_fan():
     try:

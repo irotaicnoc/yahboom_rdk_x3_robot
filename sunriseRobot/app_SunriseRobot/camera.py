@@ -3,9 +3,9 @@
 import cv2 as cv
 import time
 
+
 # V1.0.1
 class Camera(object):
-
     def __init__(self, video_id=0, width=640, height=480, debug=False):
         self.__debug = debug
         self.__video_id = int(video_id)
@@ -77,7 +77,6 @@ class Camera(object):
             self.__video.release()
         self.__state = False
 
-
     # 重新连接摄像头 
     # Reconnect the camera
     def reconnect(self):
@@ -110,7 +109,6 @@ class Camera(object):
             self.__state = True
             self.__config_camera()
         return True
-
 
     # 获取摄像头的一帧图片 
     # Gets a frame of the camera
@@ -150,7 +148,7 @@ if __name__ == '__main__':
             ret, frame = camera.get_frame()
             end = time.time()
             fps = 1 / (end - start)
-        text="FPS:" + str(int(fps))
+        text = "FPS:" + str(int(fps))
         cv.putText(frame, text, (20, 30), cv.FONT_HERSHEY_SIMPLEX, 0.9, (0, 200, 0), 1)
         cv.imshow('frame', frame)
 

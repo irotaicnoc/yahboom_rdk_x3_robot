@@ -7,7 +7,6 @@ import time
 import threading
 import cv2 as cv
 import sys
-import struct
 from gevent import pywsgi
 from flask import Flask, render_template, Response
 
@@ -64,8 +63,8 @@ g_car_stabilize_state = 0
 
 # TCP未接收命令超时计数
 g_tcp_except_count = 0
-
 g_motor_speed = [0, 0, 0, 0]
+
 
 # 获取IP地址
 def get_ip_address():
@@ -459,7 +458,6 @@ def init_tcp_socket():
         print('-------------------Init TCP Socket!-------------------------')
 
 
-
 # 根据状态机来运行程序包含视频流返回
 def mode_handle():
     global g_mode, g_bot, g_car_type, g_camera_type
@@ -513,15 +511,13 @@ def index():
 def video_feed():
     if g_debug:
         print("----------------------------video_feed:0x%02x--------------------------" % g_camera_type)
-    return Response(mode_handle(),
-                    mimetype='multipart/x-mixed-replace; boundary=frame')
+    return Response(mode_handle(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
 @app.route('/init')
 def init():
     init_tcp_socket()
     return render_template('init.html')
-
 
 
 # 麦克纳姆轮返回速度的线程
