@@ -1,16 +1,18 @@
 #!/usr/bin/env python3
 # coding=utf-8
-import os, struct, sys
-
+import os
+import struct
+import sys
 import time
 import threading
 
 from SunriseRobotLib import SunriseRobot as Robot
 
+
 # V1.0.4
 class Joystick(object):
 
-    def __init__(self, robot:Robot, js_id=0, debug=False):
+    def __init__(self, robot: Robot, js_id=0, debug=False):
         self.__debug = debug
         self.__js_id = int(js_id)
         self.__js_isOpen = False
@@ -109,46 +111,45 @@ class Joystick(object):
         return self.__js_isOpen
     
     # transform data
-    def __my_map(self, x, in_min, in_max, out_min, out_max):
+    @staticmethod
+    def __my_map(x, in_min, in_max, out_min, out_max):
         return (out_max - out_min) * (x - in_min) / (in_max - in_min) + out_min
-
 
     # Control robot
     def __data_processing(self, name, value):
-        
-        if name=="RK1_LEFT_RIGHT":
+        if name == "RK1_LEFT_RIGHT":
             value = -value / 32767
             if self.__debug:
-                print ("%s : %.3f" % (name, value))
+                print("%s : %.3f" % (name, value))
             self.__speed_y = value * self.__speed_ctrl
             self.__robot.set_car_motion(self.__speed_x, self.__speed_y, self.__speed_z)
         
         elif name == 'RK1_UP_DOWN':
             value = -value / 32767
             if self.__debug:
-                print ("%s : %.3f" % (name, value))
+                print("%s : %.3f" % (name, value))
             self.__speed_x = value * self.__speed_ctrl
             self.__robot.set_car_motion(self.__speed_x, self.__speed_y, self.__speed_z)
 
         elif name == 'RK2_LEFT_RIGHT':
             value = -value / 32767
             if self.__debug:
-                print ("%s : %.3f" % (name, value))
+                print("%s : %.3f" % (name, value))
             self.__speed_z = value * 5 * self.__speed_ctrl
             self.__robot.set_car_motion(self.__speed_x, self.__speed_y, self.__speed_z)
             
         elif name == 'RK2_UP_DOWN':
             value = -value / 32767
             if self.__debug:
-                print ("%s : %.3f" % (name, value))
+                print("%s : %.3f" % (name, value))
 
         elif name == 'A':
             if self.__debug:
-                print (name, ":", value)
+            if value == 1:
 
         elif name == 'B':
             if self.__debug:
-                print (name, ":", value)
+                print(name, ":", value)
             if value == 1:
                 self.__robot.set_car_motion(0, 0, -self.__speed_ctrl*5)
             else:
@@ -156,7 +157,7 @@ class Joystick(object):
 
         elif name == 'X':
             if self.__debug:
-                print (name, ":", value)
+                print(name, ":", value)
             if value == 1:
                 self.__robot.set_car_motion(0, 0, self.__speed_ctrl*5)
             else:
@@ -164,23 +165,23 @@ class Joystick(object):
         
         elif name == 'Y':
             if self.__debug:
-                print (name, ":", value)
+                print(name, ":", value)
 
         elif name == 'L1':
             if self.__debug:
-                print (name, ":", value)
+                print(name, ":", value)
 
         elif name == 'R1':
             if self.__debug:
-                print (name, ":", value)
+                print(name, ":", value)
 
         elif name == 'SELECT':
             if self.__debug:
-                print (name, ":", value)
+                print(name, ":", value)
 
         elif name == 'START':
             if self.__debug:
-                print (name, ":", value)
+                print(name, ":", value)
             if value == 1:
                 self.__robot.set_beep(1)
             else:
@@ -188,10 +189,10 @@ class Joystick(object):
 
         elif name == 'MODE':
             if self.__debug:
-                print (name, ":", value)
+                print(name, ":", value)
         elif name == 'BTN_RK1':
             if self.__debug:
-                print (name, ":", value)
+                print(name, ":", value)
             if value == 1:
                 self.__speed_ctrl = self.__speed_ctrl + 0.3
                 if self.__speed_ctrl > 1:
@@ -199,23 +200,22 @@ class Joystick(object):
 
         elif name == 'BTN_RK2':
             if self.__debug:
-                print (name, ":", value)
+                print(name, ":", value)
         
         elif name == "L2":
             value = ((value/32767)+1)/2
             if self.__debug:
-                print ("%s : %.3f" % (name, value))
+                print("%s : %.3f" % (name, value))
 
         elif name == "R2":
             value = ((value/32767)+1)/2
             if self.__debug:
-                print ("%s : %.3f" % (name, value))
+                print("%s : %.3f" % (name, value))
 
-            
         elif name == 'WSAD_LEFT_RIGHT':
             value = -value / 32767
             if self.__debug:
-                print ("%s : %.3f" % (name, value))
+                print("%s : %.3f" % (name, value))
             if value > 0:
                 self.__robot.set_car_motion(0, self.__speed_ctrl, 0)
             elif value < 0:
@@ -226,7 +226,7 @@ class Joystick(object):
         elif name == 'WSAD_UP_DOWN':
             value = -value / 32767
             if self.__debug:
-                print ("%s : %.3f" % (name, value))
+                print("%s : %.3f" % (name, value))
             if value > 0:
                 self.__robot.set_car_motion(self.__speed_ctrl, 0, 0)
             elif value < 0:
