@@ -1,41 +1,16 @@
-import rclpy
-from rclpy.node import Node
-from sensor_msgs.msg import Image
-import base64
+import os
 import cv2
 from cv_bridge import CvBridge
-import math
-import io
-import numpy as np
-import json
-from sensor_msgs.msg import CompressedImage
-from std_msgs.msg import String
-import os
 import time
+import numpy as np
+import rclpy
 from hobot_vio import libsrcampy as srcampy
-
-
-try:
-    import simplejpeg
-except ImportError:
-    simplejpeg = None
-    try:
-        import cv2
-        print("simplejpeg not found. Falling back to cv2 for JPEG encoding.")
-    except ImportError:
-        cv2 = None
-        try:
-            import PIL
-            from PIL import Image
-            print("simplejpeg not found. Falling back to PIL for JPEG encoding.")
-        except ImportError:
-            PIL = None
-
+from rclpy.node import Node
+from sensor_msgs.msg import CompressedImage
 
 
 class Mipi_Camera(object):
-    
-    def __init__(self, width=320, height=240, debug=False):
+    def __init__(self, width=640, height=480, debug=False):
         self.__debug = debug
         self.__state = False
         self.__width = width
@@ -57,10 +32,11 @@ class Mipi_Camera(object):
     def __del__(self):
         self.__clear()
         if self.__debug:
-                print("---Mipi_Camera Del---")
+            print("---Mipi_Camera Del---")
 
     # 配置CSI摄像头
-    def __sensor_reset_shell(self):
+    @staticmethod
+    def __sensor_reset_shell():
         os.system("echo 19 > /sys/class/gpio/export")
         os.system("echo out > /sys/class/gpio/gpio19/direction")
         os.system("echo 0 > /sys/class/gpio/gpio19/value")
@@ -70,7 +46,8 @@ class Mipi_Camera(object):
         os.system("echo 1 > /sys/class/vps/mipi_host0/param/stop_check_instart")
 
     # nv12图像转化成bgr图像
-    def __nv12_to_bgr_opencv(self, image, width, height):
+    @staticmethod
+    def __nv12_to_bgr_opencv(image, width, height):
         frame = np.frombuffer(image , dtype=np.uint8)
         img_bgr = cv2.cvtColor(frame.reshape((height * 3 // 2, width)), cv2.COLOR_YUV2BGR_NV12)
         return img_bgr
@@ -111,7 +88,6 @@ class Mipi_Camera(object):
         success, jpeg = cv2.imencode('.jpg', image)
         return success, jpeg.tobytes()
 
-
     # 获取摄像头的一帧图片 
     # Gets a frame of the camera
     def read(self):
@@ -128,10 +104,6 @@ class Mipi_Camera(object):
         self.__clear()
 
 
-
-
-
-
 class ImageSubscriber(Node):
     def __init__(self):
         super().__init__("image_subscriber")
@@ -139,15 +111,14 @@ class ImageSubscriber(Node):
         self.cv_bridge = CvBridge()
 
     def run(self, img):
-        
         compressed_image_msg = self.cv_bridge.cv2_to_compressed_imgmsg(img, dst_format='jpeg')
         self.frame_mask_pub.publish(compressed_image_msg)
         return img
-        
 
     def process_image(self, msg):
         cv_img = self.run(msg)
-        
+
+
 def main(args=None):
     rclpy.init(args=args)
     node = ImageSubscriber()
@@ -156,10 +127,9 @@ def main(args=None):
     g_debug = True
     camera = Mipi_Camera(width=img_width, height=img_height, debug=g_debug)
     while rclpy.ok():
-        #ret, frame = cap.read()
         ret, img = camera.get_frame()
         if ret:
             node.process_image(img)
-    cap.release()
+    camera.release()
     node.destroy_node() 
     rclpy.shutdown()
