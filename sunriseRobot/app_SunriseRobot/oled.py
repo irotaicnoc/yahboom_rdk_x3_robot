@@ -11,6 +11,8 @@ from PIL import ImageFont
 
 import subprocess
 
+from SunriseRobotLib import SunriseRobot
+
 
 # V1.0.10
 class OLED:
@@ -30,6 +32,14 @@ class OLED:
         self.__image = Image.new('1', (self.__WIDTH, self.__HEIGHT))
         self.__draw = ImageDraw.Draw(self.__image)
         self.__font = ImageFont.load_default()
+
+        self.__bot = SunriseRobot()
+        # com = "COM30"
+        # com="/dev/ttyTHS1"
+        # com="/dev/ttyUSB0"
+        # com="/dev/ttyAMA0"
+        # com="/dev/myserial"
+        self.__bot.create_receive_threading()
 
     def __del__(self):
         self.clear(True)
@@ -192,6 +202,10 @@ class OLED:
             ip = 'x.x.x.x'
         return ip
 
+    def get_battery_voltage(self) -> str:
+        voltage = self.__bot.get_battery_voltage()
+        return f'Battery: {voltage:.2f}V'
+
     # oled主要运行函数，在while循环里调用，可实现热插拔功能。
     # Oled mainly runs functions that are called in a while loop and can be hot-pluggable
     def main_program(self):
@@ -205,14 +219,15 @@ class OLED:
                     return True
                 str_CPU = self.getCPULoadRate(cpu_index)
                 str_Time = self.getSystemTime()
+                str_voltage = self.get_battery_voltage()
                 if cpu_index == 0:
                     str_FreeRAM = self.getUsagedRAM()
-                    str_Disk = self.getUsagedDisk()
+                    # str_Disk = self.getUsagedDisk()
                     str_IP = "IPA:" + self.getLocalIP()
                 self.add_text(0, 0, str_CPU)
                 self.add_text(50, 0, str_Time)
                 self.add_line(str_FreeRAM, 2)
-                self.add_line(str_Disk, 3)
+                self.add_line(str_voltage, 3)
                 self.add_line(str_IP, 4)
                 # Display image.
                 self.refresh()
