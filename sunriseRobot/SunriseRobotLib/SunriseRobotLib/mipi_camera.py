@@ -9,7 +9,6 @@ from hobot_vio import libsrcampy as srcampy
 
 # V2.0.1
 class Mipi_Camera(object):
-    
     def __init__(self, width=320, height=240, debug=False):
         self.__debug = debug
         self.__state = False
@@ -45,8 +44,9 @@ class Mipi_Camera(object):
         os.system("echo 1 > /sys/class/vps/mipi_host0/param/stop_check_instart")
 
     # nv12图像转化成bgr图像
-    def __nv12_to_bgr_opencv(self, image, width, height):
-        frame = np.frombuffer(image , dtype=np.uint8)
+    @staticmethod
+    def __nv12_to_bgr_opencv(image, width, height):
+        frame = np.frombuffer(image, dtype=np.uint8)
         img_bgr = cv.cvtColor(frame.reshape((height * 3 // 2, width)), cv.COLOR_YUV2BGR_NV12)
         return img_bgr
     
@@ -86,7 +86,6 @@ class Mipi_Camera(object):
         success, jpeg = cv.imencode('.jpg', image)
         return success, jpeg.tobytes()
 
-
     # 获取摄像头的一帧图片 
     # Gets a frame of the camera
     def read(self):
@@ -101,6 +100,7 @@ class Mipi_Camera(object):
     # Release the camera
     def release(self):
         self.__clear()
+
 
 if __name__ == '__main__':
     img_width = 640
@@ -123,7 +123,7 @@ if __name__ == '__main__':
             # fps = 1 / (end - start)
             if ret:
                 # 增加fps
-                text="FPS:" + str(int(fps))
+                text = "FPS:" + str(int(fps))
                 cv.putText(img, text, (20, 30), cv.FONT_HERSHEY_SIMPLEX, 0.9, (0, 200, 0), 1)
                 # opencv 显示图像
                 print("show opencv, ", text)

@@ -10,7 +10,6 @@ import threading
 # V2.0.1
 class SunriseRobot(object):
     __uart_state = 0
-
     def __init__(self, com="/dev/myserial", delay=.002, debug=False):
         # com = "COM30"
         # com="/dev/ttyTHS1"
@@ -59,7 +58,6 @@ class SunriseRobot(object):
 
         self.FUNC_AKM_DEF_ANGLE = 0x30
         self.FUNC_AKM_STEER_ANGLE = 0x31
-
 
         self.FUNC_REQUEST_DATA = 0x50
         self.FUNC_VERSION = 0x51
@@ -252,7 +250,6 @@ class SunriseRobot(object):
             elif ext_type == self.FUNC_SET_CAR_TYPE:
                 car_type = struct.unpack('B', bytearray(ext_data[0:1]))[0]
                 self.__read_car_type = car_type
-            
 
     # 接收数据 receive data
     def __receive_data(self):
