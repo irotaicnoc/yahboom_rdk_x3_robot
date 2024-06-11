@@ -30,6 +30,8 @@ class Joystick(object):
         self.__speed_z = 0
         self.__light_effect = 0
         self.__bus = smbus.SMBus(0)
+        # Start with lights turned off
+        self.__bus.write_byte_data(0x0d, 0x04, self.__light_effect)
 
         # Find the joystick device.
         print('Joystick Available devices:')
