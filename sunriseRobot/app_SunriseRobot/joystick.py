@@ -35,7 +35,7 @@ class Joystick(object):
 
         # Find the joystick device.
         print('Joystick Available devices:')
-        # Shows the joystick list of the Controler, for example: /dev/input/js0
+        # Shows the joystick list of the Controller, for example: /dev/input/js0
         for fn in os.listdir('/dev/input'):
             if fn.startswith('js'):
                 print('    /dev/input/%s' % (fn))
