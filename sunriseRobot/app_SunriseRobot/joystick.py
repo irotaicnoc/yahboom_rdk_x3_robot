@@ -164,18 +164,10 @@ class Joystick(object):
         elif name == 'B':
             if self.__debug:
                 print(name, ":", value)
-            if value == 1:
-                self.__robot.set_car_motion(0, 0, -self.__speed_ctrl*5)
-            else:
-                self.__robot.set_car_motion(0, 0, 0)
 
         elif name == 'X':
             if self.__debug:
                 print(name, ":", value)
-            if value == 1:
-                self.__robot.set_car_motion(0, 0, self.__speed_ctrl*5)
-            else:
-                self.__robot.set_car_motion(0, 0, 0)
 
         # activate buzzer
         elif name == 'Y':
