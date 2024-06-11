@@ -147,8 +147,22 @@ class Joystick(object):
             if self.__debug:
                 print("%s : %.3f" % (name, value))
 
-        # change light effect
+        # activate buzzer
         elif name == 'A':
+            if self.__debug:
+                print(name, ":", value)
+            self.__robot.set_beep(value)
+
+        elif name == 'B':
+            if self.__debug:
+                print(name, ":", value)
+
+        elif name == 'X':
+            if self.__debug:
+                print(name, ":", value)
+
+        # change light effect
+        elif name == 'Y':
             if self.__debug:
                 print(name, ":", value)
             if value == 1:
@@ -160,21 +174,6 @@ class Joystick(object):
                 else:
                     self.__bus.write_byte_data(0x0d, 0x04, self.__light_effect)
                     time.sleep(.05)
-
-        elif name == 'B':
-            if self.__debug:
-                print(name, ":", value)
-
-        elif name == 'X':
-            if self.__debug:
-                print(name, ":", value)
-
-        # activate buzzer
-        elif name == 'Y':
-            if self.__debug:
-                print(name, ":", value)
-            # if value == 1:
-            self.__robot.set_beep(value)
 
         elif name == 'L1':
             if self.__debug:
