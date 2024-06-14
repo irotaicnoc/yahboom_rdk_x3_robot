@@ -6,12 +6,12 @@ import sys
 import time
 import smbus
 
+from kill_process import kill_process_
 from SunriseRobotLib import SunriseRobot as Robot
 
 
 # V1.0.4
 class Joystick(object):
-
     def __init__(self, robot: Robot, js_id=0, debug=False):
         self.__debug = debug
         self.__js_id = int(js_id)
@@ -28,6 +28,9 @@ class Joystick(object):
         self.__speed_x = 0
         self.__speed_y = 0
         self.__speed_z = 0
+
+        self.__hotspot_active = False
+        # self.__hotspot_ip = hotspot_ip
         self.__light_effect = 0
         self.__bus = smbus.SMBus(0)
         # Start with lights turned off
@@ -38,7 +41,7 @@ class Joystick(object):
         # Shows the joystick list of the Controller, for example: /dev/input/js0
         for fn in os.listdir('/dev/input'):
             if fn.startswith('js'):
-                print('    /dev/input/%s' % (fn))
+                print('    /dev/input/%s' % fn)
 
         # Open the joystick device.
         try:
@@ -178,6 +181,33 @@ class Joystick(object):
         elif name == 'L1':
             if self.__debug:
                 print(name, ":", value)
+            if value == 1:
+                self.__hotspot_active = not self.__hotspot_active
+                if self.__hotspot_active:
+                    print("Starting Hotspot...")
+                    os.system("sleep 3")
+                    os.system("systemctl stop wpa_supplicant")
+                    os.system("ip addr flush dev wlan0")
+                    os.system("sleep 0.5")
+                    os.system("ifconfig wlan0 down")
+                    os.system("sleep 1")
+                    os.system("ifconfig wlan0 up")
+                    os.system("hostapd -B /root/sunriseRobot/hotspot/etc/hostapd.conf")
+                    os.system("ifconfig wlan0 192.168.8.88 netmask 255.255.255.0")
+                    os.system("systemctl start isc-dhcp-server")
+                    print("Hotspot started")
+
+                else:
+                    print("Stopping Hotspot...")
+                    kill_process_(program_name="hostapd", debug=self.__debug)
+                    os.system("systemctl stop isc-dhcp-server")
+                    os.system("ip addr flush dev wlan0")
+                    os.system("sleep 0.5")
+                    os.system("ifconfig wlan0 down")
+                    os.system("sleep 1")
+                    os.system("ifconfig wlan0 up")
+                    os.system("systemctl start wpa_supplicant")
+                    print("Hotspot stopped")
 
         elif name == 'R1':
             if self.__debug:
