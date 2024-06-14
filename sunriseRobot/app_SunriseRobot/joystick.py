@@ -254,13 +254,13 @@ class Joystick(object):
         try:
             evbuf = self.__jsdev.read(8)
             if evbuf:
-                time, value, type, number = struct.unpack('IhBB', evbuf)
-                func = type << 8 | number
+                _time, value, _type, number = struct.unpack('IhBB', evbuf)
+                func = _type << 8 | number
                 name = self.__function_names.get(func)
-                # print("evbuf:", time, value, type, number)
+                # print("evbuf:", _time, value, _type, number)
                 # if self.__debug:
                 #     print("func:0x%04X, %s, %d" % (func, name, value))
-                if name != None:
+                if name is not None:
                     self.__data_processing(name, value)
                 else:
                     if self.__ignore_count > 0:

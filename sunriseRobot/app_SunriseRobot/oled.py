@@ -192,11 +192,11 @@ class OLED:
             "/sbin/ifconfig eth0 | grep 'inet' | awk '{print $2}'").read()
         ip = ip[0: ip.find('\n')]
         # ip = ''
-        if(ip == '' or len(ip) > 15):
+        if ip == '' or len(ip) > 15:
             ip = os.popen(
                 "/sbin/ifconfig wlan0 | grep 'inet' | awk '{print $2}'").read()
             ip = ip[0: ip.find('\n')]
-            if(ip == ''):
+            if ip == '':
                 ip = 'x.x.x.x'
         if len(ip) > 15:
             ip = 'x.x.x.x'
