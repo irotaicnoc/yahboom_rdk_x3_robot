@@ -204,7 +204,7 @@ class OLED:
 
     def get_battery_voltage(self) -> str:
         voltage = self.__bot.get_battery_voltage()
-        return f'Battery: {voltage:.2f}V'
+        return f'Battery: {voltage:.1f}V'
 
     # oled主要运行函数，在while循环里调用，可实现热插拔功能。
     # Oled mainly runs functions that are called in a while loop and can be hot-pluggable
@@ -223,7 +223,7 @@ class OLED:
                 if cpu_index == 0:
                     str_FreeRAM = self.getUsagedRAM()
                     # str_Disk = self.getUsagedDisk()
-                    str_IP = "IPA:" + self.getLocalIP()
+                    str_IP = "IP:" + self.getLocalIP()
                 self.add_text(0, 0, str_CPU)
                 self.add_text(50, 0, str_Time)
                 self.add_line(str_FreeRAM, 2)
