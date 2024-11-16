@@ -81,6 +81,7 @@ def get_ip_address():
         ip = 'x.x.x.x'
     return ip
 
+
 # 返回单片机版本号, tcp=TCP服务对象
 def return_bot_version(tcp):
     T_CARTYPE = g_car_type
@@ -112,6 +113,7 @@ def return_battery_voltage(tcp):
         print("voltage:", vol / 10.0)
         print("tcp send:", data)
     return vol / 10.0
+
 
 # 返回小车速度控制百分比
 def return_car_speed(tcp, speed_xy, speed_z):

@@ -3,6 +3,7 @@
 import os
 import sys
 import time
+import psutil
 import Adafruit_SSD1306 as SSD
 
 from PIL import Image
@@ -46,7 +47,6 @@ class OLED:
         if self.__debug:
             print("---OLED-DEL---")
 
-    # 初始化OLED，成功返回:True，失败返回:False
     # Initialize OLED, return True on success, False on failure
     def begin(self):
         try:
@@ -62,7 +62,6 @@ class OLED:
                 print("---OLED no found!---")
             return False
 
-    # 清除显示。refresh=True立即刷新，refresh=False不刷新。
     # Clear the display.  Refresh =True Refresh immediately, refresh=False refresh not
     def clear(self, refresh=False):
         self.__draw.rectangle(
@@ -74,8 +73,6 @@ class OLED:
             except:
                 return False
 
-    # 增加字符。start_x start_y表示开始的点。text是要增加的字符。
-    # refresh=True立即刷新，refresh=False不刷新。
     # Add characters.  Start_x Start_y indicates the starting point.  Text is the character to be added
     # Refresh =True Refresh immediately, refresh=False refresh not
     def add_text(self, start_x, start_y, text, refresh=False):
@@ -89,7 +86,6 @@ class OLED:
         if refresh:
             self.refresh()
 
-    # 写入一行字符text。refresh=True立即刷新，refresh=False不刷新。
     # line=[1, 4]
     # Write a line of character text.  Refresh =True Refresh immediately, refresh=False refresh not.
     def add_line(self, text, line=1, refresh=False):
@@ -100,13 +96,11 @@ class OLED:
         y = int(8 * (line - 1))
         self.add_text(0, y, text, refresh)
 
-    # 刷新OLED，显示内容
     # Refresh the OLED to display the content
     def refresh(self):
         self.__oled.image(self.__image)
         self.__oled.display()
 
-    # 读取CPU占用率
     # Read the CPU usage rate
     def getCPULoadRate(self, index):
         count = 10
@@ -139,9 +133,9 @@ class OLED:
             #     print(self.__str_CPU)
         return self.__str_CPU
 
-    # 读取系统时间
     # Read system time
-    def getSystemTime(self):
+    @staticmethod
+    def getSystemTime():
         cmd = "date +%H:%M:%S"
         date_time = subprocess.check_output(cmd, shell=True)
         str_Time = str(date_time).lstrip('b\'')
@@ -149,49 +143,48 @@ class OLED:
         # print(date_time)
         return str_Time
 
-    # 读取内存占用率 和 总内存
     # Read the memory usage and total memory
-    def getUsagedRAM(self):
+    @staticmethod
+    def getUsagedRAM():
         cmd = "free | awk 'NR==2{printf \"RAM:%2d%% -> %.1fGB \", 100*($2-$7)/$2, ($2/1048576.0)}'"
         FreeRam = subprocess.check_output(cmd, shell=True)
         str_FreeRam = str(FreeRam).lstrip('b\'')
         str_FreeRam = str_FreeRam.rstrip('\'')
         return str_FreeRam
 
-    # 读取空闲的内存 / 总内存
     # Read free memory/total memory
-    def getFreeRAM(self):
+    @staticmethod
+    def getFreeRAM():
         cmd = "free -h | awk 'NR==2{printf \"RAM: %.1f/%.1fGB \", $7,$2}'"
         FreeRam = subprocess.check_output(cmd, shell=True)
         str_FreeRam = str(FreeRam).lstrip('b\'')
         str_FreeRam = str_FreeRam.rstrip('\'')
         return str_FreeRam
 
-    # 读取TF卡空间占用率 / TF卡总空间
     # Read the TF card space usage/TOTAL TF card space
-    def getUsagedDisk(self):
+    @staticmethod
+    def getUsagedDisk():
         cmd = "df -h | awk '$NF==\"/\"{printf \"SDC:%s -> %.1fGB\", $5, $2}'"
         Disk = subprocess.check_output(cmd, shell=True)
         str_Disk = str(Disk).lstrip('b\'')
         str_Disk = str_Disk.rstrip('\'')
         return str_Disk
 
-    # 读取空闲的TF卡空间 / TF卡总空间
     # Read the free TF card space/total TF card space
-    def getFreeDisk(self):
+    @staticmethod
+    def getFreeDisk():
         cmd = "df -h | awk '$NF==\"/\"{printf \"Disk:%.1f/%.1fGB\", $4,$2}'"
         Disk = subprocess.check_output(cmd, shell=True)
         str_Disk = str(Disk).lstrip('b\'')
         str_Disk = str_Disk.rstrip('\'')
         return str_Disk
 
-    # 获取本机IP
     # Read the local IP address
-    def getLocalIP(self):
+    @staticmethod
+    def getLocalIP():
         ip = os.popen(
             "/sbin/ifconfig eth0 | grep 'inet' | awk '{print $2}'").read()
         ip = ip[0: ip.find('\n')]
-        # ip = ''
         if ip == '' or len(ip) > 15:
             ip = os.popen(
                 "/sbin/ifconfig wlan0 | grep 'inet' | awk '{print $2}'").read()
@@ -202,11 +195,19 @@ class OLED:
             ip = 'x.x.x.x'
         return ip
 
+    @staticmethod
+    def get_ros2_mode_status() -> str:
+        ros2_name = "ros2"
+        process_list = psutil.process_iter()
+        for process in process_list:
+            if ros2_name in process.name():
+                return 'Ros Active'
+        return 'Ros Inactive'
+
     def get_battery_voltage(self) -> str:
         voltage = self.__bot.get_battery_voltage()
         return f'Battery: {voltage:.1f}V'
 
-    # oled主要运行函数，在while循环里调用，可实现热插拔功能。
     # Oled mainly runs functions that are called in a while loop and can be hot-pluggable
     def main_program(self):
         try:
@@ -217,24 +218,22 @@ class OLED:
                 if self.__clear:
                     self.refresh()
                     return True
-                str_CPU = self.getCPULoadRate(cpu_index)
-                str_Time = self.getSystemTime()
-                str_voltage = self.get_battery_voltage()
                 if cpu_index == 0:
                     str_FreeRAM = self.getUsagedRAM()
                     # str_Disk = self.getUsagedDisk()
                     str_IP = "IP:" + self.getLocalIP()
-                self.add_text(0, 0, str_CPU)
-                self.add_text(50, 0, str_Time)
-                self.add_line(str_FreeRAM, 2)
-                self.add_line(str_voltage, 3)
+                self.add_text(0, 0, self.getCPULoadRate(cpu_index))
+                self.add_text(50, 0, self.getSystemTime())
+                self.add_line(self.get_ros2_mode_status(), 2)
+                # self.add_line(str_FreeRAM, 2)
+                self.add_line(self.get_battery_voltage(), 3)
                 self.add_line(str_IP, 4)
                 # Display image.
                 self.refresh()
                 cpu_index = cpu_index + 1
                 if cpu_index >= 5:
                     cpu_index = 0
-                time.sleep(.1)
+                time.sleep(5)
             return False
         except:
             if self.__debug:
@@ -266,10 +265,10 @@ if __name__ == "__main__":
             import smbus
             bus = smbus.SMBus(0)
             if not oled_clear:
-                start = 1    # 风扇开关
+                start = 1
                 bus.write_byte_data(0x0d, 0x08, start)
                 time.sleep(.05)
-                effect = 2   # 灯光效果1-4
+                effect = 2
                 bus.write_byte_data(0x0d, 0x04, effect)
                 time.sleep(.05)
         except:

@@ -30,6 +30,7 @@ class Joystick(object):
         self.__speed_z = 0
 
         self.__hotspot_active = False
+        self.__ros2_active = False
         # self.__hotspot_ip = hotspot_ip
         self.__light_effect = 0
         self.__bus = smbus.SMBus(0)
@@ -52,7 +53,7 @@ class Joystick(object):
         except:
             self.__js_isOpen = False
             print('---Failed To Open %s---' % js)
-        
+
         # Defining Functional List
         # Red LED Mode
         self.__function_names = {
@@ -116,7 +117,7 @@ class Joystick(object):
     # Return joystick state
     def is_Opened(self):
         return self.__js_isOpen
-    
+
     # transform data
     @staticmethod
     def __my_map(x, in_min, in_max, out_min, out_max):
@@ -130,7 +131,7 @@ class Joystick(object):
                 print("%s : %.3f" % (name, value))
             self.__speed_y = value * self.__speed_ctrl
             self.__robot.set_car_motion(self.__speed_x, self.__speed_y, self.__speed_z)
-        
+
         elif name == 'RK1_UP_DOWN':
             value = -value / 32767
             if self.__debug:
@@ -144,7 +145,7 @@ class Joystick(object):
                 print("%s : %.3f" % (name, value))
             self.__speed_z = value * 5 * self.__speed_ctrl
             self.__robot.set_car_motion(self.__speed_x, self.__speed_y, self.__speed_z)
-            
+
         elif name == 'RK2_UP_DOWN':
             value = -value / 32767
             if self.__debug:
@@ -178,6 +179,7 @@ class Joystick(object):
                     self.__bus.write_byte_data(0x0d, 0x04, self.__light_effect)
                     time.sleep(.05)
 
+        # activate/deactivate hotspot
         elif name == 'L1':
             if self.__debug:
                 print(name, ":", value)
@@ -209,7 +211,18 @@ class Joystick(object):
                     os.system("systemctl start wpa_supplicant")
                     print("Hotspot stopped")
 
+        # activate/deactivate ROS2
         elif name == 'R1':
+            if value == 1:
+                if not self.__ros2_active:
+                    self.__ros2_active = True
+                    print("Starting ROS2...")
+                    os.system("/root/sunriseRobot/app_SunriseRobot/start_ros2.sh")
+                else:
+                    kill_process_(program_name="ros2", debug=self.__debug)
+                    self.__ros2_active = False
+                    print("ROS2 stopped")
+
             if self.__debug:
                 print(name, ":", value)
 
@@ -228,27 +241,36 @@ class Joystick(object):
         elif name == 'MODE':
             if self.__debug:
                 print(name, ":", value)
+
         elif name == 'BTN_RK1':
             if self.__debug:
                 print(name, ":", value)
-            if value == 1:
-                self.__speed_ctrl = self.__speed_ctrl + 0.3
-                if self.__speed_ctrl > 1:
-                    self.__speed_ctrl = 0.4
 
         elif name == 'BTN_RK2':
             if self.__debug:
                 print(name, ":", value)
-        
+
         elif name == "L2":
-            value = ((value/32767)+1)/2
             if self.__debug:
                 print("%s : %.3f" % (name, value))
 
         elif name == "R2":
-            value = ((value/32767)+1)/2
             if self.__debug:
                 print("%s : %.3f" % (name, value))
+
+        # decrease sensibility
+        elif name == "L2_1":
+            if self.__debug:
+                print("%s : %.3f" % (name, value))
+            if value == 1:
+                self.__speed_ctrl = max(0.0, self.__speed_ctrl - 0.1)
+
+        # increase sensibility
+        elif name == "R2_1":
+            if self.__debug:
+                print("%s : %.3f" % (name, value))
+            if value == 1:
+                self.__speed_ctrl = min(1.0, self.__speed_ctrl + 0.1)
 
         elif name == 'WSAD_LEFT_RIGHT':
             value = -value / 32767
@@ -260,7 +282,7 @@ class Joystick(object):
                 self.__robot.set_car_motion(0, -self.__speed_ctrl, 0)
             else:
                 self.__robot.set_car_motion(0, 0, 0)
-            
+
         elif name == 'WSAD_UP_DOWN':
             value = -value / 32767
             if self.__debug:

@@ -14,23 +14,24 @@ from sensor_msgs.msg import Image
 print("import done")
 
 cv_edition = cv.__version__
-print("cv_edition: ",cv_edition)
+print("cv_edition: ", cv_edition)
+
 
 class simple_AR(Node):
-    def __init__(self,name):
+    def __init__(self, name):
         super().__init__(name)
         #create pub
-        self.pub_img = self.create_publisher(Image,'/simpleAR/camera',1)
+        self.pub_img = self.create_publisher(Image, '/simpleAR/camera', 1)
         #create sub
-        self.sub_graphics = self.create_subscription(String,'/Graphics_topic',self.choose_Graphics,1)
+        self.sub_graphics = self.create_subscription(String, '/Graphics_topic', self.choose_Graphics, 1)
         self.sub_keyboard = self.create_subscription(Char, '/key_value', self.KeyCallback, 1)
-        
+
         self.flip = True
         self.switch = False
         self.index = 0
-        self.graphics = ["Triangle", "Rectangle", "Parallelogram","WindMill",
-                            "TableTennisTable", "Ball", "Arrow", "Knife", "Desk",
-                            "Bench", "Stickman", "ParallelBars"]
+        self.graphics = ["Triangle", "Rectangle", "Parallelogram", "WindMill",
+                         "TableTennisTable", "Ball", "Arrow", "Knife", "Desk",
+                         "Bench", "Stickman", "ParallelBars"]
         self.Graphics = self.graphics[self.index]
         self.axis = np.float32([
             [0, 0, -1], [0, 8, -1], [5, 8, -1], [5, 0, -1],
@@ -53,7 +54,7 @@ class simple_AR(Node):
             [5, 0, -4], [0, 4, -5], [5, 4, -4], [5, 4, -5],
             [2, 5, -1], [2, 7, -1], [2, 6, -3], [2, 6, -5],
             [2, 5, -3], [2, 7, -3]
-            ])
+        ])
         self.frame = None
         self.img_name = 'img'
         self.patternSize = (6, 9)
@@ -68,33 +69,37 @@ class simple_AR(Node):
         self.objectPoints = np.zeros((6 * 9, 3), np.float32)
         self.objectPoints[:, :2] = np.mgrid[0:6, 0:9].T.reshape(-1, 2)
         self.capture = cv.VideoCapture(8)
-        if cv_edition[0]=='3': self.capture.set(cv.CAP_PROP_FOURCC, cv.VideoWriter_fourcc(*'XVID'))
-        else: self.capture.set(cv.CAP_PROP_FOURCC, cv.VideoWriter.fourcc('M', 'J', 'P', 'G'))
+        if cv_edition[0] == '3':
+            self.capture.set(cv.CAP_PROP_FOURCC, cv.VideoWriter_fourcc(*'XVID'))
+        else:
+            self.capture.set(cv.CAP_PROP_FOURCC, cv.VideoWriter.fourcc('M', 'J', 'P', 'G'))
         self.capture.set(cv.CAP_PROP_FRAME_WIDTH, 640)
         self.capture.set(cv.CAP_PROP_FRAME_HEIGHT, 480)
         self.timer = self.create_timer(0.001, self.on_timer)
-        
-        
-    def choose_Graphics(self,msg):
+
+    def choose_Graphics(self, msg):
         if not isinstance(msg, String): return
-        if msg.data in self.graphics: self.Graphics = msg.data
-        else: self.graphics_update()
-        
+        if msg.data in self.graphics:
+            self.Graphics = msg.data
+        else:
+            self.graphics_update()
+
     def graphics_update(self):
         self.index += 1
         if self.index >= len(self.graphics): self.index = 0
         self.Graphics = self.graphics[self.index]
-        
+
     def on_timer(self):
         ret, frame = self.capture.read()
         if self.switch:
             self.graphics_update()
             self.switch = False
-        frame =self.process(frame)
-			
+        frame = self.process(frame)
+
     def process(self, img):
         start = time.time()
-        if self.flip == True: img = cv.flip(img, 1)
+        if self.flip:
+            img = cv.flip(img, 1)
         gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
         # 查找每个图片的角点
         # Find the corner of each image
@@ -123,7 +128,7 @@ class simple_AR(Node):
         cv.putText(img, text, (30, 30), cv.FONT_HERSHEY_SIMPLEX, 0.6, (100, 200, 200), 1)
         self.pub_img.publish(self.bridge.cv2_to_imgmsg(img, "bgr8"))
         return img
-    
+
     def draw(self, img, corners, image_Points):
         # drawContours函数中绘图颜色顺序是bgr
         # drawContours the color order of the drawing is BGR
@@ -146,7 +151,8 @@ class simple_AR(Node):
                 cv.line(img, tuple(img_pts[i]), tuple(img_pts[65 + i]), (255, 0, 0), 3)
             cv.drawContours(img, [np.array([img_pts[60], img_pts[66], img_pts[67], img_pts[68]])], -1, (0, 255, 0), -1)
             cv.drawContours(img, [np.array([img_pts[23], img_pts[69], img_pts[71], img_pts[70]])], -1, (0, 0, 255), -1)
-        elif self.Graphics == "Ball": cv.circle(img, tuple(img_pts[22]), 30, (0, 0, 255), -1)
+        elif self.Graphics == "Ball":
+            cv.circle(img, tuple(img_pts[22]), 30, (0, 0, 255), -1)
         elif self.Graphics == "Arrow":
             cv.drawContours(img, [np.array([img_pts[13], img_pts[34], img_pts[36]])], -1, (0, 255, 0), -1)
             cv.drawContours(img, [np.array([img_pts[37], img_pts[15], img_pts[10], img_pts[38]])], -1, (0, 255, 0), -1)
@@ -190,12 +196,12 @@ class simple_AR(Node):
 
     def KeyCallback(self, key):
         data = key.data
-        if data == ord('f') or data == ord('F'): 
+        if data == ord('f') or data == ord('F'):
             self.switch = True
 
-def main():
-	print("start")
-	rclpy.init()
-	ar = simple_AR('simple_AR')
-	rclpy.spin(ar)
 
+def main():
+    print("start")
+    rclpy.init()
+    ar = simple_AR('simple_AR')
+    rclpy.spin(ar)

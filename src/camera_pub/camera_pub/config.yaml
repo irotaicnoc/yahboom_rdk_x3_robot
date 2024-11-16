@@ -1,14 +1,14 @@
-rclpy_init: null
 camera_publisher_node:
-  topic_name: camera_stream
+  camera_topic: camera_stream
   queue_size: 3
+  verbose: True
   image_orientation: 0
   video_capture_kwargs:
     pipe_id: 1
     video_index: -1
     fps: 5
-#    width: 1280
-#    height: 720
+#    width: 1920
+#    height: 1080
     width: 640
     height: 480
 #    raw_width: 1920

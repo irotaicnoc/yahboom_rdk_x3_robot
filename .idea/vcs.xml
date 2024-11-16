@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project version="4">
-  <component name="VcsDirectoryMappings">
-    <mapping directory="$PROJECT_DIR$" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/library_ws_src/src/rosbridge_suite" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/yahboomcar_ws_src/src/robot_localization" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/yahboomcar_ws_src/src/robot_pose_publisher_ros2" vcs="Git" />
-  </component>
-</project>

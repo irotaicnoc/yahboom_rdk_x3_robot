@@ -1,43 +1,19 @@
-import os
-import cv2
-import time
+# ros2 libraries
 import rclpy
-import numpy as np
 from rclpy.node import Node
 from cv_bridge import CvBridge
 from sensor_msgs.msg import Image
+
+# robot libraries
 from hobot_vio import libsrcampy as srcampy
 
-from camera_pub import extra_args
-
-
-def format_camera_frames(frame, width: int, height: int, image_orientation: int, logger=None):
-    frame_from_buffer = np.frombuffer(frame, dtype=np.uint8)
-    # logger().info(f'frame_from_buffer shape: {frame_from_buffer.shape}')
-    frame_reshaped = frame_from_buffer.reshape(height * 3 // 2, width)
-    # logger().info(f'frame_reshaped shape: {frame_reshaped.shape}')
-    frame_rgb = cv2.cvtColor(src=frame_reshaped, code=cv2.COLOR_YUV2RGB_NV12)
-    # logger().info(f'frame_rgb shape: {frame_rgb.shape}')
-    # logger().info(f'image_orientation: {image_orientation}')
-    # logger().info(f'image_orientation type: {type(image_orientation)}')
-    flipped_frame = cv2.flip(src=frame_rgb, flipCode=image_orientation)
-    # logger().info(f'flipped frame shape: {flipped_frame.shape}')
-    return flipped_frame
-
-
-# def sensor_reset_shell():
-#     os.system('echo 19 > /sys/class/gpio/export')
-#     os.system('echo out > /sys/class/gpio/direction')
-#     os.system('echo 0 > /sys/class/gpio/gpio19/value')
-#     time.sleep(0.2)
-#     os.system('echo 1 > /sys/class/gpio/gpio19/value')
-#     os.system('echo 19 > /sys/class/gpio/unexport')
-#     os.system('echo 1 > /sys/class/vps/mipi_host0/param/stop_check_instart')
+# my libraries
+from camera_pub import utils
 
 
 class CameraPublisherNode(Node):
     def __init__(self,
-                 topic_name: str,
+                 camera_topic: str,
                  image_orientation: int,
                  queue_size: int,
                  video_capture_kwargs: dict,
@@ -46,13 +22,15 @@ class CameraPublisherNode(Node):
         # camera
         self.is_open = -1
         self.get_logger().info(f'{video_capture_kwargs=}')
-        self.get_logger().info(f'{topic_name=}')
+        self.get_logger().info(f'{camera_topic=}')
         # self.get_logger().info(f'{queue_size=}')
         self.video_capture_kwargs = video_capture_kwargs
         self.camera = srcampy.Camera()
         self.is_open = self.camera.open_cam(**self.video_capture_kwargs)
-        self.get_logger().info(f'camera is_open = {self.is_open}')
-        self.get_logger().info('0 = success, -1 = failed')
+        if self.is_open == 0:
+            self.get_logger().info(f'camera is_open: SUCCESS')
+        else:
+            self.get_logger().info(f'camera is_open: FAILED')
         self.image_width = self.video_capture_kwargs['width']
         self.image_height = self.video_capture_kwargs['height']
         self.image_orientation = image_orientation
@@ -63,27 +41,31 @@ class CameraPublisherNode(Node):
         self.cv_ros_bridge = CvBridge()
 
         # publisher
-        self.topic_name = topic_name
+        self.topic_name = camera_topic
         self.queue_size = queue_size
         self.publisher = self.create_publisher(Image, self.topic_name, self.queue_size)
 
         # it is the inverse of Frames Per Second
         self.time_between_frames = round(1 / self.video_capture_kwargs['fps'], ndigits=3)
         self.timer = self.create_timer(self.time_between_frames, self.timer_callback_function)
-        # self.message_counter = 0
+        self.message_counter = 0
 
     def timer_callback_function(self):
         frame = self.camera.get_img(2)
         if frame is None:
             self.get_logger().info('frame is None')
             return
-
-        frame = format_camera_frames(
+        save_img = False
+        if self.message_counter % 100 == 0:
+            save_img = True
+        frame = utils.format_camera_frames(
             frame=frame,
             width=self.image_width,
             height=self.image_height,
             image_orientation=self.image_orientation,
             # logger=self.get_logger,
+            # save_img=save_img,
+            # counter=self.message_counter//100,
         )
         # self.get_logger().info(f'time_between_frames {self.time_between_frames}')
         # self.get_logger().info(f'image_width {self.image_width}')
@@ -98,7 +80,7 @@ class CameraPublisherNode(Node):
         # if self.message_counter % 100 == 0:
         #         self.get_logger().info(f'image {self.message_counter}, shape {frame.shape}')
         #         self.get_logger().info(f'encoding {ros2_image_message.encoding}')
-        # self.message_counter += 1
+        self.message_counter += 1
 
     def destroy_node(self):
         self.get_logger().info('destroy cam publisher node')
@@ -109,12 +91,8 @@ class CameraPublisherNode(Node):
 
 
 def main(args=None):
-    kwargs = extra_args.read()
-    try:
-        rclpy_init_args = kwargs['rclpy_init']
-    except:
-        rclpy_init_args = None
-    rclpy.init(args=rclpy_init_args)
+    rclpy.init(args=args)
+    kwargs = utils.args_from_yaml(config_path='/root/marco_ros2_ws/src/camera_pub/camera_pub/config.yaml')
     try:
         camera_publisher_node_args = kwargs['camera_publisher_node']
     except:

@@ -84,7 +84,7 @@ class Mipi_Camera(object):
         if text != "":
             # 各参数依次是：图片，添加的文字，左上角坐标，字体，字体大小，颜色，字体粗细
             # The parameters are: image, added text, top left coordinate, font, font size, color, font size  
-            cv2.putText(image, str(text), (10, 20), cv.FONT_HERSHEY_SIMPLEX, 0.5, color, 1)
+            cv2.putText(image, str(text), (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 1)
         success, jpeg = cv2.imencode('.jpg', image)
         return success, jpeg.tobytes()
 

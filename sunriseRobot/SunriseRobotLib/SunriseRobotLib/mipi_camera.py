@@ -7,6 +7,7 @@ import numpy as np
 # Camera API libs
 from hobot_vio import libsrcampy as srcampy
 
+
 # V2.0.1
 class Mipi_Camera(object):
     def __init__(self, width=320, height=240, debug=False):
@@ -34,7 +35,8 @@ class Mipi_Camera(object):
                 print("---Mipi_Camera Del---")
 
     # 配置CSI摄像头
-    def __sensor_reset_shell(self):
+    @staticmethod
+    def __sensor_reset_shell():
         os.system("echo 19 > /sys/class/gpio/export")
         os.system("echo out > /sys/class/gpio/gpio19/direction")
         os.system("echo 0 > /sys/class/gpio/gpio19/value")

@@ -4,6 +4,8 @@ import psutil
 
 def kill_process_(program_name: str, debug: bool = False):
     process_list = psutil.process_iter()
+    if debug:
+        print(f"Killing for {program_name}...")
     for process in process_list:
         if program_name in process.name():
             if debug:
