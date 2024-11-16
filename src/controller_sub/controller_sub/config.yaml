@@ -1,0 +1,5 @@
+rclpy_init: null
+controller_subscriber_node:
+  topic_name: cmd_vel
+  queue_size: 2
+
