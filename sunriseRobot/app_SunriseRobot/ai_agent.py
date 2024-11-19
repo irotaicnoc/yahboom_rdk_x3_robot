@@ -48,14 +48,13 @@ class AiAgent(object):
             if self.verbose:
                 print('Camera closed.')
 
-
-    def activate_agent(self, video_capture_kwargs = None):
+    def activate_agent(self, video_capture_kwargs=None):
         self.camera_is_open = -1
         if video_capture_kwargs is None:
             self.camera_is_open = self.camera.open_cam(**self.video_capture_kwargs)
         else:
             self.camera_is_open = self.camera.open_cam(**video_capture_kwargs)
-            
+
         if self.camera_is_open == 0:
             self.agent_active = True
             if self.verbose:
@@ -68,7 +67,6 @@ class AiAgent(object):
             print('Impossible to run autonomous behavior.')
             self.agent_active = False
 
-
     def update_params(self, params: dict) -> None:
         for param_name, param_value in params.items():
             if param_name == 'target_name':
@@ -76,7 +74,6 @@ class AiAgent(object):
 
             elif hasattr(self, param_name):
                 setattr(self, param_name, param_value)
-
 
     def autonomous_behavior(self) -> None:
         print('Start autonomous behavior.')

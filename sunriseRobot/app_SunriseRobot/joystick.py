@@ -40,7 +40,8 @@ class Joystick(object):
         # autonomous mode
         self.bot_mode_list = ['user_controlled', 'autonomous_tracking']
         self.bot_mode = self.bot_mode_list[0]
-        self.tracking_target_list = ['person', 'cat', 'backpack', 'fork', 'knife', 'spoon', 'orange', 'chair', 'remote', 'cell phone']
+        self.tracking_target_list = ['person', 'cat', 'backpack', 'fork', 'knife',
+                                     'spoon', 'orange', 'chair', 'remote', 'cell phone']
         self.tracking_target_pos = 0
         self.__last_select_press = 0  # Add timestamp for SELECT button
         self.__select_delay = 5.0  # Minimum seconds between SELECT presses
@@ -205,7 +206,7 @@ class Joystick(object):
                     os.system("hostapd -B /root/sunriseRobot/hotspot/etc/hostapd.conf")
                     os.system("ifconfig wlan0 192.168.8.88 netmask 255.255.255.0")
                     os.system("systemctl start isc-dhcp-server")
-                    print("Done")
+                    print("Done.")
                     self.__hotspot_status = 'active'
 
                 elif self.__hotspot_status == 'active':
@@ -219,7 +220,7 @@ class Joystick(object):
                     os.system("sleep 1")
                     os.system("ifconfig wlan0 up")
                     os.system("systemctl start wpa_supplicant")
-                    print("Done")
+                    print("Done.")
                     self.__hotspot_status = 'inactive'
 
         # activate/deactivate ROS2
@@ -230,13 +231,13 @@ class Joystick(object):
                         self.__ros2_status = 'processing'
                         print("Starting ROS2...", end='')
                         os.system("/root/sunriseRobot/app_SunriseRobot/start_ros2.sh")
-                        print("Done")
+                        print("Done.")
                         self.__ros2_status = 'active'
                     elif self.__ros2_status == 'active':
                         self.__ros2_status = 'processing'
                         print("Stopping ROS2...", end='')
                         kill_process_(program_name="ros2", debug=self.__debug)
-                        print("Done")
+                        print("Done.")
                         self.__ros2_status = 'inactive'
 
                 if self.__debug:
@@ -331,8 +332,7 @@ class Joystick(object):
                 if value < 0:   
                     self.tracking_target_pos -= 1
                     self.tracking_target_pos = self.tracking_target_pos % len(self.tracking_target_list)
-                params = {}
-                params['target_name'] = self.tracking_target_list[self.tracking_target_pos]
+                params = {'target_name': self.tracking_target_list[self.tracking_target_pos]}
                 self.ai_agent.update_params(params=params)
 
         else:
