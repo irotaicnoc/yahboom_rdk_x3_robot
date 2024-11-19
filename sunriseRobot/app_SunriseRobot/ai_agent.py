@@ -12,9 +12,7 @@ class AiAgent(object):
     def __init__(self, robot: SunriseRobot, **kwargs):
         # general initialization
         self.robot = robot
-        parameters = args.import_args(yaml_path='config.yaml', **kwargs)
-        print('parameters')
-        utils.pretty_print_dict(parameters)
+        parameters = args.import_args(yaml_path='/root/sunriseRobot/app_SunriseRobot/config.yaml', **kwargs)
         robot_kwargs = parameters['robot_kwargs']
         camera_kwargs = parameters['camera_kwargs']
         tracker_kwargs = parameters['tracker_kwargs']
