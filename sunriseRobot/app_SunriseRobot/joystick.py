@@ -6,9 +6,9 @@ import time
 import smbus
 import struct
 
+from ai_agent import AiAgent
 from kill_process import kill_process_
 from SunriseRobotLib import SunriseRobot
-from ai_agent import AiAgent
 
 
 # V1.0.4

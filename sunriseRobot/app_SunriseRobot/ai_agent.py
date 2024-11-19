@@ -47,7 +47,7 @@ class AiAgent(object):
             self.camera.close_cam()
             self.agent_active = False
             if self.verbose:
-                print('camera closed')
+                print('Camera closed.')
 
 
     def activate_agent(self, video_capture_kwargs = None):
@@ -65,8 +65,8 @@ class AiAgent(object):
             tracking_task.setDaemon(True)
             tracking_task.start()
         else:
-            print('failed to open camera')
-            print('impossible to run autonomous behavior')
+            print('Failed to open camera.')
+            print('Impossible to run autonomous behavior.')
             self.agent_active = False
 
 
@@ -80,11 +80,12 @@ class AiAgent(object):
 
 
     def autonomous_behavior(self) -> None:
+        print('Start autonomous behavior.')
         while self.agent_active:
             frame = self.camera.get_img(2)
             if frame is None:
                 if self.verbose:
-                    print('frame is None')
+                    print('Frame is None.')
                 time.sleep(0.5)
                 continue
             frame = utils.format_camera_frames(
@@ -114,3 +115,5 @@ class AiAgent(object):
                 self.robot.set_car_motion(self.speed_x, self.speed_y, self.speed_z)
 
             time.sleep(0.5)
+
+        print('Stop autonomous behavior.')

@@ -4,15 +4,16 @@ import argparse
 
 
 def import_args(yaml_path: str, **kwargs) -> dict:
+    # read data from yaml config file
     data_dict = None
     with open(yaml_path) as f:
         data_dict = yaml.safe_load(f)
 
     # command line arguments have priority over yaml arguments
     data_dict = from_command_line(default_data_dict=data_dict)
+
     # function arguments have priority over yaml AND command line arguments
     data_dict = from_function_arguments(default_data_dict=data_dict, **kwargs)
-
     return data_dict
 
 

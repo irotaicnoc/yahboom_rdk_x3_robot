@@ -9,8 +9,8 @@ class YoloTracker(object):
         self.model_folder = model_folder
         self.model_path = model_folder + model_name
         self.image_size = image_size
-        # self.x_center = int(imgsz[0] / 2)
-        # self.y_center = int(imgsz[1] / 2)
+        # self.x_center = int(image_size[0] / 2)
+        # self.y_center = int(image_size[1] / 2)
         self.verbose = verbose
 
         # Download model in folder if not present, and load it
