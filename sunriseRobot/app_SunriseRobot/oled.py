@@ -12,7 +12,7 @@ from PIL import ImageFont
 
 import subprocess
 
-from SunriseRobotLib import SunriseRobot
+# from SunriseRobotLib import SunriseRobot
 
 
 # V1.0.10
@@ -34,13 +34,13 @@ class OLED:
         self.__draw = ImageDraw.Draw(self.__image)
         self.__font = ImageFont.load_default()
 
-        self.__bot = SunriseRobot()
+        # self.__bot = SunriseRobot()
         # com = "COM30"
-        # com="/dev/ttyTHS1"
-        # com="/dev/ttyUSB0"
-        # com="/dev/ttyAMA0"
-        # com="/dev/myserial"
-        self.__bot.create_receive_threading()
+        # com = "/dev/ttyTHS1"
+        # com = "/dev/ttyUSB0"
+        # com = "/dev/ttyAMA0"
+        # com = "/dev/myserial"
+        # self.__bot.create_receive_threading()
 
     def __del__(self):
         self.clear(True)
@@ -204,9 +204,9 @@ class OLED:
                 return 'Ros Active'
         return 'Ros Inactive'
 
-    def get_battery_voltage(self) -> str:
-        voltage = self.__bot.get_battery_voltage()
-        return f'Battery: {voltage:.1f}V'
+    # def get_battery_voltage(self) -> str:
+    #     voltage = self.__bot.get_battery_voltage()
+    #     return f'Battery: {voltage:.1f}V'
 
     # Oled mainly runs functions that are called in a while loop and can be hot-pluggable
     def main_program(self):
@@ -226,7 +226,7 @@ class OLED:
                 self.add_text(50, 0, self.getSystemTime())
                 self.add_line(self.get_ros2_mode_status(), 2)
                 # self.add_line(str_FreeRAM, 2)
-                self.add_line(self.get_battery_voltage(), 3)
+                # self.add_line(self.get_battery_voltage(), 3)
                 self.add_line(str_IP, 4)
                 # Display image.
                 self.refresh()
