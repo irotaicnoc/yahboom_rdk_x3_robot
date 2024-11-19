@@ -21,6 +21,7 @@ class AiAgent(object):
         self.agent_active = False
 
         # camera initialization
+        self.camera_is_open = -1
         self.camera = srcampy.Camera()
         self.video_capture_kwargs = camera_kwargs['video_capture_kwargs']
         self.frame_width = self.video_capture_kwargs['width']
@@ -34,11 +35,10 @@ class AiAgent(object):
         # motion initialization
         self.steer_threshold: float = 0.05
         self.steering_speed_coefficient: float = robot_kwargs['speed_coefficient']
-        self.forward_speed_coefficient: float = robot_kwargs['speed_coefficient'] / 5
+        self.forward_speed_coefficient: float = robot_kwargs['speed_coefficient'] / 3
         self.speed_x = 0
         self.speed_y = 0
         self.speed_z = 0
-
 
     def deactivate_agent(self):
         if self.camera_is_open == 0:
@@ -109,6 +109,6 @@ class AiAgent(object):
                     self.speed_z = 0
                 self.robot.set_car_motion(self.speed_x, self.speed_y, self.speed_z)
 
-            time.sleep(0.5)
+            time.sleep(0.1)
 
         print('Stop autonomous behavior.')

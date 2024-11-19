@@ -46,6 +46,8 @@ class Joystick(object):
         self.__last_select_press = 0  # Add timestamp for SELECT button
         self.__select_delay = 5.0  # Minimum seconds between SELECT presses
         self.ai_agent = AiAgent(robot=self.__robot)
+        params = {'target_name': self.tracking_target_list[self.tracking_target_pos]}
+        self.ai_agent.update_params(params=params)
 
         # Find the joystick device.
         print('Joystick Available devices:')

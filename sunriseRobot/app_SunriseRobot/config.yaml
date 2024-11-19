@@ -1,5 +1,5 @@
 verbose: True
-save_images: True
+save_images: False
 
 robot_kwargs:
   speed_coefficient: 0.7
