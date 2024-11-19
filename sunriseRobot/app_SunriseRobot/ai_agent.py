@@ -25,7 +25,6 @@ class AiAgent(object):
         self.video_capture_kwargs = camera_kwargs['video_capture_kwargs']
         self.frame_width = self.video_capture_kwargs['width']
         self.frame_height = self.video_capture_kwargs['height']
-        # self.image_orientation = camera_kwargs['image_orientation']
 
         # yolo tracker initialization
         image_size = (self.frame_width, self.frame_height)
@@ -92,7 +91,6 @@ class AiAgent(object):
                 frame=frame,
                 width=self.frame_width,
                 height=self.frame_height,
-                # image_orientation=self.image_orientation,
                 # save_img=save_img,
             )
 
