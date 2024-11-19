@@ -113,4 +113,8 @@ class AiAgent(object):
 
             time.sleep(0.1)
 
+        self.speed_x = 0
+        self.speed_y = 0
+        self.speed_z = 0
+        self.robot.set_car_motion(self.speed_x, self.speed_y, self.speed_z)
         print('Stop autonomous behavior.')
