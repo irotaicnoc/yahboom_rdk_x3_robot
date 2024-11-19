@@ -19,4 +19,4 @@ camera_kwargs:
 
 tracker_kwargs:
   model_name: yolov5nu.pt
-  model_folder: models/
+  model_folder: /root/sunriseRobot/app_SunriseRobot/models/
