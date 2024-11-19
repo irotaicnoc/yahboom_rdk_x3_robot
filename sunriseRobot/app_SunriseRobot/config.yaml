@@ -5,7 +5,7 @@ robot_kwargs:
   speed_coefficient: 0.7
 
 camera_kwargs:
-  image_orientation: 0
+  # image_orientation: 0
   video_capture_kwargs:
     pipe_id: 1
     video_index: -1
