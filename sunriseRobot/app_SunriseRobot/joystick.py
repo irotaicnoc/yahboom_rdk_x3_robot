@@ -1,18 +1,19 @@
 #!/usr/bin/env python3
 # coding=utf-8
 import os
-import struct
 import sys
 import time
 import smbus
+import struct
 
 from kill_process import kill_process_
-from SunriseRobotLib import SunriseRobot as Robot
+from SunriseRobotLib import SunriseRobot
+from ai_agent import AiAgent
 
 
 # V1.0.4
 class Joystick(object):
-    def __init__(self, robot: Robot, js_id=0, debug=False):
+    def __init__(self, robot: SunriseRobot, js_id=0, debug=False):
         self.__debug = debug
         self.__js_id = int(js_id)
         self.__js_isOpen = False
@@ -29,13 +30,22 @@ class Joystick(object):
         self.__speed_y = 0
         self.__speed_z = 0
 
-        self.__hotspot_active = False
-        self.__ros2_active = False
-        # self.__hotspot_ip = hotspot_ip
+        self.__hotspot_status = 'inactive'
+        self.__ros2_status = 'inactive'
         self.__light_effect = 0
         self.__bus = smbus.SMBus(0)
         # Start with lights turned off
         self.__bus.write_byte_data(0x0d, 0x07, 0x00)
+
+        # autonomous mode
+        self.bot_mode_list = ['user_controlled', 'autonomous_tracking']
+        self.bot_mode = self.bot_mode_list[0]
+        self.tracking_target_list = ['person', 'cat', 'backpack', 'fork', 'knife', 'spoon', 'orange', 'chair', 'remote', 'cell phone']
+        self.tracking_target_pos = 0
+        self.__last_select_press = 0  # Add timestamp for SELECT button
+        self.__select_delay = 5.0  # Minimum seconds between SELECT presses
+        self.ai_agent = AiAgent(robot=self.__robot)
+        self.ai_agent.deactivate_agent()
 
         # Find the joystick device.
         print('Joystick Available devices:')
@@ -118,38 +128,37 @@ class Joystick(object):
     def is_Opened(self):
         return self.__js_isOpen
 
-    # transform data
-    @staticmethod
-    def __my_map(x, in_min, in_max, out_min, out_max):
-        return (out_max - out_min) * (x - in_min) / (in_max - in_min) + out_min
-
     # Control robot
     def __data_processing(self, name, value):
         if name == "RK1_LEFT_RIGHT":
-            value = -value / 32767
-            if self.__debug:
-                print("%s : %.3f" % (name, value))
-            self.__speed_y = value * self.__speed_ctrl
-            self.__robot.set_car_motion(self.__speed_x, self.__speed_y, self.__speed_z)
+            if self.bot_mode == 'user_controlled':
+                value = -value / 32767
+                if self.__debug:
+                    print("%s : %.3f" % (name, value))
+                self.__speed_y = value * self.__speed_ctrl
+                self.__robot.set_car_motion(self.__speed_x, self.__speed_y, self.__speed_z)
 
         elif name == 'RK1_UP_DOWN':
-            value = -value / 32767
-            if self.__debug:
-                print("%s : %.3f" % (name, value))
-            self.__speed_x = value * self.__speed_ctrl
-            self.__robot.set_car_motion(self.__speed_x, self.__speed_y, self.__speed_z)
+            if self.bot_mode == 'user_controlled':
+                value = -value / 32767
+                if self.__debug:
+                    print("%s : %.3f" % (name, value))
+                self.__speed_x = value * self.__speed_ctrl
+                self.__robot.set_car_motion(self.__speed_x, self.__speed_y, self.__speed_z)
 
         elif name == 'RK2_LEFT_RIGHT':
-            value = -value / 32767
-            if self.__debug:
-                print("%s : %.3f" % (name, value))
-            self.__speed_z = value * 5 * self.__speed_ctrl
-            self.__robot.set_car_motion(self.__speed_x, self.__speed_y, self.__speed_z)
+            if self.bot_mode == 'user_controlled':
+                value = -value / 32767
+                if self.__debug:
+                    print("%s : %.3f" % (name, value))
+                self.__speed_z = value * 5 * self.__speed_ctrl
+                self.__robot.set_car_motion(self.__speed_x, self.__speed_y, self.__speed_z)
 
         elif name == 'RK2_UP_DOWN':
-            value = -value / 32767
-            if self.__debug:
-                print("%s : %.3f" % (name, value))
+            if self.bot_mode == 'user_controlled':
+                value = -value / 32767
+                if self.__debug:
+                    print("%s : %.3f" % (name, value))
 
         # activate buzzer
         elif name == 'A':
@@ -184,9 +193,9 @@ class Joystick(object):
             if self.__debug:
                 print(name, ":", value)
             if value == 1:
-                self.__hotspot_active = not self.__hotspot_active
-                if self.__hotspot_active:
-                    print("Starting Hotspot...")
+                if self.__hotspot_status == 'inactive':
+                    self.__hotspot_status = 'processing'
+                    print("Starting Hotspot...", end='')
                     os.system("sleep 3")
                     os.system("systemctl stop wpa_supplicant")
                     os.system("ip addr flush dev wlan0")
@@ -197,10 +206,12 @@ class Joystick(object):
                     os.system("hostapd -B /root/sunriseRobot/hotspot/etc/hostapd.conf")
                     os.system("ifconfig wlan0 192.168.8.88 netmask 255.255.255.0")
                     os.system("systemctl start isc-dhcp-server")
-                    print("Hotspot started")
+                    print("Done")
+                    self.__hotspot_status = 'active'
 
-                else:
-                    print("Stopping Hotspot...")
+                elif self.__hotspot_status == 'active':
+                    self.__hotspot_status = 'processing'
+                    print("Stopping Hotspot...", end='')
                     kill_process_(program_name="hostapd", debug=self.__debug)
                     os.system("systemctl stop isc-dhcp-server")
                     os.system("ip addr flush dev wlan0")
@@ -209,26 +220,43 @@ class Joystick(object):
                     os.system("sleep 1")
                     os.system("ifconfig wlan0 up")
                     os.system("systemctl start wpa_supplicant")
-                    print("Hotspot stopped")
+                    print("Done")
+                    self.__hotspot_status = 'inactive'
 
         # activate/deactivate ROS2
         elif name == 'R1':
-            if value == 1:
-                if not self.__ros2_active:
-                    self.__ros2_active = True
-                    print("Starting ROS2...")
-                    os.system("/root/sunriseRobot/app_SunriseRobot/start_ros2.sh")
-                else:
-                    kill_process_(program_name="ros2", debug=self.__debug)
-                    self.__ros2_active = False
-                    print("ROS2 stopped")
+            if self.bot_mode == 'user_controlled':
+                if value == 1:
+                    if self.__ros2_status == 'inactive':
+                        self.__ros2_status = 'processing'
+                        print("Starting ROS2...", end='')
+                        os.system("/root/sunriseRobot/app_SunriseRobot/start_ros2.sh")
+                        print("Done")
+                        self.__ros2_status = 'active'
+                    elif self.__ros2_status == 'active':
+                        self.__ros2_status = 'processing'
+                        print("Stopping ROS2...", end='')
+                        kill_process_(program_name="ros2", debug=self.__debug)
+                        print("Done")
+                        self.__ros2_status = 'inactive'
 
-            if self.__debug:
-                print(name, ":", value)
+                if self.__debug:
+                    print(name, ":", value)
 
+        # switch between user-controlled mode and autonomous mode
         elif name == 'SELECT':
             if self.__debug:
                 print(name, ":", value)
+            current_time = time.time()
+            if value == 1 and (current_time - self.__last_select_press) >= self.__select_delay:
+                print(f"Switching from {self.bot_mode} mode.")
+                self.bot_mode = self.bot_mode_list[(self.bot_mode_list.index(self.bot_mode) + 1) % len(self.bot_mode_list)]
+                print(f"Switching to {self.bot_mode} mode.")
+                self.__last_select_press = current_time
+                if self.bot_mode == 'user_controlled':
+                    self.ai_agent.deactivate_agent()
+                elif self.bot_mode == 'autonomous_tracking':
+                    self.ai_agent.activate_agent()
 
         elif name == 'START':
             if self.__debug:
@@ -274,25 +302,39 @@ class Joystick(object):
 
         elif name == 'WSAD_LEFT_RIGHT':
             value = -value / 32767
-            if self.__debug:
-                print("%s : %.3f" % (name, value))
-            if value > 0:
-                self.__robot.set_car_motion(0, self.__speed_ctrl, 0)
-            elif value < 0:
-                self.__robot.set_car_motion(0, -self.__speed_ctrl, 0)
-            else:
-                self.__robot.set_car_motion(0, 0, 0)
+            if self.bot_mode == 'user_controlled':
+                if self.__debug:
+                    print("%s : %.3f" % (name, value))
+                if value > 0:
+                    self.__robot.set_car_motion(0, self.__speed_ctrl, 0)
+                elif value < 0:
+                    self.__robot.set_car_motion(0, -self.__speed_ctrl, 0)
+                else:
+                    self.__robot.set_car_motion(0, 0, 0)
 
         elif name == 'WSAD_UP_DOWN':
+            # in user_controlled mode robot forward/backward
             value = -value / 32767
-            if self.__debug:
-                print("%s : %.3f" % (name, value))
-            if value > 0:
-                self.__robot.set_car_motion(self.__speed_ctrl, 0, 0)
-            elif value < 0:
-                self.__robot.set_car_motion(-self.__speed_ctrl, 0, 0)
-            else:
-                self.__robot.set_car_motion(0, 0, 0)
+            if self.bot_mode == 'user_controlled':
+                if self.__debug:
+                    print("%s : %.3f" % (name, value))
+                if value > 0:
+                    self.__robot.set_car_motion(self.__speed_ctrl, 0, 0)
+                elif value < 0:
+                    self.__robot.set_car_motion(-self.__speed_ctrl, 0, 0)
+                else:
+                    self.__robot.set_car_motion(0, 0, 0)
+            # in autonomous_tracking mode cycle through tracking_target_list
+            elif self.bot_mode == 'autonomous_tracking':
+                if value > 0:
+                    self.tracking_target_pos += 1
+                    self.tracking_target_pos = self.tracking_target_pos % len(self.tracking_target_list)
+                if value < 0:   
+                    self.tracking_target_pos -= 1
+                    self.tracking_target_pos = self.tracking_target_pos % len(self.tracking_target_list)
+                params = {}
+                params['target_name'] = self.tracking_target_list[self.tracking_target_pos]
+                self.ai_agent.update_params(params=params)
 
         else:
             pass
@@ -352,7 +394,7 @@ if __name__ == '__main__':
             g_debug = True
     print("debug=", g_debug)
 
-    g_robot = Robot()
+    g_robot = SunriseRobot()
     js = Joystick(g_robot, debug=g_debug)
     try:
         while True:
