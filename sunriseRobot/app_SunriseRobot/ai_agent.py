@@ -1,4 +1,5 @@
 import time
+import threading
 
 from SunriseRobotLib import SunriseRobot
 from hobot_vio import libsrcampy as srcampy
@@ -60,6 +61,9 @@ class AiAgent(object):
             self.agent_active = True
             if self.verbose:
                 print('camera opened correctly')
+            tracking_task = threading.Thread(target=self.autonomous_behavior, name='tracking_task')
+            tracking_task.setDaemon(True)
+            tracking_task.start()
         else:
             print('failed to open camera')
             print('impossible to run autonomous behavior')
