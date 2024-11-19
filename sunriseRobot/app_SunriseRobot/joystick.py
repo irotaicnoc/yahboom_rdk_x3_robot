@@ -46,7 +46,10 @@ class Joystick(object):
         self.__last_select_press = 0  # Add timestamp for SELECT button
         self.__select_delay = 5.0  # Minimum seconds between SELECT presses
         self.ai_agent = AiAgent(robot=self.__robot)
-        params = {'target_name': self.tracking_target_list[self.tracking_target_pos]}
+        params = {
+            'target_name': self.tracking_target_list[self.tracking_target_pos],
+            'speed_coefficient': self.speed_coefficient,
+        }
         self.ai_agent.update_params(params=params)
 
         # Find the joystick device.
@@ -296,6 +299,9 @@ class Joystick(object):
                 print("%s : %.3f" % (name, value))
             if value == 1:
                 self.speed_coefficient = max(0.0, self.speed_coefficient - 0.1)
+                if self.bot_mode == 'autonomous_tracking':
+                    params = {'speed_coefficient': self.speed_coefficient}
+                    self.ai_agent.update_params(params=params)
 
         # increase sensibility
         elif name == "R2_1":
@@ -303,6 +309,9 @@ class Joystick(object):
                 print("%s : %.3f" % (name, value))
             if value == 1:
                 self.speed_coefficient = min(1.0, self.speed_coefficient + 0.1)
+                if self.bot_mode == 'autonomous_tracking':
+                    params = {'speed_coefficient': self.speed_coefficient}
+                    self.ai_agent.update_params(params=params)
 
         elif name == 'WSAD_LEFT_RIGHT':
             value = -value / 32767
@@ -336,7 +345,10 @@ class Joystick(object):
                 if value < 0:   
                     self.tracking_target_pos -= 1
                     self.tracking_target_pos = self.tracking_target_pos % len(self.tracking_target_list)
-                params = {'target_name': self.tracking_target_list[self.tracking_target_pos]}
+                params = {
+                    'target_name': self.tracking_target_list[self.tracking_target_pos],
+                    'speed_coefficient': self.speed_coefficient,
+                }
                 self.ai_agent.update_params(params=params)
 
         else:
