@@ -2,7 +2,7 @@ verbose: True
 save_images: False
 
 robot_kwargs:
-  speed_coefficient: 0.7
+  speed_coefficient: 0.5
 
 camera_kwargs:
   video_capture_kwargs:
