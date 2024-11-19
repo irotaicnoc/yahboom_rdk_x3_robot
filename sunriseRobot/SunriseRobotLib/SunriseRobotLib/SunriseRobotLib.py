@@ -1092,22 +1092,16 @@ class SunriseRobot(object):
     # 获取加速度计三轴数据，返回a_x, a_y, a_z
     # Get accelerometer triaxial data, return a_x, a_y, a_z
     def get_accelerometer_data(self):
-        a_x, a_y, a_z = self.__ax, self.__ay, self.__az
-        # self.__ax, self.__ay, self.__az = 0, 0, 0
-        return a_x, a_y, a_z
+        return self.__ax, self.__ay, self.__az
 
     # 获取陀螺仪三轴数据，返回g_x, g_y, g_z
     # Get the gyro triaxial data, return g_x, g_y, g_z
     def get_gyroscope_data(self):
-        g_x, g_y, g_z = self.__gx, self.__gy, self.__gz
-        # self.__gx, self.__gy, self.__gz = 0, 0, 0
-        return g_x, g_y, g_z
+        return self.__gx, self.__gy, self.__gz
 
     # 获取磁力计三轴数据，返回m_x, m_y, m_z
     def get_magnetometer_data(self):
-        m_x, m_y, m_z = self.__mx, self.__my, self.__mz
-        # self.__mx, self.__my, self.__mz = 0, 0, 0
-        return m_x, m_y, m_z
+        return self.__mx, self.__my, self.__mz
 
     # 获取板子姿态角，返回yaw, roll, pitch
     # ToAngle=True返回角度，ToAngle=False返回弧度。
@@ -1125,25 +1119,18 @@ class SunriseRobot(object):
     # 获取小车速度，val_vx, val_vy, val_vz
     # Get the car speed, val_vx, val_vy, val_vz
     def get_motion_data(self):
-        val_vx = self.__vx
-        val_vy = self.__vy
-        val_vz = self.__vz
-        # self.__vx, self.__vy, self.__vz = 0, 0, 0
-        return val_vx, val_vy, val_vz
+        return self.__vx, self.__vy, self.__vz
 
     # 获取电池电压值
     # Get the battery voltage
     def get_battery_voltage(self):
         vol = self.__battery_voltage / 10.0
-        # self.__battery_voltage = 0
         return vol
 
     # 获取四路电机编码器数据
     # Obtain data of four-channel motor encoder
     def get_motor_encoder(self):
-        m1, m2, m3, m4 = self.__encoder_m1, self.__encoder_m2, self.__encoder_m3, self.__encoder_m4
-        # self.__encoder_m1, self.__encoder_m2, self.__encoder_m3, self.__encoder_m4 = 0, 0, 0, 0
-        return m1, m2, m3, m4
+        return self.__encoder_m1, self.__encoder_m2, self.__encoder_m3, self.__encoder_m4
 
     # 获取小车的运动PID参数, 返回[kp, ki, kd]
     # Get the motion PID parameters of the dolly and return [kp, ki, kd]

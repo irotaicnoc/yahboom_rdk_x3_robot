@@ -24,25 +24,23 @@ if len(sys.argv) > 1:
 print("debug=", g_debug)
 
 
-# 小车底层处理库
+# Robot base processing library
 g_bot = SunriseRobot(debug=g_debug)
-# 启动线程接收串口数据
+# Start thread to receive serial data
 g_bot.create_receive_threading()
-# 小车类型
+# Car type
 g_car_type = 0
 
-# 摄像头库
+# Camera library
 TYPE_USB_CAMERA = 0x08
 TYPE_CSI_CAMERA = 0xFF
-W = 320
-H = 240
+W = 640
+H = 480
 g_usb_camera = Camera(video_id=TYPE_USB_CAMERA, width=W, height=H, debug=g_debug)
 g_camera_type = TYPE_USB_CAMERA
 g_camera_state = 0
 
-
 g_csi_camera = Mipi_Camera(width=W, height=H, debug=g_debug)
-
 
 g_ip_addr = "x.x.x.x"
 g_tcp_ip = g_ip_addr
@@ -50,23 +48,20 @@ g_tcp_ip = g_ip_addr
 g_init = False
 g_mode = 'Home'
 
-
 app = Flask(__name__)
 
-
-# 速度控制
+# Speed control
 g_speed_ctrl_xy = 100
 g_speed_ctrl_z = 100
 g_motor_speed = [0, 0, 0, 0]
 g_car_stabilize_state = 0
 
-
-# TCP未接收命令超时计数
+# TCP command timeout counter
 g_tcp_except_count = 0
 g_motor_speed = [0, 0, 0, 0]
 
 
-# 获取IP地址
+# Get IP address
 def get_ip_address():
     ip = os.popen(
         "/sbin/ifconfig eth0 | grep 'inet' | awk '{print $2}'").read()
@@ -82,7 +77,7 @@ def get_ip_address():
     return ip
 
 
-# 返回单片机版本号, tcp=TCP服务对象
+# Return MCU version number, tcp=TCP service object
 def return_bot_version(tcp):
     T_CARTYPE = g_car_type
     T_FUNC = 0x01
@@ -98,7 +93,7 @@ def return_bot_version(tcp):
         print("tcp send:", data)
 
 
-# 返回电池电压
+# Return battery voltage
 def return_battery_voltage(tcp):
     T_CARTYPE = g_car_type
     T_FUNC = 0x02
@@ -115,7 +110,7 @@ def return_battery_voltage(tcp):
     return vol / 10.0
 
 
-# 返回小车速度控制百分比
+# Return car speed control percentage
 def return_car_speed(tcp, speed_xy, speed_z):
     T_CARTYPE = g_car_type
     T_FUNC = 0x16
@@ -127,7 +122,7 @@ def return_car_speed(tcp, speed_xy, speed_z):
         print("speed:", speed_xy, speed_z)
         print("tcp send:", data)
 
-# 返回小车自稳状态
+# Return car stabilization status
 def return_car_stabilize(tcp, state):
     T_CARTYPE = g_car_type
     T_FUNC = 0x17
@@ -140,7 +135,7 @@ def return_car_stabilize(tcp, state):
         print("tcp send:", data)
 
 
-# 返回小车当前的XYZ速度
+# Return current XYZ speed of the car
 def return_car_current_speed(tcp):
     T_CARTYPE = g_car_type
     T_FUNC = 0x22
@@ -156,17 +151,14 @@ def return_car_current_speed(tcp):
     data = "$%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x#" % \
         (T_CARTYPE, T_FUNC, T_LEN, speed_x[0], speed_x[1], speed_y[0], speed_y[1], speed_z[0], speed_z[1], checknum)
     tcp.send(data.encode(encoding="utf-8"))
-    # if g_debug:
-    #     print("current_speed:", num_x, num_y, num_z)
-    #     print("tcp send:", data)
 
 
-# 数值变换
+# Value transformation
 def my_map(x, in_min, in_max, out_min, out_max):
     return (out_max - out_min) * (x - in_min) / (in_max - in_min) + out_min
 
 
-# 控制小车
+# Control car
 def ctrl_car(state):
     if state == 0:
         g_bot.set_car_run(0, g_car_stabilize_state)
@@ -178,16 +170,15 @@ def ctrl_car(state):
         g_bot.set_car_run(state, speed, g_car_stabilize_state)
 
 
-# 协议解析部分
+# Protocol parsing section
 def parse_data(sk_client, data):
-    # print(data)
     global g_mode, g_bot, g_car_type
     global g_motor_speed
     global g_speed_ctrl_xy, g_speed_ctrl_z
     global g_car_stabilize_state
     global g_camera_type, g_camera_state
     data_size = len(data)
-    # 长度校验
+    # Length verification
     if data_size < 8:
         if g_debug:
             print("The data length is too short!", data_size)
@@ -196,19 +187,18 @@ def parse_data(sk_client, data):
         if g_debug:
             print("The data length error!", int(data[5:7], 16), data_size-8)
         return
-    # 和校验
+    # Checksum verification
     checknum = 0
     num_checknum = int(data[data_size-3:data_size-1], 16)
     for i in range(0, data_size-4, 2):
         checknum = (int(data[1+i:3+i], 16) + checknum) % 256
-        # print("check:", i, int(data[1+i:3+i], 16), checknum)
     if checknum != num_checknum:
         if g_debug:
             print("num_checknum error!", checknum, num_checknum)
             print("checksum error! cmd:0x%02x, calnum:%d, recvnum:%d" % (int(data[3:5], 16), checknum, num_checknum))
         return
     
-    # 小车类型匹配
+    # Car type matching
     num_carType = int(data[1:3], 16)
     if num_carType <= 0 or num_carType > 5:
         if g_debug:
@@ -218,34 +208,34 @@ def parse_data(sk_client, data):
         if g_car_type != num_carType:
             g_car_type = num_carType
     
-    # 解析命令标记
+    # Parse command flag
     cmd = data[3:5]
-    if cmd == "0F":  # 进入界面
+    if cmd == "0F":  # Enter interface
         func = int(data[7:9])
         if g_debug:
             print("cmd func=", func)
         g_mode = 'Home'
-        if func == 0: # 首页
+        if func == 0: # Home page
             return_battery_voltage(sk_client)
-        elif func == 1: # 遥控
+        elif func == 1: # Remote control
             return_car_speed(sk_client, g_speed_ctrl_xy, g_speed_ctrl_z)
             return_car_stabilize(sk_client, g_car_stabilize_state)
             g_mode = 'Standard'
-        elif func == 2: # 麦克纳姆轮
+        elif func == 2: # Mecanum wheel
             return_car_current_speed(sk_client)
             g_mode = 'MecanumWheel'
 
-    elif cmd == "01":  # 获取硬件版本号
+    elif cmd == "01":  # Get hardware version
         if g_debug:
             print("get version")
         return_bot_version(sk_client)
 
-    elif cmd == "02":  # 获取电池电压
+    elif cmd == "02":  # Get battery voltage
         if g_debug:
             print("get voltage")
         return_battery_voltage(sk_client)
 
-    elif cmd == "10":  # 控制小车
+    elif cmd == "10":  # Control car
         num_x = int(data[7:9], 16)
         num_y = int(data[9:11], 16)
         if num_x > 127:
@@ -261,7 +251,7 @@ def parse_data(sk_client, data):
         if g_debug:
             print("speed_x:%.2f, speed_y:%.2f" % (speed_x, speed_y))
 
-    # 设置蜂鸣器
+    # Set buzzer
     elif cmd == "13":
         num_state = int(data[7:9], 16)
         num_delay = int(data[9:11], 16)
@@ -275,7 +265,7 @@ def parse_data(sk_client, data):
                 delay_ms = num_delay * 10
         g_bot.set_beep(delay_ms)
 
-    # 按键控制
+    # Button control
     elif cmd == "15":
         num_dir = int(data[7:9], 16)
         if g_debug:
@@ -284,7 +274,7 @@ def parse_data(sk_client, data):
         if g_debug:
             print("car ctrl:", num_dir)
     
-    # 控制速度
+    # Control speed
     elif cmd == '16':
         num_speed_xy = int(data[7:9], 16)
         num_speed_z = int(data[9:11], 16)
@@ -301,7 +291,7 @@ def parse_data(sk_client, data):
         if g_speed_ctrl_z < 0:
             g_speed_ctrl_z = 0
 
-    # 自稳开关
+    # Stabilization switch
     elif cmd == '17':
         num_stab = int(data[7:9], 16)
         if g_debug:
@@ -311,7 +301,7 @@ def parse_data(sk_client, data):
         else:
             g_car_stabilize_state = 0
 
-    # 麦克纳姆轮控制
+    # Mecanum wheel control
     elif cmd == '20':
         num_id = int(data[7:9], 16)
         num_speed = int(data[9:11], 16)
@@ -333,7 +323,7 @@ def parse_data(sk_client, data):
                 g_motor_speed[num_id-1] = num_speed
             g_bot.set_motor(g_motor_speed[0], g_motor_speed[1], g_motor_speed[2], g_motor_speed[3])
 
-    # 更新速度
+    # Update speed
     elif cmd == '21':
         num_speed_m1 = int(data[7:9], 16)
         num_speed_m2 = int(data[9:11], 16)
@@ -355,7 +345,7 @@ def parse_data(sk_client, data):
         g_motor_speed[3] = num_speed_m4
         g_bot.set_motor(g_motor_speed[0], g_motor_speed[1], g_motor_speed[2], g_motor_speed[3])
 
-    # 设置彩色灯带的颜色
+    # Set RGB LED strip color
     elif cmd == "30":
         num_id = int(data[7:9], 16)
         num_r = int(data[9:11], 16)
@@ -365,7 +355,7 @@ def parse_data(sk_client, data):
             print("lamp:%d, r:%d, g:%d, b:%d" % (num_id, num_r, num_g, num_b))
         g_bot.set_colorful_lamps(num_id, num_r, num_g, num_b)
 
-    # 设置彩色灯带的特效
+    # Set RGB LED strip effects
     elif cmd == "31":
         num_effect = int(data[7:9], 16)
         num_speed = int(data[9:11], 16)
@@ -373,7 +363,7 @@ def parse_data(sk_client, data):
             print("effect:%d, speed:%d" % (num_effect, num_speed))
         g_bot.set_colorful_effect(num_effect, num_speed, 255)
 
-    # 设置彩色灯带的单色呼吸灯效果的颜色
+    # Set color for single-color breathing effect on RGB LED strip
     elif cmd == "32":
         num_color = int(data[7:9], 16)
         if g_debug:
@@ -384,7 +374,7 @@ def parse_data(sk_client, data):
             g_bot.set_colorful_effect(3, 255, num_color - 1)
 
 
-# socket TCP通信建立
+# Establish socket TCP communication
 def start_tcp_server(ip, port):
     global g_init, g_tcp_except_count
     global g_socket, g_mode, g_camera_type
@@ -431,13 +421,12 @@ def start_tcp_server(ip, port):
                     if g_debug:
                         print("!!!----TCP Except:%d-----!!!" % tcp_state)
                 continue
-            # parse_data(g_socket, cmd[index1:index2 + 1])
         print("socket disconnected!")
         g_socket.close()
         g_mode = 'Home'
 
 
-# 初始化TCP Socket
+# Initialize TCP Socket
 def init_tcp_socket():
     global g_ip_addr, g_tcp_ip
     if g_init:
@@ -460,48 +449,48 @@ def init_tcp_socket():
         print('-------------------Init TCP Socket!-------------------------')
 
 
-# 根据状态机来运行程序包含视频流返回
-def mode_handle():
-    global g_mode, g_bot, g_car_type, g_camera_type
-    global g_usb_camera, g_csi_camera
-    if g_debug:
-        print("----------------------------mode_handle--------------------------")
-    while True:
-        m_fps = 0
-        t_start = time.time()
-        while True:
-            if g_mode == 'Standard':
-                if g_camera_type == TYPE_USB_CAMERA:
-                    success, frame = g_usb_camera.get_frame()
-                elif g_camera_type == TYPE_CSI_CAMERA:
-                    success, frame = g_csi_camera.get_frame()
-                m_fps = m_fps + 1
-                fps = m_fps / (time.time() - t_start)
+# Run program based on state machine including video stream return
+# def mode_handle():
+#     global g_mode, g_bot, g_car_type, g_camera_type
+#     global g_usb_camera, g_csi_camera
+#     if g_debug:
+#         print("----------------------------mode_handle--------------------------")
+#     while True:
+#         m_fps = 0
+#         t_start = time.time()
+#         while True:
+#             if g_mode == 'Standard':
+#                 if g_camera_type == TYPE_USB_CAMERA:
+#                     success, frame = g_usb_camera.get_frame()
+#                 elif g_camera_type == TYPE_CSI_CAMERA:
+#                     success, frame = g_csi_camera.get_frame()
+#                 m_fps = m_fps + 1
+#                 fps = m_fps / (time.time() - t_start)
 
-                text = "FPS:" + str(int(fps))
-                if not success:
-                    m_fps = 0
-                    t_start = time.time()
-                    if g_debug:
-                        print("-----The camera is reconnecting...")
-                    if g_camera_type == TYPE_USB_CAMERA:
-                        g_camera_type = TYPE_CSI_CAMERA
-                        pass
-                    elif g_camera_type == TYPE_CSI_CAMERA:
-                        g_camera_type = TYPE_USB_CAMERA
-                        g_usb_camera.reconnect()
-                    time.sleep(.5)
-                    continue
-                cv.putText(frame, text, (10, 25), cv.FONT_HERSHEY_TRIPLEX, 0.8, (0, 200, 0), 1)
-                ret, img_encode = cv.imencode('.jpg', frame)
-                if ret:
-                    img_encode = img_encode.tobytes()
-                    yield (b'--frame\r\n'
-                        b'Content-Type: image/jpeg\r\n\r\n' + img_encode + b'\r\n')
-            else:
-                time.sleep(.1)
-                m_fps = 0
-                t_start = time.time()
+#                 text = "FPS:" + str(int(fps))
+#                 if not success:
+#                     m_fps = 0
+#                     t_start = time.time()
+#                     if g_debug:
+#                         print("-----The camera is reconnecting...")
+#                     if g_camera_type == TYPE_USB_CAMERA:
+#                         g_camera_type = TYPE_CSI_CAMERA
+#                         pass
+#                     elif g_camera_type == TYPE_CSI_CAMERA:
+#                         g_camera_type = TYPE_USB_CAMERA
+#                         g_usb_camera.reconnect()
+#                     time.sleep(.5)
+#                     continue
+#                 cv.putText(frame, text, (10, 25), cv.FONT_HERSHEY_TRIPLEX, 0.8, (0, 200, 0), 1)
+#                 ret, img_encode = cv.imencode('.jpg', frame)
+#                 if ret:
+#                     img_encode = img_encode.tobytes()
+#                     yield (b'--frame\r\n'
+#                         b'Content-Type: image/jpeg\r\n\r\n' + img_encode + b'\r\n')
+#             else:
+#                 time.sleep(.1)
+#                 m_fps = 0
+#                 t_start = time.time()
 
 
 @app.route('/')
@@ -509,11 +498,11 @@ def index():
     return render_template('index.html')
 
 
-@app.route('/video_feed')
-def video_feed():
-    if g_debug:
-        print("----------------------------video_feed:0x%02x--------------------------" % g_camera_type)
-    return Response(mode_handle(), mimetype='multipart/x-mixed-replace; boundary=frame')
+# @app.route('/video_feed')
+# def video_feed():
+#     if g_debug:
+#         print("----------------------------video_feed:0x%02x--------------------------" % g_camera_type)
+#     return Response(mode_handle(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
 @app.route('/init')
@@ -522,7 +511,7 @@ def init():
     return render_template('init.html')
 
 
-# 麦克纳姆轮返回速度的线程
+# Thread for returning Mecanum wheel speed
 def task_mecanum():
     while True:
         if g_mode == 'MecanumWheel':
@@ -532,11 +521,9 @@ def task_mecanum():
             time.sleep(1)
 
 
-# USB无线手柄
+# USB wireless gamepad
 def task_joystick():
     js = Joystick(g_bot, debug=g_debug)
-    # if not js.is_Opened():
-    #     return
     while True:
         state = js.joystick_handle()
         if state != js.STATE_OK:
@@ -565,7 +552,7 @@ if __name__ == '__main__':
     g_bot.set_car_type(6)
     time.sleep(.01)
     print("Version:", g_bot.get_version())
-    print("Waiting for connect to the APP!")
+    print("Waiting to connect to the APP!")
 
     try:
         server = pywsgi.WSGIServer(('0.0.0.0', 6500), app)
