@@ -142,10 +142,12 @@ class Joystick(object):
 
         elif name == 'RK1_UP_DOWN':
             if self.bot_mode == 'user_controlled':
+                print("%s : %.3f" % (name, value))
                 value = -value / 32767
-                if self.__debug:
-                    print("%s : %.3f" % (name, value))
+                # if self.__debug:
+                print("%s : %.3f" % (name, value))
                 self.__speed_x = value * self.__speed_ctrl
+                print(f"{self.__speed_x=}")
                 self.__robot.set_car_motion(self.__speed_x, self.__speed_y, self.__speed_z)
 
         elif name == 'RK2_LEFT_RIGHT':

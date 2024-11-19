@@ -104,8 +104,10 @@ class AiAgent(object):
                 if abs(normalized_center_x) > self.steer_threshold:
                     self.speed_x = 0
                     self.speed_z = normalized_center_x * self.steering_speed_coefficient
+                    print(f'autonomous self.speed_z: {self.speed_z}')
                 else:
                     self.speed_x = self.forward_speed_coefficient
+                    print(f'autonomous self.speed_x: {self.speed_x}')
                     self.speed_z = 0
                 self.robot.set_car_motion(self.speed_x, self.speed_y, self.speed_z)
 
