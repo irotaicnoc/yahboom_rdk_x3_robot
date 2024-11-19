@@ -17,12 +17,11 @@ class AiAgent(object):
         camera_kwargs = parameters['camera_kwargs']
         tracker_kwargs = parameters['tracker_kwargs']
         self.verbose = parameters['verbose']
-        self.agent_active = True
+        self.agent_active = False
 
         # camera initialization
         self.camera = srcampy.Camera()
         self.video_capture_kwargs = camera_kwargs['video_capture_kwargs']
-        self.activate_agent(video_capture_kwargs=self.video_capture_kwargs)
         self.frame_width = self.video_capture_kwargs['width']
         self.frame_height = self.video_capture_kwargs['height']
         self.image_orientation = camera_kwargs['image_orientation']
