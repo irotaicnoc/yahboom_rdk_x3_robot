@@ -100,7 +100,8 @@ class AiAgent(object):
             # }
             if target_info['num_targets'] > 0:
                 normalized_center_x = target_info['normalized_center_x']
-                # only steer to the target if its center is more than self.steer_threshold distant from the current forward direction
+                # only steer to the target if its center is more than
+                # self.steer_threshold distant from the current forward direction
                 if abs(normalized_center_x) > self.steer_threshold:
                     self.speed_x = 0
                     self.speed_z = normalized_center_x * self.steering_speed_coefficient

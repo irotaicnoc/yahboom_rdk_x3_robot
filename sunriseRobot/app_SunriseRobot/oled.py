@@ -219,7 +219,7 @@ class OLED:
                     self.refresh()
                     return True
                 if cpu_index == 0:
-                    str_FreeRAM = self.getUsagedRAM()
+                    # str_FreeRAM = self.getUsagedRAM()
                     # str_Disk = self.getUsagedDisk()
                     str_IP = "IP:" + self.getLocalIP()
                 self.add_text(0, 0, self.getCPULoadRate(cpu_index))
