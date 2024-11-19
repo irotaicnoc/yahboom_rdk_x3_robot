@@ -34,8 +34,7 @@ class AiAgent(object):
 
         # motion initialization
         self.steer_threshold: float = 0.05
-        self.steering_speed_coefficient: float = robot_kwargs['speed_coefficient']
-        self.forward_speed_coefficient: float = robot_kwargs['speed_coefficient'] / 3
+        self.speed_coefficient: float = robot_kwargs['speed_coefficient']
         self.speed_x = 0
         self.speed_y = 0
         self.speed_z = 0
@@ -104,10 +103,10 @@ class AiAgent(object):
                 # self.steer_threshold distant from the current forward direction
                 if abs(normalized_center_x) > self.steer_threshold:
                     self.speed_x = 0
-                    self.speed_z = normalized_center_x * self.steering_speed_coefficient
+                    self.speed_z = -normalized_center_x * self.speed_coefficient
                     print(f'autonomous self.speed_z: {self.speed_z}')
                 else:
-                    self.speed_x = self.forward_speed_coefficient
+                    self.speed_x = self.speed_coefficient / 2
                     print(f'autonomous self.speed_x: {self.speed_x}')
                     self.speed_z = 0
                 self.robot.set_car_motion(self.speed_x, self.speed_y, self.speed_z)

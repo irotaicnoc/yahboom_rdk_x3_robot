@@ -75,13 +75,10 @@ class YoloTracker(object):
             confidence = results[0].boxes.conf
             if len(confidence) > 0:
                 # print(f'confidence: {confidence}')
-                # max_confidence_id = confidence.argmax().cpu()
                 max_confidence_id = confidence.argmax()
                 # print(f'max_confidence_id: {max_confidence_id}')
-                # x, y, w, h = results[0].boxes.xywh[max_confidence_id].cpu()
                 normalized_center_x, normalized_center_y, _, _ = results[0].boxes.xywhn[max_confidence_id]
                 target_info['num_targets'] = len(confidence)
-                # target_info['highest_confidence'] = confidence[max_confidence_id].cpu().item()
                 target_info['highest_confidence'] = confidence[max_confidence_id].item()
                 target_info['normalized_center_x'] = normalized_center_x - 0.5
                 target_info['normalized_center_y'] = normalized_center_y - 0.5

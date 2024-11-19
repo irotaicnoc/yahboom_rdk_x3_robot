@@ -25,7 +25,7 @@ class Joystick(object):
         self.STATE_DISCONNECT = 2
         self.STATE_KEY_BREAK = 3
 
-        self.__speed_ctrl = 0.7
+        self.speed_coefficient = 0.7
         self.__speed_x = 0
         self.__speed_y = 0
         self.__speed_z = 0
@@ -137,7 +137,7 @@ class Joystick(object):
                 value = -value / 32767
                 if self.__debug:
                     print("%s : %.3f" % (name, value))
-                self.__speed_y = value * self.__speed_ctrl
+                self.__speed_y = value * self.speed_coefficient
                 self.__robot.set_car_motion(self.__speed_x, self.__speed_y, self.__speed_z)
 
         elif name == 'RK1_UP_DOWN':
@@ -146,7 +146,7 @@ class Joystick(object):
                 value = -value / 32767
                 # if self.__debug:
                 print("%s : %.3f" % (name, value))
-                self.__speed_x = value * self.__speed_ctrl
+                self.__speed_x = value * self.speed_coefficient
                 print(f"{self.__speed_x=}")
                 self.__robot.set_car_motion(self.__speed_x, self.__speed_y, self.__speed_z)
 
@@ -155,7 +155,7 @@ class Joystick(object):
                 value = -value / 32767
                 if self.__debug:
                     print("%s : %.3f" % (name, value))
-                self.__speed_z = value * 5 * self.__speed_ctrl
+                self.__speed_z = value * 5 * self.speed_coefficient
                 self.__robot.set_car_motion(self.__speed_x, self.__speed_y, self.__speed_z)
 
         elif name == 'RK2_UP_DOWN':
@@ -295,14 +295,14 @@ class Joystick(object):
             if self.__debug:
                 print("%s : %.3f" % (name, value))
             if value == 1:
-                self.__speed_ctrl = max(0.0, self.__speed_ctrl - 0.1)
+                self.speed_coefficient = max(0.0, self.speed_coefficient - 0.1)
 
         # increase sensibility
         elif name == "R2_1":
             if self.__debug:
                 print("%s : %.3f" % (name, value))
             if value == 1:
-                self.__speed_ctrl = min(1.0, self.__speed_ctrl + 0.1)
+                self.speed_coefficient = min(1.0, self.speed_coefficient + 0.1)
 
         elif name == 'WSAD_LEFT_RIGHT':
             value = -value / 32767
@@ -310,9 +310,9 @@ class Joystick(object):
                 if self.__debug:
                     print("%s : %.3f" % (name, value))
                 if value > 0:
-                    self.__robot.set_car_motion(0, self.__speed_ctrl, 0)
+                    self.__robot.set_car_motion(0, self.speed_coefficient, 0)
                 elif value < 0:
-                    self.__robot.set_car_motion(0, -self.__speed_ctrl, 0)
+                    self.__robot.set_car_motion(0, -self.speed_coefficient, 0)
                 else:
                     self.__robot.set_car_motion(0, 0, 0)
 
@@ -323,9 +323,9 @@ class Joystick(object):
                 if self.__debug:
                     print("%s : %.3f" % (name, value))
                 if value > 0:
-                    self.__robot.set_car_motion(self.__speed_ctrl, 0, 0)
+                    self.__robot.set_car_motion(self.speed_coefficient, 0, 0)
                 elif value < 0:
-                    self.__robot.set_car_motion(-self.__speed_ctrl, 0, 0)
+                    self.__robot.set_car_motion(-self.speed_coefficient, 0, 0)
                 else:
                     self.__robot.set_car_motion(0, 0, 0)
             # in autonomous_tracking mode cycle through tracking_target_list
