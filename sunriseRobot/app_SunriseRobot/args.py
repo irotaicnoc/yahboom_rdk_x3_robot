@@ -26,7 +26,8 @@ def from_command_line(default_data_dict: dict) -> dict:
     args = parser.parse_args()
     args_dict = vars(args)
     for key in args_dict:
-        updated_data_dict[key] = args_dict[key]
+        if args_dict[key] is not None:
+            updated_data_dict[key] = args_dict[key]
 
     return updated_data_dict
 
