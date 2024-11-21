@@ -48,7 +48,7 @@ def main_loop(**kwargs):
     task_3 = threading.Thread(target=task_ai_agent, name='task_ai_agent', kwargs=task_ai_agent_kwargs)
     task_3.start()
 
-#     TODO: ros2 as separate thread?
+    # TODO: ros2 as separate thread?
 
 
 # USB wireless gamepad
