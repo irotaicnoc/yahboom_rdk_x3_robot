@@ -87,8 +87,8 @@ class YoloTracker(object):
                 normalized_center_x, normalized_center_y, _, _ = results[0].boxes.xywhn[max_confidence_id]
                 target_info['num_targets'] = len(confidence)
                 target_info['highest_confidence'] = confidence[max_confidence_id].item()
-                target_info['normalized_center_x'] = normalized_center_x - 0.5
-                target_info['normalized_center_y'] = normalized_center_y - 0.5
+                target_info['normalized_center_x'] = -(normalized_center_x - 0.5) * 2
+                target_info['normalized_center_y'] = (normalized_center_y - 0.5) * 2
                 return target_info
             else:
                 return self.no_target_info

@@ -95,8 +95,6 @@ class AiAgent(object):
             # target_info = {
             #     'num_targets': int,
             #     'highest_confidence': float [0, 1],
-            #     'normalized_center_x': float [-0.5, 0.5],
-            #     'normalized_center_y': float [-0.5, 0.5],
             # }
             if target_info['num_targets'] > 0:
                 normalized_center_x = target_info['normalized_center_x']
@@ -111,6 +109,8 @@ class AiAgent(object):
                     print(f'autonomous self.speed_x: {self.speed_x}')
                     self.speed_z = 0
                 self.robot.set_car_motion(self.speed_x, self.speed_y, self.speed_z)
+        #     'normalized_center_x': float [-1, 1],
+        #     'normalized_center_y': float [-1, 1],
 
             time.sleep(0.5)
 
