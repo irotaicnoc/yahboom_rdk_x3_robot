@@ -26,18 +26,20 @@ class YoloTracker(object):
         }
 
     def select_target(self, target_name: str) -> None:
-        # target to track (only one allowed)
-        try:
-            self.target_class_id = utils.get_class_id_from_name(class_name=target_name, class_dict=self.model.names)
-            self.target_class_name = target_name
-            if self.verbose:
-                print(f'target: {target_name}')
-                print(f'target_class_id: {self.target_class_id}')
-        except ValueError as e:
-            if self.verbose:
+        if self.target_class_name != target_name:
+            # target to track (only one allowed)
+            try:
+                self.target_class_id = utils.get_class_id_from_name(class_name=target_name, class_dict=self.model.names)
+                self.target_class_name = target_name
+                if self.verbose:
+                    print(f'target: {target_name}')
+                    print(f'target_class_id: {self.target_class_id}')
+            except ValueError as e:
+                print('Error in selecting new target.')
                 print(e)
 
-    def find_target(self, frame, save: bool = False) -> dict:
+    def find_target(self, frame, target_name: str, save: bool = False) -> dict:
+        self.select_target(target_name)
         # output:
         #   - number of detections
         #   - confidence of the best detection

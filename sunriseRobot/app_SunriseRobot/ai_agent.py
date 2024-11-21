@@ -10,11 +10,12 @@ from tracker import YoloTracker
 
 
 class AiAgent(object):
-    def __init__(self, robot: SunriseRobot, **kwargs):
+    def __init__(self, robot_body: SunriseRobot, robot_head: RobotHead, **kwargs):
         # general initialization
         self.robot = robot
         parameters = args.import_args(yaml_path='/root/sunriseRobot/app_SunriseRobot/config.yaml', **kwargs)
         robot_kwargs = parameters['robot_kwargs']
+        self.robot_head = robot_head
         camera_kwargs = parameters['camera_kwargs']
         tracker_kwargs = parameters['tracker_kwargs']
         self.verbose = parameters['verbose']
@@ -29,12 +30,11 @@ class AiAgent(object):
 
         # yolo tracker initialization
         image_size = (self.frame_width, self.frame_height)
-        self.tracker = YoloTracker(**tracker_kwargs, image_size=image_size, verbose=self.verbose)
+        self.tracker = YoloTracker(robot_head=robot_head, image_size=image_size, verbose=self.verbose)
         self.save_images = parameters['save_images']
 
         # motion initialization
-        self.steer_threshold: float = 0.05
-        self.speed_coefficient: float = robot_kwargs['speed_coefficient']
+        self.steer_threshold: float = parameters['steer_threshold']
         self.speed_x = 0
         self.speed_y = 0
         self.speed_z = 0

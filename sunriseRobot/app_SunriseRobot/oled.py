@@ -16,17 +16,19 @@ from PIL import ImageFont
 
 import subprocess
 
-# from SunriseRobotLib import SunriseRobot
+from robot_head import RobotHead
 
 
 # V1.0.10
 class OLED:
     def __init__(self, i2c_bus=0, clear=False, debug=False):
         self.__debug = debug
+                 robot_head: RobotHead = None,
         self.__i2c_bus = i2c_bus
         self.__clear = clear
         self.__top = -2
         self.__x = 0
+        self.robot_head = robot_head
 
         self.__total_last = 0
         self.__idle_last = 0
@@ -38,13 +40,11 @@ class OLED:
         self.__draw = ImageDraw.Draw(self.__image)
         self.__font = ImageFont.load_default()
 
-        # self.__bot = SunriseRobot()
         # com = "COM30"
         # com = "/dev/ttyTHS1"
         # com = "/dev/ttyUSB0"
         # com = "/dev/ttyAMA0"
         # com = "/dev/myserial"
-        # self.__bot.create_receive_threading()
 
     def __del__(self):
         self.clear(True)
@@ -208,9 +208,19 @@ class OLED:
                 return 'Ros Active'
         return 'Ros Inactive'
 
-    # def get_battery_voltage(self) -> str:
-    #     voltage = self.__bot.get_battery_voltage()
-    #     return f'Battery: {voltage:.1f}V'
+    def get_controller_mode_status(self) -> tuple:
+        status = (
+            self.robot_head.robot_mode,
+            f'target: {self.robot_head.tracking_target_list[self.robot_head.tracking_target_pos]}'
+        )
+        return status
+
+    def get_battery_voltage(self) -> str:
+        try:
+            voltage = self.robot_body.get_battery_voltage()
+            return f'Battery: {voltage:.1f}V'
+        except:
+            return f'Battery: error'
 
     # Oled mainly runs functions that are called in a while loop and can be hot-pluggable
     def main_program(self):
@@ -226,9 +236,14 @@ class OLED:
                     # str_FreeRAM = self.getUsagedRAM()
                     # str_Disk = self.getUsagedDisk()
                     str_IP = "IP:" + self.getLocalIP()
-                self.add_text(0, 0, self.getCPULoadRate(cpu_index))
-                self.add_text(50, 0, self.getSystemTime())
-                self.add_line(self.get_ros2_mode_status(), 2)
+                # self.add_text(0, 0, self.getCPULoadRate(cpu_index))
+                # self.add_text(50, 0, self.getSystemTime())
+                controller_mode = self.get_controller_mode_status()
+                self.add_line(controller_mode[0], line=1)
+                if controller_mode[0] == 'autonomous_tracking':
+                    self.add_line(controller_mode[1], line=2)
+                else:
+                    self.add_line(self.get_ros2_mode_status(), line=2)
                 # self.add_line(str_FreeRAM, 2)
                 # self.add_line(self.get_battery_voltage(), 3)
                 self.add_line(str_IP, 4)
