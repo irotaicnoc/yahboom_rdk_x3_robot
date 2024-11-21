@@ -334,7 +334,6 @@ class Joystick(object):
                 func = _type << 8 | number
                 name = self.__function_names.get(func)
                 # print("evbuf:", _time, value, _type, number)
-                # if self.__debug:
                 # if self.verbose:
                 if name is not None:
                     self.__data_processing(name, value)
