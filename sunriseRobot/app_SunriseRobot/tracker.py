@@ -1,20 +1,25 @@
 from ultralytics import YOLO
 
+import args
 import utils
 
 
 class YoloTracker(object):
-    def __init__(self, model_name: str, model_folder: str, image_size: tuple, verbose: bool = False):
-        self.model_name = model_name
-        self.model_folder = model_folder
-        self.model_path = model_folder + model_name
-        self.image_size = image_size
+    def __init__(self, **kwargs):
+        parameters = args.import_args(
+            yaml_path='/root/sunriseRobot/app_SunriseRobot/configs/tracker_config.yaml',
+            **kwargs,
+        )
+        self.model_name = parameters['model_name']
+        self.model_folder = parameters['model_folder']
+        self.model_path = self.model_folder + self.model_name
+        self.image_size = parameters['image_size']
         # self.x_center = int(image_size[0] / 2)
         # self.y_center = int(image_size[1] / 2)
-        self.verbose = verbose
+        self.verbose = parameters['verbose']
 
         # Download model in folder if not present, and load it
-        self.model = YOLO(model=self.model_path, verbose=verbose)
+        self.model = YOLO(model=self.model_path, verbose=self.verbose)
 
         self.target_class_name = None
         self.target_class_id : int = -1
