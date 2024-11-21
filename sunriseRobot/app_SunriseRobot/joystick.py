@@ -133,7 +133,7 @@ class Joystick(object):
             if self.robot_head.robot_mode == 'user_controlled':
                 print("%s : %.3f" % (name, value))
                 value = -value / 32767
-                # if self.__debug:
+                # if self.verbose:
                 print("%s : %.3f" % (name, value))
                 self.__speed_x = value * self.speed_coefficient
                 print(f"{self.__speed_x=}")
@@ -160,11 +160,11 @@ class Joystick(object):
             self.robot_body.set_beep(value)
 
         # elif name == 'B':
-        #     if self.__debug:
+        #     if self.verbose:
         #         print(name, ":", value)
         #
         # elif name == 'X':
-        #     if self.__debug:
+        #     if self.verbose:
         #         print(name, ":", value)
 
         # change light effect
@@ -254,23 +254,23 @@ class Joystick(object):
                 self.robot_body.set_beep(0)
 
         # elif name == 'MODE':
-        #     if self.__debug:
+        #     if self.verbose:
         #         print(name, ":", value)
         #
         # elif name == 'BTN_RK1':
-        #     if self.__debug:
+        #     if self.verbose:
         #         print(name, ":", value)
         #
         # elif name == 'BTN_RK2':
-        #     if self.__debug:
+        #     if self.verbose:
         #         print(name, ":", value)
         #
         # elif name == "L2":
-        #     if self.__debug:
+        #     if self.verbose:
         #         print("%s : %.3f" % (name, value))
         #
         # elif name == "R2":
-        #     if self.__debug:
+        #     if self.verbose:
         #         print("%s : %.3f" % (name, value))
 
         # decrease sensibility
@@ -324,7 +324,7 @@ class Joystick(object):
     # Handles events for joystick
     def joystick_handle(self):
         if not self.__js_isOpen:
-            # if self.__debug:
+            # if self.verbose:
             #     print('Failed To Open Joystick')
             return self.STATE_NO_OPEN
         try:
@@ -335,7 +335,7 @@ class Joystick(object):
                 name = self.__function_names.get(func)
                 # print("evbuf:", _time, value, _type, number)
                 # if self.__debug:
-                #     print("func:0x%04X, %s, %d" % (func, name, value))
+                # if self.verbose:
                 if name is not None:
                     self.__data_processing(name, value)
                 else:
@@ -364,7 +364,7 @@ class Joystick(object):
             return True
         except:
             self.__js_isOpen = False
-            # if self.__debug:
+            # if self.verbose:
             #     print('Failed To Open %s' % js)
             return False
 
