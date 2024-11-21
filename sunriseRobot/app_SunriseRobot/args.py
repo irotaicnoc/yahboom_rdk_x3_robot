@@ -5,7 +5,6 @@ import argparse
 
 def import_args(yaml_path: str, **kwargs) -> dict:
     # read data from yaml config file
-    data_dict = None
     with open(yaml_path) as f:
         data_dict = yaml.safe_load(f)
 
