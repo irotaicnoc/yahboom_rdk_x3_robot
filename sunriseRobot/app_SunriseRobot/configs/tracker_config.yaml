@@ -1,0 +1,3 @@
+verbose: False
+model_name: yolov5nu.pt
+model_folder: /root/sunriseRobot/app_SunriseRobot/models/
