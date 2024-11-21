@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Exec=bash /root/sunriseRobot/app_SunriseRobot/start_robot_control.sh
+Hidden=false
+NoDisplay=false
+X-GNOME-Autostart-enabled=true
+Name[en_US]=Robot Control
+Name=Robot Control
+Comment[en_US]=Main loop for the custom code
+Comment=Main loop for the custom code
