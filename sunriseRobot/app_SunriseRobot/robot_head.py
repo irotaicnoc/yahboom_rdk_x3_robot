@@ -35,3 +35,9 @@ class RobotHead:
         self.tracking_target_pos = self.tracking_target_pos % len(self.tracking_target_list)
         if self.verbose:
             print(f'New target: {self.tracking_target_list[self.tracking_target_pos]}')
+
+    def increase_speed_coefficient(self):
+        self.speed_coefficient = min(1.0, self.speed_coefficient + 0.1)
+
+    def decrease_speed_coefficient(self):
+        self.speed_coefficient = max(0.0, self.speed_coefficient - 0.1)
