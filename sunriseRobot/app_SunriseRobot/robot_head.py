@@ -23,10 +23,6 @@ class RobotHead:
         self.robot_mode = self.robot_mode_list[(self.robot_mode_list.index(self.robot_mode) + 1) % len(self.robot_mode_list)]
         if self.verbose:
             print(f"Switching to {self.robot_mode} mode.")
-        if self.robot_mode == 'user_controlled':
-            self.ai_agent.deactivate_agent()
-        elif self.robot_mode == 'autonomous_tracking':
-            self.ai_agent.activate_agent()
 
     def next_target(self):
         self.tracking_target_pos += 1
