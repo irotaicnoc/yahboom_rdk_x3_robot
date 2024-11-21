@@ -10,6 +10,7 @@ import threading
 # V2.0.1
 class SunriseRobot(object):
     __uart_state = 0
+
     def __init__(self, com="/dev/myserial", delay=.002, debug=False):
         # com = "COM30"
         # com="/dev/ttyTHS1"

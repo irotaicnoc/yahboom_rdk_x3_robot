@@ -5,7 +5,7 @@ from cv_bridge import CvBridge
 from sensor_msgs.msg import Image
 
 # robot libraries
-from hobot_vio import libsrcampy as srcampy
+from hobot_vio import libsrcampy as camera_lib
 
 # my libraries
 from camera_pub import utils
@@ -25,7 +25,7 @@ class CameraPublisherNode(Node):
         self.get_logger().info(f'{camera_topic=}')
         # self.get_logger().info(f'{queue_size=}')
         self.video_capture_kwargs = video_capture_kwargs
-        self.camera = srcampy.Camera()
+        self.camera = camera_lib.Camera()
         self.is_open = self.camera.open_cam(**self.video_capture_kwargs)
         if self.is_open == 0:
             self.get_logger().info(f'camera is_open: SUCCESS')

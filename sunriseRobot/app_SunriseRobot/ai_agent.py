@@ -1,12 +1,12 @@
 import time
-import threading
 
 from SunriseRobotLib import SunriseRobot
-from hobot_vio import libsrcampy as srcampy
+from hobot_vio import libsrcampy as camera_lib
 
 import args
 import utils
 from tracker import YoloTracker
+from robot_head import RobotHead
 
 
 class AiAgent(object):
@@ -19,13 +19,12 @@ class AiAgent(object):
             **kwargs,
         )
         camera_kwargs = parameters['camera_kwargs']
-        tracker_kwargs = parameters['tracker_kwargs']
         self.verbose = parameters['verbose']
         self.agent_active = False
 
         # camera initialization
         self.camera_is_open = -1
-        self.camera = srcampy.Camera()
+        self.camera = camera_lib.Camera()
         self.video_capture_kwargs = camera_kwargs['video_capture_kwargs']
         self.frame_width = self.video_capture_kwargs['width']
         self.frame_height = self.video_capture_kwargs['height']
@@ -42,10 +41,10 @@ class AiAgent(object):
         self.speed_z = 0
 
     def deactivate_agent(self):
+        self.agent_active = False
         if self.camera_is_open == 0:
             self.camera_is_open = -1
             self.camera.close_cam()
-            self.agent_active = False
             if self.verbose:
                 print('Camera closed.')
 

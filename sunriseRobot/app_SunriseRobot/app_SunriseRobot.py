@@ -523,7 +523,7 @@ def task_mecanum():
 
 # USB wireless gamepad
 def task_joystick():
-    js = Joystick(g_bot, debug=g_debug)
+    js = Joystick(g_bot, verbose=g_debug)
     while True:
         state = js.joystick_handle()
         if state != js.STATE_OK:

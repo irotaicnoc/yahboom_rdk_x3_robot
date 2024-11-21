@@ -45,9 +45,9 @@ class YoloTracker(object):
         #   - confidence of the best detection
         #   - x distance from the center of the image (proportional to the width of the image)
         #   - y distance from the center of the image (proportional to the height of the image)
-        # x and y have range [-0.5, 0.5] where:
-        #   [-0.5, 0] means the target is left or above of center respectively
-        #   [0, 0.5] means the target is right or below of center respectively
+        # x and y have range [-1, 1] where:
+        #   [-1, 0] means the target is left or above of center respectively
+        #   [0, 1] means the target is right or below of center respectively
 
         if self.target_class_name is None:
             if self.verbose:
