@@ -19,6 +19,10 @@ def main_loop(**kwargs):
     )
     robot_body = SunriseRobot()
     robot_head = RobotHead()
+    print(f'robot_mode_list: {robot_head.robot_mode_list}')
+    print(f'robot_mode: {robot_head.robot_mode}')
+    print(f'tracking_target_pos: {robot_head.tracking_target_pos}')
+    print(f'speed_coefficient: {robot_head.speed_coefficient}')
 
     task_joystick_kwargs = {
         'robot_body': robot_body,
