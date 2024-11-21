@@ -26,7 +26,6 @@ def main_loop(**kwargs):
         'verbose': False,
     }
     task_1 = threading.Thread(target=task_joystick, name='task_joystick', kwargs=task_joystick_kwargs)
-    task_1.setDaemon(True)
     task_1.start()
 
     task_screen_kwargs = {
@@ -35,7 +34,6 @@ def main_loop(**kwargs):
         'verbose': parameters['verbose']
     }
     task_2 = threading.Thread(target=task_screen, name='task_screen', kwargs=task_screen_kwargs)
-    task_2.setDaemon(True)
     task_2.start()
 
     task_ai_agent_kwargs = {
@@ -44,7 +42,6 @@ def main_loop(**kwargs):
         'verbose': parameters['verbose']
     }
     task_2 = threading.Thread(target=task_ai_agent, name='task_ai_agent', kwargs=task_ai_agent_kwargs)
-    task_2.setDaemon(True)
     task_2.start()
 
 #     TODO: ros2 as separate thread?
