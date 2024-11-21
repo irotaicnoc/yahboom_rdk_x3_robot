@@ -214,12 +214,9 @@ class OLED:
                 return 'Ros Active'
         return 'Ros Inactive'
 
-    def get_controller_mode_status(self) -> tuple:
-        status = (
-            self.robot_head.robot_mode,
-            f'target: {self.robot_head.tracking_target_list[self.robot_head.tracking_target_pos]}'
-        )
-        return status
+    def get_controller_mode_status(self) -> str:
+        return f'{self.robot_head.robot_mode.replace("_", " ").title()} '\
+               f'({self.robot_head.tracking_target_list[self.robot_head.tracking_target_pos]})'
 
     def get_battery_voltage(self) -> str:
         try:
@@ -231,33 +228,29 @@ class OLED:
     # Oled mainly runs functions that are called in a while loop and can be hot-pluggable
     def main_program(self):
         try:
-            cpu_index = 0
+            # cpu_index = 0
             state = self.begin()
             while state:
                 self.clear()
                 if self.__clear:
                     self.refresh()
                     return True
-                if cpu_index == 0:
+                # if cpu_index == 0:
                     # str_FreeRAM = self.getUsagedRAM()
                     # str_Disk = self.getUsagedDisk()
-                    str_IP = "IP:" + self.getLocalIP()
+                str_ip = "IP:" + self.getLocalIP()
                 # self.add_text(0, 0, self.getCPULoadRate(cpu_index))
                 # self.add_text(50, 0, self.getSystemTime())
-                controller_mode = self.get_controller_mode_status()
-                self.add_line(controller_mode[0], line=1)
-                if controller_mode[0] == 'autonomous_tracking':
-                    self.add_line(controller_mode[1], line=2)
-                else:
-                    self.add_line(self.get_ros2_mode_status(), line=2)
+                self.add_line(self.get_controller_mode_status(), line=1)
+                self.add_line(self.get_ros2_mode_status(), line=2)
                 # self.add_line(str_FreeRAM, 2)
                 self.add_line(self.get_battery_voltage(), line=3)
-                self.add_line(str_IP, line=4)
+                self.add_line(str_ip, line=4)
                 # Display image.
                 self.refresh()
-                cpu_index = cpu_index + 1
-                if cpu_index >= 5:
-                    cpu_index = 0
+                # cpu_index = cpu_index + 1
+                # if cpu_index >= 5:
+                #     cpu_index = 0
                 time.sleep(2)
             return False
         except:
