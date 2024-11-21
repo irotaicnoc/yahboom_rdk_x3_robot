@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 # coding=utf-8
+# import sys
+# import utils
+# import subprocess
+
 import os
 import sys
 import time
@@ -241,49 +245,40 @@ class OLED:
             return False
 
 
-def close_rgb_fan():
-    try:
-        bus.write_byte_data(0x0d, 0x08, 0)
-        time.sleep(.01)
-        bus.write_byte_data(0x0d, 0x07, 0)
-    except:
-        pass
-
-
-if __name__ == "__main__":
-    try:
-        oled_clear = False
-        oled_debug = False
-        state = False
-        if len(sys.argv) > 1:
-            if str(sys.argv[1]) == "clear":
-                oled_clear = True
-            elif str(sys.argv[1]) == "debug":
-                oled_debug = True
-        oled = OLED(clear=oled_clear, debug=oled_debug)
-        try:
-            import smbus
-            bus = smbus.SMBus(0)
-            if not oled_clear:
-                start = 1
-                bus.write_byte_data(0x0d, 0x08, start)
-                time.sleep(.05)
-                effect = 2
-                bus.write_byte_data(0x0d, 0x04, effect)
-                time.sleep(.05)
-        except:
-            pass
-
-        while True:
-            state = oled.main_program()
-            oled.clear(True)
-            if state:
-                del oled
-                print("---OLED CLEARED!---")
-                close_rgb_fan()
-                break
-            time.sleep(1)
-    except KeyboardInterrupt:
-        del oled
-        close_rgb_fan()
-        print("---Program closed!---")
+# if __name__ == "__main__":
+#     try:
+#         oled_clear = False
+#         oled_debug = False
+#         state = False
+#         if len(sys.argv) > 1:
+#             if str(sys.argv[1]) == "clear":
+#                 oled_clear = True
+#             elif str(sys.argv[1]) == "debug":
+#                 oled_debug = True
+#         oled = OLED(clear=oled_clear, debug=oled_debug)
+#         try:
+#             import smbus
+#             bus = smbus.SMBus(0)
+#             if not oled_clear:
+#                 start = 1
+#                 bus.write_byte_data(0x0d, 0x08, start)
+#                 time.sleep(.05)
+#                 effect = 2
+#                 bus.write_byte_data(0x0d, 0x04, effect)
+#                 time.sleep(.05)
+#         except:
+#             pass
+#
+#         while True:
+#             state = oled.main_program()
+#             oled.clear(True)
+#             if state:
+#                 del oled
+#                 print("---OLED CLEARED!---")
+#                 utils.close_rgb_fan(bus=bus)
+#                 break
+#             time.sleep(1)
+#     except KeyboardInterrupt:
+#         del oled
+#         utils.close_rgb_fan(bus=bus)
+#         print("---Program closed!---")

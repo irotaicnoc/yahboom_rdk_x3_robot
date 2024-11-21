@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # coding=utf-8
+# import sys
 import os
-import sys
 import time
 import smbus
 import struct
@@ -402,23 +402,23 @@ class Joystick(object):
             return False
 
 
-if __name__ == '__main__':
-    g_debug = False
-    if len(sys.argv) > 1:
-        if str(sys.argv[1]) == "debug":
-            g_debug = True
-    print("debug=", g_debug)
-
-    g_robot = SunriseRobot()
-    js = Joystick(g_robot, debug=g_debug)
-    try:
-        while True:
-            state = js.joystick_handle()
-            if state != js.STATE_OK:
-                if state == js.STATE_KEY_BREAK:
-                    break
-                time.sleep(1)
-                js.reconnect()
-    except KeyboardInterrupt:
-        pass
-    del js
+# if __name__ == '__main__':
+#     g_debug = False
+#     if len(sys.argv) > 1:
+#         if str(sys.argv[1]) == "debug":
+#             g_debug = True
+#     print("debug=", g_debug)
+#
+#     robot_body = SunriseRobot()
+#     js = Joystick(robot_body=robot_body, debug=g_debug)
+#     try:
+#         while True:
+#             state = js.joystick_handle()
+#             if state != js.STATE_OK:
+#                 if state == js.STATE_KEY_BREAK:
+#                     break
+#                 time.sleep(1)
+#                 js.reconnect()
+#     except KeyboardInterrupt:
+#         pass
+#     del js
