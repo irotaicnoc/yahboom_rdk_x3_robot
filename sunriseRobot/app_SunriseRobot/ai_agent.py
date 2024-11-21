@@ -41,6 +41,10 @@ class AiAgent(object):
         self.speed_z = 0
 
     def deactivate_agent(self):
+        self.speed_x = 0
+        self.speed_y = 0
+        self.speed_z = 0
+        self.robot_body.set_car_motion(self.speed_x, self.speed_y, self.speed_z)
         self.agent_active = False
         if self.camera_is_open == 0:
             self.camera_is_open = -1
@@ -49,6 +53,10 @@ class AiAgent(object):
                 print('Camera closed.')
 
     def activate_agent(self, video_capture_kwargs=None):
+        self.speed_x = 0
+        self.speed_y = 0
+        self.speed_z = 0
+        self.robot_body.set_car_motion(self.speed_x, self.speed_y, self.speed_z)
         self.camera_is_open = -1
         if video_capture_kwargs is None:
             self.camera_is_open = self.camera.open_cam(**self.video_capture_kwargs)
@@ -59,63 +67,70 @@ class AiAgent(object):
             self.agent_active = True
             if self.verbose:
                 print('Camera opened correctly.')
-            tracking_task = threading.Thread(target=self.autonomous_behavior, name='tracking_task')
-            tracking_task.setDaemon(True)
-            tracking_task.start()
         else:
             print('Failed to open camera.')
             print('Impossible to run autonomous behavior.')
             self.agent_active = False
 
-    def update_params(self, params: dict) -> None:
-        for param_name, param_value in params.items():
-            if param_name == 'target_name':
-                self.tracker.select_target(param_value)
+    def autonomous_behavior(self):
+        if self.robot_head.robot_mode == 'autonomous_tracking':
+            if self.agent_active:
+                self.detect_and_move()
+            else:
+                print('Start autonomous behavior.')
+                self.activate_agent()
+                self.detect_and_move()
+        else:
+            if self.agent_active:
+                print('Stop autonomous behavior.')
+                self.deactivate_agent()
+                time.sleep(2)
+            else:
+                time.sleep(2)
 
-            elif hasattr(self, param_name):
-                setattr(self, param_name, param_value)
+    def detect_and_move(self) -> None:
+        frame = self.camera.get_img(2)
+        if frame is None:
+            if self.verbose:
+                print('Frame is None.')
+            time.sleep(0.5)
+            return
+        frame = utils.format_camera_frames(
+            frame=frame,
+            width=self.frame_width,
+            height=self.frame_height,
+            # save_img=save_img,
+        )
 
-    def autonomous_behavior(self) -> None:
-        print('Start autonomous behavior.')
-        while self.agent_active:
-            frame = self.camera.get_img(2)
-            if frame is None:
-                if self.verbose:
-                    print('Frame is None.')
-                time.sleep(0.5)
-                continue
-            frame = utils.format_camera_frames(
-                frame=frame,
-                width=self.frame_width,
-                height=self.frame_height,
-                # save_img=save_img,
-            )
-
-            target_info = self.tracker.find_target(frame=frame, save=self.save_images)
-            # target_info = {
-            #     'num_targets': int,
-            #     'highest_confidence': float [0, 1],
-            # }
-            if target_info['num_targets'] > 0:
-                normalized_center_x = target_info['normalized_center_x']
-                # only steer to the target if its center is more than
-                # self.steer_threshold distant from the current forward direction
-                if abs(normalized_center_x) > self.steer_threshold:
-                    self.speed_x = 0
-                    self.speed_z = -normalized_center_x * self.speed_coefficient
-                    print(f'autonomous self.speed_z: {self.speed_z}')
-                else:
-                    self.speed_x = self.speed_coefficient / 2
-                    print(f'autonomous self.speed_x: {self.speed_x}')
-                    self.speed_z = 0
-                self.robot.set_car_motion(self.speed_x, self.speed_y, self.speed_z)
+        target_info = self.tracker.find_target(
+            frame=frame,
+            target_name=self.robot_head.tracking_target_list[self.robot_head.tracking_target_pos],
+            save=self.save_images)
+        # target_info = {
+        #     'num_targets': int,
+        #     'highest_confidence': float [0, 1],
         #     'normalized_center_x': float [-1, 1],
         #     'normalized_center_y': float [-1, 1],
+        # }
+        print(f'num_targets: {target_info["num_targets"]}')
+        if target_info['num_targets'] > 0:
+            normalized_center_x = target_info['normalized_center_x']
+            print(f'target x: {normalized_center_x}')
+            # only steer to the target if its center is more than
+            # self.steer_threshold distant from the current forward direction
+            if abs(normalized_center_x) > self.steer_threshold:
+                self.speed_x = 0
+                self.speed_z = normalized_center_x * self.robot_head.speed_coefficient
+                print(f'autonomous self.speed_z: {self.speed_z}')
+            else:
+                self.speed_x = self.robot_head.speed_coefficient / 2
+                print(f'autonomous self.speed_x: {self.speed_x}')
+                self.speed_z = 0
+            self.robot_body.set_car_motion(self.speed_x, self.speed_y, self.speed_z)
 
-            time.sleep(0.5)
-
+        time.sleep(0.1)
         self.speed_x = 0
         self.speed_y = 0
         self.speed_z = 0
-        self.robot.set_car_motion(self.speed_x, self.speed_y, self.speed_z)
-        print('Stop autonomous behavior.')
+        self.robot_body.set_car_motion(self.speed_x, self.speed_y, self.speed_z)
+        time.sleep(0.5)
