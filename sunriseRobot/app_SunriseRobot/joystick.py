@@ -335,6 +335,7 @@ class Joystick(object):
                 name = self.__function_names.get(func)
                 # print("evbuf:", _time, value, _type, number)
                 # if self.verbose:
+                print("func:0x%04X, %s, %d" % (func, name, value))
                 if name is not None:
                     self.__data_processing(name, value)
                 else:
@@ -343,13 +344,14 @@ class Joystick(object):
                     if self.verbose and self.__ignore_count == 0:
                         print("Key Value Invalid")
             return self.STATE_OK
-        except KeyboardInterrupt:
-            if self.verbose:
-                print('Key Break Joystick')
+        except KeyboardInterrupt as ki:
+            print('Key Break Joystick')
+            print(ki)
             return self.STATE_KEY_BREAK
-        except:
+        except Exception as e:
             self.__js_isOpen = False
             print('---Joystick Disconnected---')
+            print(e)
             return self.STATE_DISCONNECT
 
     # reconnect Joystick
