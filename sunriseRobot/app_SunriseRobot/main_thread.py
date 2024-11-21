@@ -41,8 +41,8 @@ def main_loop(**kwargs):
         'robot_head': robot_head,
         'verbose': parameters['verbose']
     }
-    task_2 = threading.Thread(target=task_ai_agent, name='task_ai_agent', kwargs=task_ai_agent_kwargs)
-    task_2.start()
+    task_3 = threading.Thread(target=task_ai_agent, name='task_ai_agent', kwargs=task_ai_agent_kwargs)
+    task_3.start()
 
 #     TODO: ros2 as separate thread?
 
