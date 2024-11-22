@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
 # coding=utf-8
-# import sys
-# import utils
-# import subprocess
 
 import os
 import time
@@ -111,84 +108,6 @@ class OLED:
         self.__oled.image(self.__image)
         self.__oled.display()
 
-    # # Read the CPU usage rate
-    # def getCPULoadRate(self, index):
-    #     count = 10
-    #     if index == 0:
-    #         f1 = os.popen("cat /proc/stat", 'r')
-    #         stat1 = f1.readline()
-    #         data_1 = []
-    #         for i in range(count):
-    #             data_1.append(int(stat1.split(' ')[i+2]))
-    #         self.__total_last = data_1[0]+data_1[1]+data_1[2]+data_1[3] + \
-    #             data_1[4]+data_1[5]+data_1[6]+data_1[7]+data_1[8]+data_1[9]
-    #         self.__idle_last = data_1[3]
-    #     elif index == 4:
-    #         f2 = os.popen("cat /proc/stat", 'r')
-    #         stat2 = f2.readline()
-    #         data_2 = []
-    #         for i in range(count):
-    #             data_2.append(int(stat2.split(' ')[i+2]))
-    #         total_now = data_2[0]+data_2[1]+data_2[2]+data_2[3] + \
-    #             data_2[4]+data_2[5]+data_2[6]+data_2[7]+data_2[8]+data_2[9]
-    #         idle_now = data_2[3]
-    #         total = int(total_now - self.__total_last)
-    #         idle = int(idle_now - self.__idle_last)
-    #         usage = int(total - idle)
-    #         usageRate = int(float(usage / total) * 100)
-    #         self.__str_CPU = "CPU:" + str(usageRate) + "%"
-    #         self.__total_last = 0
-    #         self.__idle_last = 0
-    #         # if self.__debug:
-    #         #     print(self.__str_CPU)
-    #     return self.__str_CPU
-
-    # Read system time
-    # @staticmethod
-    # def getSystemTime():
-    #     cmd = "date +%H:%M:%S"
-    #     date_time = subprocess.check_output(cmd, shell=True)
-    #     str_Time = str(date_time).lstrip('b\'')
-    #     str_Time = str_Time.rstrip('\\n\'')
-    #     # print(date_time)
-    #     return str_Time
-
-    # Read the memory usage and total memory
-    # @staticmethod
-    # def getUsagedRAM():
-    #     cmd = "free | awk 'NR==2{printf \"RAM:%2d%% -> %.1fGB \", 100*($2-$7)/$2, ($2/1048576.0)}'"
-    #     FreeRam = subprocess.check_output(cmd, shell=True)
-    #     str_FreeRam = str(FreeRam).lstrip('b\'')
-    #     str_FreeRam = str_FreeRam.rstrip('\'')
-    #     return str_FreeRam
-
-    # Read free memory/total memory
-    # @staticmethod
-    # def getFreeRAM():
-    #     cmd = "free -h | awk 'NR==2{printf \"RAM: %.1f/%.1fGB \", $7,$2}'"
-    #     FreeRam = subprocess.check_output(cmd, shell=True)
-    #     str_FreeRam = str(FreeRam).lstrip('b\'')
-    #     str_FreeRam = str_FreeRam.rstrip('\'')
-    #     return str_FreeRam
-
-    # Read the TF card space usage/TOTAL TF card space
-    # @staticmethod
-    # def getUsagedDisk():
-    #     cmd = "df -h | awk '$NF==\"/\"{printf \"SDC:%s -> %.1fGB\", $5, $2}'"
-    #     Disk = subprocess.check_output(cmd, shell=True)
-    #     str_Disk = str(Disk).lstrip('b\'')
-    #     str_Disk = str_Disk.rstrip('\'')
-    #     return str_Disk
-
-    # Read the free TF card space/total TF card space
-    # @staticmethod
-    # def getFreeDisk():
-    #     cmd = "df -h | awk '$NF==\"/\"{printf \"Disk:%.1f/%.1fGB\", $4,$2}'"
-    #     Disk = subprocess.check_output(cmd, shell=True)
-    #     str_Disk = str(Disk).lstrip('b\'')
-    #     str_Disk = str_Disk.rstrip('\'')
-    #     return str_Disk
-
     # Read the local IP address
     @staticmethod
     def getLocalIP():
@@ -228,16 +147,12 @@ class OLED:
     # Oled mainly runs functions that are called in a while loop and can be hot-pluggable
     def main_program(self):
         try:
-            # cpu_index = 0
             state = self.begin()
             while state:
                 self.clear()
                 if self.__clear:
                     self.refresh()
                     return True
-                # if cpu_index == 0:
-                    # str_FreeRAM = self.getUsagedRAM()
-                    # str_Disk = self.getUsagedDisk()
                 str_ip = "IP:" + self.getLocalIP()
                 # self.add_text(0, 0, self.getCPULoadRate(cpu_index))
                 # self.add_text(50, 0, self.getSystemTime())
@@ -248,51 +163,9 @@ class OLED:
                 self.add_line(str_ip, line=4)
                 # Display image.
                 self.refresh()
-                # cpu_index = cpu_index + 1
-                # if cpu_index >= 5:
-                #     cpu_index = 0
                 time.sleep(2)
             return False
         except:
             if self.verbose:
                 print("!!!---OLED refresh error---!!!")
             return False
-
-
-# if __name__ == "__main__":
-#     try:
-#         oled_clear = False
-#         oled_debug = False
-#         state = False
-#         if len(sys.argv) > 1:
-#             if str(sys.argv[1]) == "clear":
-#                 oled_clear = True
-#             elif str(sys.argv[1]) == "debug":
-#                 oled_debug = True
-#         oled = OLED(clear=oled_clear, debug=oled_debug)
-#         try:
-#             import smbus
-#             bus = smbus.SMBus(0)
-#             if not oled_clear:
-#                 start = 1
-#                 bus.write_byte_data(0x0d, 0x08, start)
-#                 time.sleep(.05)
-#                 effect = 2
-#                 bus.write_byte_data(0x0d, 0x04, effect)
-#                 time.sleep(.05)
-#         except:
-#             pass
-#
-#         while True:
-#             state = oled.main_program()
-#             oled.clear(True)
-#             if state:
-#                 del oled
-#                 print("---OLED CLEARED!---")
-#                 utils.close_rgb_fan(bus=bus)
-#                 break
-#             time.sleep(1)
-#     except KeyboardInterrupt:
-#         del oled
-#         utils.close_rgb_fan(bus=bus)
-#         print("---Program closed!---")

@@ -24,28 +24,28 @@ def main_loop(**kwargs):
     print(f'tracking_target_pos: {robot_head.tracking_target_pos}')
     print(f'speed_coefficient: {robot_head.speed_coefficient}')
 
-    task_joystick_kwargs = {
+    task_1_kwargs = {
         'robot_body': robot_body,
         'robot_head': robot_head,
         'verbose': False,
     }
-    task_1 = threading.Thread(target=task_joystick, name='task_joystick', kwargs=task_joystick_kwargs)
+    task_1 = threading.Thread(target=task_joystick, name='task_joystick', kwargs=task_1_kwargs)
     task_1.start()
 
-    task_screen_kwargs = {
+    task_2_kwargs = {
         'robot_body': robot_body,
         'robot_head': robot_head,
         'verbose': parameters['verbose']
     }
-    task_2 = threading.Thread(target=task_screen, name='task_screen', kwargs=task_screen_kwargs)
+    task_2 = threading.Thread(target=task_screen, name='task_screen', kwargs=task_2_kwargs)
     task_2.start()
 
-    task_ai_agent_kwargs = {
+    task_3_kwargs = {
         'robot_body': robot_body,
         'robot_head': robot_head,
         'verbose': parameters['verbose']
     }
-    task_3 = threading.Thread(target=task_ai_agent, name='task_ai_agent', kwargs=task_ai_agent_kwargs)
+    task_3 = threading.Thread(target=task_ai_agent, name='task_ai_agent', kwargs=task_3_kwargs)
     task_3.start()
 
     # TODO: ros2 as separate thread?
