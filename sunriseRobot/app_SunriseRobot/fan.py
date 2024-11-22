@@ -1,15 +1,14 @@
 import time
-import smbus
 
 
 class Fan:
-    def __init__(self):
+    def __init__(self, bus):
         self.bus_arg_1 = 0x0d
         self.bus_arg_2 = 0x08
         self.stop_cmd = 0
         self.start_cmd = 1
+        self.bus = bus
 
-        self.bus = smbus.SMBus(0)
 
     def stop(self):
         self.bus.write_byte_data(0x0d, 0x08, self.stop_cmd)

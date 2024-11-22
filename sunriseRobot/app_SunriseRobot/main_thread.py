@@ -1,6 +1,7 @@
 import time
 import threading
 
+import smbus
 from oled import OLED
 from joystick import Joystick
 from SunriseRobotLib import SunriseRobot
@@ -17,9 +18,11 @@ def main_loop(**kwargs):
         yaml_path='/root/sunriseRobot/app_SunriseRobot/configs/main_thread_config.yaml',
         **kwargs,
     )
-    fan = Fan()
+    bus = smbus.SMBus(0)
+
+    fan = Fan(bus=bus)
     fan.start()
-    lights = Lights()
+    lights = Lights(bus=bus)
 
     robot_body = SunriseRobot(com="/dev/ttyUSB0", debug=parameters['verbose'])
     robot_body.create_receive_threading()

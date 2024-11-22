@@ -1,9 +1,8 @@
 import time
-import smbus
 
 
 class Lights:
-    def __init__(self):
+    def __init__(self, bus):
         self.bus_arg_1 = 0x0d
         self.bus_arg_2_state = 0x07
         self.bus_arg_2_mode = 0x04
@@ -11,7 +10,7 @@ class Lights:
         self.start_cmd = 1
         self.light_effect = 0
 
-        self.bus = smbus.SMBus(0)
+        self.bus = bus
 
         # self.stop()
 
