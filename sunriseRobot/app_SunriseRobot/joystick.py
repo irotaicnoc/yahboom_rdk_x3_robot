@@ -140,7 +140,7 @@ class Joystick(object):
                 value = -value / 32767
                 if self.verbose:
                     print("%s : %.3f" % (name, value))
-                self.__speed_z = value * 5 * self.robot_head.speed_coefficient
+                self.__speed_z = value * self.robot_head.speed_coefficient * self.robot_head.steer_speed_proportion
                 self.robot_body.set_car_motion(self.__speed_x, self.__speed_y, self.__speed_z)
 
         elif name == 'RK2_UP_DOWN':

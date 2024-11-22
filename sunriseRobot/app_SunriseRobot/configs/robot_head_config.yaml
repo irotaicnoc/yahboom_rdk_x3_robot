@@ -1,3 +1,4 @@
 verbose: False
 speed_coefficient: 0.7
+steer_speed_proportion: 5
 tracking_target_list: [person, cat, orange, remote]

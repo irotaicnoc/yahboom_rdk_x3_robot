@@ -125,7 +125,7 @@ class AiAgent(object):
             # self.steer_threshold distant from the current forward direction
             if abs(normalized_center_x) > self.steer_threshold:
                 self.speed_x = 0
-                self.speed_z = normalized_center_x * self.robot_head.speed_coefficient
+                self.speed_z = normalized_center_x * self.robot_head.speed_coefficient * self.robot_head.steer_speed_proportion
                 print(f'Steer: {self.speed_z}')
             else:
                 self.speed_x = self.robot_head.speed_coefficient

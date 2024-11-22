@@ -13,6 +13,7 @@ class RobotHead:
         self.tracking_target_list = parameters['tracking_target_list']
         self.tracking_target_pos = 0
 
+        self.steer_speed_proportion = parameters['steer_speed_proportion']
         self.speed_coefficient = parameters['speed_coefficient']
         self.verbose = parameters['verbose']
 
