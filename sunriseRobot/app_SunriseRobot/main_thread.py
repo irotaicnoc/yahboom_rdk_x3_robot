@@ -1,5 +1,4 @@
 import time
-import smbus
 import threading
 
 from oled import OLED
@@ -7,7 +6,8 @@ from joystick import Joystick
 from SunriseRobotLib import SunriseRobot
 
 import args
-import utils
+from fan import Fan
+from lights import Lights
 from ai_agent import AiAgent
 from robot_head import RobotHead
 
@@ -17,6 +17,9 @@ def main_loop(**kwargs):
         yaml_path='/root/sunriseRobot/app_SunriseRobot/configs/main_thread_config.yaml',
         **kwargs,
     )
+    fan = Fan()
+    lights = Lights()
+
     robot_body = SunriseRobot()
     robot_head = RobotHead()
     print(f'robot_mode_list: {robot_head.robot_mode_list}')
@@ -27,6 +30,7 @@ def main_loop(**kwargs):
     task_1_kwargs = {
         'robot_body': robot_body,
         'robot_head': robot_head,
+        'lights': lights,
         'verbose': False,
     }
     task_1 = threading.Thread(target=task_joystick, name='task_joystick', kwargs=task_1_kwargs)
@@ -78,32 +82,17 @@ def task_ai_agent(**kwargs):
 # oled screen
 def task_screen(**kwargs):
     try:
-        oled_clear = False
-        oled = OLED(clear=oled_clear, **kwargs)
-        try:
-            bus = smbus.SMBus(0)
-            if not oled_clear:
-                start = 1
-                bus.write_byte_data(0x0d, 0x08, start)
-                time.sleep(.05)
-                effect = 2
-                bus.write_byte_data(0x0d, 0x04, effect)
-                time.sleep(.05)
-        except:
-            pass
-
+        oled = OLED(clear=False, **kwargs)
         while True:
             state = oled.main_program()
             oled.clear(True)
             if state:
                 del oled
                 print("---OLED CLEARED!---")
-                utils.close_rgb_fan(bus=bus)
                 break
             time.sleep(1)
     except KeyboardInterrupt:
         del oled
-        utils.close_rgb_fan(bus=bus)
         print("---Program closed!---")
 
 

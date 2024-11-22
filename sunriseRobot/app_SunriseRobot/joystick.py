@@ -2,9 +2,9 @@
 # coding=utf-8
 import os
 import time
-import smbus
 import struct
 
+from lights import Lights
 from robot_head import RobotHead
 from kill_process import kill_process_
 from SunriseRobotLib import SunriseRobot
@@ -12,7 +12,7 @@ from SunriseRobotLib import SunriseRobot
 
 # V1.0.4
 class Joystick(object):
-    def __init__(self, robot_body: SunriseRobot, robot_head: RobotHead, js_id=0, verbose=False):
+    def __init__(self, robot_body: SunriseRobot, robot_head: RobotHead, lights: Lights, js_id=0, verbose=False):
         self.verbose = verbose
         self.robot_body = robot_body
 
@@ -31,15 +31,12 @@ class Joystick(object):
 
         self.__hotspot_status = 'inactive'
         self.__ros2_status = 'inactive'
-        self.__light_effect = 0
-        self.__bus = smbus.SMBus(0)
-        # Start with lights turned off
-        self.__bus.write_byte_data(0x0d, 0x07, 0x00)
 
         # accept only one button input per cooldown
         self.__last_select_press = 0  # Add timestamp for SELECT button
         self.__select_delay = 5.0  # Minimum seconds between SELECT presses
         self.robot_head = robot_head
+        self.lights = lights
 
         # Find the joystick device.
         print('Joystick Available devices:')
@@ -171,14 +168,7 @@ class Joystick(object):
             if self.verbose:
                 print(name, ":", value)
             if value == 1:
-                self.__light_effect = self.__light_effect + 1
-                if self.__light_effect > 4:
-                    self.__light_effect = 0
-                    self.__bus.write_byte_data(0x0d, 0x07, 0x00)
-                    time.sleep(.05)
-                else:
-                    self.__bus.write_byte_data(0x0d, 0x04, self.__light_effect)
-                    time.sleep(.05)
+                self.lights.next_effect()
 
         # activate/deactivate hotspot
         elif name == 'L1':

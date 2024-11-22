@@ -1,5 +1,4 @@
 import cv2
-import time
 import numpy as np
 from ultralytics import YOLO
 
@@ -64,12 +63,3 @@ def pretty_print_dict(data, _level: int = 0):
         for _ in range(_level):
             print('\t', end='')
         print(data)
-
-
-def close_rgb_fan(bus):
-    try:
-        bus.write_byte_data(0x0d, 0x08, 0)
-        time.sleep(.01)
-        bus.write_byte_data(0x0d, 0x07, 0)
-    except:
-        pass
