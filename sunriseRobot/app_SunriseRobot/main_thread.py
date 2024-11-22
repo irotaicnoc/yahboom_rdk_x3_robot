@@ -21,8 +21,32 @@ def main_loop(**kwargs):
     fan.start()
     lights = Lights()
 
-    robot_body = SunriseRobot(debug=parameters['verbose'])
+    robot_body_2 = SunriseRobot(debug=parameters['verbose'])
+    robot_body_2_version = robot_body_2.get_version()
+    print("robot_body_2 version=", robot_body_2_version)
+    import platform
+    device = platform.system()
+    print("Read device:", device)
+    if device == 'Windows':
+        com_index = 1
+        while True:
+            com_index = com_index + 1
+            try:
+                print("try COM%d" % com_index)
+                com = 'COM%d' % com_index
+                robot_body = SunriseRobot(com, debug=parameters['verbose'])
+                break
+            except:
+                if com_index > 256:
+                    print("-----------------------No COM Open--------------------------")
+                    exit(0)
+                continue
+        print("--------------------Open %s---------------------" % com)
+    else:
+        robot_body = SunriseRobot(com="/dev/ttyUSB0", debug=parameters['verbose'])
     robot_body.create_receive_threading()
+    robot_body_version = robot_body.get_version()
+    print("robot_body version=", robot_body_version)
     robot_head = RobotHead()
     print(f'robot_mode_list: {robot_head.robot_mode_list}')
     print(f'robot_mode: {robot_head.robot_mode}')
