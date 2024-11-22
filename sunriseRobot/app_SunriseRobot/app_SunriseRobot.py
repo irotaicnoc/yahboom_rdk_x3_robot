@@ -5,7 +5,7 @@ import socket
 import os
 import time
 import threading
-import cv2 as cv
+# import cv2 as cv
 import sys
 from gevent import pywsgi
 from flask import Flask, render_template, Response
@@ -66,11 +66,11 @@ def get_ip_address():
     ip = os.popen(
         "/sbin/ifconfig eth0 | grep 'inet' | awk '{print $2}'").read()
     ip = ip[0: ip.find('\n')]
-    if(ip == '' or len(ip) > 15):
+    if ip == '' or len(ip) > 15:
         ip = os.popen(
             "/sbin/ifconfig wlan0 | grep 'inet' | awk '{print $2}'").read()
         ip = ip[0: ip.find('\n')]
-        if(ip == ''):
+        if ip == '':
             ip = 'x.x.x.x'
     if len(ip) > 15:
         ip = 'x.x.x.x'
@@ -121,6 +121,7 @@ def return_car_speed(tcp, speed_xy, speed_z):
     if g_debug:
         print("speed:", speed_xy, speed_z)
         print("tcp send:", data)
+
 
 # Return car stabilization status
 def return_car_stabilize(tcp, state):
@@ -199,14 +200,14 @@ def parse_data(sk_client, data):
         return
     
     # Car type matching
-    num_carType = int(data[1:3], 16)
-    if num_carType <= 0 or num_carType > 5:
+    num_car_type = int(data[1:3], 16)
+    if num_car_type <= 0 or num_car_type > 5:
         if g_debug:
-            print("num_carType error!")
+            print("num_car_type error!")
         return
     else:
-        if g_car_type != num_carType:
-            g_car_type = num_carType
+        if g_car_type != num_car_type:
+            g_car_type = num_car_type
     
     # Parse command flag
     cmd = data[3:5]
@@ -215,13 +216,13 @@ def parse_data(sk_client, data):
         if g_debug:
             print("cmd func=", func)
         g_mode = 'Home'
-        if func == 0: # Home page
+        if func == 0:  # Home page
             return_battery_voltage(sk_client)
-        elif func == 1: # Remote control
+        elif func == 1:  # Remote control
             return_car_speed(sk_client, g_speed_ctrl_xy, g_speed_ctrl_z)
             return_car_stabilize(sk_client, g_car_stabilize_state)
             g_mode = 'Standard'
-        elif func == 2: # Mecanum wheel
+        elif func == 2:  # Mecanum wheel
             return_car_current_speed(sk_client)
             g_mode = 'MecanumWheel'
 
@@ -309,7 +310,7 @@ def parse_data(sk_client, data):
             num_speed = num_speed - 256
         if g_debug:
             print("mecanum wheel ctrl:%d, %d" % (num_id, num_speed))
-        if num_id >= 0 and num_id <= 4:
+        if 0 <= num_id <= 4:
             if num_speed > 100:
                 num_speed = 100
             if num_speed < -100:

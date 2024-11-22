@@ -11,8 +11,6 @@ class Fan:
 
         self.bus = smbus.SMBus(0)
 
-        self.start()
-
     def stop(self):
         self.bus.write_byte_data(0x0d, 0x08, self.stop_cmd)
         time.sleep(.05)

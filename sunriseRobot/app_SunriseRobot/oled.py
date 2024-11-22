@@ -43,12 +43,6 @@ class OLED:
         self.__draw = ImageDraw.Draw(self.__image)
         self.__font = ImageFont.load_default()
 
-        # com = "COM30"
-        # com = "/dev/ttyTHS1"
-        # com = "/dev/ttyUSB0"
-        # com = "/dev/ttyAMA0"
-        # com = "/dev/myserial"
-
     def __del__(self):
         self.clear(True)
         if self.verbose:

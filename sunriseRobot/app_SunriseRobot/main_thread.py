@@ -18,6 +18,7 @@ def main_loop(**kwargs):
         **kwargs,
     )
     fan = Fan()
+    fan.start()
     lights = Lights()
 
     robot_body = SunriseRobot()
