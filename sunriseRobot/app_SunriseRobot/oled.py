@@ -133,9 +133,12 @@ class OLED:
                 return 'Ros Active'
         return 'Ros Inactive'
 
-    def get_controller_mode_status(self) -> str:
-        return f'{self.robot_head.robot_mode.replace("_", " ").title()} '\
-               f'({self.robot_head.tracking_target_list[self.robot_head.tracking_target_pos]})'
+    def get_controller_mode_status(self) -> tuple:
+        status = (
+            self.robot_head.robot_mode,
+            f'target: {self.robot_head.tracking_target_list[self.robot_head.tracking_target_pos]}'
+        )
+        return status
 
     def get_battery_voltage(self) -> str:
         try:
@@ -156,8 +159,12 @@ class OLED:
                 str_ip = "IP:" + self.getLocalIP()
                 # self.add_text(0, 0, self.getCPULoadRate(cpu_index))
                 # self.add_text(50, 0, self.getSystemTime())
-                self.add_line(self.get_controller_mode_status(), line=1)
-                self.add_line(self.get_ros2_mode_status(), line=2)
+                controller_mode = self.get_controller_mode_status()
+                self.add_line(controller_mode[0], line=1)
+                if controller_mode[0] == 'autonomous_tracking':
+                    self.add_line(controller_mode[1], line=2)
+                else:
+                    self.add_line(self.get_ros2_mode_status(), line=2)
                 # self.add_line(str_FreeRAM, 2)
                 self.add_line(self.get_battery_voltage(), line=3)
                 self.add_line(str_ip, line=4)
