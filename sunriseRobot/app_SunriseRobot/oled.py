@@ -110,7 +110,7 @@ class OLED:
 
     # Read the local IP address
     @staticmethod
-    def getLocalIP():
+    def get_local_ip():
         ip = os.popen(
             "/sbin/ifconfig eth0 | grep 'inet' | awk '{print $2}'").read()
         ip = ip[0: ip.find('\n')]
@@ -156,9 +156,7 @@ class OLED:
                 if self.__clear:
                     self.refresh()
                     return True
-                str_ip = "IP:" + self.getLocalIP()
-                # self.add_text(0, 0, self.getCPULoadRate(cpu_index))
-                # self.add_text(50, 0, self.getSystemTime())
+                str_ip = "IP:" + self.get_local_ip()
                 controller_mode = self.get_controller_mode_status()
                 self.add_line(controller_mode[0], line=1)
                 if controller_mode[0] == 'autonomous_tracking':
@@ -168,7 +166,7 @@ class OLED:
                 # self.add_line(str_FreeRAM, 2)
                 self.add_line(self.get_battery_voltage(), line=3)
                 self.add_line(str_ip, line=4)
-                # Display image.
+                # Display image
                 self.refresh()
                 time.sleep(2)
             return False

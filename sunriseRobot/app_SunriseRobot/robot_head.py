@@ -10,8 +10,7 @@ class RobotHead:
         # autonomous mode parameters
         self.robot_mode_list = ['user_controlled', ]
         self.robot_mode = self.robot_mode_list[0]
-        self.tracking_target_list = ['person', 'cat', 'backpack', 'fork', 'spoon',
-                                     'orange', 'chair', 'remote', 'cell phone']
+        self.tracking_target_list = parameters['tracking_target_list']
         self.tracking_target_pos = 0
 
         self.speed_coefficient = parameters['speed_coefficient']

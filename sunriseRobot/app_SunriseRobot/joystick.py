@@ -29,12 +29,12 @@ class Joystick(object):
         self.__speed_y = 0
         self.__speed_z = 0
 
-        self.__hotspot_status = 'inactive'
-        self.__ros2_status = 'inactive'
+        self.hotspot_status = 'inactive'
+        self.ros2_status = 'inactive'
 
         # accept only one button input per cooldown
-        self.__last_select_press = 0  # Add timestamp for SELECT button
-        self.__select_delay = 5.0  # Minimum seconds between SELECT presses
+        self.last_select_press = 0  # Add timestamp for SELECT button
+        self.select_delay = 5.0  # Minimum seconds between SELECT presses
         self.robot_head = robot_head
         self.lights = lights
 
@@ -175,8 +175,8 @@ class Joystick(object):
             if self.verbose:
                 print(name, ":", value)
             if value == 1:
-                if self.__hotspot_status == 'inactive':
-                    self.__hotspot_status = 'processing'
+                if self.hotspot_status == 'inactive':
+                    self.hotspot_status = 'processing'
                     print("Starting Hotspot...", end='')
                     os.system("sleep 3")
                     os.system("systemctl stop wpa_supplicant")
@@ -189,10 +189,10 @@ class Joystick(object):
                     os.system("ifconfig wlan0 192.168.8.88 netmask 255.255.255.0")
                     os.system("systemctl start isc-dhcp-server")
                     print("Done.")
-                    self.__hotspot_status = 'active'
+                    self.hotspot_status = 'active'
 
-                elif self.__hotspot_status == 'active':
-                    self.__hotspot_status = 'processing'
+                elif self.hotspot_status == 'active':
+                    self.hotspot_status = 'processing'
                     print("Stopping Hotspot...", end='')
                     kill_process_(program_name="hostapd", debug=self.verbose)
                     os.system("systemctl stop isc-dhcp-server")
@@ -203,24 +203,24 @@ class Joystick(object):
                     os.system("ifconfig wlan0 up")
                     os.system("systemctl start wpa_supplicant")
                     print("Done.")
-                    self.__hotspot_status = 'inactive'
+                    self.hotspot_status = 'inactive'
 
         # activate/deactivate ROS2
         elif name == 'R1':
             if self.robot_head.robot_mode == 'user_controlled':
                 if value == 1:
-                    if self.__ros2_status == 'inactive':
-                        self.__ros2_status = 'processing'
+                    if self.ros2_status == 'inactive':
+                        self.ros2_status = 'processing'
                         print("Starting ROS2...", end='')
                         os.system("/root/sunriseRobot/app_SunriseRobot/start_ros2.sh")
                         print("Done.")
-                        self.__ros2_status = 'active'
-                    elif self.__ros2_status == 'active':
-                        self.__ros2_status = 'processing'
+                        self.ros2_status = 'active'
+                    elif self.ros2_status == 'active':
+                        self.ros2_status = 'processing'
                         print("Stopping ROS2...", end='')
                         kill_process_(program_name="ros2", debug=self.verbose)
                         print("Done.")
-                        self.__ros2_status = 'inactive'
+                        self.ros2_status = 'inactive'
 
                 if self.verbose:
                     print(name, ":", value)
@@ -230,8 +230,8 @@ class Joystick(object):
             if self.verbose:
                 print(name, ":", value)
             current_time = time.time()
-            if value == 1 and (current_time - self.__last_select_press) >= self.__select_delay:
-                self.__last_select_press = current_time
+            if value == 1 and (current_time - self.last_select_press) >= self.select_delay:
+                self.last_select_press = current_time
                 self.robot_head.next_mode()
 
         elif name == 'START':

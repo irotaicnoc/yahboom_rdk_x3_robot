@@ -40,10 +40,13 @@ class AiAgent(object):
         self.speed_y = 0
         self.speed_z = 0
 
-    def deactivate_agent(self):
+    def set_zero_speed(self):
         self.speed_x = 0
         self.speed_y = 0
         self.speed_z = 0
+
+    def deactivate_agent(self):
+        self.set_zero_speed()
         self.robot_body.set_car_motion(self.speed_x, self.speed_y, self.speed_z)
         self.agent_active = False
         if self.camera_is_open == 0:
@@ -53,9 +56,7 @@ class AiAgent(object):
                 print('Camera closed.')
 
     def activate_agent(self, video_capture_kwargs=None):
-        self.speed_x = 0
-        self.speed_y = 0
-        self.speed_z = 0
+        self.set_zero_speed()
         self.robot_body.set_car_motion(self.speed_x, self.speed_y, self.speed_z)
         self.camera_is_open = -1
         if video_capture_kwargs is None:

@@ -52,7 +52,7 @@ def print_known_classes(model=None, yolo_model_name: str = None) -> None:
         print(f'{model.names[class_id]}, ID: {class_id}')
 
 
-def pretty_print_dict(data, _level: int = 0):
+def pretty_print_dict(data, _level: int = 0) -> None:
     if isinstance(data, dict):
         for key in data:
             for i in range(_level):
