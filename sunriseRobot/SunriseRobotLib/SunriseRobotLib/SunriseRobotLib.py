@@ -1125,6 +1125,7 @@ class SunriseRobot(object):
     # 获取电池电压值
     # Get the battery voltage
     def get_battery_voltage(self):
+        print(f'{self.__battery_voltage=}')
         vol = self.__battery_voltage / 10.0
         return vol
 

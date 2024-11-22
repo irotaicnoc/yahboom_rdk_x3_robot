@@ -143,6 +143,7 @@ class OLED:
     def get_battery_voltage(self) -> str:
         try:
             voltage = self.robot_body.get_battery_voltage()
+            print(f'{voltage=}')
             return f'Battery: {voltage:.1f}V'
         except:
             return f'Battery: error'
