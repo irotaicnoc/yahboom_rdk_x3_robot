@@ -24,10 +24,12 @@ def main_loop(**kwargs):
     robot_body = SunriseRobot(com="/dev/ttyUSB0", debug=parameters['verbose'])
     robot_body.create_receive_threading()
     robot_head = RobotHead()
-    print(f'robot_mode_list: {robot_head.robot_mode_list}')
-    print(f'robot_mode: {robot_head.robot_mode}')
-    print(f'tracking_target_pos: {robot_head.tracking_target_pos}')
-    print(f'speed_coefficient: {robot_head.speed_coefficient}')
+    if parameters['verbose']:
+        print(f'robot_mode_list: {robot_head.robot_mode_list}')
+        print(f'robot_mode: {robot_head.robot_mode}')
+        print(f'tracking_target_list: {robot_head.tracking_target_list}')
+        print(f'selected_target: {robot_head.tracking_target_list[robot_head.tracking_target_pos]}')
+        print(f'speed_coefficient: {robot_head.speed_coefficient}')
 
     task_1_kwargs = {
         'robot_body': robot_body,
@@ -41,7 +43,7 @@ def main_loop(**kwargs):
     task_2_kwargs = {
         'robot_body': robot_body,
         'robot_head': robot_head,
-        'verbose': parameters['verbose']
+        'verbose': parameters['verbose'],
     }
     task_2 = threading.Thread(target=task_screen, name='task_screen', kwargs=task_2_kwargs)
     task_2.start()
@@ -49,7 +51,7 @@ def main_loop(**kwargs):
     task_3_kwargs = {
         'robot_body': robot_body,
         'robot_head': robot_head,
-        'verbose': parameters['verbose']
+        'verbose': parameters['verbose'],
     }
     task_3 = threading.Thread(target=task_ai_agent, name='task_ai_agent', kwargs=task_3_kwargs)
     task_3.start()
