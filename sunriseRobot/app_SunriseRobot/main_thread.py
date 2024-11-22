@@ -21,7 +21,8 @@ def main_loop(**kwargs):
     fan.start()
     lights = Lights()
 
-    robot_body = SunriseRobot()
+    robot_body = SunriseRobot(debug=parameters['verbose'])
+    robot_body.create_receive_threading()
     robot_head = RobotHead()
     print(f'robot_mode_list: {robot_head.robot_mode_list}')
     print(f'robot_mode: {robot_head.robot_mode}')
