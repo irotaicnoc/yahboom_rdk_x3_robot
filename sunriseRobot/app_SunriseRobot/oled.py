@@ -129,8 +129,8 @@ class OLED:
 
     def get_controller_mode_status(self) -> tuple:
         status = (
-            self.robot_head.robot_mode,
-            f'target: {self.robot_head.tracking_target_list[self.robot_head.tracking_target_pos]}'
+            self.robot_head.robot_mode.replace('_', ' ').title(),
+            f'target: {self.robot_head.tracking_target_list[self.robot_head.tracking_target_pos].replace("_", " ").title()}'
         )
         return status
 
