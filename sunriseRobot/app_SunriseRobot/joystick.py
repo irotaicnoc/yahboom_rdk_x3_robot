@@ -37,7 +37,6 @@ class Joystick(object):
         self.select_delay = 5.0  # Minimum seconds between SELECT presses
         self.robot_head = robot_head
         self.lights = lights
-        self.fan = fan
         self.fan_active = False
 
         # Find the joystick device.
