@@ -39,7 +39,6 @@ def main_loop(**kwargs):
         'robot_body': robot_body,
         'robot_head': robot_head,
         'lights': lights,
-        'fan': fan,
         'verbose': False,
     }
     task_1 = threading.Thread(target=task_joystick, name='task_joystick', kwargs=task_1_kwargs)
