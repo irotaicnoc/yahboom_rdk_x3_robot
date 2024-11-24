@@ -1,6 +1,6 @@
 verbose: False
 steer_threshold: 0.05
-save_images: True
+save_images: False
 
 camera_kwargs:
   video_capture_kwargs:
