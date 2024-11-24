@@ -19,7 +19,7 @@ def main_loop(**kwargs):
         **kwargs,
     )
 
-    robot_body = SunriseRobot(com="/dev/ttyUSB0", debug=parameters['verbose'])
+    robot_body = SunriseRobot(com="/dev/ttyUSB0", debug=False)
     robot_body.create_receive_threading()
 
     bus = smbus.SMBus(0)
@@ -39,6 +39,7 @@ def main_loop(**kwargs):
         'robot_body': robot_body,
         'robot_head': robot_head,
         'lights': lights,
+        'fan': fan,
         'verbose': False,
     }
     task_1 = threading.Thread(target=task_joystick, name='task_joystick', kwargs=task_1_kwargs)

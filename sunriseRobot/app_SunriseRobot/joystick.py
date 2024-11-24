@@ -5,6 +5,7 @@ import time
 import struct
 
 from lights import Lights
+from fan import Fan
 from robot_head import RobotHead
 from kill_process import kill_process_
 from SunriseRobotLib import SunriseRobot
@@ -12,7 +13,7 @@ from SunriseRobotLib import SunriseRobot
 
 # V1.0.4
 class Joystick(object):
-    def __init__(self, robot_body: SunriseRobot, robot_head: RobotHead, lights: Lights, js_id=0, verbose=False):
+    def __init__(self, robot_body: SunriseRobot, robot_head: RobotHead, lights: Lights, fan: Fan, js_id=0, verbose=False):
         self.verbose = verbose
         self.robot_body = robot_body
 
@@ -37,6 +38,8 @@ class Joystick(object):
         self.select_delay = 5.0  # Minimum seconds between SELECT presses
         self.robot_head = robot_head
         self.lights = lights
+        self.fan = fan
+        self.fan_active = False
 
         # Find the joystick device.
         print('Joystick Available devices:')
@@ -155,10 +158,17 @@ class Joystick(object):
                 print(name, ":", value)
             self.robot_body.set_beep(value)
 
-        # elif name == 'B':
-        #     if self.verbose:
-        #         print(name, ":", value)
-        #
+        elif name == 'B':
+            if self.verbose:
+                print(name, ":", value)
+            if self.fan_active:
+                print('Start fan.')
+                self.fan.stop()
+            else:
+                print('Stop fan.')
+                self.fan.start()
+            self.fan_active = not self.fan_active
+
         # elif name == 'X':
         #     if self.verbose:
         #         print(name, ":", value)
