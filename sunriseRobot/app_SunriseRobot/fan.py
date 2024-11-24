@@ -11,15 +11,15 @@ class Fan:
 
 
     def stop(self):
-        self.bus.write_byte_data(0x0d, 0x08, self.stop_cmd)
+        self.bus.write_byte_data(self.bus_arg_1, self.bus_arg_2, self.stop_cmd)
         time.sleep(.05)
 
     def start(self):
-        self.bus.write_byte_data(0x0d, 0x08, self.start_cmd)
+        self.bus.write_byte_data(self.bus_arg_1, self.bus_arg_2, self.start_cmd)
         time.sleep(.05)
 
     def command(self, command: int):
-        self.bus.write_byte_data(0x0d, 0x08, command)
+        self.bus.write_byte_data(self.bus_arg_1, self.bus_arg_2, command)
         time.sleep(.05)
 
     def __del__(self):

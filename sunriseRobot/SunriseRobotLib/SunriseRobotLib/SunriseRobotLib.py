@@ -41,7 +41,7 @@ class SunriseRobot(object):
         self.FUNC_REPORT_IMU_ATT = 0x0C
         self.FUNC_REPORT_ENCODER = 0x0D
         self.FUNC_REPORT_ICM_RAW = 0x0E
-        
+
         self.FUNC_RESET_STATE = 0x0F
 
         self.FUNC_MOTOR = 0x10
@@ -150,37 +150,37 @@ class SunriseRobot(object):
         # (MPU9250)the original gyroscope, accelerometer, magnetometer data
         elif ext_type == self.FUNC_REPORT_MPU_RAW:
             # 陀螺仪传感器:±500dps=±500°/s ±32768 (gyro/32768*500)*PI/180(rad/s)=gyro/3754.9(rad/s)
-            gyro_ratio = 1 / 3754.9 # ±500dps
-            self.__gx = struct.unpack('h', bytearray(ext_data[0:2]))[0]*gyro_ratio
-            self.__gy = struct.unpack('h', bytearray(ext_data[2:4]))[0]*-gyro_ratio
-            self.__gz = struct.unpack('h', bytearray(ext_data[4:6]))[0]*-gyro_ratio
+            gyro_ratio = 1 / 3754.9  # ±500dps
+            self.__gx = struct.unpack('h', bytearray(ext_data[0:2]))[0] * gyro_ratio
+            self.__gy = struct.unpack('h', bytearray(ext_data[2:4]))[0] * -gyro_ratio
+            self.__gz = struct.unpack('h', bytearray(ext_data[4:6]))[0] * -gyro_ratio
             # 加速度传感器:±2g=±2*9.8m/s^2 ±32768 accel/32768*19.6=accel/1671.84
             accel_ratio = 1 / 1671.84
-            self.__ax = struct.unpack('h', bytearray(ext_data[6:8]))[0]*accel_ratio
-            self.__ay = struct.unpack('h', bytearray(ext_data[8:10]))[0]*accel_ratio
-            self.__az = struct.unpack('h', bytearray(ext_data[10:12]))[0]*accel_ratio
+            self.__ax = struct.unpack('h', bytearray(ext_data[6:8]))[0] * accel_ratio
+            self.__ay = struct.unpack('h', bytearray(ext_data[8:10]))[0] * accel_ratio
+            self.__az = struct.unpack('h', bytearray(ext_data[10:12]))[0] * accel_ratio
             # 磁力计传感器
             mag_ratio = 1
-            self.__mx = struct.unpack('h', bytearray(ext_data[12:14]))[0]*mag_ratio
-            self.__my = struct.unpack('h', bytearray(ext_data[14:16]))[0]*mag_ratio
-            self.__mz = struct.unpack('h', bytearray(ext_data[16:18]))[0]*mag_ratio
+            self.__mx = struct.unpack('h', bytearray(ext_data[12:14]))[0] * mag_ratio
+            self.__my = struct.unpack('h', bytearray(ext_data[14:16]))[0] * mag_ratio
+            self.__mz = struct.unpack('h', bytearray(ext_data[16:18]))[0] * mag_ratio
         # 解析ICM20948原始陀螺仪、加速度计、磁力计数据
         # (ICM20948)the original gyroscope, accelerometer, magnetometer data
         elif ext_type == self.FUNC_REPORT_ICM_RAW:
             gyro_ratio = 1 / 1000.0
-            self.__gx = struct.unpack('h', bytearray(ext_data[0:2]))[0]*gyro_ratio
-            self.__gy = struct.unpack('h', bytearray(ext_data[2:4]))[0]*gyro_ratio
-            self.__gz = struct.unpack('h', bytearray(ext_data[4:6]))[0]*gyro_ratio
+            self.__gx = struct.unpack('h', bytearray(ext_data[0:2]))[0] * gyro_ratio
+            self.__gy = struct.unpack('h', bytearray(ext_data[2:4]))[0] * gyro_ratio
+            self.__gz = struct.unpack('h', bytearray(ext_data[4:6]))[0] * gyro_ratio
 
             accel_ratio = 1 / 1000.0
-            self.__ax = struct.unpack('h', bytearray(ext_data[6:8]))[0]*accel_ratio
-            self.__ay = struct.unpack('h', bytearray(ext_data[8:10]))[0]*accel_ratio
-            self.__az = struct.unpack('h', bytearray(ext_data[10:12]))[0]*accel_ratio
+            self.__ax = struct.unpack('h', bytearray(ext_data[6:8]))[0] * accel_ratio
+            self.__ay = struct.unpack('h', bytearray(ext_data[8:10]))[0] * accel_ratio
+            self.__az = struct.unpack('h', bytearray(ext_data[10:12]))[0] * accel_ratio
 
             mag_ratio = 1 / 1000.0
-            self.__mx = struct.unpack('h', bytearray(ext_data[12:14]))[0]*mag_ratio
-            self.__my = struct.unpack('h', bytearray(ext_data[14:16]))[0]*mag_ratio
-            self.__mz = struct.unpack('h', bytearray(ext_data[16:18]))[0]*mag_ratio
+            self.__mx = struct.unpack('h', bytearray(ext_data[12:14]))[0] * mag_ratio
+            self.__my = struct.unpack('h', bytearray(ext_data[14:16]))[0] * mag_ratio
+            self.__mz = struct.unpack('h', bytearray(ext_data[16:18]))[0] * mag_ratio
         # 解析板子的姿态角
         # the attitude Angle of the board
         elif ext_type == self.FUNC_REPORT_IMU_ATT:
@@ -247,7 +247,7 @@ class SunriseRobot(object):
                 self.__akm_readed_angle = True
                 if self.__debug:
                     print("FUNC_AKM_DEF_ANGLE:", id, self.__akm_def_angle)
-            
+
             elif ext_type == self.FUNC_SET_CAR_TYPE:
                 car_type = struct.unpack('B', bytearray(ext_data[0:1]))[0]
                 self.__read_car_type = car_type
@@ -332,7 +332,7 @@ class SunriseRobot(object):
         if value == 127:
             return 127
         elif value > 100:
-           return 100
+            return 100
         elif value < -100:
             return -100
         else:
@@ -352,7 +352,7 @@ class SunriseRobot(object):
         except:
             print('---create_receive_threading error!---')
             pass
-    
+
     # 单片机自动返回数据状态位，默认为开启，如果设置关闭会影响部分读取数据功能。
     # enable=True,底层扩展板会每隔10毫秒发送一包数据，总共四包不同数据，所以每包数据每40毫秒刷新一次。enable=False，则不发送。
     # forever=True永久保存，=False临时作用。
@@ -450,11 +450,12 @@ class SunriseRobot(object):
         except:
             print('---set_pwm_servo_all error!---')
             pass
-    
+
     # RGB可编程灯带控制，可单独控制或全体控制，控制前需要先停止RGB灯特效。
     # led_id=[0, 13]，控制对应编号的RGB灯；led_id=0xFF, 控制所有灯。
     # red,green,blue=[0, 255]，表示颜色RGB值。
-    # RGB programmable light belt control, can be controlled individually or collectively, before control need to stop THE RGB light effect.
+    # RGB programmable light belt control, can be controlled individually or collectively, before control
+    # need to stop THE RGB light effect.
     # Led_id =[0, 13], control the CORRESPONDING numbered RGB lights;  Led_id =0xFF, controls all lights.
     # Red,green,blue=[0, 255], indicating the RGB value of the color.
     def set_colorful_lamps(self, led_id, red, green, blue):
@@ -500,7 +501,6 @@ class SunriseRobot(object):
             print('---set_colorful_effect error!---')
             pass
 
-
     # 控制电机PWM脉冲，从而控制速度（未使用编码器测速）。speed_X=[-100, 100]
     # Control PWM pulse of motor to control speed (speed measurement without encoder). speed_X=[-100, 100]
     def set_motor(self, speed_1, speed_2, speed_3, speed_4):
@@ -522,7 +522,6 @@ class SunriseRobot(object):
             print('---set_motor error!---')
             pass
 
-
     # 控制小车向前、向后、向左、向右等运动。
     # state=[0, 7],=0停止,=1前进,=2后退,=3向左,=4向右,=5左旋,=6右旋,=7停车
     # speed=[-100, 100]，=0停止。
@@ -538,7 +537,7 @@ class SunriseRobot(object):
                 car_type = car_type | self.__CAR_ADJUST
             t_speed = bytearray(struct.pack('h', int(speed)))
             cmd = [self.__HEAD, self.__DEVICE_ID, 0x00, self.FUNC_CAR_RUN, \
-                car_type, int(state&0xff), t_speed[0], t_speed[1]]
+                   car_type, int(state & 0xff), t_speed[0], t_speed[1]]
             cmd[2] = len(cmd) - 1
             checksum = sum(cmd, self.__COMPLEMENT) & 0xff
             cmd.append(checksum)
@@ -560,11 +559,11 @@ class SunriseRobot(object):
         R2/R2L: v_x=[-1.8, 1.8], v_y=[-0.045, 0.045], v_z=[-3, 3]
         '''
         try:
-            vx_parms = bytearray(struct.pack('h', int(v_x*1000)))
-            vy_parms = bytearray(struct.pack('h', int(v_y*1000)))
-            vz_parms = bytearray(struct.pack('h', int(v_z*1000)))
+            vx_parms = bytearray(struct.pack('h', int(v_x * 1000)))
+            vy_parms = bytearray(struct.pack('h', int(v_y * 1000)))
+            vz_parms = bytearray(struct.pack('h', int(v_z * 1000)))
             cmd = [self.__HEAD, self.__DEVICE_ID, 0x00, self.FUNC_MOTION, self.__CAR_TYPE, \
-                vx_parms[0], vx_parms[1], vy_parms[0], vy_parms[1], vz_parms[0], vz_parms[1]]
+                   vx_parms[0], vx_parms[1], vy_parms[0], vy_parms[1], vz_parms[0], vz_parms[1]]
             cmd[2] = len(cmd) - 1
             checksum = sum(cmd, self.__COMPLEMENT) & 0xff
             cmd.append(checksum)
@@ -575,7 +574,6 @@ class SunriseRobot(object):
         except:
             print('---set_car_motion error!---')
             pass
-
 
     # PID 参数控制，会影响set_car_motion函数控制小车的运动速度变化情况。默认情况下可不调整。
     # kp ki kd = [0, 10.00], 可输入小数。
@@ -617,7 +615,7 @@ class SunriseRobot(object):
         except:
             print('---set_pid_param error!---')
             pass
-    
+
     # 设置偏航角调节的PID
     # Set the PID for yaw Angle adjustment
     # def set_yaw_pid_param(self, kp, ki, kd, forever=False):
@@ -689,7 +687,7 @@ class SunriseRobot(object):
             r_time = bytearray(struct.pack('h', int(run_time)))
 
             cmd = [self.__HEAD, self.__DEVICE_ID, 0x00, self.FUNC_UART_SERVO, \
-                s_id, value[0], value[1], r_time[0], r_time[1]]
+                   s_id, value[0], value[1], r_time[0], r_time[1]]
             cmd[2] = len(cmd) - 1
             checksum = sum(cmd, self.__COMPLEMENT) & 0xff
             cmd.append(checksum)
@@ -798,8 +796,6 @@ class SunriseRobot(object):
         else:
             self.__arm_ctrl_enable = False
 
-
-
     # 同时控制机械臂所有舵机的角度。
     # Meanwhile, the Angle of all steering gear of the manipulator is controlled
     def set_uart_servo_angle_array(self, angle_s=[90, 90, 90, 90, 90, 180], run_time=500):
@@ -807,15 +803,15 @@ class SunriseRobot(object):
             if not self.__arm_ctrl_enable:
                 return
             if 0 <= angle_s[0] <= 180 and 0 <= angle_s[1] <= 180 and 0 <= angle_s[2] <= 180 and \
-                0 <= angle_s[3] <= 180 and 0 <= angle_s[4] <= 270 and 0 <= angle_s[5] <= 180:
+                    0 <= angle_s[3] <= 180 and 0 <= angle_s[4] <= 270 and 0 <= angle_s[5] <= 180:
                 if run_time > 2000:
                     run_time = 2000
                 if run_time < 0:
                     run_time = 0
                 temp_val = [0, 0, 0, 0, 0, 0]
                 for i in range(6):
-                    temp_val[i] = self.__arm_convert_value(i+1, angle_s[i])
-                    
+                    temp_val[i] = self.__arm_convert_value(i + 1, angle_s[i])
+
                 value_s1 = bytearray(struct.pack('h', int(temp_val[0])))
                 value_s2 = bytearray(struct.pack('h', int(temp_val[1])))
                 value_s3 = bytearray(struct.pack('h', int(temp_val[2])))
@@ -842,9 +838,9 @@ class SunriseRobot(object):
             print('---set_uart_servo_angle_array error!---')
             pass
 
-
     # 设置机械臂的中位偏差，servo_id=0~6， =0全部恢复出厂默认值
-    # Run the following command to set the mid-bit deviation of the manipulator: servo_id=0 to 6, =0 Restore the factory default values
+    # Run the following command to set the mid-bit deviation of the manipulator: servo_id=0 to 6, =0 Restore the
+    # factory default values
     def set_uart_servo_offset(self, servo_id):
         try:
             self.__arm_offset_id = 0xff
@@ -914,7 +910,7 @@ class SunriseRobot(object):
             id = self.__AKM_SERVO_ID
             if ctrl_car:
                 id = self.__AKM_SERVO_ID + 0x80
-            cmd = [self.__HEAD, self.__DEVICE_ID, 0x00, self.FUNC_AKM_STEER_ANGLE, id, int(angle)&0xFF]
+            cmd = [self.__HEAD, self.__DEVICE_ID, 0x00, self.FUNC_AKM_STEER_ANGLE, id, int(angle) & 0xFF]
             cmd[2] = len(cmd) - 1
             checksum = sum(cmd, self.__COMPLEMENT) & 0xff
             cmd.append(checksum)
@@ -925,7 +921,6 @@ class SunriseRobot(object):
         except:
             print('---set_akm_steering_angle error!---')
             pass
-
 
     # 重置小车flash保存的数据，恢复出厂默认值。
     # Reset the car flash saved data, restore the factory default value
@@ -942,7 +937,7 @@ class SunriseRobot(object):
         except:
             print('---reset_flash_value error!---')
             pass
-    
+
     # 重置小车状态，包括停车，关灯，关蜂鸣器
     # Reset car status, including parking, lights off, buzzer off
     def reset_car_state(self):
@@ -981,8 +976,6 @@ class SunriseRobot(object):
                     return -1
                 time.sleep(.01)
         return self.__akm_def_angle
-
-
 
     # 读取总线舵机位置参数, servo_id=[1-250], 返回：读到的ID，当前位置参数
     # Read bus servo position parameters, servo_id=[1-250], return: read ID, current position parameters
@@ -1058,7 +1051,8 @@ class SunriseRobot(object):
             return -2
 
     # 一次性读取六个舵机的角度[xx, xx, xx, xx, xx, xx]，如果某个舵机错误则那一位为-1
-    # Read the angles of three steering gear [xx, xx, xx, xx, xx, xx] at one time. If one steering gear is wrong, that one is -1
+    # Read the angles of three steering gear [xx, xx, xx, xx, xx, xx] at one time.
+    # If one steering gear is wrong, that one is -1
     def get_uart_servo_angle_array(self):
         try:
             # angle = [-1, -1, -1, -1, -1, -1]
@@ -1079,9 +1073,9 @@ class SunriseRobot(object):
                 if self.__read_arm_ok == 1:
                     for i in range(6):
                         if self.__read_arm[i] > 0:
-                            angle[i] = self.__arm_convert_angle(i+1, self.__read_arm[i])
+                            angle[i] = self.__arm_convert_angle(i + 1, self.__read_arm[i])
                     if self.__debug:
-                        print("angle_array:", 30-timeout, angle)
+                        print("angle_array:", 30 - timeout, angle)
                     break
                 timeout = timeout - 1
                 time.sleep(.001)
@@ -1106,15 +1100,14 @@ class SunriseRobot(object):
 
     # 获取板子姿态角，返回yaw, roll, pitch
     # ToAngle=True返回角度，ToAngle=False返回弧度。
-    def get_imu_attitude_data(self, ToAngle=True):
-        if ToAngle:
-            RtA = 57.2957795
-            roll = self.__roll * RtA
-            pitch = self.__pitch * RtA
-            yaw = self.__yaw * RtA
+    def get_imu_attitude_data(self, to_angle=True):
+        if to_angle:
+            rta = 57.2957795
+            roll = self.__roll * rta
+            pitch = self.__pitch * rta
+            yaw = self.__yaw * rta
         else:
             roll, pitch, yaw = self.__roll, self.__pitch, self.__yaw
-        # self.__roll, self.__pitch, self.__yaw = 0, 0, 0
         return roll, pitch, yaw
 
     # 获取小车速度，val_vx, val_vy, val_vz
@@ -1183,7 +1176,6 @@ class SunriseRobot(object):
             time.sleep(.001)
         return -1
 
-
     # 获取底层单片机版本号，如1.1
     # Get the underlying microcontroller version number, such as 1.1
     def get_version(self):
@@ -1204,8 +1196,9 @@ class SunriseRobot(object):
 
 if __name__ == '__main__':
     # 小车底层处理库
-    
+
     import platform
+
     device = platform.system()
     print("Read device:", device)
     if device == 'Windows':
@@ -1237,7 +1230,7 @@ if __name__ == '__main__':
     time.sleep(.1)
     car_type = robot.get_car_type_from_machine()
     print("read car_type:", car_type)
-    
+
     try:
         while False:
             # ax, ay, az = robot.get_accelerometer_data()

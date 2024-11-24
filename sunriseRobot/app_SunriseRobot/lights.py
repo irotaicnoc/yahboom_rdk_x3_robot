@@ -8,28 +8,35 @@ class Lights:
         self.bus_arg_2_mode = 0x04
         self.stop_cmd = 0
         self.start_cmd = 1
-        self.light_effect = 0
+        self.current_effect_cmd = 0
 
         self.bus = bus
 
         # self.stop()
 
     def stop(self):
-        self.bus.write_byte_data(0x0d, 0x07, self.stop_cmd)
+        self.bus.write_byte_data(self.bus_arg_1, self.bus_arg_2_state, self.stop_cmd)
         time.sleep(.05)
 
     def start(self):
-        self.bus.write_byte_data(0x0d, 0x07, self.start_cmd)
+        self.bus.write_byte_data(self.bus_arg_1, self.bus_arg_2_state, self.start_cmd)
         time.sleep(.05)
 
-    def next_effect(self):
-        self.light_effect = self.light_effect + 1
-        if self.light_effect > 4:
-            self.light_effect = 0
-            self.bus.write_byte_data(0x0d, 0x07, 0x00)
+    def set_effect(self, effect_cmd: int = None):
+        if effect_cmd is None:
+            effect_cmd = self.current_effect_cmd
+        if effect_cmd == self.stop_cmd:
+            self.stop()
         else:
-            self.bus.write_byte_data(0x0d, 0x04, self.light_effect)
-        time.sleep(.05)
+            self.bus.write_byte_data(self.bus_arg_1, self.bus_arg_2_mode, effect_cmd)
+            time.sleep(.05)
+
+    def next_effect(self):
+        self.current_effect_cmd = self.current_effect_cmd + 1
+        if self.current_effect_cmd > 4:
+            self.current_effect_cmd = 0
+
+        self.set_effect()
 
     def __del__(self):
         self.stop()
