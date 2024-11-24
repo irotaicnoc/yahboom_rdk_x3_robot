@@ -26,10 +26,10 @@ def main_loop(**kwargs):
     # (fan turned on, leds turned off)
     bus = smbus.SMBus(0)
     lights = Lights(bus=bus)
-    time.sleep(.05)
+    time.sleep(.5)
     lights.stop()
     fan = Fan(bus=bus)
-    time.sleep(.05)
+    time.sleep(.5)
     fan.start()
 
     robot_head = RobotHead()
