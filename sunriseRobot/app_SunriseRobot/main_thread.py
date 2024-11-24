@@ -22,9 +22,14 @@ def main_loop(**kwargs):
     robot_body = SunriseRobot(com="/dev/ttyUSB0", debug=False)
     robot_body.create_receive_threading()
 
+    # start fan and RGB leds
+    # (fan turned on, leds turned off)
     bus = smbus.SMBus(0)
     lights = Lights(bus=bus)
+    time.sleep(.05)
+    lights.stop()
     fan = Fan(bus=bus)
+    time.sleep(.05)
     fan.start()
 
     robot_head = RobotHead()
