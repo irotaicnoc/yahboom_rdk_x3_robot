@@ -3,7 +3,6 @@ import time
 
 class Lights:
     def __init__(self, bus):
-        print('Creating Lights.')
         self.bus_arg_1 = 0x0d
         self.bus_arg_2_state = 0x07
         self.bus_arg_2_mode = 0x04
