@@ -37,7 +37,6 @@ class Joystick(object):
         self.select_delay = 5.0  # Minimum seconds between SELECT presses
         self.robot_head = robot_head
         self.lights = lights
-        self.fan_active = False
 
         # Find the joystick device.
         print('Joystick Available devices:')
@@ -159,15 +158,6 @@ class Joystick(object):
         elif name == 'B':
             if self.verbose:
                 print(name, ":", value)
-
-            # if value == 1:
-            #     if self.fan_active:
-            #         print('Start fan.')
-            #         self.fan.stop()
-            #     else:
-            #         print('Stop fan.')
-            #         self.fan.start()
-            #     self.fan_active = not self.fan_active
 
         # elif name == 'X':
         #     if self.verbose:
