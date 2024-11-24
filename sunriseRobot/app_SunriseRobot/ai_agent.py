@@ -91,8 +91,8 @@ class AiAgent(object):
 
     # stop -> observe -> think -> move for 0.2 seconds -> repeat if not stopped
     def detect_and_move(self) -> None:
-        # self.set_zero_speed()
-        # self.robot_body.set_car_motion(self.speed_x, self.speed_y, self.speed_z)
+        self.set_zero_speed()
+        self.robot_body.set_car_motion(self.speed_x, self.speed_y, self.speed_z)
 
         frame = self.camera.get_img(2)
         if frame is None:
@@ -135,4 +135,4 @@ class AiAgent(object):
             print('Search...')
             self.set_zero_speed()
         self.robot_body.set_car_motion(self.speed_x, self.speed_y, self.speed_z)
-        time.sleep(0.2)
+        time.sleep(0.4)
