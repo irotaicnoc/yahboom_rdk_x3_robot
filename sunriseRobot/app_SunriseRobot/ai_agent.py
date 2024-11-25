@@ -136,3 +136,6 @@ class AiAgent(object):
             self.set_zero_speed()
         self.robot_body.set_car_motion(self.speed_x, self.speed_y, self.speed_z)
         time.sleep(0.4)
+
+    def __del__(self):
+        self.deactivate_agent()
