@@ -78,12 +78,14 @@ class AiAgent(object):
             if self.agent_active:
                 self.detect_and_move()
             else:
-                print('Start autonomous behavior.')
+                if self.verbose:
+                    print('Start autonomous behavior.')
                 self.activate_agent()
                 self.detect_and_move()
         else:
             if self.agent_active:
-                print('Stop autonomous behavior.')
+                if self.verbose:
+                    print('Stop autonomous behavior.')
                 self.deactivate_agent()
                 time.sleep(2)
             else:
@@ -134,7 +136,7 @@ class AiAgent(object):
                 print(f'Forward: {self.speed_x}')
                 self.speed_z = 0
         else:
-            print('Search...')
+            print('Searching...')
             self.set_zero_speed()
         self.robot_body.set_car_motion(self.speed_x, self.speed_y, self.speed_z)
         time.sleep(0.4)

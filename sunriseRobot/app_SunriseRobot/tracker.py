@@ -38,7 +38,7 @@ class YoloTracker(object):
                 self.target_class_name = target_name
                 if self.verbose:
                     print(f'target: {target_name}')
-                    print(f'target_class_id: {self.target_class_id}')
+                    # print(f'target_class_id: {self.target_class_id}')
             except ValueError as e:
                 print('Error in selecting new target.')
                 print(e)
