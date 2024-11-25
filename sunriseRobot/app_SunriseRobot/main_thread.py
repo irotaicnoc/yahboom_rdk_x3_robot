@@ -1,14 +1,13 @@
 import time
 import threading
 
-import smbus
 from oled import OLED
 from joystick import Joystick
 from SunriseRobotLib import SunriseRobot
 
 import args
 from fan import Fan
-from lights import Lights
+from light import Light
 from ai_agent import AiAgent
 from robot_head import RobotHead
 
@@ -22,16 +21,6 @@ def main_loop(**kwargs):
     robot_body = SunriseRobot(com="/dev/ttyUSB0", debug=False)
     robot_body.create_receive_threading()
 
-    # start fan and RGB leds
-    # (fan turned on, leds turned off)
-    bus = smbus.SMBus(0)
-    lights = Lights(bus=bus)
-    time.sleep(.5)
-    lights.stop()
-    fan = Fan(bus=bus)
-    time.sleep(.5)
-    fan.start()
-
     robot_head = RobotHead()
     if parameters['verbose']:
         print(f'robot_mode_list: {robot_head.robot_mode_list}')
@@ -43,7 +32,6 @@ def main_loop(**kwargs):
     task_1_kwargs = {
         'robot_body': robot_body,
         'robot_head': robot_head,
-        'lights': lights,
         'verbose': False,
     }
     task_1 = threading.Thread(target=task_joystick, name='task_joystick', kwargs=task_1_kwargs)
@@ -64,6 +52,18 @@ def main_loop(**kwargs):
     }
     task_3 = threading.Thread(target=task_ai_agent, name='task_ai_agent', kwargs=task_3_kwargs)
     task_3.start()
+
+    fan_kwargs = {
+        'robot_head': robot_head,
+    }
+    thread_fan = threading.Thread(target=task_fan, name='task_fan', kwargs=fan_kwargs)
+    thread_fan.start()
+
+    light_kwargs = {
+        'robot_head': robot_head,
+    }
+    thread_light = threading.Thread(target=task_light, name='task_light', kwargs=light_kwargs)
+    thread_light.start()
 
     # TODO: ros2 as separate thread?
 
@@ -107,6 +107,20 @@ def task_screen(**kwargs):
     except KeyboardInterrupt:
         del oled
         print("---Program closed!---")
+
+
+def task_fan(**kwargs):
+    fan = Fan(**kwargs)
+    time.sleep(.2)
+    while True:
+        fan.control_behavior()
+
+
+def task_light(**kwargs):
+    light = Light(**kwargs)
+    time.sleep(.2)
+    while True:
+        light.control_behavior()
 
 
 if __name__ == '__main__':
