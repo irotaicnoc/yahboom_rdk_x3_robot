@@ -21,6 +21,10 @@ class RobotHead:
         self.fan_state = gc.FAN_START_CMD
         self.light_state = gc.LIGHT_STOP_CMD
 
+        # hotspot and ROS2 parameters
+        self.hotspot_status = 'inactive'
+        self.ros2_status = 'inactive'
+
         # motion parameters
         self.steer_speed_proportion = parameters['steer_speed_proportion']
         self.speed_coefficient = parameters['speed_coefficient']

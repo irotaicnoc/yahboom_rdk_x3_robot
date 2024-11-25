@@ -4,8 +4,8 @@ import os
 import time
 import struct
 
+import utils
 from robot_head import RobotHead
-from kill_process import kill_process_
 from SunriseRobotLib import SunriseRobot
 
 
@@ -27,9 +27,6 @@ class Joystick(object):
         self.__speed_x = 0
         self.__speed_y = 0
         self.__speed_z = 0
-
-        self.hotspot_status = 'inactive'
-        self.ros2_status = 'inactive'
 
         # accept only one button input per cooldown
         self.last_select_press = 0  # Add timestamp for SELECT button
@@ -173,52 +170,28 @@ class Joystick(object):
             if self.verbose:
                 print(name, ":", value)
             if value == 1:
-                if self.hotspot_status == 'inactive':
-                    self.hotspot_status = 'processing'
-                    print("Starting Hotspot...", end='')
-                    os.system("sleep 3")
-                    os.system("systemctl stop wpa_supplicant")
-                    os.system("ip addr flush dev wlan0")
-                    os.system("sleep 0.5")
-                    os.system("ifconfig wlan0 down")
-                    os.system("sleep 1")
-                    os.system("ifconfig wlan0 up")
-                    os.system("hostapd -B /root/sunriseRobot/hotspot/etc/hostapd.conf")
-                    os.system("ifconfig wlan0 192.168.8.88 netmask 255.255.255.0")
-                    os.system("systemctl start isc-dhcp-server")
-                    print("Done.")
-                    self.hotspot_status = 'active'
+                if self.robot_head.hotspot_status == 'inactive':
+                    self.robot_head.hotspot_status = 'processing'
+                    utils.activate_hotspot(verbose=self.verbose)
+                    self.robot_head.hotspot_status = 'active'
 
-                elif self.hotspot_status == 'active':
-                    self.hotspot_status = 'processing'
-                    print("Stopping Hotspot...", end='')
-                    kill_process_(program_name="hostapd", debug=self.verbose)
-                    os.system("systemctl stop isc-dhcp-server")
-                    os.system("ip addr flush dev wlan0")
-                    os.system("sleep 0.5")
-                    os.system("ifconfig wlan0 down")
-                    os.system("sleep 1")
-                    os.system("ifconfig wlan0 up")
-                    os.system("systemctl start wpa_supplicant")
-                    print("Done.")
-                    self.hotspot_status = 'inactive'
+                elif self.robot_head.hotspot_status == 'active':
+                    self.robot_head.hotspot_status = 'processing'
+                    utils.deactivate_hotspot(verbose=self.verbose)
+                    self.robot_head.hotspot_status = 'inactive'
 
         # activate/deactivate ROS2
         elif name == 'R1':
             if self.robot_head.robot_mode == 'user_controlled':
                 if value == 1:
-                    if self.ros2_status == 'inactive':
-                        self.ros2_status = 'processing'
-                        print("Starting ROS2...", end='')
-                        os.system("/root/sunriseRobot/app_SunriseRobot/start_ros2.sh")
-                        print("Done.")
-                        self.ros2_status = 'active'
-                    elif self.ros2_status == 'active':
-                        self.ros2_status = 'processing'
-                        print("Stopping ROS2...", end='')
-                        kill_process_(program_name="ros2", debug=self.verbose)
-                        print("Done.")
-                        self.ros2_status = 'inactive'
+                    if self.robot_head.ros2_status == 'inactive':
+                        self.robot_head.ros2_status = 'processing'
+                        utils.activate_ros2(verbose=self.verbose)
+                        self.robot_head.ros2_status = 'active'
+                    elif self.robot_head.ros2_status == 'active':
+                        self.robot_head.ros2_status = 'processing'
+                        utils.deactivate_ros2(verbose=self.verbose)
+                        self.robot_head.ros2_status = 'inactive'
 
                 if self.verbose:
                     print(name, ":", value)
