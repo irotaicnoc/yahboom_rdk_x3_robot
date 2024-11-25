@@ -1,5 +1,5 @@
 verbose: False
-steer_threshold: 0.05
+steer_threshold: 0.1
 save_images: False
 
 camera_kwargs:
