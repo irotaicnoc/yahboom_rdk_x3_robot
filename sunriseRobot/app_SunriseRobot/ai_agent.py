@@ -5,6 +5,7 @@ from hobot_vio import libsrcampy as camera_lib
 
 import args
 import utils
+import global_constants as gc
 from tracker import YoloTracker
 from robot_head import RobotHead
 
@@ -130,6 +131,11 @@ class AiAgent(object):
             if abs(normalized_center_x) > self.steer_threshold:
                 self.speed_x = 0
                 self.speed_z = normalized_center_x * self.robot_head.speed_coefficient * self.robot_head.steer_speed_proportion
+                if abs(self.speed_z) < gc.MINIMUM_ANGULAR_SPEED:
+                    self.speed_z = gc.MINIMUM_ANGULAR_SPEED
+                    if normalized_center_x < 0:
+                        self.speed_z *= -1
+
                 print(f'Steer: {self.speed_z}')
             else:
                 self.speed_x = self.robot_head.speed_coefficient

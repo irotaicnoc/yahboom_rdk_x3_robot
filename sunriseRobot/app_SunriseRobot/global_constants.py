@@ -13,3 +13,5 @@ FAN_START_CMD = 1
 LIGHT_STOP_CMD = 0
 LIGHT_EFFECT_CMD_LIST = [0, 1, 2, 3, 4]
 
+# for autonomous mode only
+MINIMUM_ANGULAR_SPEED = 1.0
