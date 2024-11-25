@@ -145,7 +145,7 @@ class AiAgent(object):
                 self.speed_z = 0
         else:
             print('Searching...')
-            # TODO: slowly rotate by 360° degree
+            # TODO: very slowly rotate by 360° degree
             self.set_zero_speed()
         self.robot_body.set_car_motion(self.speed_x, self.speed_y, self.speed_z)
         time.sleep(0.3)

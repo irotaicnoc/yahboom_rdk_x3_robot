@@ -26,8 +26,8 @@ class YoloTracker(object):
         self.no_target_info = {
             'num_targets': 0,
             'highest_confidence': 0,
-            'normalized_center_x': 0,
-            'normalized_center_y': 0,
+            'distance_from_center_x': 0,
+            'distance_from_center_y': 0,
         }
 
     def select_target(self, target_name: str) -> None:
@@ -75,8 +75,8 @@ class YoloTracker(object):
         target_info = {
             'num_targets': 0,
             'highest_confidence': 0,
-            'normalized_center_x': 0,
-            'normalized_center_y': 0,
+            'distance_from_center_x': 0,
+            'distance_from_center_y': 0,
         }
         try:
             confidence = results[0].boxes.conf
@@ -89,9 +89,9 @@ class YoloTracker(object):
                 print(f'Target Center X: {normalized_center_x}')
                 target_info['num_targets'] = len(confidence)
                 target_info['highest_confidence'] = confidence[max_confidence_id].item()
-                target_info['normalized_center_x'] = -(normalized_center_x - 0.5) * 2
-                target_info['normalized_center_y'] = (normalized_center_y - 0.5) * 2
-                print(f'X distance from img center: {target_info["normalized_center_x"]}')
+                target_info['distance_from_center_x'] = -(normalized_center_x - 0.5) * 2
+                target_info['distance_from_center_y'] = (normalized_center_y - 0.5) * 2
+                print(f'X distance from img center: {target_info["distance_from_center_x"]}')
                 return target_info
             else:
                 return self.no_target_info
