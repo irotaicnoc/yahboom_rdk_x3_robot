@@ -58,8 +58,10 @@ class RobotHead:
         self.speed_coefficient = max(0.0, self.speed_coefficient - 0.1)
 
     def next_light_effect(self):
-        print(f"Switching from {self.light_state} mode.")
+        if self.verbose:
+            print(f"Switching from {self.light_state} mode.")
         self.light_state = gc.LIGHT_EFFECT_CMD_LIST[
             (gc.LIGHT_EFFECT_CMD_LIST.index(self.light_state) + 1) % len(gc.LIGHT_EFFECT_CMD_LIST)
         ]
-        print(f"Switching to {self.light_state} mode.")
+        if self.verbose:
+            print(f"Switching to {self.light_state} mode.")
