@@ -128,6 +128,7 @@ class AiAgent(object):
             # print(f'target x: {normalized_center_x}')
             # only steer to the target if its center is more than
             # self.steer_threshold distant from the current forward direction
+            # otherwise move forward
             if abs(normalized_center_x) > self.steer_threshold:
                 self.speed_x = 0
                 self.speed_z = normalized_center_x * self.robot_head.speed_coefficient * self.robot_head.steer_speed_proportion
@@ -143,6 +144,7 @@ class AiAgent(object):
                 self.speed_z = 0
         else:
             print('Searching...')
+            # TODO: slowly rotate by 360° degree
             self.set_zero_speed()
         self.robot_body.set_car_motion(self.speed_x, self.speed_y, self.speed_z)
         time.sleep(0.4)
