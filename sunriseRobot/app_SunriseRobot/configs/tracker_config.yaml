@@ -1,5 +1,5 @@
 verbose: False
 #model_name: yolov5nu.pt
 #model_name: yolov5m6u.pt  # requires 1280 pixel images
-model_name: yolo11l.pt.pt
+model_name: yolo11l.pt
 model_folder: /root/sunriseRobot/app_SunriseRobot/models/
