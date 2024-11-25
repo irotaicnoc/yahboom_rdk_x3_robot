@@ -86,12 +86,12 @@ class YoloTracker(object):
                 max_confidence_id = confidence.argmax()
                 # print(f'max_confidence_id: {max_confidence_id}')
                 normalized_center_x, normalized_center_y, _, _ = results[0].boxes.xywhn[max_confidence_id]
-                print(f'Target Center X: {normalized_center_x}')
+                # print(f'Target Center X: {normalized_center_x}')
                 target_info['num_targets'] = len(confidence)
                 target_info['highest_confidence'] = confidence[max_confidence_id].item()
                 target_info['distance_from_center_x'] = -(normalized_center_x - 0.5) * 2
                 target_info['distance_from_center_y'] = (normalized_center_y - 0.5) * 2
-                print(f'X distance from img center: {target_info["distance_from_center_x"]}')
+                # print(f'X distance from img center: {target_info["distance_from_center_x"]}')
                 return target_info
             else:
                 return self.no_target_info

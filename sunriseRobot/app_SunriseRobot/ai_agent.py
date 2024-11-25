@@ -130,6 +130,7 @@ class AiAgent(object):
             # only steer to the target if its center is more than
             # self.steer_threshold distant from the current forward direction
             # otherwise move forward
+            print(f'X distance from img center: {distance_from_center_x}')
             if abs(distance_from_center_x) > self.steer_threshold:
                 self.speed_x = 0
                 self.speed_z = utils.x_displacement_to_angular_speed(
@@ -137,7 +138,6 @@ class AiAgent(object):
                     steer_threshold=self.steer_threshold,
                     angular_speed_range=self.angular_speed_range,
                 )
-
                 print(f'Steer: {self.speed_z}')
             else:
                 self.speed_x = self.robot_head.speed_coefficient
