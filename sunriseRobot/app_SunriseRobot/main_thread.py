@@ -67,6 +67,9 @@ def main_loop(**kwargs):
 
     # TODO: ros2 as separate thread?
 
+    # notify the robot is ready
+    robot_body.set_beep(50)
+
 
 # USB wireless gamepad
 def task_joystick(**kwargs):
