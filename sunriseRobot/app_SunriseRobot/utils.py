@@ -115,3 +115,25 @@ def deactivate_ros2(verbose: bool = False):
     kill_process_(program_name="ros2", debug=verbose)
     if verbose:
         print("Done.")
+
+
+def change_range(val, original_min_val, original_max_val, new_min_val, new_max_val):
+    return (val - original_min_val) * (new_max_val - new_min_val) / (original_max_val - original_min_val) + new_min_val
+
+
+def x_displacement_to_angular_speed(x_distance_from_img_center: float,
+                                    steer_threshold: float,
+                                    angular_speed_range: list,
+                                    ) -> float:
+    # x_distance_from_img_center: [-1, -steer_threshold] [steer_threshold, 1]
+    # output: [-2, -1] [1, 2]
+    speed_z = change_range(
+        val=abs(x_distance_from_img_center),
+        original_min_val=steer_threshold,
+        original_max_val=1,
+        new_min_val=angular_speed_range[0],
+        new_max_val=angular_speed_range[1],
+    )
+    if x_distance_from_img_center < 0:
+        speed_z *= -1
+    return speed_z

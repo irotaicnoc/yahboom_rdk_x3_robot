@@ -5,7 +5,6 @@ from hobot_vio import libsrcampy as camera_lib
 
 import args
 import utils
-import global_constants as gc
 from tracker import YoloTracker
 from robot_head import RobotHead
 
@@ -36,7 +35,8 @@ class AiAgent(object):
         self.save_images = parameters['save_images']
 
         # motion initialization
-        self.steer_threshold: float = parameters['steer_threshold']
+        self.steer_threshold = parameters['steer_threshold']
+        self.angular_speed_range = parameters['angular_speed_range']
         self.speed_x = 0
         self.speed_y = 0
         self.speed_z = 0
@@ -92,7 +92,7 @@ class AiAgent(object):
             else:
                 time.sleep(2)
 
-    # stop -> observe -> think -> move for 0.2 seconds -> repeat if not stopped
+    # stop -> observe -> think -> move for 0.3 seconds -> repeat until interrupted
     def detect_and_move(self) -> None:
         self.set_zero_speed()
         self.robot_body.set_car_motion(self.speed_x, self.speed_y, self.speed_z)
@@ -115,27 +115,28 @@ class AiAgent(object):
         target_info = self.tracker.find_target(
             frame=frame,
             target_name=self.robot_head.tracking_target_list[self.robot_head.tracking_target_pos],
-            save=self.save_images)
+            save=self.save_images,
+        )
         # target_info = {
         #     'num_targets': int,
         #     'highest_confidence': float [0, 1],
-        #     'normalized_center_x': float [-1, 1],
-        #     'normalized_center_y': float [-1, 1],
+        #     'distance_from_center_x': float [-1, 1],
+        #     'distance_from_center_y': float [-1, 1],
         # }
         # print(f'num_targets: {target_info["num_targets"]}')
         if target_info['num_targets'] > 0:
-            normalized_center_x = target_info['normalized_center_x']
-            # print(f'target x: {normalized_center_x}')
+            distance_from_center_x = target_info['distance_from_center_x']
+            # print(f'target x: {distance_from_center_x}')
             # only steer to the target if its center is more than
             # self.steer_threshold distant from the current forward direction
             # otherwise move forward
-            if abs(normalized_center_x) > self.steer_threshold:
+            if abs(distance_from_center_x) > self.steer_threshold:
                 self.speed_x = 0
-                self.speed_z = normalized_center_x * self.robot_head.speed_coefficient * self.robot_head.steer_speed_proportion
-                if abs(self.speed_z) < gc.MINIMUM_ANGULAR_SPEED:
-                    self.speed_z = gc.MINIMUM_ANGULAR_SPEED
-                    if normalized_center_x < 0:
-                        self.speed_z *= -1
+                self.speed_z = utils.x_displacement_to_angular_speed(
+                    x_distance_from_img_center=distance_from_center_x,
+                    steer_threshold=self.steer_threshold,
+                    angular_speed_range=self.angular_speed_range,
+                )
 
                 print(f'Steer: {self.speed_z}')
             else:
@@ -147,7 +148,7 @@ class AiAgent(object):
             # TODO: slowly rotate by 360° degree
             self.set_zero_speed()
         self.robot_body.set_car_motion(self.speed_x, self.speed_y, self.speed_z)
-        time.sleep(0.4)
+        time.sleep(0.3)
 
     def __del__(self):
         self.deactivate_agent()
