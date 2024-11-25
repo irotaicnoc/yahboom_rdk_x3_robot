@@ -153,7 +153,7 @@ class OLED:
                 str_ip = "IP:" + self.get_local_ip()
                 controller_mode = self.get_controller_mode_status()
                 self.add_line(controller_mode[0], line=1)
-                if controller_mode[0] == 'autonomous_tracking':
+                if controller_mode[0] == 'Autonomous Tracking':
                     self.add_line(controller_mode[1], line=2)
                 else:
                     self.add_line(self.get_ros2_mode_status(), line=2)
