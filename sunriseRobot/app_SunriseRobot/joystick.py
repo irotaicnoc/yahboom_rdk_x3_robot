@@ -168,7 +168,7 @@ class Joystick(object):
             if self.verbose:
                 print(name, ":", value)
             if value == 1:
-                self.lights.next_effect()
+                self.robot_head.next_light_effect()
 
         # activate/deactivate hotspot
         elif name == 'L1':

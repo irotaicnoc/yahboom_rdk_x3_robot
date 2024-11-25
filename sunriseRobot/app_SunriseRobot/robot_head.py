@@ -13,6 +13,11 @@ class RobotHead:
         self.tracking_target_list = parameters['tracking_target_list']
         self.tracking_target_pos = 0
 
+        # fan and lights parameters
+        self.bus = smbus.SMBus(0)
+        self.fan_state = gc.FAN_START_CMD
+        self.light_state = gc.LIGHT_STOP_CMD
+
         self.steer_speed_proportion = parameters['steer_speed_proportion']
         self.speed_coefficient = parameters['speed_coefficient']
         self.verbose = parameters['verbose']
@@ -41,3 +46,10 @@ class RobotHead:
 
     def decrease_speed_coefficient(self):
         self.speed_coefficient = max(0.0, self.speed_coefficient - 0.1)
+
+    def next_light_effect(self):
+        print(f"Switching from {self.light_state} mode.")
+        self.light_state = gc.LIGHT_EFFECT_CMD_LIST[
+            (gc.LIGHT_EFFECT_CMD_LIST.index(self.light_state) + 1) % len(gc.LIGHT_EFFECT_CMD_LIST)
+        ]
+        print(f"Switching to {self.light_state} mode.")
