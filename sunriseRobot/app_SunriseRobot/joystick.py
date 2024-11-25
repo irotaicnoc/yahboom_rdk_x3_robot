@@ -4,7 +4,6 @@ import os
 import time
 import struct
 
-from lights import Lights
 from robot_head import RobotHead
 from kill_process import kill_process_
 from SunriseRobotLib import SunriseRobot
@@ -12,7 +11,7 @@ from SunriseRobotLib import SunriseRobot
 
 # V1.0.4
 class Joystick(object):
-    def __init__(self, robot_body: SunriseRobot, robot_head: RobotHead, lights: Lights, js_id=0, verbose=False):
+    def __init__(self, robot_body: SunriseRobot, robot_head: RobotHead, js_id=0, verbose=False):
         self.verbose = verbose
         self.robot_body = robot_body
 
@@ -36,7 +35,6 @@ class Joystick(object):
         self.last_select_press = 0  # Add timestamp for SELECT button
         self.select_delay = 5.0  # Minimum seconds between SELECT presses
         self.robot_head = robot_head
-        self.lights = lights
 
         # Find the joystick device.
         print('Joystick Available devices:')
