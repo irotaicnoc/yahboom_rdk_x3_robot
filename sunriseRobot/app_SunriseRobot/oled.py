@@ -35,7 +35,6 @@ class OLED:
 
         self.__total_last = 0
         self.__idle_last = 0
-        self.__str_CPU = "CPU:0%"
 
         self.__WIDTH = 128
         self.__HEIGHT = 32
@@ -146,10 +145,7 @@ class OLED:
         try:
             state = self.begin()
             while state:
-                self.clear()
-                if self.__clear:
-                    self.refresh()
-                    return True
+                self.clear(refresh=self.__clear)
                 str_ip = "IP:" + self.get_local_ip()
                 controller_mode = self.get_controller_mode_status()
                 self.add_line(controller_mode[0], line=1)
@@ -157,7 +153,6 @@ class OLED:
                     self.add_line(controller_mode[1], line=2)
                 else:
                     self.add_line(self.get_ros2_mode_status(), line=2)
-                # self.add_line(str_FreeRAM, 2)
                 self.add_line(self.get_battery_voltage(), line=3)
                 self.add_line(str_ip, line=4)
                 # Display image
