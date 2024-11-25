@@ -21,6 +21,7 @@ class RobotHead:
         self.fan_state = gc.FAN_START_CMD
         self.light_state = gc.LIGHT_STOP_CMD
 
+        # motion parameters
         self.steer_speed_proportion = parameters['steer_speed_proportion']
         self.speed_coefficient = parameters['speed_coefficient']
         self.verbose = parameters['verbose']
@@ -28,7 +29,9 @@ class RobotHead:
     def next_mode(self):
         if self.verbose:
             print(f"Switching from {self.robot_mode} mode.")
-        self.robot_mode = self.robot_mode_list[(self.robot_mode_list.index(self.robot_mode) + 1) % len(self.robot_mode_list)]
+        self.robot_mode = self.robot_mode_list[
+            (self.robot_mode_list.index(self.robot_mode) + 1) % len(self.robot_mode_list)
+        ]
         if self.verbose:
             print(f"Switching to {self.robot_mode} mode.")
 

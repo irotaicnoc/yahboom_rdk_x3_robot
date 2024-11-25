@@ -29,29 +29,29 @@ def main_loop(**kwargs):
         print(f'selected_target: {robot_head.tracking_target_list[robot_head.tracking_target_pos]}')
         print(f'speed_coefficient: {robot_head.speed_coefficient}')
 
-    task_1_kwargs = {
+    joystick_kwargs = {
         'robot_body': robot_body,
         'robot_head': robot_head,
         'verbose': False,
     }
-    task_1 = threading.Thread(target=task_joystick, name='task_joystick', kwargs=task_1_kwargs)
-    task_1.start()
+    thread_joystick = threading.Thread(target=task_joystick, name='task_joystick', kwargs=joystick_kwargs)
+    thread_joystick.start()
 
-    task_2_kwargs = {
+    screen_kwargs = {
         'robot_body': robot_body,
         'robot_head': robot_head,
         'verbose': parameters['verbose'],
     }
-    task_2 = threading.Thread(target=task_screen, name='task_screen', kwargs=task_2_kwargs)
-    task_2.start()
+    thread_screen = threading.Thread(target=task_screen, name='task_screen', kwargs=screen_kwargs)
+    thread_screen.start()
 
-    task_3_kwargs = {
+    ai_agent_kwargs = {
         'robot_body': robot_body,
         'robot_head': robot_head,
         'verbose': parameters['verbose'],
     }
-    task_3 = threading.Thread(target=task_ai_agent, name='task_ai_agent', kwargs=task_3_kwargs)
-    task_3.start()
+    thread_ai_agent = threading.Thread(target=task_ai_agent, name='task_ai_agent', kwargs=ai_agent_kwargs)
+    thread_ai_agent.start()
 
     fan_kwargs = {
         'robot_head': robot_head,
