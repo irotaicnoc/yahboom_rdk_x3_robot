@@ -148,10 +148,10 @@ class Joystick(object):
                 print(name, ":", value)
             self.robot_body.set_beep(value)
 
-        elif name == 'B':
-            if self.verbose:
-                print(name, ":", value)
-
+        # elif name == 'B':
+        #     if self.verbose:
+        #         print(name, ":", value)
+        #
         # elif name == 'X':
         #     if self.verbose:
         #         print(name, ":", value)
