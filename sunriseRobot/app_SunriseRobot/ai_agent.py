@@ -152,13 +152,8 @@ class AiAgent(object):
         stop_thinking = time.time()
         print(f'thinking time: {round(stop_thinking - start_thinking, 3)}')
         start_moving = time.time()
-        self.robot_body.set_car_motion_duration(
-            v_x=self.speed_x,
-            v_y=self.speed_y,
-            v_z=self.speed_z,
-            time_seconds=move_duration
-        )
-        # time.sleep(move_duration)
+        self.robot_body.set_car_motion(self.speed_x, 0, self.speed_z)
+        time.sleep(move_duration)
         stop_moving = time.time()
         print(f'moving time AI: {round(stop_moving - start_moving, 3)}')
 
