@@ -95,7 +95,7 @@ class AiAgent(object):
         start_thinking = time.time()
         self.set_zero_speed()
         self.robot_body.set_car_motion(self.speed_x, 0, self.speed_z)
-        move_duration = 0.4
+        move_duration = 0.3
 
         self.camera.get_img(2)
         # _ = self.camera.get_img(2)
@@ -149,6 +149,7 @@ class AiAgent(object):
             # TODO: very slowly rotate by 360° degree
             self.speed_x = 0
             self.speed_z = self.robot_head.speed_coefficient
+            self.speed_z = self.robot_head.speed_coefficient * 3
         stop_thinking = time.time()
         print(f'thinking time: {round(stop_thinking - start_thinking, 3)}')
         start_moving = time.time()
