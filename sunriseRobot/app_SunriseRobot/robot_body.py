@@ -581,7 +581,7 @@ class RobotBody(object):
         time.sleep(time_seconds)
         self.set_car_motion(v_x=0, v_y=0, v_z=0)
         stop_moving = time.time()
-        print(f'moving time robot body: {stop_moving - start_moving}')
+        print(f'moving time robot body: {round(stop_moving - start_moving, 3)}')
 
 
     # PID 参数控制，会影响set_car_motion函数控制小车的运动速度变化情况。默认情况下可不调整。

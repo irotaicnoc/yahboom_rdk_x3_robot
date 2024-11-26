@@ -38,17 +38,15 @@ class AiAgent(object):
         self.steer_threshold = parameters['steer_threshold']
         self.angular_speed_range = parameters['angular_speed_range']
         self.speed_x = 0
-        self.speed_y = 0
         self.speed_z = 0
 
     def set_zero_speed(self):
         self.speed_x = 0
-        self.speed_y = 0
         self.speed_z = 0
 
     def deactivate_agent(self):
         self.set_zero_speed()
-        self.robot_body.set_car_motion(self.speed_x, self.speed_y, self.speed_z)
+        self.robot_body.set_car_motion(self.speed_x, 0, self.speed_z)
         self.agent_active = False
         if self.camera_is_open == 0:
             self.camera_is_open = -1
@@ -58,7 +56,7 @@ class AiAgent(object):
 
     def activate_agent(self, video_capture_kwargs=None):
         self.set_zero_speed()
-        self.robot_body.set_car_motion(self.speed_x, self.speed_y, self.speed_z)
+        self.robot_body.set_car_motion(self.speed_x, 0, self.speed_z)
         self.camera_is_open = -1
         if video_capture_kwargs is None:
             self.camera_is_open = self.camera.open_cam(**self.video_capture_kwargs)
@@ -95,10 +93,9 @@ class AiAgent(object):
     # stop -> observe -> think -> move for 0.3 seconds -> repeat until interrupted
     def detect_and_move(self) -> None:
         start_thinking = time.time()
-        # start_thinking_nano = time.time_ns()
         self.set_zero_speed()
-        self.robot_body.set_car_motion(self.speed_x, self.speed_y, self.speed_z)
         move_duration = 0.3
+        self.robot_body.set_car_motion(self.speed_x, 0, self.speed_z)
 
         self.camera.get_img(2)
         # _ = self.camera.get_img(2)
@@ -153,10 +150,7 @@ class AiAgent(object):
             self.speed_x = 0
             self.speed_z = self.robot_head.speed_coefficient
         stop_thinking = time.time()
-        stop_thinking_nano = time.time_ns()
-        print(f'stop_thinking time: {stop_thinking}')
-        print(f'TEST stop_thinking_nano time: {stop_thinking_nano}')
-        print(f'thinking time: {stop_thinking - start_thinking}')
+        print(f'thinking time: {round(stop_thinking - start_thinking, 3)}')
         start_moving = time.time()
         self.robot_body.set_car_motion_duration(
             v_x=self.speed_x,
@@ -166,7 +160,7 @@ class AiAgent(object):
         )
         # time.sleep(move_duration)
         stop_moving = time.time()
-        print(f'moving time AI: {stop_moving - start_moving}')
+        print(f'moving time AI: {round(stop_moving - start_moving, 3)}')
 
     def __del__(self):
         self.deactivate_agent()
