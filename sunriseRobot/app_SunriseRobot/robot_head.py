@@ -23,6 +23,7 @@ class RobotHead:
 
         # hotspot and ROS2 parameters
         self.hotspot_status = 'inactive'
+        self.hotspot_ip = parameters['hotspot_ip']
         self.ros2_status = 'inactive'
 
         # motion parameters

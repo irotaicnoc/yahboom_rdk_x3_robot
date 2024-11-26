@@ -170,7 +170,7 @@ class Joystick(object):
             if value == 1:
                 if self.robot_head.hotspot_status == 'inactive':
                     self.robot_head.hotspot_status = 'processing'
-                    utils.activate_hotspot(verbose=self.verbose)
+                    utils.activate_hotspot(hotspot_ip=self.robot_head.hotspot_ip, verbose=self.verbose)
                     self.robot_head.hotspot_status = 'active'
 
                 elif self.robot_head.hotspot_status == 'active':

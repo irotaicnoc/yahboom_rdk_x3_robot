@@ -69,10 +69,8 @@ def pretty_print_dict(data, _level: int = 0) -> None:
         print(data)
 
 
-def activate_hotspot(verbose: bool = False):
+def activate_hotspot(hotspot_ip: str, verbose: bool = False):
     if verbose:
-    os.system("ifconfig wlan0 192.168.8.88 netmask 255.255.255.0")
-    os.system("systemctl start isc-dhcp-server")
         print('Starting Hotspot...', end='')
     os.system('sleep 3')
     os.system('systemctl stop wpa_supplicant')
@@ -82,6 +80,8 @@ def activate_hotspot(verbose: bool = False):
     os.system('sleep 1')
     os.system('ifconfig wlan0 up')
     os.system(f'hostapd -B {gc.MAIN_FOLDER_PATH}hotspot/etc/hostapd.conf')
+    os.system(f'ifconfig wlan0 {hotspot_ip} netmask 255.255.255.0')
+    os.system('systemctl start isc-dhcp-server')
     if verbose:
         print('Done.')
 
