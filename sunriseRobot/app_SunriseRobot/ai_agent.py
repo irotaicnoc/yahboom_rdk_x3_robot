@@ -100,8 +100,8 @@ class AiAgent(object):
         self.robot_body.set_car_motion(self.speed_x, self.speed_y, self.speed_z)
         move_duration = 0.3
 
-        _ = self.camera.get_img(2)
-        _ = self.camera.get_img(2)
+        self.camera.get_img(2)
+        # _ = self.camera.get_img(2)
         frame = self.camera.get_img(2)
         if frame is None:
             if self.verbose:
