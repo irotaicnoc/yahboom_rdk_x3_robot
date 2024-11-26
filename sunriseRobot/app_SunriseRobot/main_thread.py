@@ -9,12 +9,13 @@ import args
 from fan import Fan
 from light import Light
 from ai_agent import AiAgent
+import global_constants as gc
 from robot_head import RobotHead
 
 
 def main_loop(**kwargs):
     parameters = args.import_args(
-        yaml_path='/root/sunriseRobot/app_SunriseRobot/configs/main_thread_config.yaml',
+        yaml_path=gc.CONFIG_FOLDER_PATH + 'main_thread_config.yaml',
         **kwargs,
     )
 

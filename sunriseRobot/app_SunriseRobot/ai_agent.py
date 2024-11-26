@@ -5,6 +5,7 @@ from hobot_vio import libsrcampy as camera_lib
 
 import args
 import utils
+import global_constants as gc
 from tracker import YoloTracker
 from robot_head import RobotHead
 
@@ -15,7 +16,7 @@ class AiAgent(object):
         self.robot_body = robot_body
         self.robot_head = robot_head
         parameters = args.import_args(
-            yaml_path='/root/sunriseRobot/app_SunriseRobot/configs/ai_agent_config.yaml',
+            yaml_path=gc.CONFIG_FOLDER_PATH + 'ai_agent_config.yaml',
             **kwargs,
         )
         camera_kwargs = parameters['camera_kwargs']

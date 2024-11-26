@@ -18,5 +18,5 @@ else
     
 fi
 # Clear OLED
-python3 /root/sunriseRobot/app_SunriseRobot/oled.py clear
+python3 /root/GIT/yahboom_rdk_x3_robot/sunriseRobot/app_SunriseRobot/oled.py clear
 sleep .1

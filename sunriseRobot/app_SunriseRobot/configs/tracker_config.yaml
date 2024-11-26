@@ -2,4 +2,4 @@ verbose: False
 #model_name: yolo11l.pt
 #model_name: yolo11m.pt
 model_name: yolo11s.pt
-model_folder: /root/sunriseRobot/app_SunriseRobot/models/
+model_folder: models/

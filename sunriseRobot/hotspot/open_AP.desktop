@@ -1,6 +1,6 @@
 [Desktop Entry]
 Type=Application
-Exec=bash /root/sunriseRobot/hotspot/open_AP.sh
+Exec=bash /root/GIT/yahboom_rdk_x3_robot/sunriseRobot/hotspot/open_AP.sh
 Hidden=false
 NoDisplay=false
 X-GNOME-Autostart-enabled=true

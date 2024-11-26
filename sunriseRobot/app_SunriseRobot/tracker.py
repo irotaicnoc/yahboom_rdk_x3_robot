@@ -2,16 +2,17 @@ from ultralytics import YOLO
 
 import args
 import utils
+import global_constants as gc
 
 
 class YoloTracker(object):
     def __init__(self, **kwargs):
         parameters = args.import_args(
-            yaml_path='/root/sunriseRobot/app_SunriseRobot/configs/tracker_config.yaml',
+            yaml_path=gc.CONFIG_FOLDER_PATH + 'tracker_config.yaml',
             **kwargs,
         )
         self.model_name = parameters['model_name']
-        self.model_folder = parameters['model_folder']
+        self.model_folder = gc.APP_FOLDER_PATH + parameters['model_folder']
         self.model_path = self.model_folder + self.model_name
         self.image_size = parameters['image_size']
         # self.x_center = int(image_size[0] / 2)

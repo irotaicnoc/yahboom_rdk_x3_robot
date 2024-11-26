@@ -7,7 +7,7 @@ import global_constants as gc
 class RobotHead:
     def __init__(self, **kwargs):
         parameters = args.import_args(
-            yaml_path='/root/sunriseRobot/app_SunriseRobot/configs/robot_head_config.yaml',
+            yaml_path=gc.CONFIG_FOLDER_PATH + 'robot_head_config.yaml',
             **kwargs,
         )
         # autonomous mode parameters

@@ -12,3 +12,8 @@ FAN_STOP_CMD = 0
 FAN_START_CMD = 1
 LIGHT_STOP_CMD = 0
 LIGHT_EFFECT_CMD_LIST = [0, 1, 2, 3, 4]
+
+# os paths
+MAIN_FOLDER_PATH = '/root/GIT/yahboom_rdk_x3_robot/sunriseRobot/'
+APP_FOLDER_PATH = '/root/GIT/yahboom_rdk_x3_robot/sunriseRobot/app_SunriseRobot/'
+CONFIG_FOLDER_PATH = APP_FOLDER_PATH + 'configs/'

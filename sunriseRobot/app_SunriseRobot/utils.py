@@ -3,24 +3,25 @@ import cv2
 import numpy as np
 from ultralytics import YOLO
 
+import global_constants as gc
 from kill_process import kill_process_
 
 
 def format_camera_frames(frame, width: int, height: int):
     # if save_img:
-    #     with open(f'/root/sunriseRobot/app_SunriseRobot/output/{counter}_01_frame_raw.raw', 'wb') as f:
+    #     with open(f'{gc.APP_FOLDER_PATH}output/{counter}_01_frame_raw.raw', 'wb') as f:
     #         f.write(frame)
     frame_from_buffer = np.frombuffer(frame, dtype=np.uint8)
     # if save_img:
-    #     np.save(f'/sunriseRobot/app_SunriseRobot/output/{counter}_02_frame_from_buffer.npy', frame_from_buffer)
+    #     np.save(f'{gc.APP_FOLDER_PATH}output/{counter}_02_frame_from_buffer.npy', frame_from_buffer)
     # logger().info(f'frame_from_buffer shape: {frame_from_buffer.shape}')
     frame_reshaped = frame_from_buffer.reshape(height * 3 // 2, width)
     # if save_img:
-    #     np.save(f'/sunriseRobot/app_SunriseRobot/output/{counter}_03_frame_reshaped.npy', frame_reshaped)
+    #     np.save(f'{gc.APP_FOLDER_PATH}output/{counter}_03_frame_reshaped.npy', frame_reshaped)
     # logger().info(f'frame_reshaped shape: {frame_reshaped.shape}')
     frame_rgb = cv2.cvtColor(src=frame_reshaped, code=cv2.COLOR_YUV2BGR_NV12)
     # if save_img:
-    #     cv2.imwrite(f'/sunriseRobot/app_SunriseRobot/output/{counter}_04_frame_rgb.jpg', frame_rgb)
+    #     cv2.imwrite(f'{gc.APP_FOLDER_PATH}output/{counter}_04_frame_rgb.jpg', frame_rgb)
     # logger().info(f'frame_rgb shape: {frame_rgb.shape}')
     # if counter >= 4:
     #     exit()
@@ -78,9 +79,9 @@ def activate_hotspot(verbose: bool = False):
     os.system("ifconfig wlan0 down")
     os.system("sleep 1")
     os.system("ifconfig wlan0 up")
-    os.system("hostapd -B /root/sunriseRobot/hotspot/etc/hostapd.conf")
     os.system("ifconfig wlan0 192.168.8.88 netmask 255.255.255.0")
     os.system("systemctl start isc-dhcp-server")
+    os.system(f'hostapd -B {gc.MAIN_FOLDER_PATH}hotspot/etc/hostapd.conf')
     if verbose:
         print("Done.")
 
@@ -103,7 +104,7 @@ def deactivate_hotspot(verbose: bool = False):
 def activate_ros2(verbose: bool = False):
     if verbose:
         print("Starting ROS2...", end='')
-    os.system("/root/sunriseRobot/app_SunriseRobot/start_ros2.sh")
+    os.system(f'{gc.APP_FOLDER_PATH}start_ros2.sh')
     if verbose:
         print("Done.")
 
