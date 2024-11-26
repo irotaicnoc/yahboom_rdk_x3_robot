@@ -17,6 +17,8 @@ class YoloTracker(object):
         # self.x_center = int(image_size[0] / 2)
         # self.y_center = int(image_size[1] / 2)
         self.verbose = parameters['verbose']
+        if self.verbose:
+            print(f'Using Computer Vision model: {self.model_name}')
 
         # Download model in folder if not present, and load it
         self.model = YOLO(model=self.model_path, verbose=self.verbose)
