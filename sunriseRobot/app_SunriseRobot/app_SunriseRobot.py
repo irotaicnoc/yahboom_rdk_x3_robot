@@ -11,10 +11,10 @@ from gevent import pywsgi
 from flask import Flask, render_template, Response
 
 
-from SunriseRobotLib import SunriseRobot
+from robot_body import RobotBody
 from camera import Camera
 from joystick import Joystick
-from SunriseRobotLib import Mipi_Camera
+from robot_body import Mipi_Camera
 
 
 g_debug = False
@@ -25,7 +25,7 @@ print("debug=", g_debug)
 
 
 # Robot base processing library
-g_bot = SunriseRobot(debug=g_debug)
+g_bot = RobotBody(debug=g_debug)
 # Start thread to receive serial data
 g_bot.create_receive_threading()
 # Car type

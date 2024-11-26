@@ -3,7 +3,7 @@ import threading
 
 from oled import OLED
 from joystick import Joystick
-from SunriseRobotLib import SunriseRobot
+from robot_body import RobotBody
 
 import args
 from fan import Fan
@@ -18,7 +18,7 @@ def main_loop(**kwargs):
         **kwargs,
     )
 
-    robot_body = SunriseRobot(com="/dev/ttyUSB0", debug=False)
+    robot_body = RobotBody(com="/dev/ttyUSB0", debug=False)
     robot_body.create_receive_threading()
 
     robot_head = RobotHead()

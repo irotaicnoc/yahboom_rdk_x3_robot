@@ -6,12 +6,12 @@ import struct
 
 import utils
 from robot_head import RobotHead
-from SunriseRobotLib import SunriseRobot
+from robot_body import RobotBody
 
 
 # V1.0.4
 class Joystick(object):
-    def __init__(self, robot_body: SunriseRobot, robot_head: RobotHead, js_id=0, verbose=False):
+    def __init__(self, robot_body: RobotBody, robot_head: RobotHead, js_id=0, verbose=False):
         self.verbose = verbose
         self.robot_body = robot_body
 

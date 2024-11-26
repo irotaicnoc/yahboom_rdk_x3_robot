@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 # coding: utf-8
 
-import struct
 import time
 import serial
+import struct
 import threading
 
 
 # V2.0.1
-class SunriseRobot(object):
+class RobotBody(object):
     __uart_state = 0
 
     def __init__(self, com="/dev/myserial", delay=.002, debug=False):
@@ -1201,66 +1201,3 @@ class SunriseRobot(object):
         else:
             return self.__version
         return -1
-
-
-if __name__ == '__main__':
-    # 小车底层处理库
-
-    import platform
-
-    device = platform.system()
-    print("Read device:", device)
-    if device == 'Windows':
-        com_index = 1
-        while True:
-            com_index = com_index + 1
-            try:
-                print("try COM%d" % com_index)
-                com = 'COM%d' % com_index
-                robot = SunriseRobot(com, debug=True)
-                break
-            except:
-                if com_index > 256:
-                    print("-----------------------No COM Open--------------------------")
-                    exit(0)
-                continue
-        print("--------------------Open %s---------------------" % com)
-    else:
-        robot = SunriseRobot(com="/dev/ttyUSB0", debug=True)
-    robot.create_receive_threading()
-    time.sleep(.1)
-    robot.set_beep(50)
-    time.sleep(.1)
-
-    version = robot.get_version()
-    print("version=", version)
-
-    robot.set_car_type(6)
-    time.sleep(.1)
-    car_type = robot.get_car_type_from_machine()
-    print("read car_type:", car_type)
-
-    try:
-        while False:
-            # ax, ay, az = robot.get_accelerometer_data()
-            # gx, gy, gz = robot.get_gyroscope_data()
-            # mx, my, mz = robot.get_magnetometer_data()
-            # print(ax, ay, az)
-            # print(ax, ay, az, gx, gy, gz, mx, my, mz)
-            # print("%3.3f, %3.3f, %3.3f,      %3.3f, %3.3f, %3.3f" % 
-            # (ax, ay, az, gx, gy, gz))
-            # print("%3.3f, %3.3f, %3.3f, %3.3f, %3.3f, %3.3f, %3.3f, %3.3f, %3.3f" % 
-            # (ax, ay, az, gx, gy, gz, mx, my, mz))
-            roll, pitch, yaw = robot.get_imu_attitude_data()
-            print("roll:%f, pitch:%f, yaw:%f" % (roll, pitch, yaw))
-            # m1, m2, m3, m4 = robot.get_motor_encoder()
-            # print("encoder:", m1, m2, m3, m4)
-
-            # v = robot.get_motion_data()
-            # print("v:", v)
-
-            time.sleep(.1)
-    except KeyboardInterrupt:
-        robot.set_car_motion(0, 0, 0)
-        pass
-    exit(0)

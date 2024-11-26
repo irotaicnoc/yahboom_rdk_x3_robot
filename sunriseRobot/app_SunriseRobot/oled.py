@@ -9,7 +9,7 @@ from PIL import ImageDraw
 from PIL import ImageFont
 import Adafruit_SSD1306 as SSD
 
-from SunriseRobotLib import SunriseRobot
+from robot_body import RobotBody
 
 from robot_head import RobotHead
 
@@ -20,7 +20,7 @@ class OLED:
                  i2c_bus=0,
                  clear=False,
                  verbose=False,
-                 robot_body: SunriseRobot = None,
+                 robot_body: RobotBody = None,
                  robot_head: RobotHead = None,
                  ):
         self.verbose = verbose

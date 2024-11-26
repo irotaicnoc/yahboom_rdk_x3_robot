@@ -1,6 +1,6 @@
 import time
 
-from SunriseRobotLib import SunriseRobot
+from robot_body import RobotBody
 from hobot_vio import libsrcampy as camera_lib
 
 import args
@@ -10,7 +10,7 @@ from robot_head import RobotHead
 
 
 class AiAgent(object):
-    def __init__(self, robot_body: SunriseRobot, robot_head: RobotHead, **kwargs):
+    def __init__(self, robot_body: RobotBody, robot_head: RobotHead, **kwargs):
         # general initialization
         self.robot_body = robot_body
         self.robot_head = robot_head
