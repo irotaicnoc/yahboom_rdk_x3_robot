@@ -9,10 +9,10 @@ from std_msgs.msg import Bool, Int8
 
 # robot libraries
 import smbus
-from SunriseRobotLib import SunriseRobot
 
 # my libraries
-from controller_sub import utils
+import utils
+from robot_body import RobotBody
 
 
 class ControllerSubscriberNode(Node):
@@ -29,7 +29,7 @@ class ControllerSubscriberNode(Node):
         self.get_logger().info(f'{rgb_light_topic=}')
         # self.get_logger().info(f'{queue_size=}')
         self.queue_size = queue_size
-        self.robot = SunriseRobot()
+        self.robot = RobotBody()
         self.bus = smbus.SMBus(0)
 
         # motion subscriber

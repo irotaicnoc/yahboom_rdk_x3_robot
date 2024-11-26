@@ -24,8 +24,8 @@ def format_camera_frames(frame, width: int, height: int, image_orientation: int)
     # if save_img:
     #     np.save(f'/root/marco_ros2_ws/src/camera_pub/camera_pub/{counter}_03_frame_reshaped.npy', frame_reshaped)
     # logger().info(f'frame_reshaped shape: {frame_reshaped.shape}')
-    frame_rgb = cv2.cvtColor(src=frame_reshaped, code=cv2.COLOR_YUV2RGB_NV12)
-    # frame_rgb = cv2.cvtColor(src=frame_reshaped, code=cv2.COLOR_YUV2BGR_NV12)
+    # frame_rgb = cv2.cvtColor(src=frame_reshaped, code=cv2.COLOR_YUV2RGB_NV12)
+    frame_rgb = cv2.cvtColor(src=frame_reshaped, code=cv2.COLOR_YUV2BGR_NV12)
     # if save_img:
     #     cv2.imwrite(f'/root/marco_ros2_ws/src/camera_pub/camera_pub/{counter}_04_frame_rgb.jpg', frame_rgb)
     # logger().info(f'frame_rgb shape: {frame_rgb.shape}')

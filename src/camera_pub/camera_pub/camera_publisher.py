@@ -8,7 +8,7 @@ from sensor_msgs.msg import Image
 from hobot_vio import libsrcampy as camera_lib
 
 # my libraries
-from camera_pub import utils
+import utils
 
 
 class CameraPublisherNode(Node):
@@ -55,9 +55,9 @@ class CameraPublisherNode(Node):
         if frame is None:
             self.get_logger().info('frame is None')
             return
-        save_img = False
-        if self.message_counter % 100 == 0:
-            save_img = True
+        # save_img = False
+        # if self.message_counter % 100 == 0:
+        #     save_img = True
         frame = utils.format_camera_frames(
             frame=frame,
             width=self.image_width,
