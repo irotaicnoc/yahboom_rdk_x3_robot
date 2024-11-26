@@ -1,5 +1,5 @@
 verbose: False
-speed_coefficient: 0.5
+speed_coefficient: 0.3
 steer_speed_proportion: 7
 tracking_target_list: [person, cat, orange, remote, mouse]
 #yolo_classes_dict:

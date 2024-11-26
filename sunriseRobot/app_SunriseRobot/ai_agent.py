@@ -94,8 +94,8 @@ class AiAgent(object):
     def detect_and_move(self) -> None:
         start_thinking = time.time()
         self.set_zero_speed()
-        move_duration = 0.3
         self.robot_body.set_car_motion(self.speed_x, 0, self.speed_z)
+        move_duration = 0.4
 
         self.camera.get_img(2)
         # _ = self.camera.get_img(2)
@@ -143,7 +143,7 @@ class AiAgent(object):
                 self.speed_x = self.robot_head.speed_coefficient
                 print(f'Forward: {self.speed_x}')
                 self.speed_z = 0
-                move_duration *= 2
+                move_duration = 1.0
         else:
             print('Searching...')
             # TODO: very slowly rotate by 360° degree
