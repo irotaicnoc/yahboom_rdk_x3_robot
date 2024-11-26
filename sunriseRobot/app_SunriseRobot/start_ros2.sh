@@ -7,7 +7,6 @@
 # start app program
 ###############################################################################
 
-
 # ubuntu 20.04
 gnome-terminal -- bash -c "python3 /root/GIT/yahboom_rdk_x3_robot/sunriseRobot/app_SunriseRobot/start_ros2.py;exec bash"
 

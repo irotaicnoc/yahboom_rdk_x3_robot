@@ -108,15 +108,15 @@ class Joystick(object):
         if self.__js_isOpen:
             self.__jsdev.close()
         if self.verbose:
-            print("\n---Joystick DEL---\n")
+            print('\n---Joystick DEL---\n')
 
     # Control robot
     def __data_processing(self, name, value):
-        if name == "RK1_LEFT_RIGHT":
+        if name == 'RK1_LEFT_RIGHT':
             if self.robot_head.robot_mode == 'user_controlled':
                 value = -value / 32767
                 if self.verbose:
-                    print("%s : %.3f" % (name, value))
+                    print('%s : %.3f' % (name, value))
                 self.__speed_y = value * self.robot_head.speed_coefficient
                 self.robot_body.set_car_motion(self.__speed_x, self.__speed_y, self.__speed_z)
 
@@ -124,7 +124,7 @@ class Joystick(object):
             if self.robot_head.robot_mode == 'user_controlled':
                 value = -value / 32767
                 if self.verbose:
-                    print("%s : %.3f" % (name, value))
+                    print('%s : %.3f' % (name, value))
                 self.__speed_x = value * self.robot_head.speed_coefficient
                 self.robot_body.set_car_motion(self.__speed_x, self.__speed_y, self.__speed_z)
 
@@ -132,7 +132,7 @@ class Joystick(object):
             if self.robot_head.robot_mode == 'user_controlled':
                 value = -value / 32767
                 if self.verbose:
-                    print("%s : %.3f" % (name, value))
+                    print('%s : %.3f' % (name, value))
                 self.__speed_z = value * self.robot_head.speed_coefficient * self.robot_head.steer_speed_proportion
                 self.robot_body.set_car_motion(self.__speed_x, self.__speed_y, self.__speed_z)
 
@@ -140,33 +140,33 @@ class Joystick(object):
             if self.robot_head.robot_mode == 'user_controlled':
                 value = -value / 32767
                 if self.verbose:
-                    print("%s : %.3f" % (name, value))
+                    print('%s : %.3f' % (name, value))
 
         # activate buzzer
         elif name == 'A':
             if self.verbose:
-                print(name, ":", value)
+                print(name, ':', value)
             self.robot_body.set_beep(value)
 
         # elif name == 'B':
         #     if self.verbose:
-        #         print(name, ":", value)
+        #         print(name, ':', value)
         #
         # elif name == 'X':
         #     if self.verbose:
-        #         print(name, ":", value)
+        #         print(name, ':', value)
 
         # change light effect
         elif name == 'Y':
             if self.verbose:
-                print(name, ":", value)
+                print(name, ':', value)
             if value == 1:
                 self.robot_head.next_light_effect()
 
         # activate/deactivate hotspot
         elif name == 'L1':
             if self.verbose:
-                print(name, ":", value)
+                print(name, ':', value)
             if value == 1:
                 if self.robot_head.hotspot_status == 'inactive':
                     self.robot_head.hotspot_status = 'processing'
@@ -192,12 +192,12 @@ class Joystick(object):
                         self.robot_head.ros2_status = 'inactive'
 
                 if self.verbose:
-                    print(name, ":", value)
+                    print(name, ':', value)
 
         # switch between user-controlled mode and autonomous mode
         elif name == 'SELECT':
             if self.verbose:
-                print(name, ":", value)
+                print(name, ':', value)
             current_time = time.time()
             if value == 1 and (current_time - self.last_select_press) >= self.select_delay:
                 self.last_select_press = current_time
@@ -205,7 +205,7 @@ class Joystick(object):
 
         elif name == 'START':
             if self.verbose:
-                print(name, ":", value)
+                print(name, ':', value)
             if value == 1:
                 self.robot_body.set_beep(1)
             else:
@@ -213,35 +213,35 @@ class Joystick(object):
 
         # elif name == 'MODE':
         #     if self.verbose:
-        #         print(name, ":", value)
+        #         print(name, ':', value)
         #
         # elif name == 'BTN_RK1':
         #     if self.verbose:
-        #         print(name, ":", value)
+        #         print(name, ':', value)
         #
         # elif name == 'BTN_RK2':
         #     if self.verbose:
-        #         print(name, ":", value)
+        #         print(name, ':', value)
         #
-        # elif name == "L2":
+        # elif name == 'L2':
         #     if self.verbose:
-        #         print("%s : %.3f" % (name, value))
+        #         print('%s : %.3f' % (name, value))
         #
-        # elif name == "R2":
+        # elif name == 'R2':
         #     if self.verbose:
-        #         print("%s : %.3f" % (name, value))
+        #         print('%s : %.3f' % (name, value))
 
         # decrease sensibility
-        elif name == "L2_1":
+        elif name == 'L2_1':
             if self.verbose:
-                print("%s : %.3f" % (name, value))
+                print('%s : %.3f' % (name, value))
             if value == 1:
                 self.robot_head.decrease_speed_coefficient()
 
         # increase sensibility
-        elif name == "R2_1":
+        elif name == 'R2_1':
             if self.verbose:
-                print("%s : %.3f" % (name, value))
+                print('%s : %.3f' % (name, value))
             if value == 1:
                 self.robot_head.increase_speed_coefficient()
 
@@ -249,7 +249,7 @@ class Joystick(object):
             value = -value / 32767
             if self.robot_head.robot_mode == 'user_controlled':
                 if self.verbose:
-                    print("%s : %.3f" % (name, value))
+                    print('%s : %.3f' % (name, value))
                 if value > 0:
                     self.robot_body.set_car_motion(0, self.robot_head.speed_coefficient, 0)
                 elif value < 0:
@@ -262,7 +262,7 @@ class Joystick(object):
             value = -value / 32767
             if self.robot_head.robot_mode == 'user_controlled':
                 if self.verbose:
-                    print("%s : %.3f" % (name, value))
+                    print('%s : %.3f' % (name, value))
                 if value > 0:
                     self.robot_body.set_car_motion(self.robot_head.speed_coefficient, 0, 0)
                 elif value < 0:
@@ -291,16 +291,16 @@ class Joystick(object):
                 _time, value, _type, number = struct.unpack('IhBB', evbuf)
                 func = _type << 8 | number
                 name = self.__function_names.get(func)
-                # print("evbuf:", _time, value, _type, number)
+                # print('evbuf:', _time, value, _type, number)
                 # if self.verbose:
-                #     print("func:0x%04X, %s, %d" % (func, name, value))
+                #     print('func:0x%04X, %s, %d' % (func, name, value))
                 if name is not None:
                     self.__data_processing(name, value)
                 else:
                     if self.__ignore_count > 0:
                         self.__ignore_count = self.__ignore_count - 1
                     if self.verbose and self.__ignore_count == 0:
-                        print("Key Value Invalid")
+                        print('Key Value Invalid')
             return self.STATE_OK
         except KeyboardInterrupt as ki:
             print('Key Break Joystick')

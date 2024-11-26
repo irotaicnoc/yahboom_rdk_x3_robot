@@ -19,7 +19,7 @@ def main_loop(**kwargs):
         **kwargs,
     )
 
-    robot_body = RobotBody(com="/dev/ttyUSB0", debug=False)
+    robot_body = RobotBody(com='/dev/ttyUSB0', debug=False)
     robot_body.create_receive_threading()
 
     robot_head = RobotHead()
@@ -105,12 +105,12 @@ def task_screen(**kwargs):
             oled.clear(True)
             if state:
                 del oled
-                print("---OLED CLEARED!---")
+                print('---OLED CLEARED!---')
                 break
             time.sleep(1)
     except KeyboardInterrupt:
         del oled
-        print("---Program closed!---")
+        print('---Program closed!---')
 
 
 def task_fan(**kwargs):

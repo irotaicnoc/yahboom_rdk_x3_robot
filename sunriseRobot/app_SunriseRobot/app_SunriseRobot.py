@@ -19,9 +19,9 @@ from robot_body import Mipi_Camera
 
 g_debug = False
 if len(sys.argv) > 1:
-    if str(sys.argv[1]) == "debug":
+    if str(sys.argv[1]) == 'debug':
         g_debug = True
-print("debug=", g_debug)
+print('debug=', g_debug)
 
 
 # Robot base processing library
@@ -42,7 +42,7 @@ g_camera_state = 0
 
 g_csi_camera = Mipi_Camera(width=W, height=H, debug=g_debug)
 
-g_ip_addr = "x.x.x.x"
+g_ip_addr = 'x.x.x.x'
 g_tcp_ip = g_ip_addr
 
 g_init = False
@@ -86,11 +86,11 @@ def return_bot_version(tcp):
     if version < 0:
         version = 0
     checknum = (6 + version) % 256
-    data = "$%02x%02x%02x%02x%02x#" % (T_CARTYPE, T_FUNC, T_LEN, version, checknum)
-    tcp.send(data.encode(encoding="utf-8"))
+    data = '$%02x%02x%02x%02x%02x#' % (T_CARTYPE, T_FUNC, T_LEN, version, checknum)
+    tcp.send(data.encode(encoding='utf-8'))
     if g_debug:
-        print("Rosmaster Version:", version / 10.0)
-        print("tcp send:", data)
+        print('Rosmaster Version:', version / 10.0)
+        print('tcp send:', data)
 
 
 # Return battery voltage
@@ -102,11 +102,11 @@ def return_battery_voltage(tcp):
     if vol < 0:
         vol = 0
     checknum = (T_CARTYPE + T_FUNC + T_LEN + vol) % 256
-    data = "$%02x%02x%02x%02x%02x#" % (T_CARTYPE, T_FUNC, T_LEN, vol, checknum)
-    tcp.send(data.encode(encoding="utf-8"))
+    data = '$%02x%02x%02x%02x%02x#' % (T_CARTYPE, T_FUNC, T_LEN, vol, checknum)
+    tcp.send(data.encode(encoding='utf-8'))
     if g_debug:
-        print("voltage:", vol / 10.0)
-        print("tcp send:", data)
+        print('voltage:', vol / 10.0)
+        print('tcp send:', data)
     return vol / 10.0
 
 
@@ -116,11 +116,11 @@ def return_car_speed(tcp, speed_xy, speed_z):
     T_FUNC = 0x16
     T_LEN = 0x06
     checknum = (T_CARTYPE + T_FUNC + T_LEN + int(speed_xy) + int(speed_z)) % 256
-    data = "$%02x%02x%02x%02x%02x%02x#" % (T_CARTYPE, T_FUNC, T_LEN, int(speed_xy), int(speed_z), checknum)
-    tcp.send(data.encode(encoding="utf-8"))
+    data = '$%02x%02x%02x%02x%02x%02x#' % (T_CARTYPE, T_FUNC, T_LEN, int(speed_xy), int(speed_z), checknum)
+    tcp.send(data.encode(encoding='utf-8'))
     if g_debug:
-        print("speed:", speed_xy, speed_z)
-        print("tcp send:", data)
+        print('speed:', speed_xy, speed_z)
+        print('tcp send:', data)
 
 
 # Return car stabilization status
@@ -129,11 +129,11 @@ def return_car_stabilize(tcp, state):
     T_FUNC = 0x17
     T_LEN = 0x04
     checknum = (T_CARTYPE + T_FUNC + T_LEN + int(state)) % 256
-    data = "$%02x%02x%02x%02x%02x#" % (T_CARTYPE, T_FUNC, T_LEN, int(state), checknum)
-    tcp.send(data.encode(encoding="utf-8"))
+    data = '$%02x%02x%02x%02x%02x#' % (T_CARTYPE, T_FUNC, T_LEN, int(state), checknum)
+    tcp.send(data.encode(encoding='utf-8'))
     if g_debug:
-        print("stabilize:", int(state))
-        print("tcp send:", data)
+        print('stabilize:', int(state))
+        print('tcp send:', data)
 
 
 # Return current XYZ speed of the car
@@ -149,9 +149,9 @@ def return_car_current_speed(tcp):
     speed_y = num_y.to_bytes(2, byteorder='little', signed=True)
     speed_z = num_z.to_bytes(2, byteorder='little', signed=True)
     checknum = (T_CARTYPE + T_FUNC + T_LEN + speed_x[0] + speed_x[1] + speed_y[0] + speed_y[1] + speed_z[0] + speed_z[1]) % 256
-    data = "$%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x#" % \
+    data = '$%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x#' % \
         (T_CARTYPE, T_FUNC, T_LEN, speed_x[0], speed_x[1], speed_y[0], speed_y[1], speed_z[0], speed_z[1], checknum)
-    tcp.send(data.encode(encoding="utf-8"))
+    tcp.send(data.encode(encoding='utf-8'))
 
 
 # Value transformation
@@ -182,11 +182,11 @@ def parse_data(sk_client, data):
     # Length verification
     if data_size < 8:
         if g_debug:
-            print("The data length is too short!", data_size)
+            print('The data length is too short!', data_size)
         return
     if int(data[5:7], 16) != data_size-8:
         if g_debug:
-            print("The data length error!", int(data[5:7], 16), data_size-8)
+            print('The data length error!', int(data[5:7], 16), data_size-8)
         return
     # Checksum verification
     checknum = 0
@@ -195,15 +195,15 @@ def parse_data(sk_client, data):
         checknum = (int(data[1+i:3+i], 16) + checknum) % 256
     if checknum != num_checknum:
         if g_debug:
-            print("num_checknum error!", checknum, num_checknum)
-            print("checksum error! cmd:0x%02x, calnum:%d, recvnum:%d" % (int(data[3:5], 16), checknum, num_checknum))
+            print('num_checknum error!', checknum, num_checknum)
+            print('checksum error! cmd:0x%02x, calnum:%d, recvnum:%d' % (int(data[3:5], 16), checknum, num_checknum))
         return
     
     # Car type matching
     num_car_type = int(data[1:3], 16)
     if num_car_type <= 0 or num_car_type > 5:
         if g_debug:
-            print("num_car_type error!")
+            print('num_car_type error!')
         return
     else:
         if g_car_type != num_car_type:
@@ -211,10 +211,10 @@ def parse_data(sk_client, data):
     
     # Parse command flag
     cmd = data[3:5]
-    if cmd == "0F":  # Enter interface
+    if cmd == '0F':  # Enter interface
         func = int(data[7:9])
         if g_debug:
-            print("cmd func=", func)
+            print('cmd func=', func)
         g_mode = 'Home'
         if func == 0:  # Home page
             return_battery_voltage(sk_client)
@@ -226,17 +226,17 @@ def parse_data(sk_client, data):
             return_car_current_speed(sk_client)
             g_mode = 'MecanumWheel'
 
-    elif cmd == "01":  # Get hardware version
+    elif cmd == '01':  # Get hardware version
         if g_debug:
-            print("get version")
+            print('get version')
         return_bot_version(sk_client)
 
-    elif cmd == "02":  # Get battery voltage
+    elif cmd == '02':  # Get battery voltage
         if g_debug:
-            print("get voltage")
+            print('get voltage')
         return_battery_voltage(sk_client)
 
-    elif cmd == "10":  # Control car
+    elif cmd == '10':  # Control car
         num_x = int(data[7:9], 16)
         num_y = int(data[9:11], 16)
         if num_x > 127:
@@ -250,14 +250,14 @@ def parse_data(sk_client, data):
         else:
             g_bot.set_car_motion(speed_x, speed_y, 0)
         if g_debug:
-            print("speed_x:%.2f, speed_y:%.2f" % (speed_x, speed_y))
+            print('speed_x:%.2f, speed_y:%.2f' % (speed_x, speed_y))
 
     # Set buzzer
-    elif cmd == "13":
+    elif cmd == '13':
         num_state = int(data[7:9], 16)
         num_delay = int(data[9:11], 16)
         if g_debug:
-            print("beep:%d, delay:%d" % (num_state, num_delay))
+            print('beep:%d, delay:%d' % (num_state, num_delay))
         delay_ms = 0
         if num_state > 0:
             if num_delay == 255:
@@ -267,20 +267,20 @@ def parse_data(sk_client, data):
         g_bot.set_beep(delay_ms)
 
     # Button control
-    elif cmd == "15":
+    elif cmd == '15':
         num_dir = int(data[7:9], 16)
         if g_debug:
-            print("btn ctl:%d" % num_dir)
+            print('btn ctl:%d' % num_dir)
         ctrl_car(num_dir)
         if g_debug:
-            print("car ctrl:", num_dir)
+            print('car ctrl:', num_dir)
     
     # Control speed
     elif cmd == '16':
         num_speed_xy = int(data[7:9], 16)
         num_speed_z = int(data[9:11], 16)
         if g_debug:
-            print("speed ctl:%d, %d" % (num_speed_xy, num_speed_z))
+            print('speed ctl:%d, %d' % (num_speed_xy, num_speed_z))
         g_speed_ctrl_xy = num_speed_xy
         g_speed_ctrl_z = num_speed_z
         if g_speed_ctrl_xy > 100:
@@ -296,7 +296,7 @@ def parse_data(sk_client, data):
     elif cmd == '17':
         num_stab = int(data[7:9], 16)
         if g_debug:
-            print("car stabilize:%d" % num_stab)
+            print('car stabilize:%d' % num_stab)
         if num_stab > 0:
             g_car_stabilize_state = 1
         else:
@@ -309,7 +309,7 @@ def parse_data(sk_client, data):
         if num_speed > 127:
             num_speed = num_speed - 256
         if g_debug:
-            print("mecanum wheel ctrl:%d, %d" % (num_id, num_speed))
+            print('mecanum wheel ctrl:%d, %d' % (num_id, num_speed))
         if 0 <= num_id <= 4:
             if num_speed > 100:
                 num_speed = 100
@@ -339,7 +339,7 @@ def parse_data(sk_client, data):
         if num_speed_m4 > 127:
             num_speed_m4 = num_speed_m4 - 256
         if g_debug:
-            print("mecanum wheel update:%d, %d, %d, %d" % (num_speed_m1, num_speed_m2, num_speed_m3, num_speed_m4))
+            print('mecanum wheel update:%d, %d, %d, %d' % (num_speed_m1, num_speed_m2, num_speed_m3, num_speed_m4))
         g_motor_speed[0] = num_speed_m1
         g_motor_speed[1] = num_speed_m2
         g_motor_speed[2] = num_speed_m3
@@ -347,28 +347,28 @@ def parse_data(sk_client, data):
         g_bot.set_motor(g_motor_speed[0], g_motor_speed[1], g_motor_speed[2], g_motor_speed[3])
 
     # Set RGB LED strip color
-    elif cmd == "30":
+    elif cmd == '30':
         num_id = int(data[7:9], 16)
         num_r = int(data[9:11], 16)
         num_g = int(data[11:13], 16)
         num_b = int(data[13:15], 16)
         if g_debug:
-            print("lamp:%d, r:%d, g:%d, b:%d" % (num_id, num_r, num_g, num_b))
+            print('lamp:%d, r:%d, g:%d, b:%d' % (num_id, num_r, num_g, num_b))
         g_bot.set_colorful_lamps(num_id, num_r, num_g, num_b)
 
     # Set RGB LED strip effects
-    elif cmd == "31":
+    elif cmd == '31':
         num_effect = int(data[7:9], 16)
         num_speed = int(data[9:11], 16)
         if g_debug:
-            print("effect:%d, speed:%d" % (num_effect, num_speed))
+            print('effect:%d, speed:%d' % (num_effect, num_speed))
         g_bot.set_colorful_effect(num_effect, num_speed, 255)
 
     # Set color for single-color breathing effect on RGB LED strip
-    elif cmd == "32":
+    elif cmd == '32':
         num_color = int(data[7:9], 16)
         if g_debug:
-            print("breath color:%d" % num_color)
+            print('breath color:%d' % num_color)
         if num_color == 0:
             g_bot.set_colorful_effect(0, 255, 255)
         else:
@@ -389,24 +389,24 @@ def start_tcp_server(ip, port):
     sock.listen(1)
 
     while True:
-        print("Waiting for the client to connect!")
+        print('Waiting for the client to connect!')
         tcp_state = 0
         g_tcp_except_count = 0
         g_socket, address = sock.accept()
-        print("Connected, Client IP:", address)
+        print('Connected, Client IP:', address)
         tcp_state = 1
         while True:
             try:
                 tcp_state = 2
-                cmd = g_socket.recv(1024).decode(encoding="utf-8")
+                cmd = g_socket.recv(1024).decode(encoding='utf-8')
                 if not cmd:
                     break
                 tcp_state = 3
                 if g_debug:
-                    print("   [-]cmd:{0}, len:{1}".format(cmd, len(cmd)))
+                    print('   [-]cmd:{0}, len:{1}'.format(cmd, len(cmd)))
                 tcp_state = 4
-                index1 = cmd.rfind("$")
-                index2 = cmd.rfind("#")
+                index1 = cmd.rfind('$')
+                index2 = cmd.rfind('#')
                 if index1 < 0 or index2 <= index1:
                     continue
                 tcp_state = 5
@@ -420,9 +420,9 @@ def start_tcp_server(ip, port):
                         break
                 else:
                     if g_debug:
-                        print("!!!----TCP Except:%d-----!!!" % tcp_state)
+                        print('!!!----TCP Except:%d-----!!!' % tcp_state)
                 continue
-        print("socket disconnected!")
+        print('socket disconnected!')
         g_socket.close()
         g_mode = 'Home'
 
@@ -434,16 +434,16 @@ def init_tcp_socket():
         return
     while True:
         ip = get_ip_address()
-        if ip == "x.x.x.x":
+        if ip == 'x.x.x.x':
             g_tcp_ip = ip
-            print("get ip address fail!")
+            print('get ip address fail!')
             time.sleep(.5)
             continue
-        if ip != "x.x.x.x":
+        if ip != 'x.x.x.x':
             g_tcp_ip = ip
-            print("TCP Service IP=", ip)
+            print('TCP Service IP=', ip)
             break
-    task_tcp = threading.Thread(target=start_tcp_server, name="task_tcp", args=(ip, 6000))
+    task_tcp = threading.Thread(target=start_tcp_server, name='task_tcp', args=(ip, 6000))
     task_tcp.setDaemon(True)
     task_tcp.start()
     if g_debug:
@@ -455,7 +455,7 @@ def init_tcp_socket():
 #     global g_mode, g_bot, g_car_type, g_camera_type
 #     global g_usb_camera, g_csi_camera
 #     if g_debug:
-#         print("----------------------------mode_handle--------------------------")
+#         print('----------------------------mode_handle--------------------------')
 #     while True:
 #         m_fps = 0
 #         t_start = time.time()
@@ -468,12 +468,12 @@ def init_tcp_socket():
 #                 m_fps = m_fps + 1
 #                 fps = m_fps / (time.time() - t_start)
 
-#                 text = "FPS:" + str(int(fps))
+#                 text = 'FPS:' + str(int(fps))
 #                 if not success:
 #                     m_fps = 0
 #                     t_start = time.time()
 #                     if g_debug:
-#                         print("-----The camera is reconnecting...")
+#                         print('-----The camera is reconnecting...')
 #                     if g_camera_type == TYPE_USB_CAMERA:
 #                         g_camera_type = TYPE_CSI_CAMERA
 #                         pass
@@ -502,7 +502,7 @@ def index():
 # @app.route('/video_feed')
 # def video_feed():
 #     if g_debug:
-#         print("----------------------------video_feed:0x%02x--------------------------" % g_camera_type)
+#         print('----------------------------video_feed:0x%02x--------------------------' % g_camera_type)
 #     return Response(mode_handle(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
@@ -535,11 +535,11 @@ def task_joystick():
 
 
 if __name__ == '__main__':
-    task_1 = threading.Thread(target=task_mecanum, name="task_mecanum")
+    task_1 = threading.Thread(target=task_mecanum, name='task_mecanum')
     task_1.setDaemon(True)
     task_1.start()
 
-    task_2 = threading.Thread(target=task_joystick, name="task_joystick")
+    task_2 = threading.Thread(target=task_joystick, name='task_joystick')
     task_2.setDaemon(True)
     task_2.start()
 
@@ -552,8 +552,8 @@ if __name__ == '__main__':
     
     g_bot.set_car_type(6)
     time.sleep(.01)
-    print("Version:", g_bot.get_version())
-    print("Waiting to connect to the APP!")
+    print('Version:', g_bot.get_version())
+    print('Waiting to connect to the APP!')
 
     try:
         server = pywsgi.WSGIServer(('0.0.0.0', 6500), app)
@@ -562,5 +562,5 @@ if __name__ == '__main__':
         g_bot.set_car_motion(0, 0, 0)
         g_bot.set_beep(0)
         if g_debug:
-            print("-----del g_bot-----")
+            print('-----del g_bot-----')
         del g_bot

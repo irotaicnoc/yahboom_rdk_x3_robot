@@ -20,36 +20,36 @@ class Camera(object):
         if self.__video_id == self.TYPE_DEPTH_CAMERA:
             self.__video = cv.VideoCapture('/dev/camera_depth')
             if self.__debug:
-                print("video:camera_depth")
+                print('video:camera_depth')
         elif self.__video_id == self.TYPE_USB_CAMERA:
             self.__video = cv.VideoCapture('/dev/camera_usb')
             if self.__debug:
-                print("video:camera_usb")
+                print('video:camera_usb')
         elif self.__video_id == self.TYPE_WIDE_ANGLE_CAMERA:
             self.__video = cv.VideoCapture('/dev/camera_wide_angle')
             if self.__debug:
-                print("video:camera_wide_angle")
+                print('video:camera_wide_angle')
         else:
             self.__video = cv.VideoCapture(self.__video_id)
             if self.__debug:
-                print("video:", self.__video_id)
+                print('video:', self.__video_id)
 
         # success, _ = self.__video.read()
         success = self.__video.isOpened()
         if not success:
             if self.__debug:
-                print("---------Camera Init Error!------------")
+                print('---------Camera Init Error!------------')
             return
         self.__state = True
 
         self.__config_camera()
 
         if self.__debug:
-            print("---------Video:0x%02x Init OK!------------" % (self.__video_id))
+            print('---------Video:0x%02x Init OK!------------' % self.__video_id)
 
     def __del__(self):
         if self.__debug:
-            print("---------Del Camera!------------")
+            print('---------Del Camera!------------')
         self.__video.release()
         self.__state = False
 
@@ -84,28 +84,28 @@ class Camera(object):
         if self.__video_id == self.TYPE_DEPTH_CAMERA:
             self.__video = cv.VideoCapture('/dev/camera_depth')
             if self.__debug:
-                print("video:camera_depth")
+                print('video:camera_depth')
         elif self.__video_id == self.TYPE_USB_CAMERA:
             self.__video = cv.VideoCapture('/dev/camera_usb')
             if self.__debug:
-                print("video:camera_usb")
+                print('video:camera_usb')
         elif self.__video_id == self.TYPE_WIDE_ANGLE_CAMERA:
             self.__video = cv.VideoCapture('/dev/camera_wide_angle')
             if self.__debug:
-                print("video:camera_wide_angle")
+                print('video:camera_wide_angle')
         else:
             self.__video = cv.VideoCapture(self.__video_id)
             if self.__debug:
-                print("video:", self.__video_id)
+                print('video:', self.__video_id)
         success, _ = self.__video.read()
         if not success:
             if self.__debug:
                 self.__state = False
-                print("---------Camera Reconnect Error!------------")
+                print('---------Camera Reconnect Error!------------')
             return False
         if not self.__state:
             if self.__debug:
-                print("---------Video:0x%02x Reconnect OK!------------" % self.__video_id)
+                print('---------Video:0x%02x Reconnect OK!------------' % self.__video_id)
             self.__state = True
             self.__config_camera()
         return True
@@ -120,11 +120,11 @@ class Camera(object):
 
     # 获取摄像头的jpg图片 
     # Gets the JPG image of the camera
-    def get_frame_jpg(self, text="", color=(0, 255, 0)):
+    def get_frame_jpg(self, text='', color=(0, 255, 0)):
         success, image = self.__video.read()
         if not success:
             return success, bytes({1})
-        if text != "":
+        if text != '':
             # 各参数依次是：图片，添加的文字，左上角坐标，字体，字体大小，颜色，字体粗细
             # The parameters are: image, added text, top left coordinate, font, font size, color, font size  
             cv.putText(image, str(text), (10, 20), cv.FONT_HERSHEY_SIMPLEX, 0.5, color, 1)
@@ -148,7 +148,7 @@ if __name__ == '__main__':
             ret, frame = camera.get_frame()
             end = time.time()
             fps = 1 / (end - start)
-        text = "FPS:" + str(int(fps))
+        text = 'FPS:' + str(int(fps))
         cv.putText(frame, text, (20, 30), cv.FONT_HERSHEY_SIMPLEX, 0.9, (0, 200, 0), 1)
         cv.imshow('frame', frame)
 

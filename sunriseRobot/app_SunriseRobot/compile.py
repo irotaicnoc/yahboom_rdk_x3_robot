@@ -13,35 +13,35 @@ File_Name = ''
 if len(sys.argv) > 1:
     File_Name = str(sys.argv[1]) + '.py'
 else:
-    print("Please Input File Name")
-    print("-----Compile Failed!-----")
+    print('Please Input File Name')
+    print('-----Compile Failed!-----')
     sys.exit(0)
-print("File Name:", File_Name)
+print('File Name:', File_Name)
 
 
-PATH_APP_DIR = ""
+PATH_APP_DIR = ''
 PATH_FILE = PATH_APP_DIR + File_Name
-print("File PATH:", PATH_FILE)
+print('File PATH:', PATH_FILE)
 
-TARGET_FILE = PATH_FILE + "c"
-print("Target File:", TARGET_FILE)
+TARGET_FILE = PATH_FILE + 'c'
+print('Target File:', TARGET_FILE)
 
 if os.path.exists(PATH_FILE):
-    print("Succeed to Read File")
+    print('Succeed to Read File')
 else:
-    print("File Name Error or File Does Not Exist")
-    print("-----Compile Failed!-----")
+    print('File Name Error or File Does Not Exist')
+    print('-----Compile Failed!-----')
     sys.exit(0)
 
 
 if os.path.exists(TARGET_FILE):
     os.system('rm ' + TARGET_FILE)
-    print(TARGET_FILE, "Cleared")
+    print(TARGET_FILE, 'Cleared')
     time.sleep(.1)
 
-print("Start Compile:", PATH_FILE)
+print('Start Compile:', PATH_FILE)
 # file=input name cfile=output name
 py_compile.compile(file=PATH_FILE, cfile=TARGET_FILE, optimize=-1)
-print("Succeed to Generate:", TARGET_FILE)
-os.system("chmod +x " + TARGET_FILE)
-print("-----Compiled OK!-----")
+print('Succeed to Generate:', TARGET_FILE)
+os.system('chmod +x ' + TARGET_FILE)
+print('-----Compiled OK!-----')

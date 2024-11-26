@@ -79,9 +79,9 @@ class ControllerSubscriberNode(Node):
         if not isinstance(rgb_light_message, Int8):
             return
         rgb_light_value = rgb_light_message.data
-        # print ("RGBLight: ", rgb_light_value)
+        # print (f'RGBLight: {rgb_light_value}')
         if rgb_light_value > 4:
-            self.get_logger().info(f"WARNING: RGBLight data = {rgb_light_value} > 4")
+            self.get_logger().info(f'WARNING: RGBLight data = {rgb_light_value} > 4')
             rgb_light_value = 0
         if rgb_light_value == 0:
             self.bus.write_byte_data(0x0d, 0x07, 0x00)

@@ -45,7 +45,7 @@ class OLED:
     def __del__(self):
         self.clear(True)
         if self.verbose:
-            print("---OLED-DEL---")
+            print('---OLED-DEL---')
 
     # Initialize OLED, return True on success, False on failure
     def begin(self):
@@ -55,11 +55,11 @@ class OLED:
             self.__oled.clear()
             self.__oled.display()
             if self.verbose:
-                print("---OLED begin ok!---")
+                print('---OLED begin ok!---')
             return True
         except:
             if self.verbose:
-                print("---OLED no found!---")
+                print('---OLED no found!---')
             return False
 
     # Clear the display.  Refresh =True Refresh immediately, refresh=False refresh not
@@ -78,7 +78,7 @@ class OLED:
     def add_text(self, start_x, start_y, text, refresh=False):
         if start_x > self.__WIDTH or start_x < 0 or start_y < 0 or start_y > self.__HEIGHT:
             if self.verbose:
-                print("oled text: x, y input error!")
+                print('oled text: x, y input error!')
             return
         x = int(start_x + self.__x)
         y = int(start_y + self.__top)
@@ -91,7 +91,7 @@ class OLED:
     def add_line(self, text, line=1, refresh=False):
         if line < 1 or line > 4:
             if self.verbose:
-                print("oled line input error!")
+                print('oled line input error!')
             return
         y = int(8 * (line - 1))
         self.add_text(0, y, text, refresh)
@@ -119,7 +119,7 @@ class OLED:
 
     @staticmethod
     def get_ros2_mode_status() -> str:
-        ros2_name = "ros2"
+        ros2_name = 'ros2'
         process_list = psutil.process_iter()
         for process in process_list:
             if ros2_name in process.name():
@@ -146,7 +146,7 @@ class OLED:
             state = self.begin()
             while state:
                 self.clear(refresh=self.__clear)
-                str_ip = "IP:" + self.get_local_ip()
+                str_ip = 'IP:' + self.get_local_ip()
                 controller_mode = self.get_controller_mode_status()
                 self.add_line(controller_mode[0], line=1)
                 if controller_mode[0] == 'Autonomous Tracking':
@@ -161,5 +161,5 @@ class OLED:
             return False
         except:
             if self.verbose:
-                print("!!!---OLED refresh error---!!!")
+                print('!!!---OLED refresh error---!!!')
             return False
