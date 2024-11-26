@@ -575,6 +575,15 @@ class SunriseRobot(object):
             print('---set_car_motion error!---')
             pass
 
+    def set_car_motion_duration(self, v_x, v_y, v_z, time_seconds: float):
+        start_moving = time.time()
+        self.set_car_motion(v_x=v_x, v_y=v_y, v_z=v_z)
+        time.sleep(time_seconds)
+        self.set_car_motion(v_x=0, v_y=0, v_z=0)
+        stop_moving = time.time()
+        print(f'moving time robot body: {stop_moving - start_moving}')
+
+
     # PID 参数控制，会影响set_car_motion函数控制小车的运动速度变化情况。默认情况下可不调整。
     # kp ki kd = [0, 10.00], 可输入小数。
     # forever=True永久保存，=False临时作用。

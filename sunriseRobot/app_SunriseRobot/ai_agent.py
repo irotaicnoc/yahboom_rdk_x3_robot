@@ -94,6 +94,8 @@ class AiAgent(object):
 
     # stop -> observe -> think -> move for 0.3 seconds -> repeat until interrupted
     def detect_and_move(self) -> None:
+        start_thinking = time.time()
+        # start_thinking_nano = time.time_ns()
         self.set_zero_speed()
         self.robot_body.set_car_motion(self.speed_x, self.speed_y, self.speed_z)
         move_duration = 0.3
@@ -148,9 +150,23 @@ class AiAgent(object):
         else:
             print('Searching...')
             # TODO: very slowly rotate by 360° degree
-            self.set_zero_speed()
-        self.robot_body.set_car_motion(self.speed_x, self.speed_y, self.speed_z)
-        time.sleep(move_duration)
+            self.speed_x = 0
+            self.speed_z = self.robot_head.speed_coefficient
+        stop_thinking = time.time()
+        stop_thinking_nano = time.time_ns()
+        print(f'stop_thinking time: {stop_thinking}')
+        print(f'TEST stop_thinking_nano time: {stop_thinking_nano}')
+        print(f'thinking time: {stop_thinking - start_thinking}')
+        start_moving = time.time()
+        self.robot_body.set_car_motion_duration(
+            v_x=self.speed_x,
+            v_y=self.speed_y,
+            v_z=self.speed_z,
+            time_seconds=move_duration
+        )
+        # time.sleep(move_duration)
+        stop_moving = time.time()
+        print(f'moving time AI: {stop_moving - start_moving}')
 
     def __del__(self):
         self.deactivate_agent()
