@@ -1,7 +1,7 @@
 import launch
 from launch import LaunchDescription
-from launch_ros.actions import Node
 import launch_ros.events.lifecycle
+from launch_ros.actions import Node
 
 import os
 
@@ -25,15 +25,17 @@ def get_local_ip():
 
 def generate_launch_description():
     ip_address = get_local_ip()
-    print(f'starting with IP {ip_address}...')
+    print(f'Local IP {ip_address}')
+    print('Starting server_node...', end='')
     server_node = Node(
         package="ros_tcp_endpoint",
         executable="default_server_endpoint",
         emulate_tty=True,
         parameters=[{"ROS_IP": ip_address}, {"ROS_TCP_PORT": 10000}],
     )
-    print('starting server_node...')  
-    # When the server_node reaches the 'active' state, log a message and start the controller_subscriber_node and camera_publisher_node.
+    print('Done.')
+    # When the server_node reaches the 'active' state, log a message and start the
+    # controller_subscriber_node and camera_publisher_node.
     register_event_handler_for_server_reaches_active_state = launch.actions.RegisterEventHandler(
         launch_ros.event_handlers.OnStateTransition(
             target_lifecycle_node=server_node, goal_state='active',
