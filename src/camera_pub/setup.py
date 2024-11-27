@@ -6,7 +6,7 @@ package_name = 'camera_pub'
 
 setup(
     name=package_name,
-    version='0.0.0',
+    version='1.0.0',
     packages=[package_name],
     data_files=[
         ('share/ament_index/resource_index/packages',
@@ -16,7 +16,7 @@ setup(
     ],
     install_requires=['setuptools'],
     zip_safe=True,
-    maintainer='marco',
+    maintainer='Marco',
     maintainer_email='irotaicnoc@gmail.com',
     description='camera publisher',
     license='Apache License 2.0',
