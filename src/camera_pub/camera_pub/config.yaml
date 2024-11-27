@@ -1,7 +1,6 @@
 camera_publisher_node:
   camera_topic: camera_stream
   queue_size: 3
-  verbose: True
   image_orientation: 0
   video_capture_kwargs:
     pipe_id: 1
