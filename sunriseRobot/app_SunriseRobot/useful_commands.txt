@@ -1,0 +1,37 @@
+useful symbols ~{}
+ros2
+	topic test
+		ros2 run demo_nodes_cpp talker
+		ros2 run demo_nodes_py listener
+	
+	build
+		cd /root/marco_ros2_ws/
+		rosdep install -i --from-path src --rosdistro foxy -y --ignore-src
+		colcon build
+		colcon build --packages-select camera_pub
+		colcon build --packages-select controller_sub
+			
+	run camera publisher
+		cd /root/marco_ros2_ws/
+		ros2 run camera_pub camera_publisher_node
+	run control subscriber	
+		cd /root/yahboomcar_ws/
+		ros2 launch yahboomcar_bringup yahboomcar_bringup_launch.py
+		ros2 run yahboomcar_bringup Mcnamu_driver
+		
+		cd /root/marco_ros2_ws/
+		ros2 run controller_sub controller_subscriber_node
+		
+	run unity bridge
+		ros2 run ros_tcp_endpoint default_server_endpoint --ros-args -p ROS_IP:=192.168.178.84
+		ROS_TCP_PORT:=10000
+	
+	launch all three
+		ros2 launch ros_tcp_endpoint endpoint_launch.py
+		
+	launch lidar publisher
+	    ros2 launch oradar_lidar ms200_scan.launch.py
+
+
+get video sources
+	ls /dev/ | grep video
