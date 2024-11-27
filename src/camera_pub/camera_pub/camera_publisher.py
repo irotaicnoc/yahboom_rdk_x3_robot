@@ -92,7 +92,7 @@ class CameraPublisherNode(Node):
 
 def main(args=None):
     rclpy.init(args=args)
-    kwargs = utils.args_from_yaml(config_path='/root/marco_ros2_ws/src/camera_pub/camera_pub/config.yaml')
+    kwargs = utils.args_from_yaml(config_path='/root/GIT/yahboom_rdk_x3_robot/src/camera_pub/camera_pub/config.yaml')
     try:
         camera_publisher_node_args = kwargs['camera_publisher_node']
     except:
