@@ -1,10 +1,8 @@
-import launch
-from launch import LaunchDescription
-import launch_ros.events.lifecycle
-# from launch_ros.actions import Node
-
 import os
-# import time
+import time
+
+from launch_ros.actions import Node
+from launch import LaunchDescription
 
 
 # Read the local IP address
@@ -28,58 +26,33 @@ def generate_launch_description():
     ip_address = get_local_ip()
     print(f'Local IP {ip_address}')
     print('Starting server_node...', end='')
-    # server_node = Node(
-    server_node = launch_ros.actions.LifecycleNode(
-        name='server_node',
-        namespace='',
-        package='ros_tcp_endpoint',
-        executable='default_server_endpoint',
+    server_node = Node(
+        package="ros_tcp_endpoint",
+        executable="default_server_endpoint",
         emulate_tty=True,
-        parameters=[{'ROS_IP': ip_address}, {'ROS_TCP_PORT': 10000}],
+        parameters=[{"ROS_IP": ip_address}, {"ROS_TCP_PORT": 10000}],
     )
     print('Done.')
 
-    # When the server_node reaches the 'active' state, log a message and start the
-    # controller_subscriber_node and camera_publisher_node.
-    register_event_handler_for_server_reaches_active_state = launch.actions.RegisterEventHandler(
-        launch_ros.event_handlers.OnStateTransition(
-            target_lifecycle_node=server_node, goal_state='active',
-            entities=[
-                launch.actions.LogInfo(msg="'server_node' reached the 'active' state. Launching other nodes."),
-                launch_ros.actions.LifecycleNode(
-                    name='controller_subscriber_node',
-                    namespace='',
-                    package='controller_sub',
-                    executable='controller_subscriber_node',
-                    ),
-                launch_ros.actions.LifecycleNode(
-                    name='camera_publisher_node',
-                    namespace='',
-                    package='camera_pub',
-                    executable='camera_publisher_node',
-                    ),
-            ],
-        )
+    print('Starting controller_subscriber_node...', end='')
+    time.sleep(1)
+    controller_subscriber_node = Node(
+        package='controller_sub',
+        executable='controller_subscriber_node',
     )
-    # print('Starting controller_subscriber_node...', end='')
-    # time.sleep(1)
-    # controller_subscriber_node = Node(
-    #     package='controller_sub',
-    #     executable='controller_subscriber_node',
-    # )
-    # print('Done.')
-    # time.sleep(1)
-    # print('Starting camera_publisher_node...', end='')
-    # camera_publisher_node = Node(
-    #     package='camera_pub',
-    #     executable='camera_publisher_node',
-    # )
-    # print('Done.')
+    print('Done.')
+    print('Starting camera_publisher_node...', end='')
+    time.sleep(1)
+    camera_publisher_node = Node(
+        package='camera_pub',
+        executable='camera_publisher_node',
+    )
+    print('Done.')
+
     node_list = [
         server_node,
-        register_event_handler_for_server_reaches_active_state,
-        # controller_subscriber_node,
-        # camera_publisher_node,
+        controller_subscriber_node,
+        camera_publisher_node,
     ]
     return LaunchDescription(node_list)
 

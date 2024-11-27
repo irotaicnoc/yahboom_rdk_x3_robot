@@ -13,6 +13,7 @@ setup(
         ("share/ament_index/resource_index/packages", ["resource/" + package_name]),
         (share_dir, ["package.xml"]),
         (os.path.join(share_dir, "launch"), ["launch/endpoint_launch.py"]),
+        # (os.path.join(share_dir, "launch"), ["launch/endpoint_launch_test.py"]),
     ],
     install_requires=["setuptools"],
     zip_safe=True,
