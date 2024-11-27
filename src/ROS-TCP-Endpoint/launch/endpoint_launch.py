@@ -1,7 +1,7 @@
 import launch
 from launch import LaunchDescription
 import launch_ros.events.lifecycle
-from launch_ros.actions import Node
+# from launch_ros.actions import Node
 
 import os
 
@@ -27,9 +27,12 @@ def generate_launch_description():
     ip_address = get_local_ip()
     print(f'Local IP {ip_address}')
     print('Starting server_node...', end='')
-    server_node = Node(
         package="ros_tcp_endpoint",
         executable="default_server_endpoint",
+    # server_node = Node(
+    server_node = launch_ros.actions.LifecycleNode(
+        name='server_node',
+        namespace='',
         emulate_tty=True,
         parameters=[{"ROS_IP": ip_address}, {"ROS_TCP_PORT": 10000}],
     )
