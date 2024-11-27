@@ -11,8 +11,8 @@ from std_msgs.msg import Bool, Int8
 import smbus
 
 # my libraries
-import utils
-from robot_body import RobotBody
+from controller_sub import utils
+from controller_sub.robot_body import RobotBody
 
 
 class ControllerSubscriberNode(Node):

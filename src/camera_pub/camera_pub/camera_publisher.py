@@ -8,7 +8,7 @@ from sensor_msgs.msg import Image
 from hobot_vio import libsrcampy as camera_lib
 
 # my libraries
-import utils
+from camera_pub import utils
 
 
 class CameraPublisherNode(Node):
