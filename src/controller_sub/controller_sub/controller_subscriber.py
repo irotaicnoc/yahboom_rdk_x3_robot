@@ -93,9 +93,7 @@ class ControllerSubscriberNode(Node):
 
 def main(args=None):
     rclpy.init(args=args)
-    kwargs = utils.args_from_yaml(
-        config_path='/root/GIT/yahboom_rdk_x3_robot/src/controller_sub/controller_sub/config.yaml'
-    )
+    kwargs = utils.args_from_yaml(config_path='/root/marco_ros2_ws/src/controller_sub/controller_sub/config.yaml')
     try:
         controller_subscriber_node_args = kwargs['controller_subscriber_node']
     except:
