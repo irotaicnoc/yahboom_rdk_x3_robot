@@ -102,7 +102,7 @@ class AiAgent(object):
         move_duration = 0.3
 
         self.camera.get_img(2)
-        # _ = self.camera.get_img(2)
+        self.camera.get_img(2)
         frame = self.camera.get_img(2)
         if frame is None:
             if self.verbose:
