@@ -5,6 +5,7 @@ import time
 import struct
 
 import utils
+import global_constants as gc
 from robot_head import RobotHead
 from robot_body import RobotBody
 
@@ -148,13 +149,17 @@ class Joystick(object):
                 print(name, ':', value)
             self.robot_body.set_beep(value)
 
-        # elif name == 'B':
-        #     if self.verbose:
-        #         print(name, ':', value)
+        elif name == 'B':
+            if self.verbose:
+                print(name, ':', value)
+            if value == 1:
+                self.robot_body.set_colorful_lamps(led_id=gc.ALL_LIGHTS_ID, red=255, green=0, blue=0)
 
-        # elif name == 'X':
-        #     if self.verbose:
-        #         print(name, ':', value)
+        elif name == 'X':
+            if self.verbose:
+                print(name, ':', value)
+            if value == 1:
+                self.robot_body.set_colorful_lamps(led_id=gc.ALL_LIGHTS_ID, red=0, green=255, blue=0)
 
         # change light effect
         # only in user_controlled mode, lights are used to signal information in autonomous mode
@@ -210,6 +215,8 @@ class Joystick(object):
                 print(name, ':', value)
             if value == 1:
                 self.robot_body.set_beep(1)
+                self.robot_body.set_colorful_lamps(led_id=0, red=0, green=0, blue=255)
+
             else:
                 self.robot_body.set_beep(0)
 
