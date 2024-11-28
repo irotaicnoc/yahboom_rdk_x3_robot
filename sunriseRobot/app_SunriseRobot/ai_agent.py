@@ -149,7 +149,7 @@ class AiAgent(object):
             print('Searching...')
             # TODO: very slowly rotate by 360° degree
             self.speed_x = 0
-            self.speed_z = self.robot_head.speed_coefficient * 3
+            self.speed_z = 1.0
             print(f'Steer: {self.speed_z}')
         stop_thinking = time.time()
         print(f'thinking time: {round(stop_thinking - start_thinking, 3)}')
