@@ -115,14 +115,14 @@ def task_screen(**kwargs):
 
 def task_fan(**kwargs):
     fan = Fan(**kwargs)
-    time.sleep(.2)
+    # time.sleep(.2)
     while True:
         fan.control_behavior()
 
 
 def task_light(**kwargs):
     light = Light(**kwargs)
-    time.sleep(.2)
+    # time.sleep(.2)
     while True:
         light.control_behavior()
 

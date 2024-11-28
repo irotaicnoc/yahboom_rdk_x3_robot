@@ -129,7 +129,7 @@ class RobotBody(object):
             print('Serial Open Failed!')
         # 打开机械臂的扭矩力，避免6号舵机首次插上去读不到角度。
         self.set_uart_servo_torque(True)
-        time.sleep(.002)
+        time.sleep(self.__delay_time)
 
     def __del__(self):
         self.ser.close()
@@ -288,7 +288,7 @@ class RobotBody(object):
         self.ser.write(cmd)
         if self.__debug:
             print('request:', cmd)
-        time.sleep(0.002)
+        time.sleep(self.__delay_time)
 
     # 机械臂转化角度成位置脉冲（写入角度）
     # Arm converts Angle to position pulse
@@ -925,7 +925,7 @@ class RobotBody(object):
                         else:
                             print('Arm Offset State:', self.__arm_offset_id, self.__arm_offset_state, i)
                     return self.__arm_offset_state
-                time.sleep(.001)
+                time.sleep(self.__delay_time)
             return self.__arm_offset_state
         except:
             print('---set_uart_servo_offset error!---')
@@ -1040,7 +1040,7 @@ class RobotBody(object):
                 akm_count = akm_count + 1
                 if akm_count > 100:
                     return -1
-                time.sleep(.01)
+                time.sleep(self.__delay_time)
         return self.__akm_def_angle
 
     # 读取总线舵机位置参数, servo_id=[1-250], 返回：读到的ID，当前位置参数
@@ -1058,7 +1058,7 @@ class RobotBody(object):
                 if self.__read_id > 0:
                     return self.__read_id, self.__read_val
                 timeout = timeout - 1
-                time.sleep(.001)
+                time.sleep(self.__delay_time)
             return -1, -1
         except:
             print('---get_uart_servo_value error!---')
@@ -1144,7 +1144,7 @@ class RobotBody(object):
                         print('angle_array:', 30 - timeout, angle)
                     break
                 timeout = timeout - 1
-                time.sleep(.001)
+                time.sleep(self.__delay_time)
             return angle
         except:
             print('---get_uart_servo_angle_array error!---')
@@ -1208,7 +1208,7 @@ class RobotBody(object):
                 if self.__debug:
                     print('get_motion_pid: {0}, {1}, {2}'.format(self.__pid_index, [kp, ki, kd], i))
                 return [kp, ki, kd]
-            time.sleep(.001)
+            time.sleep(self.__delay_time)
         return [-1, -1, -1]
 
     # 获取小车偏航角PID参数
@@ -1239,7 +1239,7 @@ class RobotBody(object):
                 car_type = self.__read_car_type
                 self.__read_car_type = 0
                 return car_type
-            time.sleep(.001)
+            time.sleep(self.__delay_time)
         return -1
 
     # 获取底层单片机版本号，如1.1
@@ -1254,7 +1254,7 @@ class RobotBody(object):
                     if self.__debug:
                         print('get_version:V{0}, i:{1}'.format(self.__version, i))
                     return self.__version
-                time.sleep(.001)
+                time.sleep(self.__delay_time)
         else:
             return self.__version
         return -1

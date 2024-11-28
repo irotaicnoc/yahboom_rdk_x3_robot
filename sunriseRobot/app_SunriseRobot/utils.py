@@ -72,7 +72,7 @@ def pretty_print_dict(data, _level: int = 0) -> None:
 def activate_hotspot(hotspot_ip: str, verbose: bool = False):
     if verbose:
         print('Starting Hotspot...', end='')
-    os.system('sleep 3')
+    os.system('sleep 2')
     os.system('systemctl stop wpa_supplicant')
     os.system('ip addr flush dev wlan0')
     os.system('sleep 0.5')
