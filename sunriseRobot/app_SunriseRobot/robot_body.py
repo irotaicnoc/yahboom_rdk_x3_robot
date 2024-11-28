@@ -469,9 +469,9 @@ class RobotBody(object):
     # red,green,blue=[0, 255]，表示颜色RGB值。
     # RGB programmable light belt control, can be controlled individually or collectively, before control
     # need to stop THE RGB light effect.
-    # Led_id =[0, 13], control the CORRESPONDING numbered RGB lights;  Led_id =0xFF, controls all lights.
-    # Red,green,blue=[0, 255], indicating the RGB value of the color.
-    def set_colorful_lamps(self, led_id, red, green, blue) -> None:
+    # Led_id =[0, 13], control the CORRESPONDING numbered RGB lights;  Led_id=0xFF, controls all lights.
+    # Red, green, blue=[0, 255], indicating the RGB value of the color.
+    def set_colorful_lamps(self, led_id, red: int, green: int, blue: int) -> None:
         try:
             id = int(led_id) & 0xff
             r = int(red) & 0xff
