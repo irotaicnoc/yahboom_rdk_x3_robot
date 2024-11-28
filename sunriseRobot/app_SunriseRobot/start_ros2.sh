@@ -2,15 +2,18 @@
 
 ###############################################################################
 # ubuntu 20.04 
-# start ros2
-# bash /root/GIT/yahboom_rdk_x3_robot/sunriseRobot/app_SunriseRobot/start_ros2.sh
-# start app program
+# start ros2:
+# - import ros2
+# - go to project workspace
+# - import project
+# - execute launch file:
+#   - start tcp server
+#   - start controller subscriber (listener)
+#   - start camera publisher (sender)
+
 ###############################################################################
 
-sleep 1
-
 # ubuntu 20.04
-gnome-terminal -- bash -c "cd /root/marco_ros2_ws/;ros2 launch ros_tcp_endpoint endpoint_launch.py;exec bash"
-
+gnome-terminal -- bash -c "source /opt/ros/foxy/setup.bash;cd /root/marco_ros2_ws/;source install/local_setup.bash;ros2 launch ros_tcp_endpoint endpoint_launch.py;exec bash"
 wait
 exit 0
