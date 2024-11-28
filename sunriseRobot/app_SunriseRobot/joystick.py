@@ -157,11 +157,13 @@ class Joystick(object):
         #         print(name, ':', value)
 
         # change light effect
+        # only in user_controlled mode, lights are used to signal information in autonomous mode
         elif name == 'Y':
             if self.verbose:
                 print(name, ':', value)
             if value == 1:
-                self.robot_head.next_light_effect()
+                if self.robot_head.robot_mode == 'user_controlled':
+                    self.robot_head.next_light_effect()
 
         # activate/deactivate hotspot
         elif name == 'L1':

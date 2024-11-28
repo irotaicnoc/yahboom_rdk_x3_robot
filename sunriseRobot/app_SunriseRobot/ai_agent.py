@@ -66,6 +66,7 @@ class AiAgent(object):
 
         if self.camera_is_open == 0:
             self.agent_active = True
+            self.robot_head.turn_off_light()
             if self.verbose:
                 print('Camera opened correctly.')
         else:
@@ -94,6 +95,8 @@ class AiAgent(object):
     # stop -> observe -> think -> move for 0.3 seconds -> repeat until interrupted
     def detect_and_move(self) -> None:
         start_thinking = time.time()
+        # show thinking light (blue)
+        self.robot_body.set_colorful_lamps(led_id=gc.ALL_LIGHTS_ID, red=0, green=0, blue=255)
         self.set_zero_speed()
         self.robot_body.set_car_motion(self.speed_x, 0, self.speed_z)
         move_duration = 0.3
@@ -126,6 +129,8 @@ class AiAgent(object):
         # }
         # print(f'num_targets: {target_info["num_targets"]}')
         if target_info['num_targets'] > 0:
+            # show target-found light (green)
+            self.robot_body.set_colorful_lamps(led_id=gc.ALL_LIGHTS_ID, red=0, green=255, blue=0)
             distance_from_center_x = target_info['distance_from_center_x']
             # print(f'target x: {distance_from_center_x}')
             # only steer to the target if its center is more than
@@ -146,6 +151,8 @@ class AiAgent(object):
                 self.speed_z = 0
                 move_duration = 1.0
         else:
+            # show target-not-found/searching light (orange)
+            self.robot_body.set_colorful_lamps(led_id=gc.ALL_LIGHTS_ID, red=255, green=127, blue=0)
             print('Searching...')
             # TODO: very slowly rotate by 360° degree
             self.speed_x = 0

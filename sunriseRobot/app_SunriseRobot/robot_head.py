@@ -66,3 +66,9 @@ class RobotHead:
         ]
         if self.verbose:
             print(f'Switching to {self.light_state} mode.')
+
+    def turn_off_light(self):
+        if self.verbose:
+            print(f'Turning off lights.')
+        self.light_state = gc.LIGHT_STOP_CMD
+
