@@ -153,11 +153,11 @@ class AiAgent(object):
             print(f'Steer: {self.speed_z}')
         stop_thinking = time.time()
         print(f'thinking time: {round(stop_thinking - start_thinking, 3)}')
-        start_moving = time.time()
+        # start_moving = time.time()
         self.robot_body.set_car_motion(self.speed_x, 0, self.speed_z)
         time.sleep(move_duration)
-        stop_moving = time.time()
-        print(f'moving time AI: {round(stop_moving - start_moving, 3)}')
+        # stop_moving = time.time()
+        # print(f'moving time AI: {round(stop_moving - start_moving, 3)}')
 
     def __del__(self):
         self.deactivate_agent()
