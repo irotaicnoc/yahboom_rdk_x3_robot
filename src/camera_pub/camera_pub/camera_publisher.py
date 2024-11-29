@@ -17,13 +17,16 @@ class CameraPublisherNode(Node):
                  image_orientation: int,
                  queue_size: int,
                  video_capture_kwargs: dict,
+                 verbose: int = 0,
                  ):
         super().__init__('camera_publisher_node')
         # camera
         self.is_open = -1
-        self.get_logger().info(f'{video_capture_kwargs=}')
-        self.get_logger().info(f'{camera_topic=}')
-        # self.get_logger().info(f'{queue_size=}')
+        self.verbose = verbose
+        if self.verbose >= 1:
+            self.get_logger().info(f'{video_capture_kwargs=}')
+            self.get_logger().info(f'{camera_topic=}')
+            # self.get_logger().info(f'{queue_size=}')
         self.video_capture_kwargs = video_capture_kwargs
         self.camera = camera_lib.Camera()
         self.is_open = self.camera.open_cam(**self.video_capture_kwargs)
@@ -53,7 +56,7 @@ class CameraPublisherNode(Node):
     def timer_callback_function(self):
         frame = self.camera.get_img(2)
         if frame is None:
-            self.get_logger().info('frame is None')
+            self.get_logger().info('frame is None.')
             return
         # save_img = False
         # if self.message_counter % 100 == 0:
@@ -83,7 +86,7 @@ class CameraPublisherNode(Node):
         self.message_counter += 1
 
     def destroy_node(self):
-        self.get_logger().info('destroy cam publisher node')
+        self.get_logger().info('Destroying cam publisher node')
         if self.is_open == 0:
             self.is_open = -1
             self.camera.close_cam()
@@ -93,11 +96,7 @@ class CameraPublisherNode(Node):
 def main(args=None):
     rclpy.init(args=args)
     kwargs = utils.args_from_yaml(config_path='/root/marco_ros2_ws/src/camera_pub/camera_pub/config.yaml')
-    try:
-        camera_publisher_node_args = kwargs['camera_publisher_node']
-    except:
-        camera_publisher_node_args = None
-    camera_publisher_node = CameraPublisherNode(**camera_publisher_node_args)
+    camera_publisher_node = CameraPublisherNode(**kwargs)
 
     rclpy.spin(camera_publisher_node)
 

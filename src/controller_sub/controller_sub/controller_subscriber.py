@@ -21,13 +21,16 @@ class ControllerSubscriberNode(Node):
                  buzzer_topic: str,
                  rgb_light_topic: str,
                  queue_size: int,
+                 verbose: int = 0,
                  ):
         super().__init__('controller_subscriber_node')
 
-        self.get_logger().info(f'{motion_topic=}')
-        self.get_logger().info(f'{buzzer_topic=}')
-        self.get_logger().info(f'{rgb_light_topic=}')
-        # self.get_logger().info(f'{queue_size=}')
+        self.verbose = verbose
+        if self.verbose >= 1:
+            self.get_logger().info(f'{motion_topic=}')
+            self.get_logger().info(f'{buzzer_topic=}')
+            self.get_logger().info(f'{rgb_light_topic=}')
+            # self.get_logger().info(f'{queue_size=}')
         self.queue_size = queue_size
         self.robot = RobotBody()
         self.bus = smbus.SMBus(0)
@@ -81,7 +84,7 @@ class ControllerSubscriberNode(Node):
         rgb_light_value = rgb_light_message.data
         # print (f'RGBLight: {rgb_light_value}')
         if rgb_light_value > 4:
-            self.get_logger().info(f'WARNING: RGBLight data = {rgb_light_value} > 4')
+            self.get_logger().warning(f'RGBLight data = {rgb_light_value} > 4')
             rgb_light_value = 0
         if rgb_light_value == 0:
             self.bus.write_byte_data(0x0d, 0x07, 0x00)
@@ -94,11 +97,7 @@ class ControllerSubscriberNode(Node):
 def main(args=None):
     rclpy.init(args=args)
     kwargs = utils.args_from_yaml(config_path='/root/marco_ros2_ws/src/controller_sub/controller_sub/config.yaml')
-    try:
-        controller_subscriber_node_args = kwargs['controller_subscriber_node']
-    except:
-        controller_subscriber_node_args = None
-    controller_subscriber_node = ControllerSubscriberNode(**controller_subscriber_node_args)
+    controller_subscriber_node = ControllerSubscriberNode(**kwargs)
 
     rclpy.spin(controller_subscriber_node)
 

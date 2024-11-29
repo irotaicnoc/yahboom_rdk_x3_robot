@@ -1,5 +1,5 @@
-controller_subscriber_node:
-  motion_topic: motion
-  buzzer_topic: buzzer
-  rgb_light_topic: rgb_light
-  queue_size: 2
+motion_topic: motion
+buzzer_topic: buzzer
+rgb_light_topic: rgb_light
+queue_size: 2
+verbose: 1
