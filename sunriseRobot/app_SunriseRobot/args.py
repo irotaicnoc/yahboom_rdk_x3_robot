@@ -19,7 +19,7 @@ def import_args(yaml_path: str, **kwargs) -> dict:
         verbose = data_dict['verbose']
     except AttributeError:
         verbose = 0
-    if verbose >= 1:
+    if verbose >= 2:
         print(f'Yaml config file: {yaml_path}.')
         print('Imported parameters:')
         utils.pretty_print_dict(data_dict)

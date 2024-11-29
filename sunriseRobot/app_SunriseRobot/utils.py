@@ -58,14 +58,13 @@ def print_known_classes(model=None, yolo_model_name: str = None) -> None:
 
 def pretty_print_dict(data, _level: int = 0) -> None:
     if isinstance(data, dict):
+        print()
         for key in data:
             for i in range(_level):
                 print('\t', end='')
-            print(f'{key}:')
+            print(f'{key}: ', end='')
             pretty_print_dict(data[key], _level=_level + 1)
     else:
-        for _ in range(_level):
-            print('\t', end='')
         print(data)
 
 
