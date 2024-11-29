@@ -6,34 +6,39 @@ from sensor_msgs.msg import LaserScan
 import math
 
 
-class laserscanToPointPublish(Node):
+class LaserScanToPointPublish(Node):
     def __init__(self):
         super().__init__('robot_pose_publisher')
         self.subscription = self.create_subscription(
             LaserScan,
             '/scan',
-            self.laserscan_callback,
+            self.laser_scan_callback,
             10)
         self.sacn_point_publisher = self.create_publisher(
             Path,
             '/scan_points',
             10)
 
-    def laserscan_callback(self, msg):
+    def laser_scan_callback(self, msg):
         # print(msg)
         angle_min = msg.angle_min
         angle_increment = msg.angle_increment
-        laserscan = msg.ranges
-        # print(laserscan)
-        laser_points = self.laserscan_to_points(laserscan, angle_increment, angle_increment)
+        laser_scan = msg.ranges
+        # print(laser_scan)
+        laser_points = self.laser_scan_to_points(
+            laser_scan=laser_scan,
+            angle_min=angle_min,
+            angle_increment=angle_increment,
+        )
         self.sacn_point_publisher.publish(laser_points)
 
-    def laserscan_to_points(self, laserscan, angle_min, angle_increment):
+    @staticmethod
+    def laser_scan_to_points(laser_scan, angle_min, angle_increment):
         points = []
         angle = angle_min
         laser_points = Path()
 
-        for distance in laserscan:
+        for distance in laser_scan:
             x = distance * math.cos(angle)
             y = distance * math.sin(angle)
             pose = PoseStamped()
@@ -49,7 +54,7 @@ class laserscanToPointPublish(Node):
 def main(args=None):
     rclpy.init(args=args)
 
-    robot_laser_scan_publisher = laserscanToPointPublish()
+    robot_laser_scan_publisher = LaserScanToPointPublish()
 
     rclpy.spin(robot_laser_scan_publisher)
 
