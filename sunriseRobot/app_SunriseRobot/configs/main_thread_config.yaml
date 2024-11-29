@@ -1,4 +1,4 @@
-verbose: 2
+verbose: 1
 # 0: errors only
 # 1: errors and important information
 # 2: everything
