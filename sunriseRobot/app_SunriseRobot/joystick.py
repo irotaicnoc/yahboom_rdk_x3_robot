@@ -153,24 +153,10 @@ class Joystick(object):
         elif name == 'B':
             if self.verbose:
                 print(name, ':', value)
-            if value == 1:
-                if self.temp_counter == 0:
-                    self.robot_body.set_colorful_lamps(led_id=0xff, red=255, green=100, blue=100)
-                    self.temp_counter += 1
-                else:
-                    self.temp_counter = 0
-                    self.robot_body.set_colorful_lamps(led_id='0xff', red=255, green=100, blue=100)
 
         elif name == 'X':
             if self.verbose:
                 print(name, ':', value)
-            if value == 1:
-                if self.temp_counter == 0:
-                    self.robot_body.set_colorful_lamps(led_id=0xFF, red=100, green=255, blue=100)
-                    self.temp_counter += 1
-                else:
-                    self.temp_counter = 0
-                    self.robot_body.set_colorful_lamps(led_id='0xFF', red=100, green=255, blue=100)
 
         # change light effect
         # only in user_controlled mode, lights are used to signal information in autonomous mode
@@ -226,11 +212,6 @@ class Joystick(object):
                 print(name, ':', value)
             if value == 1:
                 self.robot_body.set_beep(1)
-                self.temp_counter += 1
-                if self.temp_counter > 13:
-                    self.temp_counter = 0
-                self.robot_body.set_colorful_lamps(led_id=self.temp_counter, red=100, green=100, blue=255)
-
             else:
                 self.robot_body.set_beep(0)
 

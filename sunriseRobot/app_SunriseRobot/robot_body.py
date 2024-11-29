@@ -472,8 +472,8 @@ class RobotBody(object):
     # Led_id =[0, 13], control the CORRESPONDING numbered RGB lights;  Led_id=0xFF, controls all lights.
     # Red, green, blue=[0, 255], indicating the RGB value of the color.
     def set_colorful_lamps(self, led_id, red: int, green: int, blue: int) -> None:
-        print('Received call with args:')
-        print(f'led_id: {led_id}, red: {red}, green: {green}, blue: {blue}')
+        # print('Received call with args:')
+        # print(f'led_id: {led_id}, red: {red}, green: {green}, blue: {blue}')
         try:
             id = int(led_id) & 0xff
             r = int(red) & 0xff
