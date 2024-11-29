@@ -14,26 +14,16 @@ from robot_head import RobotHead
 
 
 def main_loop(**kwargs):
-    parameters = args.import_args(
-        yaml_path=gc.CONFIG_FOLDER_PATH + 'main_thread_config.yaml',
-        **kwargs,
-    )
+    parameters = args.import_args(yaml_path=gc.CONFIG_FOLDER_PATH + 'main_thread_config.yaml', **kwargs)
 
-    robot_body = RobotBody(com='/dev/ttyUSB0', debug=False)
+    robot_body = RobotBody(com=parameters['com'], baud_rate=parameters['baud_rate'], verbose=parameters['verbose'])
     robot_body.create_receive_threading()
-
     robot_head = RobotHead()
-    if parameters['verbose']:
-        print(f'robot_mode_list: {robot_head.robot_mode_list}')
-        print(f'robot_mode: {robot_head.robot_mode}')
-        print(f'tracking_target_list: {robot_head.tracking_target_list}')
-        print(f'selected_target: {robot_head.tracking_target_list[robot_head.tracking_target_pos]}')
-        print(f'speed_coefficient: {robot_head.speed_coefficient}')
 
     joystick_kwargs = {
         'robot_body': robot_body,
         'robot_head': robot_head,
-        'verbose': False,
+        'verbose': parameters['verbose'],
     }
     thread_joystick = threading.Thread(target=task_joystick, name='task_joystick', kwargs=joystick_kwargs)
     thread_joystick.start()

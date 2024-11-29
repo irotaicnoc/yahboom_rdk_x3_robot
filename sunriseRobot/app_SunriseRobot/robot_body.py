@@ -11,17 +11,17 @@ import threading
 class RobotBody(object):
     __uart_state = 0
 
-    def __init__(self, com='/dev/myserial', delay=.002, debug=False):
+    def __init__(self, com: str = '/dev/ttyUSB0', baud_rate: int = 115200, delay=.002, verbose: int = 0):
         # com = 'COM30'
-        # com='/dev/ttyTHS1'
-        # com='/dev/ttyUSB0'
-        # com='/dev/ttyAMA0'
-        # com='/dev/myserial'
+        # com = '/dev/ttyTHS1'
+        # com = '/dev/ttyUSB0'
+        # com = '/dev/ttyAMA0'
+        # com = '/dev/myserial'
 
-        self.ser = serial.Serial(com, 115200)
+        self.ser = serial.Serial(com, baud_rate)
 
         self.__delay_time = delay
-        self.__debug = debug
+        self.verbose = verbose
 
         self.__HEAD = 0xFF
         self.__DEVICE_ID = 0xFC
@@ -120,7 +120,7 @@ class RobotBody(object):
 
         self.__read_car_type = 0
 
-        if self.__debug:
+        if self.verbose >= 2:
             print('cmd_delay=' + str(self.__delay_time) + 's')
 
         if self.ser.isOpen():
@@ -199,7 +199,7 @@ class RobotBody(object):
             if ext_type == self.FUNC_UART_SERVO:
                 self.__read_id = struct.unpack('B', bytearray(ext_data[0:1]))[0]
                 self.__read_val = struct.unpack('h', bytearray(ext_data[1:3]))[0]
-                if self.__debug:
+                if self.verbose >= 2:
                     print('FUNC_UART_SERVO:', self.__read_id, self.__read_val)
 
             elif ext_type == self.FUNC_ARM_CTRL:
@@ -210,13 +210,13 @@ class RobotBody(object):
                 self.__read_arm[4] = struct.unpack('h', bytearray(ext_data[8:10]))[0]
                 self.__read_arm[5] = struct.unpack('h', bytearray(ext_data[10:12]))[0]
                 self.__read_arm_ok = 1
-                if self.__debug:
+                if self.verbose >= 2:
                     print('FUNC_ARM_CTRL:', self.__read_arm)
 
             elif ext_type == self.FUNC_VERSION:
                 self.__version_H = struct.unpack('B', bytearray(ext_data[0:1]))[0]
                 self.__version_L = struct.unpack('B', bytearray(ext_data[1:2]))[0]
-                if self.__debug:
+                if self.verbose >= 2:
                     print('FUNC_VERSION:', self.__version_H, self.__version_L)
 
             elif ext_type == self.FUNC_SET_MOTOR_PID:
@@ -224,7 +224,7 @@ class RobotBody(object):
                 self.__kp1 = struct.unpack('h', bytearray(ext_data[1:3]))[0]
                 self.__ki1 = struct.unpack('h', bytearray(ext_data[3:5]))[0]
                 self.__kd1 = struct.unpack('h', bytearray(ext_data[5:7]))[0]
-                if self.__debug:
+                if self.verbose >= 2:
                     print('FUNC_SET_MOTOR_PID:', self.__pid_index, [self.__kp1, self.__ki1, self.__kd1])
 
             elif ext_type == self.FUNC_SET_YAW_PID:
@@ -232,20 +232,20 @@ class RobotBody(object):
                 self.__kp1 = struct.unpack('h', bytearray(ext_data[1:3]))[0]
                 self.__ki1 = struct.unpack('h', bytearray(ext_data[3:5]))[0]
                 self.__kd1 = struct.unpack('h', bytearray(ext_data[5:7]))[0]
-                if self.__debug:
+                if self.verbose >= 2:
                     print('FUNC_SET_YAW_PID:', self.__pid_index, [self.__kp1, self.__ki1, self.__kd1])
 
             elif ext_type == self.FUNC_ARM_OFFSET:
                 self.__arm_offset_id = struct.unpack('B', bytearray(ext_data[0:1]))[0]
                 self.__arm_offset_state = struct.unpack('B', bytearray(ext_data[1:2]))[0]
-                if self.__debug:
+                if self.verbose >= 2:
                     print('FUNC_ARM_OFFSET:', self.__arm_offset_id, self.__arm_offset_state)
 
             elif ext_type == self.FUNC_AKM_DEF_ANGLE:
                 id = struct.unpack('B', bytearray(ext_data[0:1]))[0]
                 self.__akm_def_angle = struct.unpack('B', bytearray(ext_data[1:2]))[0]
                 self.__akm_readed_angle = True
-                if self.__debug:
+                if self.verbose >= 2:
                     print('FUNC_AKM_DEF_ANGLE:', id, self.__akm_def_angle)
 
             elif ext_type == self.FUNC_SET_CAR_TYPE:
@@ -276,7 +276,7 @@ class RobotBody(object):
                     if check_sum % 256 == rx_check_num:
                         self.__parse_data(ext_type, ext_data)
                     else:
-                        if self.__debug:
+                        if self.verbose >= 2:
                             print('check sum error:', ext_len, ext_type, ext_data)
 
     # 请求数据， function：对应要返回数据的功能字，parm：传入的参数。
@@ -286,7 +286,7 @@ class RobotBody(object):
         checksum = sum(cmd, self.__COMPLEMENT) & 0xff
         cmd.append(checksum)
         self.ser.write(cmd)
-        if self.__debug:
+        if self.verbose >= 2:
             print('request:', cmd)
         time.sleep(self.__delay_time)
 
@@ -378,7 +378,7 @@ class RobotBody(object):
             checksum = sum(cmd, self.__COMPLEMENT) & 0xff
             cmd.append(checksum)
             self.ser.write(cmd)
-            if self.__debug:
+            if self.verbose >= 2:
                 print('report:', cmd)
             time.sleep(self.__delay_time)
         except:
@@ -400,7 +400,7 @@ class RobotBody(object):
             checksum = sum(cmd, self.__COMPLEMENT) & 0xff
             cmd.append(checksum)
             self.ser.write(cmd)
-            if self.__debug:
+            if self.verbose >= 2:
                 print('beep:', cmd)
             time.sleep(self.__delay_time)
         except:
@@ -413,7 +413,7 @@ class RobotBody(object):
     def set_pwm_servo(self, servo_id: int, angle) -> None:
         try:
             if servo_id < 1 or servo_id > 4:
-                if self.__debug:
+                if self.verbose >= 2:
                     print('set_pwm_servo input invalid')
                 return
             if angle > 180:
@@ -425,7 +425,7 @@ class RobotBody(object):
             checksum = sum(cmd, self.__COMPLEMENT) & 0xff
             cmd.append(checksum)
             self.ser.write(cmd)
-            if self.__debug:
+            if self.verbose >= 2:
                 print('pwmServo:', cmd)
             time.sleep(self.__delay_time)
         except:
@@ -457,7 +457,7 @@ class RobotBody(object):
             checksum = sum(cmd, self.__COMPLEMENT) & 0xff
             cmd.append(checksum)
             self.ser.write(cmd)
-            if self.__debug:
+            if self.verbose >= 2:
                 print('all Servo:', cmd)
             time.sleep(self.__delay_time)
         except:
@@ -484,7 +484,7 @@ class RobotBody(object):
             checksum = sum(cmd, self.__COMPLEMENT) & 0xff
             cmd.append(checksum)
             self.ser.write(cmd)
-            if self.__debug:
+            if self.verbose >= 2:
                 print('rgb:', cmd)
             time.sleep(self.__delay_time)
         except:
@@ -511,7 +511,7 @@ class RobotBody(object):
             checksum = sum(cmd, self.__COMPLEMENT) & 0xff
             cmd.append(checksum)
             self.ser.write(cmd)
-            if self.__debug:
+            if self.verbose >= 2:
                 print('rgb_effect:', cmd)
             time.sleep(self.__delay_time)
         except:
@@ -532,7 +532,7 @@ class RobotBody(object):
             checksum = sum(cmd, self.__COMPLEMENT) & 0xff
             cmd.append(checksum)
             self.ser.write(cmd)
-            if self.__debug:
+            if self.verbose >= 2:
                 print('motor:', cmd)
             time.sleep(self.__delay_time)
         except:
@@ -568,7 +568,7 @@ class RobotBody(object):
             checksum = sum(cmd, self.__COMPLEMENT) & 0xff
             cmd.append(checksum)
             self.ser.write(cmd)
-            if self.__debug:
+            if self.verbose >= 2:
                 print('car_run:', cmd)
             time.sleep(self.__delay_time)
         except:
@@ -602,7 +602,7 @@ class RobotBody(object):
             checksum = sum(cmd, self.__COMPLEMENT) & 0xff
             cmd.append(checksum)
             self.ser.write(cmd)
-            if self.__debug:
+            if self.verbose >= 2:
                 print('motion:', cmd)
             time.sleep(self.__delay_time)
         except:
@@ -651,7 +651,7 @@ class RobotBody(object):
             checksum = sum(cmd, self.__COMPLEMENT) & 0xff
             cmd.append(checksum)
             self.ser.write(cmd)
-            if self.__debug:
+            if self.verbose >= 2:
                 print('pid:', cmd)
             time.sleep(self.__delay_time)
             if forever:
@@ -684,7 +684,7 @@ class RobotBody(object):
     #         checksum = sum(cmd, self.__COMPLEMENT) & 0xff
     #         cmd.append(checksum)
     #         self.ser.write(cmd)
-    #         if self.__debug:
+    #         if self.verbose >= 2:
     #             print('pid:', cmd)
     #         time.sleep(self.__delay_time)
     #         if forever:
@@ -703,7 +703,7 @@ class RobotBody(object):
             checksum = sum(cmd, self.__COMPLEMENT) & 0xff
             cmd.append(checksum)
             self.ser.write(cmd)
-            if self.__debug:
+            if self.verbose >= 2:
                 print('car_type:', cmd)
             time.sleep(.1)
         else:
@@ -747,7 +747,7 @@ class RobotBody(object):
             checksum = sum(cmd, self.__COMPLEMENT) & 0xff
             cmd.append(checksum)
             self.ser.write(cmd)
-            if self.__debug:
+            if self.verbose >= 2:
                 print('uartServo:', servo_id, int(pulse_value), cmd)
             time.sleep(self.__delay_time)
         except:
@@ -816,7 +816,7 @@ class RobotBody(object):
             checksum = sum(cmd, self.__COMPLEMENT) & 0xff
             cmd.append(checksum)
             self.ser.write(cmd)
-            if self.__debug:
+            if self.verbose >= 2:
                 print('uartServo_id:', cmd)
             time.sleep(self.__delay_time)
         except:
@@ -839,7 +839,7 @@ class RobotBody(object):
             checksum = sum(cmd, self.__COMPLEMENT) & 0xff
             cmd.append(checksum)
             self.ser.write(cmd)
-            if self.__debug:
+            if self.verbose >= 2:
                 print('uartServo_torque:', cmd)
             time.sleep(self.__delay_time)
         except:
@@ -893,7 +893,7 @@ class RobotBody(object):
                 checksum = sum(cmd, self.__COMPLEMENT) & 0xff
                 cmd.append(checksum)
                 self.ser.write(cmd)
-                if self.__debug:
+                if self.verbose >= 2:
                     print('arm:', cmd)
                     print('value:', temp_val)
                 time.sleep(self.__delay_time)
@@ -916,12 +916,12 @@ class RobotBody(object):
             checksum = sum(cmd, self.__COMPLEMENT) & 0xff
             cmd.append(checksum)
             self.ser.write(cmd)
-            if self.__debug:
+            if self.verbose >= 2:
                 print('uartServo_offset:', cmd)
             time.sleep(self.__delay_time)
             for i in range(200):
                 if self.__arm_offset_id == servo_id:
-                    if self.__debug:
+                    if self.verbose >= 2:
                         if self.__arm_offset_id == 0:
                             print('Arm Reset Offset Value')
                         else:
@@ -956,7 +956,7 @@ class RobotBody(object):
             checksum = sum(cmd, self.__COMPLEMENT) & 0xff
             cmd.append(checksum)
             self.ser.write(cmd)
-            if self.__debug:
+            if self.verbose >= 2:
                 print('akm set def angle:', cmd)
             time.sleep(self.__delay_time)
             if forever:
@@ -983,7 +983,7 @@ class RobotBody(object):
             checksum = sum(cmd, self.__COMPLEMENT) & 0xff
             cmd.append(checksum)
             self.ser.write(cmd)
-            if self.__debug:
+            if self.verbose >= 2:
                 print('akm_steering_angle:', cmd)
             time.sleep(self.__delay_time)
         except:
@@ -998,7 +998,7 @@ class RobotBody(object):
             checksum = sum(cmd, self.__COMPLEMENT) & 0xff
             cmd.append(checksum)
             self.ser.write(cmd)
-            if self.__debug:
+            if self.verbose >= 2:
                 print('flash:', cmd)
             time.sleep(self.__delay_time)
             time.sleep(.1)
@@ -1014,7 +1014,7 @@ class RobotBody(object):
             checksum = sum(cmd, self.__COMPLEMENT) & 0xff
             cmd.append(checksum)
             self.ser.write(cmd)
-            if self.__debug:
+            if self.verbose >= 2:
                 print('reset_car_state:', cmd)
             time.sleep(self.__delay_time)
         except:
@@ -1075,43 +1075,43 @@ class RobotBody(object):
             if s_id == 1 and read_id == 1:
                 angle = self.__arm_convert_angle(s_id, value)
                 if angle > 180 or angle < 0:
-                    if self.__debug:
+                    if self.verbose >= 2:
                         print('read servo:%d out of range!' % s_id)
                     angle = -1
             elif s_id == 2 and read_id == 2:
                 angle = self.__arm_convert_angle(s_id, value)
                 if angle > 180 or angle < 0:
-                    if self.__debug:
+                    if self.verbose >= 2:
                         print('read servo:%d out of range!' % s_id)
                     angle = -1
             elif s_id == 3 and read_id == 3:
                 angle = self.__arm_convert_angle(s_id, value)
                 if angle > 180 or angle < 0:
-                    if self.__debug:
+                    if self.verbose >= 2:
                         print('read servo:%d out of range!' % s_id)
                     angle = -1
             elif s_id == 4 and read_id == 4:
                 angle = self.__arm_convert_angle(s_id, value)
                 if angle > 180 or angle < 0:
-                    if self.__debug:
+                    if self.verbose >= 2:
                         print('read servo:%d out of range!' % s_id)
                     angle = -1
             elif s_id == 5 and read_id == 5:
                 angle = self.__arm_convert_angle(s_id, value)
                 if angle > 270 or angle < 0:
-                    if self.__debug:
+                    if self.verbose >= 2:
                         print('read servo:%d out of range!' % s_id)
                     angle = -1
             elif s_id == 6 and read_id == 6:
                 angle = self.__arm_convert_angle(s_id, value)
                 if angle > 180 or angle < 0:
-                    if self.__debug:
+                    if self.verbose >= 2:
                         print('read servo:%d out of range!' % s_id)
                     angle = -1
             else:
-                if self.__debug:
+                if self.verbose >= 2:
                     print('read servo:%d error!' % s_id)
-            if self.__debug:
+            if self.verbose >= 2:
                 print('request angle %d: %d, %d' % (s_id, read_id, value))
             return angle
         except:
@@ -1142,7 +1142,7 @@ class RobotBody(object):
                     for i in range(6):
                         if self.__read_arm[i] > 0:
                             angle[i] = self.__arm_convert_angle(i + 1, self.__read_arm[i])
-                    if self.__debug:
+                    if self.verbose >= 2:
                         print('angle_array:', 30 - timeout, angle)
                     break
                 timeout = timeout - 1
@@ -1207,7 +1207,7 @@ class RobotBody(object):
                 kp = float(self.__kp1 / 1000.0)
                 ki = float(self.__ki1 / 1000.0)
                 kd = float(self.__kd1 / 1000.0)
-                if self.__debug:
+                if self.verbose >= 2:
                     print('get_motion_pid: {0}, {1}, {2}'.format(self.__pid_index, [kp, ki, kd], i))
                 return [kp, ki, kd]
             time.sleep(self.__delay_time)
@@ -1226,7 +1226,7 @@ class RobotBody(object):
     #             kp = float(self.__kp1 / 1000.0)
     #             ki = float(self.__ki1 / 1000.0)
     #             kd = float(self.__kd1 / 1000.0)
-    #             if self.__debug:
+    #             if self.verbose >= 2:
     #                 print('get_yaw_pid: {0}, {1}, {2}'.format(self.__pid_index, [kp, ki, kd], i))
     #             return [kp, ki, kd]
     #         time.sleep(.001)
@@ -1253,7 +1253,7 @@ class RobotBody(object):
                 if self.__version_H != 0:
                     val = self.__version_H * 1.0
                     self.__version = val + self.__version_L / 10.0
-                    if self.__debug:
+                    if self.verbose >= 2:
                         print('get_version:V{0}, i:{1}'.format(self.__version, i))
                     return self.__version
                 time.sleep(self.__delay_time)

@@ -1,3 +1,5 @@
+import warnings
+
 from ultralytics import YOLO
 
 import args
@@ -18,7 +20,7 @@ class YoloTracker(object):
         # self.x_center = int(image_size[0] / 2)
         # self.y_center = int(image_size[1] / 2)
         self.verbose = parameters['verbose']
-        if self.verbose:
+        if self.verbose >= 1:
             print(f'Using Computer Vision model: {self.model_name}')
 
         # Download model in folder if not present, and load it
@@ -36,15 +38,20 @@ class YoloTracker(object):
     def select_target(self, target_name: str) -> None:
         if self.target_class_name != target_name:
             # target to track (only one allowed)
+            old_target_class_id = self.target_class_id
+            old_target_class_name = self.target_class_name
             try:
                 self.target_class_id = utils.get_class_id_from_name(class_name=target_name, class_dict=self.model.names)
                 self.target_class_name = target_name
-                if self.verbose:
+                if self.verbose >= 2:
                     print(f'target: {target_name}')
                     # print(f'target_class_id: {self.target_class_id}')
             except ValueError as e:
-                print('Error in selecting new target.')
+                warnings.warn('Error in selecting new target.')
                 print(e)
+                print(f'Restoring previous target "{old_target_class_name}"')
+                self.target_class_id = old_target_class_id
+                self.target_class_name = old_target_class_name
 
     def find_target(self, frame, target_name: str, save: bool = False) -> dict:
         self.select_target(target_name)
@@ -58,8 +65,7 @@ class YoloTracker(object):
         #   [0, 1] means the target is right or below of center respectively
 
         if self.target_class_name is None:
-            if self.verbose:
-                print(f'target_class_name is None.')
+            warnings.warn(f'Target_class_name is None.')
             return self.no_target_info
 
         results = self.model.predict(
@@ -83,7 +89,8 @@ class YoloTracker(object):
         }
         try:
             confidence = results[0].boxes.conf
-            print(f'num_targets: {len(confidence)}')
+            if self.verbose >= 1:
+                print(f'num_targets: {len(confidence)}')
             if len(confidence) > 0:
                 # print(f'confidence: {confidence}')
                 max_confidence_id = confidence.argmax()

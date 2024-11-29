@@ -1,5 +1,6 @@
 import yaml
 import copy
+import utils
 import argparse
 
 
@@ -13,6 +14,16 @@ def import_args(yaml_path: str, **kwargs) -> dict:
 
     # function arguments have priority over yaml AND command line arguments
     data_dict = from_function_arguments(default_data_dict=data_dict, **kwargs)
+
+    try:
+        verbose = data_dict['verbose']
+    except AttributeError:
+        verbose = 0
+    if verbose >= 1:
+        print(f'Yaml config file: {yaml_path}.')
+        print('Imported parameters:')
+        utils.pretty_print_dict(data_dict)
+
     return data_dict
 
 

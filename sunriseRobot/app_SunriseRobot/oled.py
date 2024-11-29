@@ -17,11 +17,11 @@ from robot_head import RobotHead
 # V1.0.10
 class OLED:
     def __init__(self,
+                 robot_body: RobotBody,
+                 robot_head: RobotHead,
                  i2c_bus=0,
                  clear=False,
-                 verbose=False,
-                 robot_body: RobotBody = None,
-                 robot_head: RobotHead = None,
+                 verbose: int = 0,
                  ):
         self.verbose = verbose
         self.__i2c_bus = i2c_bus
@@ -44,7 +44,7 @@ class OLED:
 
     def __del__(self):
         self.clear(True)
-        if self.verbose:
+        if self.verbose >= 1:
             print('---OLED-DEL---')
 
     # Initialize OLED, return True on success, False on failure
@@ -54,12 +54,12 @@ class OLED:
             self.__oled.begin()
             self.__oled.clear()
             self.__oled.display()
-            if self.verbose:
+            if self.verbose >= 1:
                 print('---OLED begin ok!---')
             return True
         except:
-            if self.verbose:
-                print('---OLED no found!---')
+            if self.verbose >= 1:
+                print('---OLED not found!---')
             return False
 
     # Clear the display.  Refresh =True Refresh immediately, refresh=False refresh not
@@ -77,8 +77,7 @@ class OLED:
     # Refresh =True Refresh immediately, refresh=False refresh not
     def add_text(self, start_x, start_y, text, refresh=False):
         if start_x > self.__WIDTH or start_x < 0 or start_y < 0 or start_y > self.__HEIGHT:
-            if self.verbose:
-                print('oled text: x, y input error!')
+            print('oled text: x, y input error!')
             return
         x = int(start_x + self.__x)
         y = int(start_y + self.__top)
@@ -90,8 +89,7 @@ class OLED:
     # Write a line of character text.  Refresh =True Refresh immediately, refresh=False refresh not.
     def add_line(self, text, line=1, refresh=False):
         if line < 1 or line > 4:
-            if self.verbose:
-                print('oled line input error!')
+            print('oled line input error!')
             return
         y = int(8 * (line - 1))
         self.add_text(0, y, text, refresh)
@@ -160,6 +158,5 @@ class OLED:
                 time.sleep(2)
             return False
         except:
-            if self.verbose:
-                print('!!!---OLED refresh error---!!!')
+            print('!!!---OLED refresh error---!!!')
             return False

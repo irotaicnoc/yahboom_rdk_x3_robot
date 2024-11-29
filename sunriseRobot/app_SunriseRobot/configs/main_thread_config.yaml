@@ -1,1 +1,9 @@
-verbose: True
+verbose: 1
+# 0: errors only
+# 1: errors and important information
+# 2: everything
+
+# serial parameters
+com: /dev/ttyUSB0
+#com: /dev/myserial
+baud_rate: 115200

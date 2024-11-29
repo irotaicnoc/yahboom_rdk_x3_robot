@@ -23,9 +23,11 @@ if len(sys.argv) > 1:
         g_debug = True
 print('debug=', g_debug)
 
-
+verbose = 0
+if g_debug:
+    verbose = 2
 # Robot base processing library
-g_bot = RobotBody(debug=g_debug)
+g_bot = RobotBody(verbose=verbose)
 # Start thread to receive serial data
 g_bot.create_receive_threading()
 # Car type

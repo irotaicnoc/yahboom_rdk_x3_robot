@@ -69,8 +69,8 @@ def pretty_print_dict(data, _level: int = 0) -> None:
         print(data)
 
 
-def activate_hotspot(hotspot_ip: str, verbose: bool = False):
-    if verbose:
+def activate_hotspot(hotspot_ip: str, verbose: int = 0):
+    if verbose >= 1:
         print('Starting Hotspot...', end='')
     os.system('sleep 2')
     os.system('systemctl stop wpa_supplicant')
@@ -82,14 +82,14 @@ def activate_hotspot(hotspot_ip: str, verbose: bool = False):
     os.system(f'hostapd -B {gc.MAIN_FOLDER_PATH}hotspot/etc/hostapd.conf')
     os.system(f'ifconfig wlan0 {hotspot_ip} netmask 255.255.255.0')
     os.system('systemctl start isc-dhcp-server')
-    if verbose:
+    if verbose >= 1:
         print('Done.')
 
 
-def deactivate_hotspot(verbose: bool = False):
-    if verbose:
+def deactivate_hotspot(verbose: int = 0):
+    if verbose >= 1:
         print('Stopping Hotspot...', end='')
-    kill_process_(program_name='hostapd', debug=verbose)
+    kill_process_(process_name='hostapd', verbose=verbose)
     os.system('systemctl stop isc-dhcp-server')
     os.system('ip addr flush dev wlan0')
     os.system('sleep 0.5')
@@ -97,28 +97,28 @@ def deactivate_hotspot(verbose: bool = False):
     os.system('sleep 1')
     os.system('ifconfig wlan0 up')
     os.system('systemctl start wpa_supplicant')
-    if verbose:
+    if verbose >= 1:
         print('Done.')
 
 
-def activate_ros2(verbose: bool = False):
-    if verbose:
+def activate_ros2(verbose: int = 0):
+    if verbose >= 1:
         print('Starting ROS2...', end='')
     # os.system(f'{gc.APP_FOLDER_PATH}start_ros2.sh')
     os.system('gnome-terminal -- bash -c "source /opt/ros/foxy/setup.bash;cd /root/marco_ros2_ws/;'
               'source install/local_setup.bash;ros2 launch ros_tcp_endpoint endpoint_launch.py;exec bash"')
     # os.system('wait')
     # os.system('exit 0')
-    if verbose:
+    if verbose >= 1:
         print('Done.')
 
 
-def deactivate_ros2(verbose: bool = False):
+def deactivate_ros2(verbose: int = 0):
     # TODO: it does not really kill the process in the separate console
-    if verbose:
+    if verbose >= 1:
         print('Stopping ROS2...', end='')
-    kill_process_(program_name='ros2', debug=verbose)
-    if verbose:
+    kill_process_(process_name='ros2', verbose=verbose)
+    if verbose >= 1:
         print('Done.')
 
 
