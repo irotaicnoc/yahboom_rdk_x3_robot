@@ -7,7 +7,7 @@ from hobot_vio import libsrcampy as camera_lib
 import args
 import utils
 import global_constants as gc
-from tracker import YoloTracker
+from detector import YoloTracker
 from robot_head import RobotHead
 
 
