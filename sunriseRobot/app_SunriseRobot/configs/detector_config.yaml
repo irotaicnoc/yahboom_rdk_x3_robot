@@ -1,0 +1,7 @@
+verbose: 0
+#model_name: yolo11l.pt
+#model_name: yolo11m.pt
+#model_name: yolo11s.pt
+model_name: yolo11s_saved_model/yolo11s_full_integer_quant_edgetpu.tflite
+model_folder: models/
+confidence_threshold: 0.25

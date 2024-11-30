@@ -1,5 +1,0 @@
-verbose: 0
-#model_name: yolo11l.pt
-#model_name: yolo11m.pt
-model_name: yolo11s.pt
-model_folder: models/
