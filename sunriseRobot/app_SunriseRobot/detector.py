@@ -44,11 +44,9 @@ class YoloDetector(object):
                 self.model = edgetpu.make_interpreter(self.model_path)
                 self.model.allocate_tensors()
                 self.model_class_dict = gc.YOLO_CLASS_DICT
-                self.model_input_size_3D = common.input_size(self.model)
-                self.model_input_size = (common.input_size(self.model)[0], common.input_size(self.model)[1])
+                self.model_input_size = common.input_size(self.model)
                 if self.verbose >= 2:
                     print(f'Model input size: {self.model_input_size}')
-                    print(f'Model input size 3D: {self.model_input_size_3D}')
             except Exception as e:
                 warnings.warn(f'could not initialize TPU model {self.model_name} in folder {self.model_folder}...')
                 if self.verbose >= 1:
@@ -220,6 +218,3 @@ class YoloDetector(object):
                     return self.no_target_info
             except:
                 return self.no_target_info
-
-        
-        
