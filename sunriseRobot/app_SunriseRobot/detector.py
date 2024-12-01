@@ -45,11 +45,11 @@ class YoloDetector(object):
                 self.model.allocate_tensors()
                 self.model_class_dict = gc.YOLO_CLASS_DICT
                 self.model_input_size = common.input_size(self.model)
+                self.output_details = self.model.get_output_details()
                 if self.verbose >= 2:
                     print(f'Model input size: {self.model_input_size}')
-                    output_details = self.model.get_output_details()
                     print('Output details:')
-                    for detail in output_details:
+                    for detail in self.output_details:
                         print(f'\t{detail}')
 
             except Exception as e:
@@ -115,14 +115,12 @@ class YoloDetector(object):
             original_width=self.camera_image_size[0],
             original_height=self.camera_image_size[1],
             new_size=self.model_input_size,
-            # add_batch_dimension=True,
         )
         # else:
         #     frame = utils.format_camera_frames(
         #         frame=frame,
         #         original_width=self.camera_image_size[0],
         #         original_height=self.camera_image_size[1],
-        #         add_batch_dimension=False,
         #     )
 
         if self.target_class_name is None:
@@ -140,9 +138,8 @@ class YoloDetector(object):
             # print('invoke.')
             self.model.invoke()
             # Get the output tensor
-            output_details = self.model.get_output_details()
-            output_data = self.model.get_tensor(output_details[0]['index'])
             # print('output_data shape:')
+            output_data = self.model.get_tensor(self.output_details[0]['index'])
             # print(output_data.shape)
             # Process the YOLO output
             results = utils.process_yolo_output(
