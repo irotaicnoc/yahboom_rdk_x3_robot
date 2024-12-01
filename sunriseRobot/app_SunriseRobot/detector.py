@@ -28,6 +28,7 @@ class YoloDetector(object):
         self.confidence_threshold = parameters['confidence_threshold']
         self.model_input_size = None
         self.device = gc.CPU_DEVICE
+        self.counter = 0
         if gc.TPU_DEVICE in parameters['model_name']:
             self.device = gc.TPU_DEVICE
 
@@ -99,6 +100,9 @@ class YoloDetector(object):
                 self.target_class_name = old_target_class_name
 
     def find_target(self, frame, target_name: str, save: bool = False) -> dict:
+        self.counter += 1
+        if self.counter > 10:
+            exit()
         self.select_target(target_name)
         # output:
         #   - number of detections
@@ -146,6 +150,7 @@ class YoloDetector(object):
                 output_data=output_data,
                 confidence_threshold=self.confidence_threshold,
             )
+            utils.draw_detections(frame=frame, detections=results, labels=self.model_class_dict, counter=self.counter)
 
             # results = detect.get_objects(
             #     interpreter=self.model,

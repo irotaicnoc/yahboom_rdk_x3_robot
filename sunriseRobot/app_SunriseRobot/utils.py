@@ -190,3 +190,20 @@ def process_yolo_output(output_data, confidence_threshold=0.5):
         })
 
     return detections
+
+
+def draw_detections(frame, detections, labels, counter: int):
+    """Draw bounding boxes and labels on the frame."""
+    for detection in detections:
+        x_min, y_min, x_max, y_max = map(int, detection['bbox'])
+        score = detection['score']
+        class_id = detection['class_id']
+        label = labels.get(class_id, f"Class {class_id}")
+
+        # Draw bounding box
+        cv2.rectangle(frame, (x_min, y_min), (x_max, y_max), (0, 255, 0), 2)
+
+        # Draw label and score
+        text = f"{label}: {score:.2f}"
+        cv2.putText(frame, text, (x_min, y_min - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+        cv2.imwrite(f'{gc.APP_FOLDER_PATH}output/frame_{counter}.jpg', frame)
