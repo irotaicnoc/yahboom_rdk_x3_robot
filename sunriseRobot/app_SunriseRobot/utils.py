@@ -11,7 +11,7 @@ def format_camera_frames(frame,
                          original_width: int,
                          original_height: int,
                          new_size: tuple = None,
-                         add_batch_dimension: bool = False,
+                         # add_batch_dimension: bool = False,
                          ):
     # if save_img:
     #     with open(f'{gc.APP_FOLDER_PATH}output/{counter}_01_frame_raw.raw', 'wb') as f:
@@ -34,10 +34,9 @@ def format_camera_frames(frame,
         print(f'{new_size=}')
         frame_rgb = cv2.resize(frame_rgb, dsize=new_size)
         print(f'frame resized shape: {frame_rgb.shape}')
-
-    if add_batch_dimension:
-        frame_rgb = np.expand_dims(frame_rgb, axis=0)
-        print(f'frame with bach dimension: {frame_rgb.shape}')
+    # if add_batch_dimension:
+    #     frame_rgb = np.expand_dims(frame_rgb, axis=0)
+    #     print(f'frame with bach dimension: {frame_rgb.shape}')
 
     return frame_rgb
 

@@ -104,21 +104,21 @@ class YoloDetector(object):
         #   [-1, 0] means the target is left or above of center respectively
         #   [0, 1] means the target is right or below of center respectively
 
-        if self.device == gc.TPU_DEVICE:
-            frame = utils.format_camera_frames(
-                frame=frame,
-                original_width=self.camera_image_size[0],
-                original_height=self.camera_image_size[1],
-                new_size=self.model_input_size,
-                add_batch_dimension=True,
-            )
-        else:
-            frame = utils.format_camera_frames(
-                frame=frame,
-                original_width=self.camera_image_size[0],
-                original_height=self.camera_image_size[1],
-                add_batch_dimension=False,
-            )
+        # if self.device == gc.TPU_DEVICE:
+        frame = utils.format_camera_frames(
+            frame=frame,
+            original_width=self.camera_image_size[0],
+            original_height=self.camera_image_size[1],
+            new_size=self.model_input_size,
+            # add_batch_dimension=True,
+        )
+        # else:
+        #     frame = utils.format_camera_frames(
+        #         frame=frame,
+        #         original_width=self.camera_image_size[0],
+        #         original_height=self.camera_image_size[1],
+        #         add_batch_dimension=False,
+        #     )
 
         if self.target_class_name is None:
             warnings.warn(f'Target_class_name is None.')
