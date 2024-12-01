@@ -1,10 +1,10 @@
 import warnings
+# from PIL import Image
 
 from ultralytics import YOLO
 from pycoral.utils import edgetpu
 from pycoral.adapters import common
 from pycoral.adapters import detect
-# from PIL import Image
 
 import args
 import utils
@@ -44,9 +44,11 @@ class YoloDetector(object):
                 self.model = edgetpu.make_interpreter(self.model_path)
                 self.model.allocate_tensors()
                 self.model_class_dict = gc.YOLO_CLASS_DICT
+                self.model_input_size_3D = common.input_size(self.model)
                 self.model_input_size = (common.input_size(self.model)[0], common.input_size(self.model)[1])
                 if self.verbose >= 2:
                     print(f'Model input size: {self.model_input_size}')
+                    print(f'Model input size 3D: {self.model_input_size_3D}')
             except Exception as e:
                 warnings.warn(f'could not initialize TPU model {self.model_name} in folder {self.model_folder}...')
                 if self.verbose >= 1:
@@ -108,7 +110,8 @@ class YoloDetector(object):
             frame=frame,
             original_width=self.camera_image_size[0],
             original_height=self.camera_image_size[1],
-            new_size=self.model_input_size,
+            # new_size=self.model_input_size,
+            new_size=self.model_input_size_3D,
         )
 
         if self.target_class_name is None:

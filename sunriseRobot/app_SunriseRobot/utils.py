@@ -22,13 +22,13 @@ def format_camera_frames(frame, original_width: int, original_height: int, new_s
     frame_rgb = cv2.cvtColor(src=frame_reshaped, code=cv2.COLOR_YUV2BGR_NV12)
     # if save_img:
     #     cv2.imwrite(f'{gc.APP_FOLDER_PATH}output/{counter}_04_frame_rgb.jpg', frame_rgb)
-    # print(f'frame RGB shape: {frame_rgb.shape}')
+    print(f'frame RGB shape: {frame_rgb.shape}')
     # if counter >= 4:
     #     exit()
     if new_size is not None:
-        # print(f'{new_size=}')
+        print(f'{new_size=}')
         frame_rgb = cv2.resize(frame_rgb, dsize=new_size)
-        # print(f'frame resized shape: {frame_rgb.shape}')
+        print(f'frame resized shape: {frame_rgb.shape}')
     return frame_rgb
 
 # def sensor_reset_shell():
