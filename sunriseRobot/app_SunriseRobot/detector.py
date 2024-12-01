@@ -46,12 +46,16 @@ class YoloDetector(object):
                 self.model_class_dict = gc.YOLO_CLASS_DICT
                 if self.verbose >= 2:
                     print(f'model input shape: {common.input_size(self.model)}')
-                    print(f'model input tensor: {common.input_tensor(self.model)}')
-            except:
+            except Exception as e:
+                warnings.warn(f'Could not initialize TPU model {self.model_name} in folder {self.model_folder}...')
+                if self.verbose >= 1:
+                    print(e)
                 self.device = gc.CPU_DEVICE
                 self.model_name = parameters['backup_model_name']
                 self.model_folder = gc.APP_FOLDER_PATH + parameters['model_folder']
                 self.model_path = self.model_folder + self.model_name
+                if self.verbose >= 1:
+                    print(f'Switching to backup CPU model {self.model_name} in folder {self.model_folder}...')
 
         if self.device == gc.CPU_DEVICE:
             # Download model in folder if not present, and load it
