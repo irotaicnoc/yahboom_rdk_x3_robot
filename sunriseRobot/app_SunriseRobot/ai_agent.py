@@ -32,8 +32,11 @@ class AiAgent(object):
         self.frame_height = self.video_capture_kwargs['height']
 
         # yolo detector initialization
-        image_size = (self.frame_width, self.frame_height)
-        self.detector = YoloDetector(robot_head=robot_head, image_size=image_size, verbose=self.verbose)
+        self.detector = YoloDetector(
+            robot_head=robot_head,
+            camera_image_size=(self.frame_width, self.frame_height),
+            verbose=self.verbose,
+        )
         self.save_images = parameters['save_images']
 
         # motion initialization
