@@ -1,6 +1,10 @@
 import warnings
 
 from ultralytics import YOLO
+from pycoral.utils import edgetpu
+from pycoral.adapters import common
+from pycoral.adapters import detect
+# from PIL import Image
 
 import args
 import utils
@@ -33,11 +37,6 @@ class YoloDetector(object):
             try:
                 if self.verbose >= 1:
                     print('On edge TPU device.')
-
-                # from PIL import Image
-                from pycoral.utils import edgetpu
-                from pycoral.adapters import common
-                from pycoral.adapters import detect
 
                 # Initialize the TF interpreter
                 # expects the file already present
