@@ -37,7 +37,7 @@ class YoloDetector(object):
         if self.device == gc.TPU_DEVICE:
             try:
                 if self.verbose >= 1:
-                    print('On edge TPU device.')
+                    print('\ton edge TPU device.')
 
                 # Initialize the TF interpreter
                 # expects the file already present
