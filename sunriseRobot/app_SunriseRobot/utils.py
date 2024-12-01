@@ -61,7 +61,7 @@ def pretty_print_dict(data, _level: int = 0) -> None:
         if _level > 0:
             print()
         for key in data:
-            for i in range(_level):
+            for i in range(_level + 1):
                 print('\t', end='')
             print(f'{key}: ', end='')
             pretty_print_dict(data[key], _level=_level + 1)
