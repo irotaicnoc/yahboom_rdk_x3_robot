@@ -31,9 +31,9 @@ class AiAgent(object):
         self.frame_width = self.video_capture_kwargs['width']
         self.frame_height = self.video_capture_kwargs['height']
 
-        # yolo tracker initialization
+        # yolo detector initialization
         image_size = (self.frame_width, self.frame_height)
-        self.tracker = YoloDetector(robot_head=robot_head, image_size=image_size, verbose=self.verbose)
+        self.detector = YoloDetector(robot_head=robot_head, image_size=image_size, verbose=self.verbose)
         self.save_images = parameters['save_images']
 
         # motion initialization
@@ -118,7 +118,7 @@ class AiAgent(object):
             # save_img=save_img,
         )
 
-        target_info = self.tracker.find_target(
+        target_info = self.detector.find_target(
             frame=frame,
             target_name=self.robot_head.tracking_target_list[self.robot_head.tracking_target_pos],
             save=self.save_images,
