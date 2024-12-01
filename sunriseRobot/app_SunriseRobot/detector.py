@@ -48,7 +48,7 @@ class YoloDetector(object):
                 if self.verbose >= 2:
                     print(f'Model input size: {self.model_input_size}')
             except Exception as e:
-                warnings.warn(f'Could not initialize TPU model {self.model_name} in folder {self.model_folder}...')
+                warnings.warn(f'could not initialize TPU model {self.model_name} in folder {self.model_folder}...')
                 if self.verbose >= 1:
                     print(e)
                 self.device = gc.CPU_DEVICE
