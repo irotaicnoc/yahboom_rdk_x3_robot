@@ -47,6 +47,11 @@ class YoloDetector(object):
                 self.model_input_size = common.input_size(self.model)
                 if self.verbose >= 2:
                     print(f'Model input size: {self.model_input_size}')
+                    output_details = self.model.get_output_details()
+                    print('Output details:')
+                    for detail in output_details:
+                        print(f'\t{detail}')
+
             except Exception as e:
                 warnings.warn(f'could not initialize TPU model {self.model_name} in folder {self.model_folder}...')
                 if self.verbose >= 1:
@@ -125,13 +130,16 @@ class YoloDetector(object):
             return self.no_target_info
 
         if self.device == gc.TPU_DEVICE:
+            print('set_input')
             common.set_input(self.model, frame)
             # _, scale = common.set_resized_input(
             #     interpreter,
             #     frame.size,
             #     lambda size: frame.resize(size, Image.LANCZOS),
             # )
+            print('invoke')
             self.model.invoke()
+            print('get_objects')
             results = detect.get_objects(
                 interpreter=self.model,
                 score_threshold=self.confidence_threshold,
