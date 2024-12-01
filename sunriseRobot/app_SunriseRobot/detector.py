@@ -21,11 +21,12 @@ class YoloDetector(object):
         self.model_name = parameters['model_name']
         self.model_folder = gc.APP_FOLDER_PATH + parameters['model_folder']
         self.model_path = self.model_folder + self.model_name
-        self.image_size = parameters['image_size']
-        # self.x_center = int(image_size[0] / 2)
-        # self.y_center = int(image_size[1] / 2)
+        self.camera_image_size = parameters['camera_image_size']
+        # self.x_center = int(camera_image_size[0] / 2)
+        # self.y_center = int(camera_image_size[1] / 2)
         self.verbose = parameters['verbose']
         self.confidence_threshold = parameters['confidence_threshold']
+        self.model_input_size = None
         self.device = gc.CPU_DEVICE
         if gc.TPU_DEVICE in parameters['model_name']:
             self.device = gc.TPU_DEVICE
@@ -43,8 +44,9 @@ class YoloDetector(object):
                 self.model = edgetpu.make_interpreter(self.model_path)
                 self.model.allocate_tensors()
                 self.model_class_dict = gc.YOLO_CLASS_DICT
+                self.model_input_size = common.input_size(self.model)[0, 1]
                 if self.verbose >= 2:
-                    print(f'model input shape: {common.input_size(self.model)}')
+                    print(f'Model input size: {self.model_input_size}')
             except Exception as e:
                 warnings.warn(f'Could not initialize TPU model {self.model_name} in folder {self.model_folder}...')
                 if self.verbose >= 1:
@@ -102,6 +104,13 @@ class YoloDetector(object):
         #   [-1, 0] means the target is left or above of center respectively
         #   [0, 1] means the target is right or below of center respectively
 
+        frame = utils.format_camera_frames(
+            frame=frame,
+            original_width=self.camera_image_size[0],
+            original_height=self.camera_image_size[1],
+            new_size=self.model_input_size,
+        )
+
         if self.target_class_name is None:
             warnings.warn(f'Target_class_name is None.')
             return self.no_target_info
@@ -143,10 +152,10 @@ class YoloDetector(object):
                     center_y = (best_detection_bbox.ymax - best_detection_bbox.ymin) / 2
                     print(f'Target Center X (PIXEL): {center_x}')
                     print(f'Target Center Y (PIXEL): {center_y}')
-                    print(f'detector image size: {self.image_size}')
+                    print(f'detector image size: {self.camera_image_size}')
                     # rescale coord from pixel number to [0, 1]
-                    normalized_center_x = center_x / self.image_size[0]
-                    normalized_center_y = center_y / self.image_size[1]
+                    normalized_center_x = center_x / self.camera_image_size[0]
+                    normalized_center_y = center_y / self.camera_image_size[1]
                     print(f'Target Center X (NORMALIZED): {normalized_center_x}')
                     print(f'Target Center Y (NORMALIZED): {normalized_center_y}')
 
@@ -163,7 +172,7 @@ class YoloDetector(object):
         else:
             results = self.model.predict(
                 source=frame,
-                imgsz=self.image_size,
+                imgsz=self.camera_image_size,
                 # vid_stride=10,
                 save=save,
                 conf=self.confidence_threshold,

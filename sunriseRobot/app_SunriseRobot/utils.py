@@ -7,7 +7,7 @@ import global_constants as gc
 from kill_process import kill_process_
 
 
-def format_camera_frames(frame, width: int, height: int):
+def format_camera_frames(frame, original_width: int, original_height: int, new_size: tuple = None):
     # if save_img:
     #     with open(f'{gc.APP_FOLDER_PATH}output/{counter}_01_frame_raw.raw', 'wb') as f:
     #         f.write(frame)
@@ -15,16 +15,20 @@ def format_camera_frames(frame, width: int, height: int):
     # if save_img:
     #     np.save(f'{gc.APP_FOLDER_PATH}output/{counter}_02_frame_from_buffer.npy', frame_from_buffer)
     # print(f'frame_from_buffer shape: {frame_from_buffer.shape}')
-    frame_reshaped = frame_from_buffer.reshape(height * 3 // 2, width)
+    frame_reshaped = frame_from_buffer.reshape(original_height * 3 // 2, original_width)
     # if save_img:
     #     np.save(f'{gc.APP_FOLDER_PATH}output/{counter}_03_frame_reshaped.npy', frame_reshaped)
     # print(f'frame_reshaped shape: {frame_reshaped.shape}')
     frame_rgb = cv2.cvtColor(src=frame_reshaped, code=cv2.COLOR_YUV2BGR_NV12)
     # if save_img:
     #     cv2.imwrite(f'{gc.APP_FOLDER_PATH}output/{counter}_04_frame_rgb.jpg', frame_rgb)
-    print(f'frame shape: {frame_rgb.shape}')
+    print(f'frame RGB shape: {frame_rgb.shape}')
     # if counter >= 4:
     #     exit()
+    if new_size is not None:
+        print(f'{new_size=}')
+        frame_rgb = cv2.resize(frame_rgb, dsize=new_size)
+        print(f'frame resized shape: {frame_rgb.shape}')
     return frame_rgb
 
 # def sensor_reset_shell():

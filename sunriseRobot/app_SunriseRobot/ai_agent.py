@@ -111,12 +111,12 @@ class AiAgent(object):
                 print('Frame is None.')
             time.sleep(0.5)
             return
-        frame = utils.format_camera_frames(
-            frame=frame,
-            width=self.frame_width,
-            height=self.frame_height,
-            # save_img=save_img,
-        )
+        # frame = utils.format_camera_frames(
+        #     frame=frame,
+        #     width=self.frame_width,
+        #     height=self.frame_height,
+        #     # save_img=save_img,
+        # )
 
         target_info = self.detector.find_target(
             frame=frame,
