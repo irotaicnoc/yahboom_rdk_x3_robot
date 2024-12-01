@@ -7,7 +7,7 @@ import utils
 import global_constants as gc
 
 
-class YoloTracker(object):
+class YoloDetector(object):
     def __init__(self, **kwargs):
         parameters = args.import_args(
             yaml_path=gc.CONFIG_FOLDER_PATH + 'detector_config.yaml',
@@ -103,6 +103,7 @@ class YoloTracker(object):
                 score_threshold=self.confidence_threshold,
                 # image_scale=scale,
             )
+            print(f'results:\n{results}')
             try:
                 if self.verbose >= 1:
                     print(f'num_targets: {len(results)}')

@@ -7,7 +7,7 @@ from hobot_vio import libsrcampy as camera_lib
 import args
 import utils
 import global_constants as gc
-from detector import YoloTracker
+from detector import YoloDetector
 from robot_head import RobotHead
 
 
@@ -33,7 +33,7 @@ class AiAgent(object):
 
         # yolo tracker initialization
         image_size = (self.frame_width, self.frame_height)
-        self.tracker = YoloTracker(robot_head=robot_head, image_size=image_size, verbose=self.verbose)
+        self.tracker = YoloDetector(robot_head=robot_head, image_size=image_size, verbose=self.verbose)
         self.save_images = parameters['save_images']
 
         # motion initialization
