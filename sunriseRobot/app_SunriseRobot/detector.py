@@ -43,6 +43,7 @@ class YoloDetector(object):
                 # expects the file already present
                 self.model = edgetpu.make_interpreter(self.model_path)
                 self.model.allocate_tensors()
+                self.model_class_dict = gc.YOLO_CLASS_DICT
                 if self.verbose >= 2:
                     print(f'model input shape: {common.input_size(self.model)}')
                     print(f'model input tensor: {common.input_tensor(self.model)}')
@@ -55,6 +56,7 @@ class YoloDetector(object):
         if self.device == gc.CPU_DEVICE:
             # Download model in folder if not present, and load it
             self.model = YOLO(model=self.model_path, verbose=self.verbose)
+            self.model_class_dict = self.model.names
 
         self.target_class_name = None
         self.target_class_id : int = -1
@@ -71,7 +73,10 @@ class YoloDetector(object):
             old_target_class_id = self.target_class_id
             old_target_class_name = self.target_class_name
             try:
-                self.target_class_id = utils.get_class_id_from_name(class_name=target_name, class_dict=self.model.names)
+                self.target_class_id = utils.get_class_id_from_name(
+                    class_name=target_name,
+                    class_dict=self.model_class_dict,
+                )
                 self.target_class_name = target_name
                 if self.verbose >= 2:
                     print(f'target: {target_name}')
