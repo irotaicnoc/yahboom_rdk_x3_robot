@@ -22,29 +22,37 @@ class YoloDetector(object):
         # self.y_center = int(image_size[1] / 2)
         self.verbose = parameters['verbose']
         self.confidence_threshold = parameters['confidence_threshold']
-        self.device = 'cpu'
+        self.device = gc.CPU_DEVICE
+        if gc.TPU_DEVICE in parameters['model_name']:
+            self.device = gc.TPU_DEVICE
+
         if self.verbose >= 1:
             print(f'Using Computer Vision model: {self.model_name}')
 
-        if 'edgetpu' in parameters['model_name']:
-            self.device = 'edgetpu'
-            if self.verbose >= 1:
-                print('On edge TPU device.')
+        if self.device == gc.TPU_DEVICE:
+            try:
+                if self.verbose >= 1:
+                    print('On edge TPU device.')
 
-            # from PIL import Image
-            from pycoral.utils import edgetpu
-            from pycoral.adapters import common
-            from pycoral.adapters import detect
+                # from PIL import Image
+                from pycoral.utils import edgetpu
+                from pycoral.adapters import common
+                from pycoral.adapters import detect
 
-            # Initialize the TF interpreter
-            # expects the file already present
-            self.model = edgetpu.make_interpreter(self.model_path)
-            self.model.allocate_tensors()
-            if self.verbose >= 2:
-                print(f'model input shape: {common.input_size(self.model)}')
-                print(f'model input tensor: {common.input_tensor(self.model)}')
+                # Initialize the TF interpreter
+                # expects the file already present
+                self.model = edgetpu.make_interpreter(self.model_path)
+                self.model.allocate_tensors()
+                if self.verbose >= 2:
+                    print(f'model input shape: {common.input_size(self.model)}')
+                    print(f'model input tensor: {common.input_tensor(self.model)}')
+            except:
+                self.device = gc.CPU_DEVICE
+                self.model_name = parameters['backup_model_name']
+                self.model_folder = gc.APP_FOLDER_PATH + parameters['model_folder']
+                self.model_path = self.model_folder + self.model_name
 
-        else:
+        if self.device == gc.CPU_DEVICE:
             # Download model in folder if not present, and load it
             self.model = YOLO(model=self.model_path, verbose=self.verbose)
 
@@ -90,7 +98,7 @@ class YoloDetector(object):
             warnings.warn(f'Target_class_name is None.')
             return self.no_target_info
 
-        if 'edgetpu' in parameters['model_name']:
+        if self.device == gc.TPU_DEVICE:
             common.set_input(self.model, frame)
             # _, scale = common.set_resized_input(
             #     interpreter,
