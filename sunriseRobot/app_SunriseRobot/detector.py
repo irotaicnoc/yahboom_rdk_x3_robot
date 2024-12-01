@@ -44,7 +44,7 @@ class YoloDetector(object):
                 self.model = edgetpu.make_interpreter(self.model_path)
                 self.model.allocate_tensors()
                 self.model_class_dict = gc.YOLO_CLASS_DICT
-                self.model_input_size = common.input_size(self.model)[0, 1]
+                self.model_input_size = (common.input_size(self.model)[0], common.input_size(self.model)[1])
                 if self.verbose >= 2:
                     print(f'Model input size: {self.model_input_size}')
             except Exception as e:
