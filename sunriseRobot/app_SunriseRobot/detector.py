@@ -130,21 +130,33 @@ class YoloDetector(object):
             return self.no_target_info
 
         if self.device == gc.TPU_DEVICE:
-            print('set_input')
+            print('set_input.')
             common.set_input(self.model, frame)
             # _, scale = common.set_resized_input(
             #     interpreter,
             #     frame.size,
             #     lambda size: frame.resize(size, Image.LANCZOS),
             # )
-            print('invoke')
+            print('invoke.')
             self.model.invoke()
-            print('get_objects')
-            results = detect.get_objects(
-                interpreter=self.model,
-                score_threshold=self.confidence_threshold,
-                # image_scale=scale,
+            print('output_details:')
+            # Get the output tensor
+            output_details = self.model.get_output_details()
+            print(output_details)
+            print('output_data shape:')
+            output_data = self.model.get_tensor(output_details[0]['index'])
+            print(output_data.shape)
+            # Process the YOLO output
+            results = utils.process_yolo_output(
+                output_data=output_data,
+                confidence_threshold=self.confidence_threshold,
             )
+
+            # results = detect.get_objects(
+            #     interpreter=self.model,
+            #     score_threshold=self.confidence_threshold,
+            #     # image_scale=scale,
+            # )
             print(f'results:\n{results}')
             try:
                 if self.verbose >= 1:

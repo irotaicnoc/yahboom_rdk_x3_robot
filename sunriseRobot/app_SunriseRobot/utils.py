@@ -155,3 +155,42 @@ def x_displacement_to_angular_speed(x_distance_from_img_center: float,
     if x_distance_from_img_center < 0:
         speed_z *= -1
     return speed_z
+
+
+def process_yolo_output(output_data, confidence_threshold=0.5):
+    """Process YOLO model output tensor to extract bounding boxes, scores, and class IDs."""
+    batch_size, num_features, num_boxes = output_data.shape
+    assert batch_size == 1, "Batch size > 1 not supported."
+
+    output_data = np.squeeze(output_data, axis=0)  # Remove batch dimension
+    boxes = output_data[:4, :]  # Bounding box coordinates
+    confidences = output_data[4, :]  # Object confidence scores
+    class_probs = output_data[5:, :]  # Class probabilities
+
+    # Compute class scores as confidence × class probability
+    class_scores = confidences * class_probs
+    max_scores = np.max(class_scores, axis=0)  # Maximum score per anchor box
+    max_classes = np.argmax(class_scores, axis=0)  # Class ID for max score
+
+    # Filter detections based on confidence threshold
+    indices = np.where(max_scores > confidence_threshold)[0]
+    filtered_boxes = boxes[:, indices]
+    filtered_scores = max_scores[indices]
+    filtered_classes = max_classes[indices]
+
+    # Convert box format [x, y, w, h] to [x_min, y_min, x_max, y_max]
+    x, y, w, h = filtered_boxes
+    x_min = x - w / 2
+    y_min = y - h / 2
+    x_max = x + w / 2
+    y_max = y + h / 2
+
+    detections = []
+    for i in range(len(filtered_scores)):
+        detections.append({
+            "bbox": [x_min[i], y_min[i], x_max[i], y_max[i]],
+            "score": filtered_scores[i],
+            "class_id": filtered_classes[i]
+        })
+
+    return detections
