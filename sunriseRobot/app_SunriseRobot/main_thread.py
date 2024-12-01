@@ -82,8 +82,9 @@ def task_ai_agent(**kwargs):
         while True:
             ai_agent.autonomous_behavior()
     except Exception as e:
-        print('Error: could not create AiAgent.')
+        print('AiAgent Error:')
         print(e)
+        print(e.__traceback__)
 
 
 # oled screen
