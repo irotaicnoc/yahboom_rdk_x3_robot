@@ -27,16 +27,16 @@ def format_camera_frames(frame,
     frame_rgb = cv2.cvtColor(src=frame_reshaped, code=cv2.COLOR_YUV2BGR_NV12)
     # if save_img:
     #     cv2.imwrite(f'{gc.APP_FOLDER_PATH}output/{counter}_04_frame_rgb.jpg', frame_rgb)
-    print(f'frame RGB shape: {frame_rgb.shape}')
+    # print(f'frame RGB shape: {frame_rgb.shape}')
     # if counter >= 4:
     #     exit()
     if new_size is not None:
-        print(f'{new_size=}')
+        # print(f'{new_size=}')
         frame_rgb = cv2.resize(frame_rgb, dsize=new_size)
-        print(f'frame resized shape: {frame_rgb.shape}')
     # if add_batch_dimension:
     #     frame_rgb = np.expand_dims(frame_rgb, axis=0)
     #     print(f'frame with bach dimension: {frame_rgb.shape}')
+        # print(f'frame resized shape: {frame_rgb.shape}')
 
     return frame_rgb
 
