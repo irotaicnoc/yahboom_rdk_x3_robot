@@ -96,7 +96,7 @@ class AiAgent(object):
             else:
                 time.sleep(2)
 
-    # stop -> observe -> think -> move for 0.3 seconds -> repeat until interrupted
+    # stop -> observe -> think -> move for n seconds -> repeat until interrupted
     def detect_and_move(self) -> None:
         if self.verbose >= 2:
             start_thinking = time.time()
