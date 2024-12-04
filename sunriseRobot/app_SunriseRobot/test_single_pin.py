@@ -2,8 +2,7 @@ import time
 
 import Hobot.GPIO as GPIO
 
-# import global_constants as gc
-from .. import global_constants as gc
+import global_constants as gc
 
 
 def main():
