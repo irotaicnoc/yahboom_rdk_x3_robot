@@ -158,21 +158,34 @@ def process_yolo_output(output_data, confidence_threshold=0.5):
     batch_size, num_features, num_boxes = output_data.shape
     assert batch_size == 1, "Batch size > 1 not supported."
 
+    print('IN PROCESS OUTPUT')
+    print(f'output_data shape: {output_data.shape}')
     output_data = np.squeeze(output_data, axis=0)  # Remove batch dimension
+    print(f'no batch dim: {output_data.shape}')
     boxes = output_data[:4, :]  # Bounding box coordinates
+    print(f'boxes shape: {boxes.shape}')
     confidences = output_data[4, :]  # Object confidence scores
+    print(f'confidences shape: {confidences.shape}')
     class_probs = output_data[5:, :]  # Class probabilities
+    print(f'class_probs shape: {class_probs.shape}')
 
-    # Compute class scores as confidence × class probability
+    # Compute class scores as confidence * class probability
     class_scores = confidences * class_probs
+    print(f'class_scores shape: {class_scores.shape}')
     max_scores = np.max(class_scores, axis=0)  # Maximum score per anchor box
+    print(f'max_scores shape: {max_scores.shape}')
     max_classes = np.argmax(class_scores, axis=0)  # Class ID for max score
+    print(f'max_classes shape: {max_classes.shape}')
 
     # Filter detections based on confidence threshold
     indices = np.where(max_scores > confidence_threshold)[0]
+    print(f'indices shape: {indices.shape}')
     filtered_boxes = boxes[:, indices]
+    print(f'filtered_boxes shape: {filtered_boxes.shape}')
     filtered_scores = max_scores[indices]
+    print(f'filtered_scores shape: {filtered_scores.shape}')
     filtered_classes = max_classes[indices]
+    print(f'filtered_classes shape: {filtered_classes.shape}')
 
     # Convert box format [x, y, w, h] to [x_min, y_min, x_max, y_max]
     x, y, w, h = filtered_boxes

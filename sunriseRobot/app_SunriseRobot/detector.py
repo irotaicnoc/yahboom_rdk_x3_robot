@@ -133,6 +133,7 @@ class YoloDetector(object):
 
         if self.device == gc.TPU_DEVICE:
             # print('set_input.')
+            start_inference = time.time()
             common.set_input(self.model, frame)
             # _, scale = common.set_resized_input(
             #     interpreter,
@@ -143,6 +144,8 @@ class YoloDetector(object):
             self.model.invoke()
             # Get the output tensor
             # print('output_data shape:')
+            print("self.output_details[0]['index']:")
+            print(self.output_details[0]['index'])
             output_data = self.model.get_tensor(self.output_details[0]['index'])
             # print(output_data.shape)
             # Process the YOLO output
@@ -150,6 +153,8 @@ class YoloDetector(object):
                 output_data=output_data,
                 confidence_threshold=self.confidence_threshold,
             )
+            stop_inference = time.time()
+            print(f'inference time: {round(stop_inference - start_inference, 3)}')
             utils.draw_detections(frame=frame, detections=results, labels=self.model_class_dict, counter=self.counter)
 
             # results = detect.get_objects(
@@ -199,6 +204,7 @@ class YoloDetector(object):
             except:
                 return self.no_target_info
         else:
+            start_inference = time.time()
             results = self.model.predict(
                 source=frame,
                 imgsz=self.camera_image_size,
@@ -212,6 +218,8 @@ class YoloDetector(object):
                 classes=[self.target_class_id],
                 verbose=False,
             )
+            stop_inference = time.time()
+            print(f'inference time: {round(stop_inference - start_inference, 3)}')
             try:
                 confidence = results[0].boxes.conf
                 if self.verbose >= 1:
