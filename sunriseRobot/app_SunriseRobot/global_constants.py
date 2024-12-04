@@ -1,4 +1,4 @@
-# FAN AND INTERNAL LIGHTS
+# SMBUS FAN AND INTERNAL LIGHTS
 #   bus arg 1
 BUS_ARG_1 = 0x0d
 #   bus arg 2
@@ -18,7 +18,15 @@ APP_FOLDER_PATH = '/root/GIT/yahboom_rdk_x3_robot/sunriseRobot/app_SunriseRobot/
 CONFIG_FOLDER_PATH = APP_FOLDER_PATH + 'configs/'
 OUTPUT_FOLDER_PATH = APP_FOLDER_PATH + 'output/'
 
-# ALIAS
+# 40 PIN INTERFACE
+# with GPIO mode = BOARD
+VIOLET_CABLE = 13   # GPIO17
+BLUE_CABLE = 15     # GPIO27
+GREEN_CABLE = 16    # GPIO22
+# respectively: GPIO5, GPIO6, PWM0, I2S0_LRCK
+BLACK_CABLES = [29, 31, 33, 35]
+
+# COMPUTER VISION MODEL
 CPU_DEVICE = 'cpu'
 TPU_DEVICE = 'edgetpu'
 YOLO_CLASS_DICT = {
