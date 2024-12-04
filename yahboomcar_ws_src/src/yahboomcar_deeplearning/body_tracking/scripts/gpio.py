@@ -2,11 +2,11 @@
 import argparse
 
 import Hobot.GPIO as GPIO
-import time
 
 
-# 定义使用的GPIO通道为36
-output_pin = 36 # BOARD 编码 36
+# Define the GPIO channel used as 36
+output_pin = 36  # BOARD 编码 36
+
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -14,6 +14,7 @@ def parse_args():
     parser.add_argument('val', help='int', type=int)
     args = parser.parse_args()
     return args
+
 
 def main():
     args = parse_args()
@@ -33,5 +34,6 @@ def main():
         curr_value ^= GPIO.HIGH
     GPIO.output(output_pin, curr_value)
 
-if __name__=='__main__':
+
+if __name__ == '__main__':
     main()
