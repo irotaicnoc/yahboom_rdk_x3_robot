@@ -2,7 +2,7 @@ verbose: 0
 # for autonomous mode only
 steer_threshold: 0.25
 angular_speed_range: [1.0, 2.0]
-save_images: False
+save_images: True
 
 camera_kwargs:
   video_capture_kwargs:
