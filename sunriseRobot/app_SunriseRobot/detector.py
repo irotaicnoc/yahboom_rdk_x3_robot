@@ -1,11 +1,7 @@
 import time
 import warnings
-# from PIL import Image
 
 from ultralytics import YOLO
-from pycoral.utils import edgetpu
-from pycoral.adapters import common
-# from pycoral.adapters import detect
 
 import args
 import utils
@@ -27,7 +23,6 @@ class YoloDetector(object):
         # self.y_center = int(camera_image_size[1] / 2)
         self.verbose = parameters['verbose']
         self.confidence_threshold = parameters['confidence_threshold']
-        self.model_input_size = None
         self.device = gc.CPU_DEVICE
         self.counter = 0
         if gc.TPU_DEVICE in parameters['model_name']:
@@ -42,19 +37,6 @@ class YoloDetector(object):
                     print('\ton edge TPU device.')
                 self.model = YOLO(model=self.model_path, task='detect', verbose=self.verbose)
                 self.model_class_dict = self.model.names
-
-                # # Initialize the TF interpreter
-                # # expects the file already present
-                # self.model = edgetpu.make_interpreter(self.model_path)
-                # self.model.allocate_tensors()
-                # self.model_class_dict = gc.YOLO_CLASS_DICT
-                # self.model_input_size = common.input_size(self.model)
-                # self.output_details = self.model.get_output_details()
-                # if self.verbose >= 2:
-                #     print(f'Model input size: {self.model_input_size}')
-                #     print('Output details:')
-                #     for detail in self.output_details:
-                #         print(f'\t{detail}')
 
             except Exception as e:
                 warnings.warn(f'could not initialize TPU model {self.model_name} in folder {self.model_folder}...')
@@ -120,7 +102,6 @@ class YoloDetector(object):
             frame=frame,
             original_width=self.camera_image_size[0],
             original_height=self.camera_image_size[1],
-            new_size=self.model_input_size,
         )
 
         if self.target_class_name is None:
