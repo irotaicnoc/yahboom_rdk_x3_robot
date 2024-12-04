@@ -8,6 +8,7 @@ import global_constants as gc
 def main():
     # Set the pin numbering mode to BOARD
     GPIO.setmode(GPIO.BOARD)
+
     # Set the pin as output and initialize it to high level
     GPIO.setup(gc.VIOLET_CABLE, GPIO.OUT, initial=GPIO.LOW)
     GPIO.setup(gc.BLUE_CABLE, GPIO.OUT, initial=GPIO.LOW)
