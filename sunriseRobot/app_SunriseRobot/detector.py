@@ -30,8 +30,8 @@ class YoloDetector(object):
         self.model_input_size = None
         self.device = gc.CPU_DEVICE
         self.counter = 0
-        # if gc.TPU_DEVICE in parameters['model_name']:
-        #     self.device = gc.TPU_DEVICE
+        if gc.TPU_DEVICE in parameters['model_name']:
+            self.device = gc.TPU_DEVICE
 
         if self.verbose >= 1:
             print(f'Using Computer Vision model: {self.model_name}')
@@ -40,19 +40,21 @@ class YoloDetector(object):
             try:
                 if self.verbose >= 1:
                     print('\ton edge TPU device.')
+                self.model = YOLO(model=self.model_path, task='detect', verbose=self.verbose)
+                self.model_class_dict = self.model.names
 
-                # Initialize the TF interpreter
-                # expects the file already present
-                self.model = edgetpu.make_interpreter(self.model_path)
-                self.model.allocate_tensors()
-                self.model_class_dict = gc.YOLO_CLASS_DICT
-                self.model_input_size = common.input_size(self.model)
-                self.output_details = self.model.get_output_details()
-                if self.verbose >= 2:
-                    print(f'Model input size: {self.model_input_size}')
-                    print('Output details:')
-                    for detail in self.output_details:
-                        print(f'\t{detail}')
+                # # Initialize the TF interpreter
+                # # expects the file already present
+                # self.model = edgetpu.make_interpreter(self.model_path)
+                # self.model.allocate_tensors()
+                # self.model_class_dict = gc.YOLO_CLASS_DICT
+                # self.model_input_size = common.input_size(self.model)
+                # self.output_details = self.model.get_output_details()
+                # if self.verbose >= 2:
+                #     print(f'Model input size: {self.model_input_size}')
+                #     print('Output details:')
+                #     for detail in self.output_details:
+                #         print(f'\t{detail}')
 
             except Exception as e:
                 warnings.warn(f'could not initialize TPU model {self.model_name} in folder {self.model_folder}...')
@@ -114,136 +116,131 @@ class YoloDetector(object):
         #   [-1, 0] means the target is left or above of center respectively
         #   [0, 1] means the target is right or below of center respectively
 
-        # if self.device == gc.TPU_DEVICE:
         frame = utils.format_camera_frames(
             frame=frame,
             original_width=self.camera_image_size[0],
             original_height=self.camera_image_size[1],
             new_size=self.model_input_size,
         )
-        # else:
-        #     frame = utils.format_camera_frames(
-        #         frame=frame,
-        #         original_width=self.camera_image_size[0],
-        #         original_height=self.camera_image_size[1],
-        #     )
 
         if self.target_class_name is None:
             warnings.warn(f'Target_class_name is None.')
             return self.no_target_info
 
-        if self.device == gc.TPU_DEVICE:
-            # print('set_input.')
-            start_inference = time.time()
-            common.set_input(self.model, frame)
-            # _, scale = common.set_resized_input(
-            #     interpreter,
-            #     frame.size,
-            #     lambda size: frame.resize(size, Image.LANCZOS),
-            # )
-            # print('invoke.')
-            self.model.invoke()
-            # Get the output tensor
-            # print('output_data shape:')
-            print("self.output_details[0]['index']:")
-            print(self.output_details[0]['index'])
-            output_data = self.model.get_tensor(self.output_details[0]['index'])
-            # print(output_data.shape)
-            # Process the YOLO output
-            results = utils.process_yolo_output(
-                output_data=output_data,
-                confidence_threshold=self.confidence_threshold,
-            )
-            stop_inference = time.time()
-            print(f'inference time: {round(stop_inference - start_inference, 3)}')
-            utils.draw_detections(frame=frame, detections=results, labels=self.model_class_dict, counter=self.counter)
-
-            # results = detect.get_objects(
-            #     interpreter=self.model,
-            #     score_threshold=self.confidence_threshold,
-            #     # image_scale=scale,
-            # )
-            print(f'results:\n{results}')
-            try:
-                if self.verbose >= 1:
-                    print(f'num_targets: {len(results)}')
-                if len(results) > 0:
-                    target_info = {
-                        'num_targets': 0,
-                        'highest_confidence': 0,
-                        'distance_from_center_x': 0,
-                        'distance_from_center_y': 0,
-                    }
-                    max_confidence = 0
-                    best_detection_bbox = None
-                    for detection in results:
-                        if detection.score > max_confidence:
-                            max_confidence = detection.score
-                            best_detection_bbox = detection.bbox
-                    print(f'{max_confidence=}')
-
-                    # get center coord
-                    center_x = (best_detection_bbox.xmax - best_detection_bbox.xmin) / 2
-                    center_y = (best_detection_bbox.ymax - best_detection_bbox.ymin) / 2
-                    print(f'Target Center X (PIXEL): {center_x}')
-                    print(f'Target Center Y (PIXEL): {center_y}')
-                    print(f'detector image size: {self.camera_image_size}')
-                    # rescale coord from pixel number to [0, 1]
-                    normalized_center_x = center_x / self.camera_image_size[0]
-                    normalized_center_y = center_y / self.camera_image_size[1]
-                    print(f'Target Center X (NORMALIZED): {normalized_center_x}')
-                    print(f'Target Center Y (NORMALIZED): {normalized_center_y}')
-
-                    target_info['num_targets'] = len(results)
-                    target_info['highest_confidence'] = max_confidence
-                    target_info['distance_from_center_x'] = -(normalized_center_x - 0.5) * 2
-                    target_info['distance_from_center_y'] = (normalized_center_y - 0.5) * 2
-                    # print(f'X distance from img center: {target_info["distance_from_center_x"]}')
-                    return target_info
-                else:
-                    return self.no_target_info
-            except:
+        # if self.device == gc.TPU_DEVICE:
+        #     # print('set_input.')
+        #     start_inference = time.time()
+        #     common.set_input(self.model, frame)
+        #     # _, scale = common.set_resized_input(
+        #     #     interpreter,
+        #     #     frame.size,
+        #     #     lambda size: frame.resize(size, Image.LANCZOS),
+        #     # )
+        #     # print('invoke.')
+        #     self.model.invoke()
+        #     # Get the output tensor
+        #     # print('output_data shape:')
+        #     print("self.output_details[0]['index']:")
+        #     print(self.output_details[0]['index'])
+        #     output_data = self.model.get_tensor(self.output_details[0]['index'])
+        #     # print(output_data.shape)
+        #     # Process the YOLO output
+        #     results = utils.process_yolo_output(
+        #         output_data=output_data,
+        #         confidence_threshold=self.confidence_threshold,
+        #     )
+        #     stop_inference = time.time()
+        #     print(f'inference time: {round(stop_inference - start_inference, 3)}')
+        #     utils.draw_detections(frame=frame, detections=results, labels=self.model_class_dict, counter=self.counter)
+        #
+        #     # results = detect.get_objects(
+        #     #     interpreter=self.model,
+        #     #     score_threshold=self.confidence_threshold,
+        #     #     # image_scale=scale,
+        #     # )
+        #     print(f'results:\n{results}')
+        #     try:
+        #         if self.verbose >= 1:
+        #             print(f'num_targets: {len(results)}')
+        #         if len(results) > 0:
+        #             target_info = {
+        #                 'num_targets': 0,
+        #                 'highest_confidence': 0,
+        #                 'distance_from_center_x': 0,
+        #                 'distance_from_center_y': 0,
+        #             }
+        #             max_confidence = 0
+        #             best_detection_bbox = None
+        #             for detection in results:
+        #                 if detection.score > max_confidence:
+        #                     max_confidence = detection.score
+        #                     best_detection_bbox = detection.bbox
+        #             print(f'{max_confidence=}')
+        #
+        #             # get center coord
+        #             center_x = (best_detection_bbox.xmax - best_detection_bbox.xmin) / 2
+        #             center_y = (best_detection_bbox.ymax - best_detection_bbox.ymin) / 2
+        #             print(f'Target Center X (PIXEL): {center_x}')
+        #             print(f'Target Center Y (PIXEL): {center_y}')
+        #             print(f'detector image size: {self.camera_image_size}')
+        #             # rescale coord from pixel number to [0, 1]
+        #             normalized_center_x = center_x / self.camera_image_size[0]
+        #             normalized_center_y = center_y / self.camera_image_size[1]
+        #             print(f'Target Center X (NORMALIZED): {normalized_center_x}')
+        #             print(f'Target Center Y (NORMALIZED): {normalized_center_y}')
+        #
+        #             target_info['num_targets'] = len(results)
+        #             target_info['highest_confidence'] = max_confidence
+        #             target_info['distance_from_center_x'] = -(normalized_center_x - 0.5) * 2
+        #             target_info['distance_from_center_y'] = (normalized_center_y - 0.5) * 2
+        #             # print(f'X distance from img center: {target_info["distance_from_center_x"]}')
+        #             return target_info
+        #         else:
+        #             return self.no_target_info
+        #     except:
+        #         return self.no_target_info
+        # else:
+        start_inference = time.time()
+        results = self.model.predict(
+            source=frame,
+            imgsz=self.camera_image_size,
+            # vid_stride=10,
+            save=save,
+            conf=self.confidence_threshold,
+            # stream=True,
+            show=False,
+            stream_buffer=False,
+            # persist=True,
+            classes=[self.target_class_id],
+            verbose=False,
+        )
+        stop_inference = time.time()
+        print(f'inference time: {round(stop_inference - start_inference, 3)}')
+        print(f'results shape: {results.shape}')
+        print(f'results: {results}')
+        try:
+            confidence = results[0].boxes.conf
+            if self.verbose >= 1:
+                print(f'num_targets: {len(confidence)}')
+            if len(confidence) > 0:
+                target_info = {
+                    'num_targets': 0,
+                    'highest_confidence': 0,
+                    'distance_from_center_x': 0,
+                    'distance_from_center_y': 0,
+                }
+                # print(f'confidence: {confidence}')
+                max_confidence_id = confidence.argmax()
+                # print(f'max_confidence_id: {max_confidence_id}')
+                normalized_center_x, normalized_center_y, _, _ = results[0].boxes.xywhn[max_confidence_id]
+                # print(f'Target Center X: {normalized_center_x}')
+                target_info['num_targets'] = len(confidence)
+                target_info['highest_confidence'] = confidence[max_confidence_id].item()
+                target_info['distance_from_center_x'] = -(normalized_center_x - 0.5) * 2
+                target_info['distance_from_center_y'] = (normalized_center_y - 0.5) * 2
+                # print(f'X distance from img center: {target_info["distance_from_center_x"]}')
+                return target_info
+            else:
                 return self.no_target_info
-        else:
-            start_inference = time.time()
-            results = self.model.predict(
-                source=frame,
-                imgsz=self.camera_image_size,
-                # vid_stride=10,
-                save=save,
-                conf=self.confidence_threshold,
-                # stream=True,
-                show=False,
-                stream_buffer=False,
-                # persist=True,
-                classes=[self.target_class_id],
-                verbose=False,
-            )
-            stop_inference = time.time()
-            print(f'inference time: {round(stop_inference - start_inference, 3)}')
-            try:
-                confidence = results[0].boxes.conf
-                if self.verbose >= 1:
-                    print(f'num_targets: {len(confidence)}')
-                if len(confidence) > 0:
-                    target_info = {
-                        'num_targets': 0,
-                        'highest_confidence': 0,
-                        'distance_from_center_x': 0,
-                        'distance_from_center_y': 0,
-                    }
-                    # print(f'confidence: {confidence}')
-                    max_confidence_id = confidence.argmax()
-                    # print(f'max_confidence_id: {max_confidence_id}')
-                    normalized_center_x, normalized_center_y, _, _ = results[0].boxes.xywhn[max_confidence_id]
-                    # print(f'Target Center X: {normalized_center_x}')
-                    target_info['num_targets'] = len(confidence)
-                    target_info['highest_confidence'] = confidence[max_confidence_id].item()
-                    target_info['distance_from_center_x'] = -(normalized_center_x - 0.5) * 2
-                    target_info['distance_from_center_y'] = (normalized_center_y - 0.5) * 2
-                    # print(f'X distance from img center: {target_info["distance_from_center_x"]}')
-                    return target_info
-                else:
-                    return self.no_target_info
-            except:
-                return self.no_target_info
+        except:
+            return self.no_target_info
