@@ -8,7 +8,7 @@ camera_kwargs:
   video_capture_kwargs:
     pipe_id: 1
     video_index: -1
-    fps: 1
+    fps: 2
   #    width: 1920
   #    height: 1080
     width: 640

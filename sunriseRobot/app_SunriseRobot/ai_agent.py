@@ -157,7 +157,7 @@ class AiAgent(object):
                 if self.verbose >= 2:
                     print(f'Forward: {self.speed_x}')
                 self.speed_z = 0
-                move_duration = 1.0
+                move_duration = 0.6
         else:
             # show target-not-found/searching light (orange)
             # self.robot_body.set_colorful_lamps(led_id=gc.ALL_LIGHTS_ID, red=255, green=127, blue=0)
