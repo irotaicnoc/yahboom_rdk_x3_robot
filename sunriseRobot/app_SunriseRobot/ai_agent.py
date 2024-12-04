@@ -7,8 +7,8 @@ from hobot_vio import libsrcampy as camera_lib
 import args
 import utils
 import global_constants as gc
-from detector import YoloDetector
 from robot_head import RobotHead
+from detector import YoloDetector
 
 
 class AiAgent(object):
@@ -106,8 +106,6 @@ class AiAgent(object):
         self.robot_body.set_car_motion(self.speed_x, 0, self.speed_z)
         move_duration = 0.3
 
-        # self.camera.get_img(2)
-        # self.camera.get_img(2)
         frame = self.camera.get_img(2)
         if frame is None:
             if self.verbose >= 1:
