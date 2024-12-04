@@ -20,16 +20,20 @@ def main():
     print("Starting demo now! Press CTRL+C to exit")
     # Loop to control the LED light on and off every 1 second
     counter = 0
-    while True:
-        time.sleep(1)
-        GPIO.output(gc.VIOLET_CABLE, red_light)
-        GPIO.output(gc.GREEN_CABLE, green_light)
-        if counter % 2 == 0:
-            red_light ^= GPIO.HIGH
-        if counter % 3 == 0:
-            green_light ^= GPIO.HIGH
+    try:
+        while True:
+            time.sleep(1)
+            GPIO.output(gc.VIOLET_CABLE, red_light)
+            GPIO.output(gc.GREEN_CABLE, green_light)
+            if counter % 2 == 0:
+                red_light ^= GPIO.HIGH
+            if counter % 3 == 0:
+                green_light ^= GPIO.HIGH
 
-        counter += 1
+            counter += 1
+
+    finally:
+        GPIO.cleanup()
 
 
 if __name__ == '__main__':
