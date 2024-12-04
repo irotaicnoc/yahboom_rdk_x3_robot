@@ -4,7 +4,7 @@ import warnings
 from ultralytics import YOLO
 from pycoral.utils import edgetpu
 from pycoral.adapters import common
-from pycoral.adapters import detect
+# from pycoral.adapters import detect
 
 import args
 import utils
@@ -29,8 +29,8 @@ class YoloDetector(object):
         self.model_input_size = None
         self.device = gc.CPU_DEVICE
         self.counter = 0
-        if gc.TPU_DEVICE in parameters['model_name']:
-            self.device = gc.TPU_DEVICE
+        # if gc.TPU_DEVICE in parameters['model_name']:
+        #     self.device = gc.TPU_DEVICE
 
         if self.verbose >= 1:
             print(f'Using Computer Vision model: {self.model_name}')

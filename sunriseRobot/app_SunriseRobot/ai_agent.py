@@ -114,12 +114,6 @@ class AiAgent(object):
                 print('Frame is None.')
             time.sleep(0.5)
             return
-        # frame = utils.format_camera_frames(
-        #     frame=frame,
-        #     width=self.frame_width,
-        #     height=self.frame_height,
-        #     # save_img=save_img,
-        # )
 
         target_info = self.detector.find_target(
             frame=frame,
@@ -132,7 +126,6 @@ class AiAgent(object):
         #     'distance_from_center_x': float [-1, 1],
         #     'distance_from_center_y': float [-1, 1],
         # }
-        # print(f'num_targets: {target_info["num_targets"]}')
         if target_info['num_targets'] > 0:
             # show target-found light (green)
             # self.robot_body.set_colorful_lamps(led_id=gc.ALL_LIGHTS_ID, red=0, green=255, blue=0)

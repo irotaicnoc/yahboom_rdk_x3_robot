@@ -156,7 +156,7 @@ def x_displacement_to_angular_speed(x_distance_from_img_center: float,
 def process_yolo_output(output_data, confidence_threshold=0.5):
     """Process YOLO model output tensor to extract bounding boxes, scores, and class IDs."""
     batch_size, num_features, num_boxes = output_data.shape
-    assert batch_size == 1, "Batch size > 1 not supported."
+    assert batch_size == 1, 'Batch size > 1 is not supported.'
 
     print('IN PROCESS OUTPUT')
     print(f'output_data shape: {output_data.shape}')
