@@ -1,4 +1,3 @@
-import time
 import warnings
 
 from ultralytics import YOLO
@@ -24,7 +23,6 @@ class YoloDetector(object):
         self.verbose = parameters['verbose']
         self.confidence_threshold = parameters['confidence_threshold']
         self.device = gc.CPU_DEVICE
-        self.counter = 0
         if gc.TPU_DEVICE in parameters['model_name']:
             self.device = gc.TPU_DEVICE
 
@@ -85,9 +83,6 @@ class YoloDetector(object):
                 self.target_class_name = old_target_class_name
 
     def find_target(self, frame, target_name: str, save: bool = False) -> dict:
-        self.counter += 1
-        if self.counter > 10:
-            exit()
         self.select_target(target_name)
         # output:
         #   - number of detections
@@ -108,7 +103,6 @@ class YoloDetector(object):
             warnings.warn(f'Target_class_name is None.')
             return self.no_target_info
 
-        start_inference = time.time()
         results = self.model.predict(
             source=frame,
             imgsz=self.camera_image_size,
@@ -123,9 +117,6 @@ class YoloDetector(object):
             classes=[self.target_class_id],
             verbose=False,
         )
-        stop_inference = time.time()
-        print(f'inference time: {round(stop_inference - start_inference, 3)}')
-        print(f'result: {results[0].boxes}')
         try:
             confidence = results[0].boxes.conf
             if self.verbose >= 1:
@@ -150,6 +141,6 @@ class YoloDetector(object):
                 return target_info
             else:
                 return self.no_target_info
-        except Exception as e:
-            print(f'Detection Exception: {e}')
+        except:
+            # print(f'Detection Exception: {e}')
             return self.no_target_info
