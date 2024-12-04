@@ -16,6 +16,7 @@ ALL_LIGHTS_ID = 0xff
 MAIN_FOLDER_PATH = '/root/GIT/yahboom_rdk_x3_robot/sunriseRobot/'
 APP_FOLDER_PATH = '/root/GIT/yahboom_rdk_x3_robot/sunriseRobot/app_SunriseRobot/'
 CONFIG_FOLDER_PATH = APP_FOLDER_PATH + 'configs/'
+OUTPUT_FOLDER_PATH = APP_FOLDER_PATH + 'output/'
 
 # ALIAS
 CPU_DEVICE = 'cpu'

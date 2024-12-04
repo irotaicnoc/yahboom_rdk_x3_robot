@@ -132,6 +132,7 @@ class YoloDetector(object):
             source=frame,
             imgsz=self.camera_image_size,
             # vid_stride=10,
+            project=gc.OUTPUT_FOLDER_PATH,
             save=save,
             conf=self.confidence_threshold,
             # stream=True,
