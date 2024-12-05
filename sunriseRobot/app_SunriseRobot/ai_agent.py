@@ -65,6 +65,10 @@ class AiAgent(object):
             if self.verbose >= 2:
                 print('Camera closed.')
 
+        # turn off gpio led
+        if self.use_gpio_led:
+            self.gpio_led.set_color('off')
+
     def activate_agent(self, video_capture_kwargs=None):
         if self.verbose >= 1:
             print('Activating autonomous agent...')
