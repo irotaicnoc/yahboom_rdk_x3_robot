@@ -33,3 +33,5 @@ class Fan:
 
 if __name__ == '__main__':
     Fan()
+    while True:
+        time.sleep(600)
