@@ -78,7 +78,7 @@ class AiAgent(object):
 
         if self.camera_is_open == 0:
             self.agent_active = True
-            self.gpio_led.turn_off()
+            self.gpio_led.set_color('off')
             if self.verbose >= 2:
                 print('Camera opened correctly.')
         else:
@@ -104,7 +104,7 @@ class AiAgent(object):
     def detect_and_move(self) -> None:
         # show thinking light (red)
         if self.use_gpio_led:
-            self.gpio_led.red()
+            self.gpio_led.set_color('red')
         if self.verbose >= 2:
             start_thinking = time.time()
         self.set_zero_speed()
@@ -132,7 +132,7 @@ class AiAgent(object):
         if target_info['num_targets'] > 0:
             # show target-found light (green)
             if self.use_gpio_led:
-                self.gpio_led.green()
+                self.gpio_led.set_color('green')
             distance_from_center_x = target_info['distance_from_center_x']
             # print(f'target x: {distance_from_center_x}')
             # only steer to the target if its center is more than
@@ -158,7 +158,7 @@ class AiAgent(object):
         else:
             # show target-not-found/searching light (red_and_green)
             if self.use_gpio_led:
-                self.gpio_led.red_and_green()
+                self.gpio_led.set_color('red_and_green')
             if self.verbose >= 2:
                 print('Searching...')
             # TODO: very slowly rotate by 360° degree
