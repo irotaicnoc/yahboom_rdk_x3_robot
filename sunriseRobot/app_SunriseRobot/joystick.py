@@ -8,11 +8,19 @@ import utils
 from light import Light
 from robot_head import RobotHead
 from robot_body import RobotBody
+from gpio_pin_control import GpioLed
 
 
 # V1.0.4
 class Joystick(object):
-    def __init__(self, robot_body: RobotBody, robot_head: RobotHead, internal_light: Light, js_id=0, verbose: int = 0):
+    def __init__(self,
+                 robot_body: RobotBody,
+                 robot_head: RobotHead,
+                 internal_light: Light,
+                 gpio_led: GpioLed,
+                 js_id=0,
+                 verbose: int = 0,
+                 ):
         self.verbose = verbose
         self.robot_body = robot_body
 
@@ -35,6 +43,7 @@ class Joystick(object):
         self.robot_head = robot_head
         self.temp_counter = 0
         self.internal_light = internal_light
+        self.gpio_led = gpio_led
 
         # Find the joystick device.
         print('Joystick Available devices:')
@@ -154,6 +163,10 @@ class Joystick(object):
         elif name == 'B':
             if self.verbose >= 3:
                 print(name, ':', value)
+
+            if value == 1:
+                if self.robot_head.robot_mode == 'user_controlled':
+                    self.gpio_led.next_color()
 
         elif name == 'X':
             if self.verbose >= 3:

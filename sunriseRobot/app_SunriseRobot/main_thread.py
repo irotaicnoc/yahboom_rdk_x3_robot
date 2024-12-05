@@ -28,6 +28,7 @@ def main_loop(**kwargs):
         'robot_body': robot_body,
         'robot_head': robot_head,
         'internal_light': internal_light,
+        'gpio_led': gpio_led,
         'verbose': parameters['verbose'],
     }
     thread_joystick = threading.Thread(target=task_joystick, name='task_joystick', kwargs=joystick_kwargs)
