@@ -6,7 +6,6 @@ from joystick import Joystick
 from robot_body import RobotBody
 
 import args
-from fan import Fan
 from light import Light
 from ai_agent import AiAgent
 import global_constants as gc
@@ -20,7 +19,6 @@ def main_loop(**kwargs):
     robot_body = RobotBody(com=parameters['com'], baud_rate=parameters['baud_rate'], verbose=parameters['verbose'])
     robot_body.create_receive_threading()
     robot_head = RobotHead()
-    fan = Fan(verbose=parameters['verbose'])
     internal_light = Light(verbose=parameters['verbose'])
     gpio_led = GpioLed()
 

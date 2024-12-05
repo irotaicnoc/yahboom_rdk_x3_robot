@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Exec=bash /root/GIT/yahboom_rdk_x3_robot/sunriseRobot/script_autostart/start_fan_service.sh
+Hidden=false
+NoDisplay=false
+X-GNOME-Autostart-enabled=true
+Name[en_US]=Activate fan
+Name=Activate fan
+Comment[en_US]=Activate fan at system startup
+Comment=Activate fan at system startup

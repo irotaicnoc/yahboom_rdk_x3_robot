@@ -6,7 +6,7 @@ import global_constants as gc
 
 
 class Fan:
-    def __init__(self, verbose: int):
+    def __init__(self, verbose: int = 0):
         self.verbose = verbose
         self.bus = smbus.SMBus(0)
         self.start()
@@ -29,3 +29,7 @@ class Fan:
 
     def __del__(self):
         self.stop()
+
+
+if __name__ == '__main__':
+    Fan()
