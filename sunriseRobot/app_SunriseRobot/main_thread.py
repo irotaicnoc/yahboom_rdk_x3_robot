@@ -42,6 +42,7 @@ def main_loop(**kwargs):
     ai_agent_kwargs = {
         'robot_body': robot_body,
         'robot_head': robot_head,
+        'gpio_led': gpio_led,
         'verbose': parameters['verbose'],
     }
     thread_ai_agent = threading.Thread(target=task_ai_agent, name='task_ai_agent', kwargs=ai_agent_kwargs)

@@ -9,10 +9,11 @@ import utils
 import global_constants as gc
 from robot_head import RobotHead
 from detector import YoloDetector
+from gpio_pin_control import GpioLed
 
 
 class AiAgent(object):
-    def __init__(self, robot_body: RobotBody, robot_head: RobotHead, **kwargs):
+    def __init__(self, robot_body: RobotBody, robot_head: RobotHead, gpio_led: GpioLed, **kwargs):
         # general initialization
         self.robot_body = robot_body
         self.robot_head = robot_head
@@ -20,14 +21,13 @@ class AiAgent(object):
             yaml_path=gc.CONFIG_FOLDER_PATH + 'ai_agent_config.yaml',
             **kwargs,
         )
-        camera_kwargs = parameters['camera_kwargs']
         self.verbose = parameters['verbose']
         self.agent_active = False
 
         # camera initialization
         self.camera_is_open = -1
         self.camera = camera_lib.Camera()
-        self.video_capture_kwargs = camera_kwargs['video_capture_kwargs']
+        self.video_capture_kwargs = parameters['camera_kwargs']['video_capture_kwargs']
         self.frame_width = self.video_capture_kwargs['width']
         self.frame_height = self.video_capture_kwargs['height']
 
@@ -44,6 +44,10 @@ class AiAgent(object):
         self.angular_speed_range = parameters['angular_speed_range']
         self.speed_x = 0
         self.speed_z = 0
+
+        # gpio led
+        self.gpio_led = gpio_led
+        self.use_gpio_led = parameters['use_gpio_led']
 
     def set_zero_speed(self):
         self.speed_x = 0
@@ -74,7 +78,7 @@ class AiAgent(object):
 
         if self.camera_is_open == 0:
             self.agent_active = True
-            self.robot_head.turn_off_light()
+            self.gpio_led.turn_off()
             if self.verbose >= 2:
                 print('Camera opened correctly.')
         else:
@@ -98,10 +102,11 @@ class AiAgent(object):
 
     # stop -> observe -> think -> move for n seconds -> repeat until interrupted
     def detect_and_move(self) -> None:
+        # show thinking light (red)
+        if self.use_gpio_led:
+            self.gpio_led.red()
         if self.verbose >= 2:
             start_thinking = time.time()
-        # show thinking light (blue)
-        # self.robot_body.set_colorful_lamps(led_id=gc.ALL_LIGHTS_ID, red=0, green=0, blue=255)
         self.set_zero_speed()
         self.robot_body.set_car_motion(self.speed_x, 0, self.speed_z)
         move_duration = 0.3
@@ -126,7 +131,8 @@ class AiAgent(object):
         # }
         if target_info['num_targets'] > 0:
             # show target-found light (green)
-            # self.robot_body.set_colorful_lamps(led_id=gc.ALL_LIGHTS_ID, red=0, green=255, blue=0)
+            if self.use_gpio_led:
+                self.gpio_led.green()
             distance_from_center_x = target_info['distance_from_center_x']
             # print(f'target x: {distance_from_center_x}')
             # only steer to the target if its center is more than
@@ -150,8 +156,9 @@ class AiAgent(object):
                 self.speed_z = 0
                 move_duration = 0.6
         else:
-            # show target-not-found/searching light (orange)
-            # self.robot_body.set_colorful_lamps(led_id=gc.ALL_LIGHTS_ID, red=255, green=127, blue=0)
+            # show target-not-found/searching light (red_and_green)
+            if self.use_gpio_led:
+                self.gpio_led.red_and_green()
             if self.verbose >= 2:
                 print('Searching...')
             # TODO: very slowly rotate by 360° degree
@@ -162,6 +169,9 @@ class AiAgent(object):
         if self.verbose >= 2:
             stop_thinking = time.time()
             print(f'thinking time: {round(stop_thinking - start_thinking, 3)}')
+        # turn-off led while moving
+        if self.use_gpio_led:
+            self.gpio_led.turn_off()
         # start_moving = time.time()
         self.robot_body.set_car_motion(self.speed_x, 0, self.speed_z)
         time.sleep(move_duration)
