@@ -169,9 +169,7 @@ class AiAgent(object):
         if self.verbose >= 2:
             stop_thinking = time.time()
             print(f'thinking time: {round(stop_thinking - start_thinking, 3)}')
-        # turn-off led while moving
-        if self.use_gpio_led:
-            self.gpio_led.turn_off()
+
         # start_moving = time.time()
         self.robot_body.set_car_motion(self.speed_x, 0, self.speed_z)
         time.sleep(move_duration)
