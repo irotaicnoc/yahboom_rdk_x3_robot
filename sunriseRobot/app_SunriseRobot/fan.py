@@ -34,13 +34,10 @@ class Fan:
         if self.verbose >= 2:
             print('Done.')
 
-    def __del__(self):
-        self.stop()
-
 
 if __name__ == '__main__':
     Fan()
-    print('starting infinite loop')
-    while True:
-        time.sleep(600)
-    print('end of infinite loop')
+    # print('starting infinite loop')
+    # while True:
+    #     time.sleep(600)
+    # print('end of infinite loop')
