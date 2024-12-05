@@ -14,6 +14,7 @@ class Fan:
         )
 
         self.verbose = parameters['verbose']
+        print(f'verbose: {self.verbose}')
         self.bus = smbus.SMBus(0)
         self.start()
 
