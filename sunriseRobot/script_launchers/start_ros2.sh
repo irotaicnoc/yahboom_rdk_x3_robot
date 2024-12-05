@@ -13,7 +13,7 @@
 
 ###############################################################################
 
-# ubuntu 20.04
 gnome-terminal -- bash -c "source /opt/ros/foxy/setup.bash;cd /root/marco_ros2_ws/;source install/local_setup.bash;ros2 launch ros_tcp_endpoint endpoint_launch.py;exec bash"
+
 wait
 exit 0

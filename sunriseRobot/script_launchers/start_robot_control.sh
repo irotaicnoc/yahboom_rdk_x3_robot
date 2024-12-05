@@ -2,13 +2,10 @@
 
 ###############################################################################
 # ubuntu 20.04 
-# add Additional startup programs
+# add additional startup programs
 # main thread
-# bash /root/GIT/yahboom_rdk_x3_robot/sunriseRobot/app_SunriseRobot/main_thread.sh
-# start app program
 ###############################################################################
 
-# ubuntu 20.04
 gnome-terminal -- bash -c "python3 /root/GIT/yahboom_rdk_x3_robot/sunriseRobot/app_SunriseRobot/main_thread.py;exec bash"
 
 wait

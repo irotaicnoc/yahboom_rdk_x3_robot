@@ -11,7 +11,6 @@ FAN_START_CMD = 1
 LIGHT_STOP_CMD = 0
 LIGHT_EFFECT_CMD_LIST = [0, 1, 2, 3, 4]
 GPIO_LED_COLOR_LIST = ['off', 'red', 'green', 'red_and_green']
-ALL_LIGHTS_ID = 0xff
 
 # OS PATHS
 MAIN_FOLDER_PATH = '/root/GIT/yahboom_rdk_x3_robot/sunriseRobot/'
