@@ -37,7 +37,10 @@ def main_loop(**kwargs):
         'robot_head': robot_head,
         'verbose': parameters['verbose'],
     }
-    thread_screen = threading.Thread(target=task_screen, name='task_screen', kwargs=screen_kwargs)
+    # "daemon = True" means that when this is the only thread running, (or when only other daemonic threads remain)
+    # the containing thread (the main) will exit. The oled screen is daemonic, if there are no more joystick and/or
+    # ai_agent left, then the main can stop.
+    thread_screen = threading.Thread(target=task_screen, name='task_screen', kwargs=screen_kwargs, daemon=True)
     thread_screen.start()
 
     ai_agent_kwargs = {

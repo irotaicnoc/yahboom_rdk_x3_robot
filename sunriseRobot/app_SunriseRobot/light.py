@@ -6,7 +6,7 @@ import global_constants as gc
 
 
 class Light:
-    def __init__(self, verbose: int):
+    def __init__(self, verbose: int = 0):
         self.current_state = gc.LIGHT_STOP_CMD
         self.bus = smbus.SMBus(0)
         self.verbose = verbose
