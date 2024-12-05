@@ -40,5 +40,7 @@ class Fan:
 
 if __name__ == '__main__':
     Fan()
+    print('starting infinite loop')
     while True:
         time.sleep(600)
+    print('end of infinite loop')
