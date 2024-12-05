@@ -56,7 +56,7 @@ class RobotHead:
         self.speed_coefficient = min(1.0, self.speed_coefficient + 0.1)
 
     def decrease_speed_coefficient(self):
-        self.speed_coefficient = max(0.0, self.speed_coefficient - 0.1)
+        self.speed_coefficient = max(0.1, self.speed_coefficient - 0.1)
 
     def next_light_effect(self):
         if self.verbose >= 2:
