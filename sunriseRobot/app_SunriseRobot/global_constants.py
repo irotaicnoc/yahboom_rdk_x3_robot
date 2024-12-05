@@ -18,6 +18,7 @@ MAIN_FOLDER_PATH = '/root/GIT/yahboom_rdk_x3_robot/sunriseRobot/'
 APP_FOLDER_PATH = '/root/GIT/yahboom_rdk_x3_robot/sunriseRobot/app_SunriseRobot/'
 CONFIG_FOLDER_PATH = APP_FOLDER_PATH + 'configs/'
 OUTPUT_FOLDER_PATH = APP_FOLDER_PATH + 'output/'
+COMPUTER_VISION_MODEL_FOLDER_PATH = APP_FOLDER_PATH + 'computer_vision_models/'
 SCRIPT_FOLDER_PATH = MAIN_FOLDER_PATH + 'script_launchers/'
 
 # 40 PIN INTERFACE
