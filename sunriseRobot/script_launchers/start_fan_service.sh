@@ -6,6 +6,7 @@
 # main thread
 ###############################################################################
 
-gnome-terminal -- bash -c "python3 /root/GIT/yahboom_rdk_x3_robot/sunriseRobot/app_SunriseRobot/fan.py;exec bash"
+gnome-terminal -- bash -c "python3 /root/GIT/yahboom_rdk_x3_robot/sunriseRobot/app_SunriseRobot/fan.py;exit;exec bash"
 
+wait
 exit 0
