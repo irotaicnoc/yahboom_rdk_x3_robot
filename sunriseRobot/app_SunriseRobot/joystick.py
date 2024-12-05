@@ -5,13 +5,14 @@ import time
 import struct
 
 import utils
+from light import Light
 from robot_head import RobotHead
 from robot_body import RobotBody
 
 
 # V1.0.4
 class Joystick(object):
-    def __init__(self, robot_body: RobotBody, robot_head: RobotHead, js_id=0, verbose: int = 0):
+    def __init__(self, robot_body: RobotBody, robot_head: RobotHead, internal_light: Light, js_id=0, verbose: int = 0):
         self.verbose = verbose
         self.robot_body = robot_body
 
@@ -33,6 +34,7 @@ class Joystick(object):
         self.select_delay = 5.0  # Minimum seconds between SELECT presses
         self.robot_head = robot_head
         self.temp_counter = 0
+        self.internal_light = internal_light
 
         # Find the joystick device.
         print('Joystick Available devices:')
@@ -158,13 +160,11 @@ class Joystick(object):
                 print(name, ':', value)
 
         # change light effect
-        # only in user_controlled mode, lights are used to signal information in autonomous mode
         elif name == 'Y':
             if self.verbose >= 3:
                 print(name, ':', value)
             if value == 1:
-                if self.robot_head.robot_mode == 'user_controlled':
-                    self.robot_head.next_light_effect()
+                self.internal_light.next_light_effect()
 
         # activate/deactivate hotspot
         elif name == 'L1':

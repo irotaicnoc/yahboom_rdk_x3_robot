@@ -20,12 +20,13 @@ def main_loop(**kwargs):
     robot_body = RobotBody(com=parameters['com'], baud_rate=parameters['baud_rate'], verbose=parameters['verbose'])
     robot_body.create_receive_threading()
     robot_head = RobotHead()
+    internal_light = Light(verbose=parameters['verbose'])
     gpio_led = GpioLed()
-
 
     joystick_kwargs = {
         'robot_body': robot_body,
         'robot_head': robot_head,
+        'internal_light': internal_light,
         'verbose': parameters['verbose'],
     }
     thread_joystick = threading.Thread(target=task_joystick, name='task_joystick', kwargs=joystick_kwargs)
@@ -53,12 +54,6 @@ def main_loop(**kwargs):
     }
     thread_fan = threading.Thread(target=task_fan, name='task_fan', kwargs=fan_kwargs)
     thread_fan.start()
-
-    light_kwargs = {
-        'robot_head': robot_head,
-    }
-    thread_light = threading.Thread(target=task_light, name='task_light', kwargs=light_kwargs)
-    thread_light.start()
 
     # TODO: ros2 as separate thread?
 
@@ -113,13 +108,6 @@ def task_fan(**kwargs):
     # time.sleep(.2)
     while True:
         fan.control_behavior()
-
-
-def task_light(**kwargs):
-    light = Light(**kwargs)
-    # time.sleep(.2)
-    while True:
-        light.control_behavior()
 
 
 if __name__ == '__main__':
