@@ -14,7 +14,8 @@ class GpioLed:
 
         # start turned-off
         GPIO.setup(gc.BLUE_CABLE, GPIO.OUT, initial=GPIO.LOW)
-        self.turn_off()
+        GPIO.setup(self.RED_LIGHT, GPIO.OUT, initial=GPIO.LOW)
+        GPIO.setup(self.GREEN_LIGHT, GPIO.OUT, initial=GPIO.LOW)
 
     def red(self):
         GPIO.output(self.RED_LIGHT, GPIO.HIGH)
