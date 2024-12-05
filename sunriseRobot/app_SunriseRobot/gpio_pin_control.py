@@ -17,20 +17,20 @@ class GpioLed:
         self.turn_off()
 
     def red(self):
-        GPIO.output(self.RED_LIGHT, initial=GPIO.HIGH)
-        GPIO.output(self.GREEN_LIGHT, initial=GPIO.LOW)
+        GPIO.output(self.RED_LIGHT, GPIO.HIGH)
+        GPIO.output(self.GREEN_LIGHT, GPIO.LOW)
 
     def green(self):
-        GPIO.output(self.RED_LIGHT, initial=GPIO.LOW)
-        GPIO.output(self.GREEN_LIGHT, initial=GPIO.HIGH)
+        GPIO.output(self.RED_LIGHT, GPIO.LOW)
+        GPIO.output(self.GREEN_LIGHT, GPIO.HIGH)
 
     def red_and_green(self):
-        GPIO.output(self.RED_LIGHT, initial=GPIO.HIGH)
-        GPIO.output(self.GREEN_LIGHT, initial=GPIO.HIGH)
+        GPIO.output(self.RED_LIGHT, GPIO.HIGH)
+        GPIO.output(self.GREEN_LIGHT, GPIO.HIGH)
 
     def turn_off(self):
-        GPIO.output(self.RED_LIGHT, initial=GPIO.LOW)
-        GPIO.output(self.GREEN_LIGHT, initial=GPIO.LOW)
+        GPIO.output(self.RED_LIGHT, GPIO.LOW)
+        GPIO.output(self.GREEN_LIGHT, GPIO.LOW)
 
     def __del__(self):
         GPIO.cleanup()
