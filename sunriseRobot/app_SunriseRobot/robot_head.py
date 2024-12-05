@@ -1,5 +1,4 @@
 import args
-import smbus
 
 import global_constants as gc
 
@@ -15,11 +14,6 @@ class RobotHead:
         self.robot_mode = self.robot_mode_list[0]
         self.tracking_target_list = parameters['tracking_target_list']
         self.tracking_target_pos = 0
-
-        # fan and lights parameters
-        self.bus = smbus.SMBus(0)
-        self.fan_state = gc.FAN_START_CMD
-        self.light_state = gc.LIGHT_STOP_CMD
 
         # hotspot and ROS2 parameters
         self.hotspot_status = 'inactive'

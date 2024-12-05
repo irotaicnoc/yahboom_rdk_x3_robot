@@ -20,6 +20,7 @@ def main_loop(**kwargs):
     robot_body = RobotBody(com=parameters['com'], baud_rate=parameters['baud_rate'], verbose=parameters['verbose'])
     robot_body.create_receive_threading()
     robot_head = RobotHead()
+    fan = Fan(verbose=parameters['verbose'])
     internal_light = Light(verbose=parameters['verbose'])
     gpio_led = GpioLed()
 
@@ -48,12 +49,6 @@ def main_loop(**kwargs):
     }
     thread_ai_agent = threading.Thread(target=task_ai_agent, name='task_ai_agent', kwargs=ai_agent_kwargs)
     thread_ai_agent.start()
-
-    fan_kwargs = {
-        'robot_head': robot_head,
-    }
-    thread_fan = threading.Thread(target=task_fan, name='task_fan', kwargs=fan_kwargs)
-    thread_fan.start()
 
     # TODO: ros2 as separate thread?
 
@@ -101,13 +96,6 @@ def task_screen(**kwargs):
     except KeyboardInterrupt:
         del oled
         print('---Program closed!---')
-
-
-def task_fan(**kwargs):
-    fan = Fan(**kwargs)
-    # time.sleep(.2)
-    while True:
-        fan.control_behavior()
 
 
 if __name__ == '__main__':
