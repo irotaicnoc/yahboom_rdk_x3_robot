@@ -115,7 +115,7 @@ class AiAgent(object):
             start_thinking = time.time()
         self.set_zero_speed()
         self.robot_body.set_car_motion(self.speed_x, 0, self.speed_z)
-        move_duration = 0.3
+        move_duration = 0.6
 
         frame = self.camera.get_img(2)
         if frame is None:
@@ -161,7 +161,7 @@ class AiAgent(object):
                 if self.verbose >= 2:
                     print(f'Forward: {self.speed_x}')
                 self.speed_z = 0
-                move_duration = 0.6
+                # move_duration = 0.6
         else:
             # show target-not-found/searching light (red_and_green)
             if self.use_gpio_led:
