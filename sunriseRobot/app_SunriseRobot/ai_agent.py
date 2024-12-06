@@ -115,7 +115,7 @@ class AiAgent(object):
             start_thinking = time.time()
         self.set_zero_speed()
         self.robot_body.set_car_motion(self.speed_x, 0, self.speed_z)
-        move_duration = 0.6
+        move_duration = 0.5
 
         frame = self.camera.get_img(2)
         if frame is None:
