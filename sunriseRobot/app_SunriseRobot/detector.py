@@ -18,11 +18,10 @@ class YoloDetector(object):
         self.model_folder = gc.COMPUTER_VISION_MODEL_FOLDER_PATH
         self.model_path = self.model_folder + self.model_name
         self.camera_image_size = parameters['camera_image_size']
-        # self.x_center = int(camera_image_size[0] / 2)
-        # self.y_center = int(camera_image_size[1] / 2)
         self.verbose = parameters['verbose']
         self.confidence_threshold = parameters['confidence_threshold']
         self.device = gc.CPU_DEVICE
+        self.frame_counter = 0
         if gc.TPU_DEVICE in parameters['model_name']:
             self.device = gc.TPU_DEVICE
 
@@ -61,6 +60,27 @@ class YoloDetector(object):
             'distance_from_center_y': 0,
         }
 
+        self.results = None
+
+    def start_search(self):
+        self.results = self.model.predict(
+            source=0,
+            imgsz=self.camera_image_size,
+            # vid_stride=10,
+            project=gc.OUTPUT_FOLDER_PATH,
+            # save=save,
+            conf=self.confidence_threshold,
+            stream=True,
+            show=False,
+            stream_buffer=False,
+            # persist=True,
+            classes=[self.target_class_id],
+            verbose=False,
+        )
+
+    def stop_search(self):
+        self.results = None
+
     def select_target(self, target_name: str) -> None:
         if self.target_class_name != target_name:
             # target to track (only one allowed)
@@ -82,7 +102,7 @@ class YoloDetector(object):
                 self.target_class_id = old_target_class_id
                 self.target_class_name = old_target_class_name
 
-    def find_target(self, frame, target_name: str, save: bool = False) -> dict:
+    def find_target(self, target_name: str, save: bool = False) -> dict:
         self.select_target(target_name)
         # output:
         #   - number of detections
@@ -93,32 +113,18 @@ class YoloDetector(object):
         #   [-1, 0] means the target is left or above of center respectively
         #   [0, 1] means the target is right or below of center respectively
 
-        frame = utils.format_camera_frames(
-            frame=frame,
-            original_width=self.camera_image_size[0],
-            original_height=self.camera_image_size[1],
-        )
-
         if self.target_class_name is None:
             warnings.warn(f'Target_class_name is None.')
             return self.no_target_info
 
-        results = self.model.predict(
-            source=frame,
-            imgsz=self.camera_image_size,
-            # vid_stride=10,
-            project=gc.OUTPUT_FOLDER_PATH,
-            save=save,
-            conf=self.confidence_threshold,
-            # stream=True,
-            show=False,
-            stream_buffer=False,
-            # persist=True,
-            classes=[self.target_class_id],
-            verbose=False,
-        )
+        print('len(self.results)')
+        print(len(self.results))
+        if save:
+            self.results.save(filename=f'{gc.OUTPUT_FOLDER_PATH}frame_{self.frame_counter}')
+            self.frame_counter += 1
+        boxes = self.results[0].boxes
         try:
-            confidence = results[0].boxes.conf
+            confidence = boxes.conf
             if len(confidence) > 0:
                 target_info = {
                     'num_targets': 0,
@@ -129,7 +135,7 @@ class YoloDetector(object):
                 # print(f'confidence: {confidence}')
                 max_confidence_id = confidence.argmax()
                 # print(f'max_confidence_id: {max_confidence_id}')
-                normalized_center_x, normalized_center_y, _, _ = results[0].boxes.xywhn[max_confidence_id]
+                normalized_center_x, normalized_center_y, _, _ = boxes.xywhn[max_confidence_id]
                 # print(f'Target Center X: {normalized_center_x}')
                 target_info['num_targets'] = len(confidence)
                 target_info['highest_confidence'] = confidence[max_confidence_id].item()
