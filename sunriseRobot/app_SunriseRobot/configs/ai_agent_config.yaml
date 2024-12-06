@@ -4,6 +4,7 @@ steer_threshold: 0.25
 angular_speed_range: [1.0, 2.0]
 save_images: False
 use_gpio_led: Ture
+think_steps_if_no_target: 2
 
 camera_kwargs:
   video_capture_kwargs:

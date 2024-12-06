@@ -23,6 +23,8 @@ class AiAgent(object):
         )
         self.verbose = parameters['verbose']
         self.agent_active = False
+        self.think_steps_if_no_target = parameters['think_steps_if_no_target']
+        self.no_target_counter = 0
 
         # camera initialization
         self.camera_is_open = -1
@@ -137,6 +139,7 @@ class AiAgent(object):
             # show target-found light (green)
             if self.use_gpio_led:
                 self.gpio_led.set_color('green')
+            self.no_target_counter = 0
             distance_from_center_x = target_info['distance_from_center_x']
             # print(f'target x: {distance_from_center_x}')
             # only steer to the target if its center is more than
@@ -167,7 +170,15 @@ class AiAgent(object):
                 print('Searching...')
             # TODO: very slowly rotate by 360° degree
             self.speed_x = 0
-            self.speed_z = self.robot_head.speed_coefficient * 5
+            if self.no_target_counter < self.think_steps_if_no_target:
+                self.no_target_counter += 1
+                if self.verbose >= 2:
+                    print('\nThink more before moving')
+                time.sleep(0.1)
+                return
+            else:
+                self.speed_z = self.robot_head.speed_coefficient * 5
+                self.no_target_counter = 0
             if self.verbose >= 2:
                 print(f'Steer: {self.speed_z}')
         if self.verbose >= 2:
