@@ -135,6 +135,8 @@ class AiAgent(object):
         #     'distance_from_center_x': float [-1, 1],
         #     'distance_from_center_y': float [-1, 1],
         # }
+        if self.verbose >= 2:
+            print(f'num_targets: {target_info["num_targets"]}')
         if target_info['num_targets'] > 0:
             # show target-found light (green)
             if self.use_gpio_led:
@@ -166,9 +168,7 @@ class AiAgent(object):
             # show target-not-found/searching light (red_and_green)
             if self.use_gpio_led:
                 self.gpio_led.set_color('red_and_green')
-            if self.verbose >= 2:
-                print('Searching...')
-            # TODO: very slowly rotate by 360° degree
+
             self.speed_x = 0
             if self.no_target_counter < self.think_steps_if_no_target:
                 self.no_target_counter += 1
@@ -177,10 +177,12 @@ class AiAgent(object):
                 time.sleep(0.1)
                 return
             else:
+                if self.verbose >= 2:
+                    print('Searching...')
                 self.speed_z = self.robot_head.speed_coefficient * 5
                 self.no_target_counter = 0
-            if self.verbose >= 2:
-                print(f'Steer: {self.speed_z}')
+                if self.verbose >= 2:
+                    print(f'Steer: {self.speed_z}')
         if self.verbose >= 2:
             stop_thinking = time.time()
             print(f'thinking time: {round(stop_thinking - start_thinking, 3)}')

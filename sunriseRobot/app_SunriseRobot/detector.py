@@ -119,8 +119,6 @@ class YoloDetector(object):
         )
         try:
             confidence = results[0].boxes.conf
-            if self.verbose >= 1:
-                print(f'num_targets: {len(confidence)}')
             if len(confidence) > 0:
                 target_info = {
                     'num_targets': 0,
