@@ -117,14 +117,14 @@ class YoloDetector(object):
             warnings.warn(f'Target_class_name is None.')
             return self.no_target_info
 
-        print('len(self.results)')
-        print(len(self.results))
+        result = next(self.results)
+        print(f'{result=}')
         if save:
-            self.results.save(filename=f'{gc.OUTPUT_FOLDER_PATH}frame_{self.frame_counter}')
+            result.save(filename=f'{gc.OUTPUT_FOLDER_PATH}frame_{self.frame_counter}')
             self.frame_counter += 1
-        boxes = self.results[0].boxes
+
         try:
-            confidence = boxes.conf
+            confidence = result.boxes.conf
             if len(confidence) > 0:
                 target_info = {
                     'num_targets': 0,
@@ -135,7 +135,7 @@ class YoloDetector(object):
                 # print(f'confidence: {confidence}')
                 max_confidence_id = confidence.argmax()
                 # print(f'max_confidence_id: {max_confidence_id}')
-                normalized_center_x, normalized_center_y, _, _ = boxes.xywhn[max_confidence_id]
+                normalized_center_x, normalized_center_y, _, _ = result.boxes.xywhn[max_confidence_id]
                 # print(f'Target Center X: {normalized_center_x}')
                 target_info['num_targets'] = len(confidence)
                 target_info['highest_confidence'] = confidence[max_confidence_id].item()
