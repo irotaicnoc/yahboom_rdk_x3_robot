@@ -91,11 +91,11 @@ class YoloDetector(object):
         #   [-1, 0] means the target is left or above of center respectively
         #   [0, 1] means the target is right or below of center respectively
 
-        frame = utils.format_camera_frames(
-            frame=frame,
-            original_width=self.camera_image_size[0],
-            original_height=self.camera_image_size[1],
-        )
+        # frame = utils.format_camera_frames(
+        #     frame=frame,
+        #     original_width=self.camera_image_size[0],
+        #     original_height=self.camera_image_size[1],
+        # )
 
         if self.target_class_name is None:
             warnings.warn(f'Target_class_name is None.')

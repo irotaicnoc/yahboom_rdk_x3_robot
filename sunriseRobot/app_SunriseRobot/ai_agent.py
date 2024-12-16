@@ -1,8 +1,8 @@
 import time
-import warnings
+# import warnings
 
 from robot_body import RobotBody
-from hobot_vio import libsrcampy as camera_lib
+# from hobot_vio import libsrcampy as camera_lib
 
 import args
 import utils
@@ -27,8 +27,8 @@ class AiAgent(object):
         self.no_target_counter = 0
 
         # camera initialization
-        self.camera_is_open = -1
-        self.camera = camera_lib.Camera()
+        # self.camera_is_open = -1
+        # self.camera = camera_lib.Camera()
         self.video_capture_kwargs = parameters['camera_kwargs']['video_capture_kwargs']
         self.frame_width = self.video_capture_kwargs['width']
         self.frame_height = self.video_capture_kwargs['height']
@@ -61,11 +61,11 @@ class AiAgent(object):
         self.set_zero_speed()
         self.robot_body.set_car_motion(self.speed_x, 0, self.speed_z)
         self.agent_active = False
-        if self.camera_is_open == 0:
-            self.camera_is_open = -1
-            self.camera.close_cam()
-            if self.verbose >= 2:
-                print('Camera closed.')
+        # if self.camera_is_open == 0:
+        #     self.camera_is_open = -1
+        #     self.camera.close_cam()
+        #     if self.verbose >= 2:
+        #         print('Camera closed.')
 
         # turn off gpio led
         if self.use_gpio_led:
@@ -76,21 +76,21 @@ class AiAgent(object):
             print('Activating autonomous agent...')
         self.set_zero_speed()
         self.robot_body.set_car_motion(self.speed_x, 0, self.speed_z)
-        self.camera_is_open = -1
-        if video_capture_kwargs is None:
-            self.camera_is_open = self.camera.open_cam(**self.video_capture_kwargs)
-        else:
-            self.camera_is_open = self.camera.open_cam(**video_capture_kwargs)
+        # self.camera_is_open = -1
+        # if video_capture_kwargs is None:
+        #     self.camera_is_open = self.camera.open_cam(**self.video_capture_kwargs)
+        # else:
+        #     self.camera_is_open = self.camera.open_cam(**video_capture_kwargs)
 
-        if self.camera_is_open == 0:
-            self.agent_active = True
-            self.gpio_led.set_color('off')
-            if self.verbose >= 2:
-                print('Camera opened correctly.')
-        else:
-            warnings.warn('Failed to open camera.')
-            warnings.warn('Impossible to run autonomous agent.')
-            self.agent_active = False
+        # if self.camera_is_open == 0:
+        #     self.agent_active = True
+        #     self.gpio_led.set_color('off')
+        #     if self.verbose >= 2:
+        #         print('Camera opened correctly.')
+        # else:
+        #     warnings.warn('Failed to open camera.')
+        #     warnings.warn('Impossible to run autonomous agent.')
+        #     self.agent_active = False
 
     def autonomous_behavior(self):
         if self.robot_head.robot_mode == 'autonomous_tracking':
@@ -117,17 +117,17 @@ class AiAgent(object):
         self.robot_body.set_car_motion(self.speed_x, 0, self.speed_z)
         move_duration = 0.5
 
-        self.camera.get_img(2)
-        self.camera.get_img(2)
-        frame = self.camera.get_img(2)
-        if frame is None:
-            if self.verbose >= 1:
-                print('Frame is None.')
-            time.sleep(0.5)
-            return
+        # self.camera.get_img(2)
+        # self.camera.get_img(2)
+        # frame = self.camera.get_img(2)
+        # if frame is None:
+        #     if self.verbose >= 1:
+        #         print('Frame is None.')
+        #     time.sleep(0.5)
+        #     return
 
         target_info = self.detector.find_target(
-            frame=frame,
+            frame=0,
             target_name=self.robot_head.tracking_target_list[self.robot_head.tracking_target_pos],
             save=self.save_images,
         )
