@@ -127,7 +127,7 @@ class AiAgent(object):
             return
 
         target_info = self.detector.find_target(
-            frame=0,
+            frame=frame,
             target_name=self.robot_head.tracking_target_list[self.robot_head.tracking_target_pos],
             save=self.save_images,
         )
