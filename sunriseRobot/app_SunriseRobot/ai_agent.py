@@ -22,7 +22,6 @@ class AiAgent(object):
             **kwargs,
         )
         self.verbose = parameters['verbose']
-        print(f'verbose: {self.verbose}')
         self.agent_active = False
         self.think_steps_if_no_target = parameters['think_steps_if_no_target']
         self.no_target_counter = 0
@@ -182,8 +181,7 @@ class AiAgent(object):
             else:
                 if self.verbose >= 2:
                     print('Searching...')
-                # self.speed_z = self.robot_head.speed_coefficient * 5
-                self.speed_x = 0.5
+                self.speed_z = self.robot_head.speed_coefficient * 5
                 self.no_target_counter = 0
                 if self.verbose >= 2:
                     print(f'Steer: {self.speed_z}')
