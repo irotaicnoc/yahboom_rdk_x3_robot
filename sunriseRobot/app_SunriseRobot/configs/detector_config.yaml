@@ -1,6 +1,4 @@
 verbose: 0
-#model_name: yolo11l.pt
-#model_name: yolo11m.pt
 #model_name: yolo11s.pt
 #model_name: yolo11s_640_480_edgetpu.tflite
 model_name: yolo11m_640_480_edgetpu.tflite
