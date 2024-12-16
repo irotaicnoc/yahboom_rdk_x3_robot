@@ -102,7 +102,7 @@ class YoloDetector(object):
             return self.no_target_info
 
         results = self.model.predict(
-            source=frame,
+            source=0,
             imgsz=self.camera_image_size,
             # vid_stride=10,
             project=gc.OUTPUT_FOLDER_PATH,
