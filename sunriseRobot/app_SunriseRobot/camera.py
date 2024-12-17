@@ -137,6 +137,7 @@ if __name__ == '__main__':
     average = False
     m_fps = 0
     t_start = time.time()
+    counter = 0
     while camera.isOpened():
         if average:
             ret, frame = camera.get_frame()
@@ -150,7 +151,8 @@ if __name__ == '__main__':
             fps = 1 / (end - start)
         text = 'FPS:' + str(int(fps))
         cv.putText(frame, text, (20, 30), cv.FONT_HERSHEY_SIMPLEX, 0.9, (0, 200, 0), 1)
-        cv.imshow('frame', frame)
+        # cv.imshow('frame', frame)
+        cv.imwrite(f'output/frame_{counter}', frame)
 
         k = cv.waitKey(1) & 0xFF
         if k == 27 or k == ord('q'):
