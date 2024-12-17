@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # coding=utf-8
-import cv2 as cv
 import time
+import cv2 as cv
 
 
 # V1.0.1
@@ -55,7 +55,7 @@ class Camera(object):
 
     def __config_camera(self):
         cv_edition = cv.__version__
-        if cv_edition[0]=='3':
+        if cv_edition[0] == '3':
             self.__video.set(cv.CAP_PROP_FOURCC, cv.VideoWriter_fourcc(*'XVID'))
         else:
             self.__video.set(cv.CAP_PROP_FOURCC, cv.VideoWriter.fourcc('M', 'J', 'P', 'G'))
