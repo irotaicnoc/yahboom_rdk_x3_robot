@@ -16,7 +16,7 @@ class Camera(object):
         self.TYPE_DEPTH_CAMERA = 0x50
         self.TYPE_USB_CAMERA = 0x51
         self.TYPE_WIDE_ANGLE_CAMERA = 0x52
-        
+
         if self.__video_id == self.TYPE_DEPTH_CAMERA:
             self.__video = cv.VideoCapture('/dev/camera_depth')
             if self.__debug:
@@ -55,29 +55,25 @@ class Camera(object):
 
     def __config_camera(self):
         cv_edition = cv.__version__
+        # print(f'OpenCV version: {cv_edition}')
         if cv_edition[0] == '3':
             self.__video.set(cv.CAP_PROP_FOURCC, cv.VideoWriter_fourcc(*'XVID'))
         else:
             self.__video.set(cv.CAP_PROP_FOURCC, cv.VideoWriter.fourcc('M', 'J', 'P', 'G'))
-        
-        # self.__video.set(cv.CAP_PROP_BRIGHTNESS, 30)  # 设置亮度 -64 - 64  0.0
-        # self.__video.set(cv.CAP_PROP_CONTRAST, 50)  # 设置对比度 -64 - 64  2.0
-        # self.__video.set(cv.CAP_PROP_EXPOSURE, 156)  # 设置曝光值 1.0 - 5000  156.0
+
         self.__video.set(cv.CAP_PROP_FRAME_WIDTH, self.__width)  # 640
         self.__video.set(cv.CAP_PROP_FRAME_HEIGHT, self.__height)  # 480
 
-    # 摄像头是否打开成功
     # Check whether the camera is enabled successfully
     def isOpened(self):
         return self.__video.isOpened()
 
-    # 释放摄像头 Release the camera
+    # Release the camera
     def clear(self):
         if self.isOpened():
             self.__video.release()
         self.__state = False
 
-    # 重新连接摄像头 
     # Reconnect the camera
     def reconnect(self):
         self.clear()
@@ -110,7 +106,6 @@ class Camera(object):
             self.__config_camera()
         return True
 
-    # 获取摄像头的一帧图片 
     # Gets a frame of the camera
     def get_frame(self):
         success, image = self.__video.read()
@@ -118,41 +113,38 @@ class Camera(object):
             return success, bytes({1})
         return success, image
 
-    # 获取摄像头的jpg图片 
     # Gets the JPG image of the camera
     def get_frame_jpg(self, text='', color=(0, 255, 0)):
         success, image = self.__video.read()
         if not success:
             return success, bytes({1})
         if text != '':
-            # 各参数依次是：图片，添加的文字，左上角坐标，字体，字体大小，颜色，字体粗细
-            # The parameters are: image, added text, top left coordinate, font, font size, color, font size  
+            # The parameters are: image, added text, top left coordinate, font, font size, color, font size
             cv.putText(image, str(text), (10, 20), cv.FONT_HERSHEY_SIMPLEX, 0.5, color, 1)
         success, jpeg = cv.imencode('.jpg', image)
         return success, jpeg.tobytes()
 
 
 if __name__ == '__main__':
-    camera = Camera(debug=True)
-    average = False
+    camera = Camera(video_id=8, debug=True)
+    average = True
     m_fps = 0
     t_start = time.time()
-    counter = 0
     while camera.isOpened():
         if average:
             ret, frame = camera.get_frame()
             m_fps = m_fps + 1
             fps = m_fps / (time.time() - t_start)
-            
+
         else:
             start = time.time()
             ret, frame = camera.get_frame()
             end = time.time()
             fps = 1 / (end - start)
+        # print(f'frame.shape: {frame.shape}')
         text = 'FPS:' + str(int(fps))
         cv.putText(frame, text, (20, 30), cv.FONT_HERSHEY_SIMPLEX, 0.9, (0, 200, 0), 1)
-        # cv.imshow('frame', frame)
-        cv.imwrite(f'output/frame_{counter}', frame)
+        cv.imshow('frame', frame)
 
         k = cv.waitKey(1) & 0xFF
         if k == 27 or k == ord('q'):

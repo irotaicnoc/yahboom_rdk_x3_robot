@@ -15,7 +15,7 @@ class YoloDetector(object):
         )
 
         self.model_name = parameters['model_name']
-        self.model_folder = gc.COMPUTER_VISION_MODEL_FOLDER_PATH
+        self.model_folder = gc.GENERIC_MODEL_FOLDER_PATH
         self.model_path = self.model_folder + self.model_name
         self.camera_image_size = parameters['camera_image_size']
         self.verbose = parameters['verbose']
@@ -40,7 +40,7 @@ class YoloDetector(object):
                     print(e)
                 self.device = gc.CPU_DEVICE
                 self.model_name = parameters['backup_model_name']
-                self.model_folder = gc.COMPUTER_VISION_MODEL_FOLDER_PATH
+                self.model_folder = gc.GENERIC_MODEL_FOLDER_PATH
                 self.model_path = self.model_folder + self.model_name
                 if self.verbose >= 1:
                     print(f'Switching to backup CPU model {self.model_name} in folder {self.model_folder}...')
