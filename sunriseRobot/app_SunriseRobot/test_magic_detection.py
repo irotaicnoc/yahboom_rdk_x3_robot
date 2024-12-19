@@ -8,8 +8,6 @@ import global_constants as gc
 
 
 def test(**kwargs) -> None:
-    parameters = args.import_args(yaml_path='configs/fine_tune_yolo_model.yaml', **kwargs)
-
     # model to test
     trained_model_path = f'{gc.MAGIC_MODEL_FOLDER_PATH}magic_detector_yolo11x_640_480_edgetpu.tflite'
     trained_model = YOLO(model=trained_model_path)
@@ -19,8 +17,6 @@ def test(**kwargs) -> None:
         test_image = cv2.imread(test_image_path)
         test_height, test_width = test_image.shape[:2]
         print(f'Test image (height, width): ({test_height}, {test_width})')
-        if parameters['verbose'] >= 1:
-            print(f'Using bg {test_image_path}')
 
         results = trained_model(test_image)
         image_np = results[0].plot()
