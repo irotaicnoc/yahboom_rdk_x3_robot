@@ -8,7 +8,7 @@ import args
 import utils
 import global_constants as gc
 from robot_head import RobotHead
-from detector import YoloDetector
+from detector_usb_camera_v1 import YoloDetector
 from gpio_pin_control import GpioLed
 
 
@@ -27,11 +27,12 @@ class AiAgent(object):
         self.no_target_counter = 0
 
         # camera initialization
-        self.camera_is_open = -1
-        self.camera = cv2.VideoCapture(8)
-        self.video_capture_kwargs = parameters['camera_kwargs']['video_capture_kwargs']
-        self.frame_width = self.video_capture_kwargs['width']
-        self.frame_height = self.video_capture_kwargs['height']
+        self.camera = None
+        self.camera_is_open = False
+        self.camera_index = parameters['camera_kwargs']['index']
+        self.frame_width = parameters['camera_kwargs']['width']
+        self.frame_height = parameters['camera_kwargs']['height']
+        self.frame_per_second = parameters['camera_kwargs']['fps']
 
         # yolo detector initialization
         self.detector = YoloDetector(
@@ -61,9 +62,9 @@ class AiAgent(object):
         self.set_zero_speed()
         self.robot_body.set_car_motion(self.speed_x, 0, self.speed_z)
         self.agent_active = False
-        if self.camera_is_open == 0:
-            self.camera_is_open = -1
-            self.camera.close_cam()
+        if self.camera_is_open:
+            self.camera_is_open = False
+            self.camera.release()
             if self.verbose >= 2:
                 print('Camera closed.')
 
@@ -71,24 +72,29 @@ class AiAgent(object):
         if self.use_gpio_led:
             self.gpio_led.set_color('off')
 
-    def activate_agent(self, video_capture_kwargs=None):
+    def activate_agent(self):
         if self.verbose >= 1:
             print('Activating autonomous agent...')
         self.set_zero_speed()
         self.robot_body.set_car_motion(self.speed_x, 0, self.speed_z)
-        self.camera_is_open = -1
-        if video_capture_kwargs is None:
-            self.camera_is_open = self.camera.open_cam(**self.video_capture_kwargs)
-        else:
-            self.camera_is_open = self.camera.open_cam(**video_capture_kwargs)
 
-        if self.camera_is_open == 0:
+        self.camera = cv2.VideoCapture(self.camera_index)
+        self.camera_is_open = self.camera.isOpened()
+        if self.camera_is_open:
+            self.camera.set(propId=cv2.CAP_PROP_FRAME_WIDTH, value=self.frame_width)
+            self.camera.set(propId=cv2.CAP_PROP_FRAME_HEIGHT, value=self.frame_height)
+            self.camera.set(propId=cv2.CAP_PROP_FPS, value=self.frame_per_second)
             self.agent_active = True
             self.gpio_led.set_color('off')
             if self.verbose >= 2:
                 print('Camera opened correctly.')
+                frame_width = int(self.camera.get(propId=cv2.CAP_PROP_FRAME_WIDTH))
+                frame_height = int(self.camera.get(propId=cv2.CAP_PROP_FRAME_HEIGHT))
+                fps = int(self.camera.get(propId=cv2.CAP_PROP_FPS))
+                print(f'camera index: {self.camera_index}')
+                print(f'width: {frame_width}, height: {frame_height}, fps: {fps}')
         else:
-            warnings.warn('Failed to open camera.')
+            warnings.warn(f'Failed to open camera {self.camera_index}.')
             warnings.warn('Impossible to run autonomous agent.')
             self.agent_active = False
 
@@ -117,12 +123,10 @@ class AiAgent(object):
         self.robot_body.set_car_motion(self.speed_x, 0, self.speed_z)
         move_duration = 0.5
 
-        self.camera.get_img(2)
-        self.camera.get_img(2)
-        frame = self.camera.get_img(2)
-        if frame is None:
+        success, frame = self.camera.read()
+        if not success:
             if self.verbose >= 1:
-                print('Frame is None.')
+                print('Could not read frame.')
             time.sleep(0.5)
             return
 

@@ -8,3 +8,7 @@ verbose: 2
 com: /dev/ttyUSB0
 #com: /dev/myserial
 baud_rate: 115200
+
+#camera_type: internal
+camera_type: usb_v1
+#camera_type: usb_v2

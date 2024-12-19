@@ -7,7 +7,6 @@ from robot_body import RobotBody
 
 import args
 from light import Light
-from ai_agent import AiAgent
 import global_constants as gc
 from robot_head import RobotHead
 from gpio_pin_control import GpioLed
@@ -47,6 +46,7 @@ def main_loop(**kwargs):
         'robot_body': robot_body,
         'robot_head': robot_head,
         'gpio_led': gpio_led,
+        'camera_type': parameters['camera_type'],
         'verbose': parameters['verbose'],
     }
     thread_ai_agent = threading.Thread(target=task_ai_agent, name='task_ai_agent', kwargs=ai_agent_kwargs)
@@ -72,6 +72,14 @@ def task_joystick(**kwargs):
 
 def task_ai_agent(**kwargs):
     try:
+        if kwargs['camera_type'] == 'internal':
+            from ai_agent import AiAgent
+        elif kwargs['camera_type'] == 'usb_v1':
+            from ai_agent_usb_camera_v1 import AiAgent
+        elif kwargs['camera_type'] == 'usb_v2':
+            from ai_agent_usb_camera_v2 import AiAgent
+        else:
+            raise ValueError(f'Unknown camera_type: {kwargs["camera_type"]}')
         ai_agent = AiAgent(**kwargs)
         robot_head = kwargs['robot_head']
         robot_head.robot_mode_list.append('autonomous_tracking')

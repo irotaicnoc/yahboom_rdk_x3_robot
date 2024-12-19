@@ -7,7 +7,7 @@ use_gpio_led: True
 think_steps_if_no_target: 3
 
 camera_kwargs:
-  video_index: 8
+  index: 8
   fps: 2
   width: 640
   height: 480
