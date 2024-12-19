@@ -16,6 +16,7 @@ def test_magic_detector() -> None:
         str_path = str(test_image_path)
         print(f'image path: {str_path}')
         test_image = cv2.imread(filename=str_path)
+        utils.display_image(image=test_image, window_name='Test image')
         # cv2.resize(src=test_image, dsize=(640, 640), dst=test_image)
         print(f'Test image shape: {test_image.shape}')
         # exchange the height and width
@@ -24,7 +25,7 @@ def test_magic_detector() -> None:
 
         results = trained_model(test_image)
         image_np = results[0].plot()
-        utils.display_image(image=image_np, window_name='REAL test images')
+        utils.display_image(image=image_np, window_name='Detection result')
 
 
 if __name__ == '__main__':
