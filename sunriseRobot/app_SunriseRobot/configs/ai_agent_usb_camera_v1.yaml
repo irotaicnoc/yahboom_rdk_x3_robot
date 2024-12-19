@@ -1,0 +1,17 @@
+verbose: 0
+# for autonomous mode only
+steer_threshold: 0.3
+angular_speed_range: [1.0, 2.0]
+save_images: False
+use_gpio_led: True
+think_steps_if_no_target: 3
+
+camera_kwargs:
+  video_index: 8
+  fps: 2
+  width: 640
+  height: 480
+#  width: 1280
+#  height: 960
+#  width: 1920
+#  height: 1080
