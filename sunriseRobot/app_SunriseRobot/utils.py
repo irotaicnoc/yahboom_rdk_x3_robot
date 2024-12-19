@@ -151,3 +151,25 @@ def x_displacement_to_angular_speed(x_distance_from_img_center: float,
     if x_distance_from_img_center < 0:
         speed_z *= -1
     return speed_z
+
+
+def display_image(image: np.ndarray,
+                  proportion: float = 1.0,
+                  window_name: str = 'Display image',
+                  ) -> None:
+    temp_image = image.copy()  # Make a copy of the original image
+
+    if proportion != 1.0:
+        height, width = temp_image.shape[:2]
+        new_width = int(width * proportion)
+        new_height = int(height * proportion)
+        temp_image = cv2.resize(temp_image, (new_width, new_height))
+
+    # Display the image
+    cv2.imshow(window_name, temp_image)
+    # Wait for a key press
+    key = cv2.waitKey(0)
+    cv2.destroyAllWindows()
+    # If 'q' is pressed, exit
+    if key == ord('q'):
+        exit()
