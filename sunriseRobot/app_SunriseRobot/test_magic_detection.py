@@ -21,8 +21,8 @@ def test_magic_detector() -> None:
         # cv2.resize(src=test_image, dsize=(640, 640), dst=test_image)
         print(f'Test image shape: {test_image.shape}')
         # exchange the height and width
-        # test_image = test_image.transpose(2, 0, 1)
-        # print(f'Test image shape: {test_image.shape}')
+        test_image = test_image.transpose(2, 0, 1)
+        print(f'Test image shape: {test_image.shape}')
 
         results = trained_model(test_image)
         image_np = results[0].plot()
