@@ -8,8 +8,8 @@ import global_constants as gc
 
 def test_magic_detector() -> None:
     # magic detector model to test
-    trained_model_path = f'{gc.MAGIC_MODEL_FOLDER_PATH}magic_detector_yolo11l.pt'
-    # trained_model_path = f'{gc.MAGIC_MODEL_FOLDER_PATH}magic_detector_yolo11x_640_480_edgetpu.tflite'
+    # trained_model_path = f'{gc.MAGIC_MODEL_FOLDER_PATH}magic_detector_yolo11l.pt'
+    trained_model_path = f'{gc.MAGIC_MODEL_FOLDER_PATH}magic_detector_yolo11l_640_480_edgetpu.tflite'
     trained_model = YOLO(model=trained_model_path, task='detect')
 
     test_image_path_generator = Path(f'{gc.APP_FOLDER_PATH}test_images/').glob('*.jpg')
