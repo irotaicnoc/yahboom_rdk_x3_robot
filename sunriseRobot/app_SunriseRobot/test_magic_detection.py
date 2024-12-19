@@ -17,10 +17,10 @@ def test_magic_detector() -> None:
         print(f'image path: {str_path}')
         test_image = cv2.imread(filename=str_path)
         # cv2.resize(src=test_image, dsize=(640, 640), dst=test_image)
-        test_height, test_width = test_image.shape[:2]
-        print(f'Test image (height, width): ({test_height}, {test_width})')
+        print(f'Test image shape: {test_image.shape}')
         # exchange the height and width
         test_image = test_image.transpose(1, 0, 2)
+        print(f'Test image shape: {test_image.shape}')
 
         results = trained_model(test_image)
         image_np = results[0].plot()
