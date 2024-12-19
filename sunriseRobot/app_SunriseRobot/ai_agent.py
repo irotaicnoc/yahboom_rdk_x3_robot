@@ -18,7 +18,7 @@ class AiAgent(object):
         self.robot_body = robot_body
         self.robot_head = robot_head
         parameters = args.import_args(
-            yaml_path=gc.CONFIG_FOLDER_PATH + 'ai_agent_config.yaml',
+            yaml_path=gc.CONFIG_FOLDER_PATH + 'ai_agent.yaml',
             **kwargs,
         )
         self.verbose = parameters['verbose']

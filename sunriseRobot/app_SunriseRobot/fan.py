@@ -10,7 +10,7 @@ class Fan:
     def __init__(self, verbose: int = None):
         if verbose is None:
             parameters = args.import_args(
-                yaml_path=gc.CONFIG_FOLDER_PATH + 'main_thread_config.yaml',
+                yaml_path=gc.CONFIG_FOLDER_PATH + 'main_thread.yaml',
             )
             self.verbose = parameters['verbose']
         else:

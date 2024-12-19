@@ -10,7 +10,7 @@ import global_constants as gc
 class YoloDetector(object):
     def __init__(self, **kwargs):
         parameters = args.import_args(
-            yaml_path=gc.CONFIG_FOLDER_PATH + 'detector_config.yaml',
+            yaml_path=gc.CONFIG_FOLDER_PATH + 'detector.yaml',
             **kwargs,
         )
 
