@@ -1,6 +1,6 @@
 import time
-import threading
 import warnings
+import threading
 
 from oled import OLED
 from joystick import Joystick
