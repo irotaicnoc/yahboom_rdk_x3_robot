@@ -1,6 +1,6 @@
 import warnings
 
-import cv2
+# import cv2
 from ultralytics import YOLO
 
 import args

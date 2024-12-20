@@ -18,15 +18,15 @@ def format_camera_frames(frame,
     frame_from_buffer = np.frombuffer(frame, dtype=np.uint8)
     # if save_img:
     #     np.save(f'{gc.APP_FOLDER_PATH}output/{counter}_02_frame_from_buffer.npy', frame_from_buffer)
-    print(f'frame_from_buffer shape: {frame_from_buffer.shape}')
+    # print(f'frame_from_buffer shape: {frame_from_buffer.shape}')
     frame_reshaped = frame_from_buffer.reshape(original_height * 3 // 2, original_width)
     # if save_img:
     #     np.save(f'{gc.APP_FOLDER_PATH}output/{counter}_03_frame_reshaped.npy', frame_reshaped)
-    print(f'frame_reshaped shape: {frame_reshaped.shape}')
+    # print(f'frame_reshaped shape: {frame_reshaped.shape}')
     frame_rgb = cv2.cvtColor(src=frame_reshaped, code=cv2.COLOR_YUV2BGR_NV12)
     # if save_img:
     #     cv2.imwrite(f'{gc.APP_FOLDER_PATH}output/{counter}_04_frame_rgb.jpg', frame_rgb)
-    print(f'frame RGB shape: {frame_rgb.shape}')
+    # print(f'frame RGB shape: {frame_rgb.shape}')
     # if counter >= 4:
     #     exit()
     # if new_size is not None:

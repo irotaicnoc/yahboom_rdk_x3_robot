@@ -126,6 +126,8 @@ class AiAgent(object):
         self.robot_body.set_car_motion(self.speed_x, 0, self.speed_z)
         move_duration = 0.5
 
+        # remove the old frame from the buffer. "grab" is faster that "read".
+        self.camera.grab()
         success, frame = self.camera.read()
         if not success:
             if self.verbose >= 1:
