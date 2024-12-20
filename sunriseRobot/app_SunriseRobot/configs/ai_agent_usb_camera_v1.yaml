@@ -9,7 +9,7 @@ think_steps_if_no_target: 3
 camera_kwargs:
   index: 8
   fps: 10
-  buffer_size: 2
+  buffer_size: 1
   width: 640
   height: 480
 #  width: 1280
