@@ -33,6 +33,7 @@ class AiAgent(object):
         self.frame_width = parameters['camera_kwargs']['width']
         self.frame_height = parameters['camera_kwargs']['height']
         self.frame_per_second = parameters['camera_kwargs']['fps']
+        self.buffer_size = parameters['camera_kwargs']['buffer_size']
 
         # yolo detector initialization
         self.detector = YoloDetector(
@@ -84,6 +85,7 @@ class AiAgent(object):
             self.camera.set(propId=cv2.CAP_PROP_FRAME_WIDTH, value=self.frame_width)
             self.camera.set(propId=cv2.CAP_PROP_FRAME_HEIGHT, value=self.frame_height)
             self.camera.set(propId=cv2.CAP_PROP_FPS, value=self.frame_per_second)
+            self.camera.set(propId=cv2.CAP_PROP_BUFFERSIZE, value=self.buffer_size)
             self.agent_active = True
             self.gpio_led.set_color('off')
             if self.verbose >= 2:
@@ -92,7 +94,8 @@ class AiAgent(object):
                 frame_height = int(self.camera.get(propId=cv2.CAP_PROP_FRAME_HEIGHT))
                 fps = int(self.camera.get(propId=cv2.CAP_PROP_FPS))
                 print(f'camera index: {self.camera_index}')
-                print(f'width: {frame_width}, height: {frame_height}, fps: {fps}')
+                print(f'width: {frame_width}, height: {frame_height}')
+                print(f'fps: {fps}, buffer size: {self.buffer_size}')
         else:
             warnings.warn(f'Failed to open camera {self.camera_index}.')
             warnings.warn('Impossible to run autonomous agent.')
