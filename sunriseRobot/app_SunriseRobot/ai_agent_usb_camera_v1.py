@@ -8,8 +8,8 @@ import args
 import utils
 import global_constants as gc
 from robot_head import RobotHead
-from detector_usb_camera_v1 import YoloDetector
 from gpio_pin_control import GpioLed
+from detector_usb_camera_v1 import YoloDetector
 
 
 class AiAgent(object):
