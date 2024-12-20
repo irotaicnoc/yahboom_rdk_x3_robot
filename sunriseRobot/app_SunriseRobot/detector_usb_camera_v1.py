@@ -22,6 +22,7 @@ class YoloDetector(object):
         self.verbose = parameters['verbose']
         self.confidence_threshold = parameters['confidence_threshold']
         self.device = gc.CPU_DEVICE
+        self.frame_counter = 0
         if gc.TPU_DEVICE in parameters['model_name']:
             self.device = gc.TPU_DEVICE
 
@@ -93,12 +94,14 @@ class YoloDetector(object):
         #   [0, 1] means the target is right or below of center respectively
 
         print(f'frame shape: {frame.shape}')
-        cv2.imwrite(gc.OUTPUT_FOLDER_PATH + 'frame.jpg', frame)
-        frame = utils.format_camera_frames(
-            frame=frame,
-            original_width=self.camera_image_size[0],
-            original_height=self.camera_image_size[1],
-        )
+        utils.display_image(image=frame, window_name='Frame')
+        cv2.waitKey(0)
+        # cv2.imwrite(f'{gc.OUTPUT_FOLDER_PATH}frame_{self.frame_counter}.jpg', frame)
+        # frame = utils.format_camera_frames(
+        #     frame=frame,
+        #     original_width=self.camera_image_size[0],
+        #     original_height=self.camera_image_size[1],
+        # )
 
         if self.target_class_name is None:
             warnings.warn(f'Target_class_name is None.')
