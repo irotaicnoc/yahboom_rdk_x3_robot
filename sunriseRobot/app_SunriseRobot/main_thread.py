@@ -1,5 +1,6 @@
 import time
 import threading
+import warnings
 
 from oled import OLED
 from joystick import Joystick
@@ -75,9 +76,17 @@ def task_ai_agent(**kwargs):
         if kwargs['camera_type'] == 'internal':
             from ai_agent import AiAgent
         elif kwargs['camera_type'] == 'usb_v1':
-            from ai_agent_usb_camera_v1 import AiAgent
+            try:
+                from ai_agent_usb_camera_v1 import AiAgent
+            except:
+                warnings.warn(f'Could not find camera {kwargs["camera_type"]}. Switching to internal camera...')
+                from ai_agent import AiAgent
         elif kwargs['camera_type'] == 'usb_v2':
-            from ai_agent_usb_camera_v2 import AiAgent
+            try:
+                from ai_agent_usb_camera_v2 import AiAgent
+            except:
+                warnings.warn(f'Could not find camera {kwargs["camera_type"]}. Switching to internal camera...')
+                from ai_agent import AiAgent
         else:
             raise ValueError(f'Unknown camera_type: {kwargs["camera_type"]}')
         ai_agent = AiAgent(**kwargs)
