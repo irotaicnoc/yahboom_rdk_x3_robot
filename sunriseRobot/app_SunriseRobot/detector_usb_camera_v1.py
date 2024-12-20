@@ -96,7 +96,7 @@ class YoloDetector(object):
         print(f'frame shape: {frame.shape}')
         utils.display_image(image=frame, window_name='Frame')
         cv2.waitKey(0)
-        # cv2.imwrite(f'{gc.OUTPUT_FOLDER_PATH}frame_{self.frame_counter}.jpg', frame)
+        cv2.imwrite(f'{gc.OUTPUT_FOLDER_PATH}frame_{self.frame_counter}.jpg', frame)
         # frame = utils.format_camera_frames(
         #     frame=frame,
         #     original_width=self.camera_image_size[0],
