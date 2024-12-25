@@ -1,7 +1,7 @@
 verbose: 0
 #model_name: yolo11s.pt
-#model_name: yolo11s_640_480_edgetpu.tflite
-model_name: yolo11m_640_480_edgetpu.tflite
+model_name: yolo11s_640_480_edgetpu.tflite
+#model_name: yolo11m_640_480_edgetpu.tflite
 #model_name: yolo11l_640_480_edgetpu.tflite
 backup_model_name: yolo11s.pt
 confidence_threshold: 0.25
