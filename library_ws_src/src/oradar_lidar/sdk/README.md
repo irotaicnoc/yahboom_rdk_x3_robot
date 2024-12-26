@@ -1,29 +1,35 @@
 
-# MS200 SDK基本介绍
-MS200 SDK是专门为Oradar MS200激光雷达产品设计的软件开发套件。提供易于使用的C/C++风格的API。通过MS200 SDK,用户可以快速连接Oradar MS200激光雷达并接收激光雷达点云数据。
- 
-# 运行要求
-- Linux系统：Ubuntu 14.04 LTS, Ubuntu 16.04 LTS, Ubuntu 18.04 LTS
-- Windows 7/10
-- C++ 11编译器
-- CMake，版本号为3.5或更高
+# MS200 SDK Basic Introduction
+The MS200 SDK is a software development kit specifically designed for the Oradar MS200 LiDAR product. It provides an
+easy-to-use C/C++ style API. With the MS200 SDK, users can quickly connect to the Oradar MS200 LiDAR and receive LiDAR
+point cloud data. 
 
-# 编译和安装方法
-首先把sdk压缩包解压出来，解压后的文件名为sdk。
-Linux下，使用如下命令：
+# Requirements
+- Linux system：Ubuntu 14.04 LTS, Ubuntu 16.04 LTS, Ubuntu 18.04 LTS
+- Windows 7/10
+- C++ 11 compiler
+- CMake，version 3.5 or higher
+
+# Compilation and Installation Method
+First, extract the SDK package. The extracted folder name is sdk.
+
+On Linux, use the following commands:
+
 ```
 cd sdk
 mkdir build
 cd build
-cmake ..    (可使用cmake -DCMAKE_INSTALL_PREFIX=out .. 指定安装目录为当前路径下的out目录)
+cmake ..    (you can use cmake -DCMAKE_INSTALL_PREFIX=out .. to specify the installation directory as the current path's out directory)
 make
 sudo make install
 ```
-Windows下：
 
-(这里以windows10系统，编译器为QT的MinGW为例，需要将编译器安装路径导入系统环境变量中)
+On Windows：
 
-按住shift键，鼠标右键，打开powershell
+(Here, taking Windows 10 system and QT's MinGW compiler as an example, you need to import the compiler installation
+path into the system environment variables).
+Hold the shift key, right-click, and open PowerShell
+
 ```
 cd sdk
 mkdir build
@@ -32,43 +38,49 @@ cmake -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=out
 mingw32-make -j8
 mingw32-make install
 ```
-生成`liboradar_sdk.a`库文件，`blocking_test`和`non-blocking_test`可执行文件
+
+Generate liboradar_sdk.a library file, blocking_test and non-blocking_test executable files
+
+# SDK Main Function API Description
+| Function Name        | Function Description                                                                                                                                     |
+|----------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Connect              | Check and open the LiDAR serial port, create LiDAR serial port read/write thread                                                                         |
+| Disconnect           | Close the LiDAR serial port read/write thread, close the serial port                                                                                     |
+| GrabOneScan          | Get the latest packet of point cloud data, non-blocking. The point cloud data includes the angle, distance, and intensity information of all points      |
+| GrabOneScanBlocking  | Get the latest packet of point cloud data, blocking. The point cloud data includes the angle, distance, and intensity information of all points          |
+| GrabFullScan         | Get the latest full circle of point cloud data, non-blocking. The point cloud data includes the angle, distance, and intensity information of all points |
+| GrabFullScanBlocking | Get the latest full circle of point cloud data, blocking. The point cloud data includes the angle, distance, and intensity information of all points     |
+| GetRotationSpeed     | Get the latest motor speed                                                                                                                               |
+| SetRotationSpeed     | Set the motor speed                                                                                                                                      |
+| GetTimestamp         | Get the timestamp of the latest packet                                                                                                                   |
+| GetFirmwareVersion   | Get the firmware version number of the upper and lower parts                                                                                             |
+| GetDeviceSN          | Get the LiDAR device SN number                                                                                                                           |
+| Activate             | The LiDAR enters the ranging state from the standby state                                                                                                |
+| Deactive             | The LiDAR enters the standby state from the ranging state                                                                                                |
 
 
-# SDK 主要函数API说明
-|函数名称 | 功能介绍|
-|---------|---------------|
-|Connect| 检查激光雷达串口并打开，创建激光雷达串口读写线程|
-|Disconnect| 关闭激光雷达串口读写线程， 关闭串口
-|GrabOneScan           |  获取最新一包点云数据，非阻塞式。 点云数据包含所有点的角度、距离和强度信息|
-|GrabOneScanBlocking   |  获取最新一包点云数据，阻塞式。 点云数据包含所有点的角度、距离和强度信息|
-|GrabFullScan          |  获取最新一圈点云数据，非阻塞式。 点云数据包含所有点的角度、距离和强度信息|
-|GrabFullScanBlocking  |  获取最新一圈点云数据，阻塞式。 点云数据包含所有点的角度、距离和强度信息|
-|GetRotationSpeed      |  获取最新的电机转速|
-|SetRotationSpeed      |  设置电机转速|
-|GetTimestamp          |  获取最新包的时间戳|
-|GetFirmwareVersion    |  获取上下部组固件版本号|
-|GetDeviceSN           |  获取雷达设备SN号|
-|Activate              |  激光雷达从待机状态进入测距状态|
-|Deactive              |  激光雷达从测距状态进入待机状态|
+# Example Usage Instructions
+On Linux：
 
+Connect the MS200 LiDAR device to the Ubuntu system via a USB to serial cable. Open the terminal in the Ubuntu system
+and enter ls /dev/ttyACM* to check if the serial device is connected. If the serial device is detected, use the sudo
+chmod 777 /dev/ttyACM* command to grant the highest permissions. Then execute the SDK Sample, enter the following
+command:
 
-# 示例使用说明
-Linux系统下：
-
-将ms200激光雷达设备通过USB转串口线，插入连接到Ubuntu系统，在Ubuntu系统下打开终端，输入 `ls /dev/ttyACM*` 查看串口设备是否接入，若检测到串口设备，则使用 `sudo chmod 777 /dev/ttyACM*` 命令赋予最高权限。
-然后执行SDK Samsple,输入如下命令：
 ```
 cd sdk/build
-./blocking_test                 #阻塞式获取一圈数据测试程序
+./blocking_test                 # Blocking test program to get a full circle of data
 ```
-或者
+or
 ```
-./non-blocking_test             #非阻塞式获取一圈数据测试程序
+./non-blocking_test             # Non-blocking test program to get a full circle of data
 ```
-注：如果命令 ls /dev/ttyACM*查看设备，*不是0时，需要在Samsple测试代码中把设备名由/dev/ttyACM0 替换为对应的设备名。(代码中的port_name变量进行修改)
 
-Windwos系统下：
+Note: If the command ls /dev/ttyACM* detects a device, and * is not 0, you need to replace the device name /dev/ttyACM0
+in the Sample test code with the corresponding device name (modify the port_name variable in the code).
 
-将ms200激光雷达设备通过USB转串口线，插入到windows系统PC上，通过设备管理器查看串口名称，比如`com10`,需要修改示例代码中的port_name变量改为com10，重新编译。
-然后双击`blocking_test.exe`或者`non-blocking_test.exe`或者`blocking_c_api_test.exe`可执行程序即可。
+On Windwos：
+
+Connect the MS200 LiDAR device to the Windows system PC via a USB to serial cable. Check the serial port name through
+the device manager, such as com10, and modify the port_name variable in the sample code to com10, then recompile. Then
+double-click the blocking_test.exe or non-blocking_test.exe or blocking_c_api_test.exe executable program to run it.
