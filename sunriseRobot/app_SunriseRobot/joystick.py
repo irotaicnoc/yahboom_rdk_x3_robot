@@ -46,11 +46,12 @@ class Joystick(object):
         self.gpio_led = gpio_led
 
         # Find the joystick device.
-        print('Joystick Available devices:')
-        # Shows the joystick list of the Controller, for example: /dev/input/js0
-        for fn in os.listdir('/dev/input'):
-            if fn.startswith('js'):
-                print('    /dev/input/%s' % fn)
+        if self.verbose >= 1:
+            print('Joystick Available devices:')
+            # Shows the joystick list of the Controller, for example: /dev/input/js0
+            for fn in os.listdir('/dev/input'):
+                if fn.startswith('js'):
+                    print('\t/dev/input/%s' % fn)
 
         # Open the joystick device.
         try:
@@ -272,6 +273,11 @@ class Joystick(object):
                     self.robot_body.set_car_motion(0, -self.robot_head.speed_coefficient, 0)
                 else:
                     self.robot_body.set_car_motion(0, 0, 0)
+            elif self.robot_head.robot_mode == 'autonomous_tracking':
+                if value > 0:
+                    self.robot_head.next_model()
+                if value < 0:
+                    self.robot_head.previous_model()
 
         elif name == 'WSAD_UP_DOWN':
             # in user_controlled mode robot forward/backward
