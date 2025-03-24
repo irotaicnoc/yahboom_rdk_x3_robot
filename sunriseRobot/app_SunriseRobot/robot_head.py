@@ -22,7 +22,6 @@ class RobotHead:
         model_folder_path = Path(gc.GENERIC_MODEL_FOLDER_PATH)
         for model_path in model_folder_path.glob('*.*'):
             self.model_list.append(model_path.name)
-        print(f'Found models: {self.model_list}')
 
         # hotspot and ROS2 parameters
         self.hotspot_status = 'inactive'
