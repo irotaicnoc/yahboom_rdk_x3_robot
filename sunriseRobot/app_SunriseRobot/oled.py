@@ -129,7 +129,8 @@ class OLED:
     def get_controller_mode_status(self) -> tuple:
         status = (
             self.robot_head.robot_mode.replace('_', ' ').title(),
-            f'target: {self.robot_head.tracking_target_list[self.robot_head.tracking_target_pos].replace("_", " ").title()}'
+            f'target: {self.robot_head.tracking_target_list[self.robot_head.tracking_target_pos].replace("_", " ").title()}',
+            f'model: {self.robot_head.model_list[self.robot_head.model_pos].replace("_", " ").title()}',
         )
         return status
 
@@ -146,15 +147,15 @@ class OLED:
             state = self.begin()
             while state:
                 self.clear(refresh=self.__clear)
-                str_ip = 'IP:' + self.get_local_ip()
                 controller_mode = self.get_controller_mode_status()
                 self.add_line(controller_mode[0], line=1)
                 if controller_mode[0] == AUTONOMOUS_MODE:
                     self.add_line(controller_mode[1], line=2)
+                    self.add_line(controller_mode[2], line=3)
                 else:
                     self.add_line(self.get_ros2_mode_status(), line=2)
-                self.add_line(self.get_battery_voltage(), line=3)
-                self.add_line(str_ip, line=4)
+                    self.add_line('IP:' + self.get_local_ip(), line=3)
+                self.add_line(self.get_battery_voltage(), line=4)
                 # Display image
                 self.refresh()
                 time.sleep(2)
