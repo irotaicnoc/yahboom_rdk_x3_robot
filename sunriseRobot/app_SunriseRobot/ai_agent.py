@@ -35,7 +35,6 @@ class AiAgent(object):
 
         # yolo detector initialization
         self.detector = YoloDetector(
-            robot_head=robot_head,
             camera_image_size=(self.frame_width, self.frame_height),
             verbose=self.verbose,
         )
