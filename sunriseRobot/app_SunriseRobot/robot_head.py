@@ -1,4 +1,5 @@
 import args
+from pathlib import Path
 
 import global_constants as gc
 
@@ -14,6 +15,14 @@ class RobotHead:
         self.robot_mode = self.robot_mode_list[0]
         self.tracking_target_list = parameters['tracking_target_list']
         self.tracking_target_pos = 0
+
+        # search for models in the model folder
+        self.model_list = []
+        self.model_pos = 0
+        model_folder_path = Path(gc.GENERIC_MODEL_FOLDER_PATH)
+        for model_path in model_folder_path.glob('*.*'):
+            self.model_list.append(model_path.name)
+        print(f'Found models: {self.model_list}')
 
         # hotspot and ROS2 parameters
         self.hotspot_status = 'inactive'
@@ -45,6 +54,18 @@ class RobotHead:
         self.tracking_target_pos = self.tracking_target_pos % len(self.tracking_target_list)
         if self.verbose >= 1:
             print(f'New target: {self.tracking_target_list[self.tracking_target_pos]}')
+
+    def next_model(self):
+        self.model_pos += 1
+        self.model_pos = self.model_pos % len(self.model_list)
+        if self.verbose >= 1:
+            print(f'New model: {self.model_list[self.model_pos]}')
+
+    def previous_model(self):
+        self.model_pos -= 1
+        self.model_pos = self.model_pos % len(self.model_list)
+        if self.verbose >= 1:
+            print(f'New model: {self.model_list[self.model_pos]}')
 
     def increase_speed_coefficient(self):
         self.speed_coefficient = min(1.0, self.speed_coefficient + 0.1)
