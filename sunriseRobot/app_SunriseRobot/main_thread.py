@@ -20,9 +20,11 @@ def main_loop(**kwargs):
     robot_body = RobotBody(com=parameters['com'], baud_rate=parameters['baud_rate'], verbose=parameters['verbose'])
     robot_body.create_receive_threading()
     robot_head = RobotHead()
+    # LIGHTS
     internal_light = Light(verbose=parameters['verbose'])
     gpio_led = GpioLed()
 
+    # JOYSTICK
     joystick_kwargs = {
         'robot_body': robot_body,
         'robot_head': robot_head,
@@ -44,6 +46,7 @@ def main_loop(**kwargs):
     thread_screen = threading.Thread(target=task_screen, name='task_screen', kwargs=screen_kwargs, daemon=True)
     thread_screen.start()
 
+    # VISION AGENT
     vision_agent_kwargs = {
         'robot_body': robot_body,
         'robot_head': robot_head,
