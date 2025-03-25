@@ -11,6 +11,7 @@ import Adafruit_SSD1306 as SSD
 
 from robot_body import RobotBody
 
+import utils
 from robot_head import RobotHead
 
 AUTONOMOUS_MODE = 'Autonomous Tracking'
@@ -137,7 +138,8 @@ class OLED:
     def get_battery_voltage(self) -> str:
         try:
             voltage = self.robot_body.get_battery_voltage()
-            return f'Battery: {voltage:.1f}V'
+            percent = utils.voltage_to_percent(voltage)
+            return f'Battery: {percent:.1f}%'
         except:
             return f'Battery: error'
 

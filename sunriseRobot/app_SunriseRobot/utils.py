@@ -173,3 +173,12 @@ def display_image(image: np.ndarray,
     # If 'q' is pressed, exit
     if key == ord('q'):
         exit()
+
+
+def voltage_to_percent(voltage: float) -> float:
+    return change_range(val=voltage,
+                        original_min_val=gc.MIN_VOLTAGE,
+                        original_max_val=gc.MAX_VOLTAGE,
+                        new_min_val=0,
+                        new_max_val=100,
+                        )
