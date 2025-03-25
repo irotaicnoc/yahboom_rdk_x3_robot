@@ -53,8 +53,6 @@ def main_loop(**kwargs):
     thread_vision_agent = threading.Thread(target=task_vision_agent, name='task_vision_agent', kwargs=vision_agent_kwargs)
     thread_vision_agent.start()
 
-    # TODO: ros2 as separate thread?
-
     # notify the robot is ready
     robot_body.set_beep(50)
 
