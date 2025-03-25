@@ -12,13 +12,13 @@ from detector import YoloDetector
 from gpio_pin_control import GpioLed
 
 
-class AiAgent(object):
+class VisionAgent(object):
     def __init__(self, robot_body: RobotBody, robot_head: RobotHead, gpio_led: GpioLed, **kwargs):
         # general initialization
         self.robot_body = robot_body
         self.robot_head = robot_head
         parameters = args.import_args(
-            yaml_path=gc.CONFIG_FOLDER_PATH + 'ai_agent.yaml',
+            yaml_path=gc.CONFIG_FOLDER_PATH + 'vision_agent.yaml',
             **kwargs,
         )
         self.verbose = parameters['verbose']

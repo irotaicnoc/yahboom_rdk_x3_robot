@@ -39,19 +39,19 @@ def main_loop(**kwargs):
     }
     # "daemon = True" means that when this is the only thread running, (or when only other daemonic threads remain)
     # the containing thread (the main) will exit. The oled screen is daemonic, if there are no more joystick and/or
-    # ai_agent left, then the main can stop.
+    # vision_agent left, then the main can stop.
     thread_screen = threading.Thread(target=task_screen, name='task_screen', kwargs=screen_kwargs, daemon=True)
     thread_screen.start()
 
-    ai_agent_kwargs = {
+    vision_agent_kwargs = {
         'robot_body': robot_body,
         'robot_head': robot_head,
         'gpio_led': gpio_led,
         'camera_type': parameters['camera_type'],
         'verbose': parameters['verbose'],
     }
-    thread_ai_agent = threading.Thread(target=task_ai_agent, name='task_ai_agent', kwargs=ai_agent_kwargs)
-    thread_ai_agent.start()
+    thread_vision_agent = threading.Thread(target=task_vision_agent, name='task_vision_agent', kwargs=vision_agent_kwargs)
+    thread_vision_agent.start()
 
     # TODO: ros2 as separate thread?
 
@@ -71,31 +71,31 @@ def task_joystick(**kwargs):
             js.reconnect()
 
 
-def task_ai_agent(**kwargs):
+def task_vision_agent(**kwargs):
     try:
         if kwargs['camera_type'] == 'internal':
-            from ai_agent import AiAgent
+            from vision_agent import VisionAgent
         elif kwargs['camera_type'] == 'usb_v1':
             try:
-                from ai_agent_usb_camera_v1 import AiAgent
+                from vision_agent_usb_camera_v1 import VisionAgent
             except:
                 warnings.warn(f'Could not find camera {kwargs["camera_type"]}. Switching to internal camera...')
-                from ai_agent import AiAgent
+                from vision_agent import VisionAgent
         elif kwargs['camera_type'] == 'usb_v2':
             try:
-                from ai_agent_usb_camera_v2 import AiAgent
+                from vision_agent_usb_camera_v2 import VisionAgent
             except:
                 warnings.warn(f'Could not find camera {kwargs["camera_type"]}. Switching to internal camera...')
-                from ai_agent import AiAgent
+                from vision_agent import VisionAgent
         else:
             raise ValueError(f'Unknown camera_type: {kwargs["camera_type"]}')
-        ai_agent = AiAgent(**kwargs)
+        vision_agent = VisionAgent(**kwargs)
         robot_head = kwargs['robot_head']
         robot_head.robot_mode_list.append('autonomous_tracking')
         while True:
-            ai_agent.autonomous_behavior()
+            vision_agent.autonomous_behavior()
     except Exception as e:
-        print('AiAgent Error:')
+        print('VisionAgent Error:')
         print(e)
         print(e.__traceback__)
 

@@ -1,6 +1,4 @@
-import cv2
 import time
-import warnings
 
 from robot_body import RobotBody
 
@@ -8,17 +6,17 @@ import args
 import utils
 import global_constants as gc
 from robot_head import RobotHead
+from detector_usb_camera_v2 import YoloDetector
 from gpio_pin_control import GpioLed
-from detector_usb_camera_v1 import YoloDetector
 
 
-class AiAgent(object):
+class VisionAgent(object):
     def __init__(self, robot_body: RobotBody, robot_head: RobotHead, gpio_led: GpioLed, **kwargs):
         # general initialization
         self.robot_body = robot_body
         self.robot_head = robot_head
         parameters = args.import_args(
-            yaml_path=gc.CONFIG_FOLDER_PATH + 'ai_agent_usb_camera_v1.yaml',
+            yaml_path=gc.CONFIG_FOLDER_PATH + 'vision_agent.yaml',
             **kwargs,
         )
         self.verbose = parameters['verbose']
@@ -27,13 +25,9 @@ class AiAgent(object):
         self.no_target_counter = 0
 
         # camera initialization
-        self.camera = None
-        self.camera_is_open = False
-        self.camera_index = parameters['camera_kwargs']['index']
-        self.frame_width = parameters['camera_kwargs']['width']
-        self.frame_height = parameters['camera_kwargs']['height']
-        self.frame_per_second = parameters['camera_kwargs']['fps']
-        self.buffer_size = parameters['camera_kwargs']['buffer_size']
+        self.video_capture_kwargs = parameters['camera_kwargs']['video_capture_kwargs']
+        self.frame_width = self.video_capture_kwargs['width']
+        self.frame_height = self.video_capture_kwargs['height']
 
         # yolo detector initialization
         self.detector = YoloDetector(
@@ -57,49 +51,25 @@ class AiAgent(object):
         self.speed_x = 0
         self.speed_z = 0
 
+    def activate_agent(self):
+        if self.verbose >= 1:
+            print('Activating autonomous agent...')
+        self.set_zero_speed()
+        self.robot_body.set_car_motion(self.speed_x, 0, self.speed_z)
+        self.gpio_led.set_color('off')
+        self.detector.start_search()
+
     def deactivate_agent(self):
         if self.verbose >= 1:
             print('Deactivating autonomous agent...')
         self.set_zero_speed()
         self.robot_body.set_car_motion(self.speed_x, 0, self.speed_z)
         self.agent_active = False
-        if self.camera_is_open:
-            self.camera_is_open = False
-            self.camera.release()
-            if self.verbose >= 2:
-                print('Camera closed.')
+        self.detector.stop_search()
 
         # turn off gpio led
         if self.use_gpio_led:
             self.gpio_led.set_color('off')
-
-    def activate_agent(self):
-        if self.verbose >= 1:
-            print('Activating autonomous agent...')
-        self.set_zero_speed()
-        self.robot_body.set_car_motion(self.speed_x, 0, self.speed_z)
-
-        self.camera = cv2.VideoCapture(self.camera_index)
-        self.camera_is_open = self.camera.isOpened()
-        if self.camera_is_open:
-            self.camera.set(propId=cv2.CAP_PROP_FRAME_WIDTH, value=self.frame_width)
-            self.camera.set(propId=cv2.CAP_PROP_FRAME_HEIGHT, value=self.frame_height)
-            self.camera.set(propId=cv2.CAP_PROP_FPS, value=self.frame_per_second)
-            self.camera.set(propId=cv2.CAP_PROP_BUFFERSIZE, value=self.buffer_size)
-            self.agent_active = True
-            self.gpio_led.set_color('off')
-            if self.verbose >= 2:
-                print('Camera opened correctly.')
-                frame_width = int(self.camera.get(propId=cv2.CAP_PROP_FRAME_WIDTH))
-                frame_height = int(self.camera.get(propId=cv2.CAP_PROP_FRAME_HEIGHT))
-                fps = int(self.camera.get(propId=cv2.CAP_PROP_FPS))
-                print(f'camera index: {self.camera_index}')
-                print(f'width: {frame_width}, height: {frame_height}')
-                print(f'fps: {fps}, buffer size: {self.buffer_size}')
-        else:
-            warnings.warn(f'Failed to open camera {self.camera_index}.')
-            warnings.warn('Impossible to run autonomous agent.')
-            self.agent_active = False
 
     def autonomous_behavior(self):
         if self.robot_head.robot_mode == 'autonomous_tracking':
@@ -126,17 +96,7 @@ class AiAgent(object):
         self.robot_body.set_car_motion(self.speed_x, 0, self.speed_z)
         move_duration = 0.5
 
-        # remove the old frame from the buffer. "grab" is faster that "read".
-        self.camera.grab()
-        success, frame = self.camera.read()
-        if not success:
-            if self.verbose >= 1:
-                print('Could not read frame.')
-            time.sleep(0.5)
-            return
-
         target_info = self.detector.find_target(
-            frame=frame,
             target_name=self.robot_head.tracking_target_list[self.robot_head.tracking_target_pos],
             save=self.save_images,
         )
