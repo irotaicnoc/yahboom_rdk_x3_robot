@@ -273,7 +273,7 @@ class Joystick(object):
                     self.robot_body.set_car_motion(0, -self.robot_head.speed_coefficient, 0)
                 else:
                     self.robot_body.set_car_motion(0, 0, 0)
-            elif self.robot_head.robot_mode == 'autonomous_tracking':
+            elif self.robot_head.robot_mode == 'autonomous_vision':
                 if value > 0:
                     self.robot_head.next_model()
                 if value < 0:
@@ -291,8 +291,8 @@ class Joystick(object):
                     self.robot_body.set_car_motion(-self.robot_head.speed_coefficient, 0, 0)
                 else:
                     self.robot_body.set_car_motion(0, 0, 0)
-            # in autonomous_tracking mode cycle through tracking_target_list
-            elif self.robot_head.robot_mode == 'autonomous_tracking':
+            # in autonomous_vision mode cycle through tracking_target_list
+            elif self.robot_head.robot_mode == 'autonomous_vision':
                 if value > 0:
                     self.robot_head.next_target()
                 if value < 0:   

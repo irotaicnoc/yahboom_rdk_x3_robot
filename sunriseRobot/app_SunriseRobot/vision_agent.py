@@ -57,7 +57,7 @@ class VisionAgent(object):
 
     def deactivate_agent(self):
         if self.verbose >= 1:
-            print('Deactivating autonomous agent...')
+            print('Deactivating vision agent...')
         self.set_zero_speed()
         self.robot_body.set_car_motion(self.speed_x, 0, self.speed_z)
         self.agent_active = False
@@ -73,7 +73,7 @@ class VisionAgent(object):
 
     def activate_agent(self, video_capture_kwargs=None):
         if self.verbose >= 1:
-            print('Activating autonomous agent...')
+            print('Activating vision agent...')
         self.set_zero_speed()
         self.robot_body.set_car_motion(self.speed_x, 0, self.speed_z)
         self.camera_is_open = -1
@@ -89,11 +89,11 @@ class VisionAgent(object):
                 print('Camera opened correctly.')
         else:
             warnings.warn('Failed to open camera.')
-            warnings.warn('Impossible to run autonomous agent.')
+            warnings.warn('Impossible to run vision agent.')
             self.agent_active = False
 
     def autonomous_behavior(self):
-        if self.robot_head.robot_mode == 'autonomous_tracking':
+        if self.robot_head.robot_mode == 'autonomous_vision':
             if self.agent_active:
                 self.detect_and_move()
             else:

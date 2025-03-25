@@ -102,7 +102,7 @@ class VisionAgent(object):
             self.agent_active = False
 
     def autonomous_behavior(self):
-        if self.robot_head.robot_mode == 'autonomous_tracking':
+        if self.robot_head.robot_mode == 'autonomous_vision':
             if self.agent_active:
                 self.detect_and_move()
             else:

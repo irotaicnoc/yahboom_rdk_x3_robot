@@ -91,7 +91,7 @@ def task_vision_agent(**kwargs):
             raise ValueError(f'Unknown camera_type: {kwargs["camera_type"]}')
         vision_agent = VisionAgent(**kwargs)
         robot_head = kwargs['robot_head']
-        robot_head.robot_mode_list.append('autonomous_tracking')
+        robot_head.robot_mode_list.append('autonomous_vision')
         while True:
             vision_agent.autonomous_behavior()
     except Exception as e:

@@ -72,7 +72,7 @@ class VisionAgent(object):
             self.gpio_led.set_color('off')
 
     def autonomous_behavior(self):
-        if self.robot_head.robot_mode == 'autonomous_tracking':
+        if self.robot_head.robot_mode == 'autonomous_vision':
             if self.agent_active:
                 self.detect_and_move()
             else:
