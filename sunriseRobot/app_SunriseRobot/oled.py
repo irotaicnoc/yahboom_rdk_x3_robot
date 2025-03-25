@@ -14,7 +14,7 @@ from robot_body import RobotBody
 import utils
 from robot_head import RobotHead
 
-AUTONOMOUS_MODE = 'Autonomous Tracking'
+AUTONOMOUS_MODE = 'Autonomous Vision'
 
 
 # V1.0.10
