@@ -78,12 +78,14 @@ def task_vision_agent(**kwargs):
                 from vision_agent_usb_camera_v1 import VisionAgent
             except:
                 warnings.warn(f'Could not find camera {kwargs["camera_type"]}. Switching to internal camera...')
+                kwargs['camera_type'] = 'internal'
                 from vision_agent import VisionAgent
         elif kwargs['camera_type'] == 'usb_v2':
             try:
                 from vision_agent_usb_camera_v2 import VisionAgent
             except:
                 warnings.warn(f'Could not find camera {kwargs["camera_type"]}. Switching to internal camera...')
+                kwargs['camera_type'] = 'internal'
                 from vision_agent import VisionAgent
         else:
             raise ValueError(f'Unknown camera_type: {kwargs["camera_type"]}')
