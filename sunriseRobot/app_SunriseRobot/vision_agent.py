@@ -41,7 +41,8 @@ class VisionAgent(object):
         self.save_images = parameters['save_images']
 
         # motion initialization
-        self.steer_threshold = parameters['steer_threshold']
+        self.steer_threshold_1 = parameters['steer_threshold_1']
+        self.steer_threshold_2 = parameters['steer_threshold_2']
         self.angular_speed_range = parameters['angular_speed_range']
         self.speed_x = 0
         self.speed_z = 0
@@ -146,20 +147,36 @@ class VisionAgent(object):
             self.no_target_counter = 0
             distance_from_center_x = target_info['distance_from_center_x']
             # print(f'target x: {distance_from_center_x}')
-            # only steer to the target if its center is more than
-            # self.steer_threshold distant from the current forward direction
+            # if the robot is almost aligned with the target (angle < steer_threshold_1)
+            #     the robot will advance
+            # if the robot is almost somewhat aligned with the target (steer_threshold_1 < angle < steer_threshold_2)
+            #     the robot will steer AND advance
+            # if the robot is not aligned with the target (angle > steer_threshold_2)
+            #     the robot will steer
             # otherwise move forward
             if self.verbose >= 2:
                 print(f'X distance from img center: {distance_from_center_x}')
-            if abs(distance_from_center_x) > self.steer_threshold:
+            if abs(distance_from_center_x) > self.steer_threshold_2:
                 self.speed_x = 0
                 self.speed_z = utils.x_displacement_to_angular_speed(
                     x_distance_from_img_center=distance_from_center_x,
-                    steer_threshold=self.steer_threshold,
+                    steer_threshold=self.steer_threshold_2,
                     angular_speed_range=self.angular_speed_range,
                 )
                 if self.verbose >= 2:
                     print(f'Steer: {self.speed_z}')
+
+            elif self.steer_threshold_1 < abs(distance_from_center_x) < self.steer_threshold_2:
+                self.speed_x = self.robot_head.speed_coefficient / 2
+                self.speed_z = utils.x_displacement_to_angular_speed(
+                    x_distance_from_img_center=distance_from_center_x,
+                    steer_threshold=self.steer_threshold_2,
+                    angular_speed_range=self.angular_speed_range,
+                ) / 2
+                if self.verbose >= 2:
+                    print(f'Forward: {self.speed_x}')
+                    print(f'Steer: {self.speed_z}')
+
             else:
                 self.speed_x = self.robot_head.speed_coefficient
                 if self.verbose >= 2:

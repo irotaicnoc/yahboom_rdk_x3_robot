@@ -1,7 +1,14 @@
 verbose: 0
 
 # for autonomous mode only
-steer_threshold: 0.3
+# if the robot is almost aligned with the target (angle < steer_threshold_1)
+#     the robot will advance
+# if the robot is almost somewhat aligned with the target (steer_threshold_1 < angle < steer_threshold_2)
+#     the robot will steer AND advance
+# if the robot is not aligned with the target (angle > steer_threshold_2)
+#     the robot will steer
+steer_threshold_1: 0.25
+steer_threshold_2: 0.4
 angular_speed_range: [1.0, 2.0]
 save_images: False
 use_gpio_led: True
