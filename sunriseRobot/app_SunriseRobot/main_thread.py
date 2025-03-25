@@ -10,6 +10,7 @@ import args
 from light import Light
 import global_constants as gc
 from robot_head import RobotHead
+from sound_agent import SoundAgent
 from gpio_pin_control import GpioLed
 
 
@@ -50,8 +51,26 @@ def main_loop(**kwargs):
         'camera_type': parameters['camera_type'],
         'verbose': parameters['verbose'],
     }
-    thread_vision_agent = threading.Thread(target=task_vision_agent, name='task_vision_agent', kwargs=vision_agent_kwargs)
+    thread_vision_agent = threading.Thread(
+        target=task_vision_agent,
+        name='task_vision_agent',
+        kwargs=vision_agent_kwargs,
+    )
     thread_vision_agent.start()
+
+    # SOUND AGENT
+    sound_agent_kwargs = {
+        'robot_body': robot_body,
+        'robot_head': robot_head,
+        'gpio_led': gpio_led,
+        'verbose': parameters['verbose'],
+    }
+    thread_sound_agent = threading.Thread(
+        target=task_sound_agent,
+        name='task_sound_agent',
+        kwargs=sound_agent_kwargs,
+    )
+    thread_sound_agent.start()
 
     # notify the robot is ready
     robot_body.set_beep(50)
@@ -95,7 +114,20 @@ def task_vision_agent(**kwargs):
         while True:
             vision_agent.autonomous_behavior()
     except Exception as e:
-        print('VisionAgent Error:')
+        print('Vision Agent Error:')
+        print(e)
+        print(e.__traceback__)
+
+
+def task_sound_agent(**kwargs):
+    try:
+        sound_agent = SoundAgent(**kwargs)
+        robot_head = kwargs['robot_head']
+        robot_head.robot_mode_list.append('autonomous_sound')
+        while True:
+            sound_agent.autonomous_behavior()
+    except Exception as e:
+        print('Sound Agent Error:')
         print(e)
         print(e.__traceback__)
 

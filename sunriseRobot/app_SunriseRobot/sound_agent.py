@@ -1,6 +1,7 @@
 import time
 import warnings
 
+import tuning
 from robot_body import RobotBody
 
 import args
@@ -20,14 +21,16 @@ class SoundAgent(object):
             **kwargs,
         )
         self.verbose = parameters['verbose']
-        self.agent_active = False
 
-        # INITIALIZE SENSOR
+        self.agent_active = False
+        self.microphone = None
 
         # motion initialization
         self.steer_threshold_1 = parameters['steer_threshold_1']
         self.steer_threshold_2 = parameters['steer_threshold_2']
         self.angular_speed_range = parameters['angular_speed_range']
+        self.vendor_id = parameters['vendor_id']
+        self.product_id = parameters['product_id']
         self.speed_x = 0
         self.speed_z = 0
 
@@ -43,10 +46,10 @@ class SoundAgent(object):
         if self.verbose >= 1:
             print('Deactivating sound agent...')
         self.set_zero_speed()
-        self.robot_body.set_car_motion(self.speed_x, 0, self.speed_z)
+        self.robot_body.set_car_motion(v_x=self.speed_x, v_y=0, v_z=self.speed_z)
         self.agent_active = False
 
-        # DEACTIVATE SENSOR
+        self.microphone.close()
 
         # turn off gpio led
         if self.use_gpio_led:
@@ -58,15 +61,17 @@ class SoundAgent(object):
         self.set_zero_speed()
         self.robot_body.set_car_motion(self.speed_x, 0, self.speed_z)
 
-        # ACTIVATE SENSOR
+        # microphone initialization
+        # ReSpeaker 4-Mic Array v2.0
+        self.microphone = tuning.find(vid=self.vendor_id, pid=self.product_id)
 
-        if ACTIVATED:
+        if self.microphone:
             self.agent_active = True
             self.gpio_led.set_color('off')
             if self.verbose >= 2:
-                print('Camera opened correctly.')
+                print('Microphone opened correctly.')
         else:
-            warnings.warn('Failed to open camera.')
+            warnings.warn('Failed to open microphone.')
             warnings.warn('Impossible to run sound agent.')
             self.agent_active = False
 
@@ -84,7 +89,7 @@ class SoundAgent(object):
             else:
                 time.sleep(2)
 
-    # stop -> observe -> think -> move for n seconds -> repeat until interrupted
+    # stop -> listen -> think -> move for n seconds -> repeat until interrupted
     def detect_and_move(self) -> None:
         # show thinking light (red)
         if self.use_gpio_led:
@@ -95,34 +100,17 @@ class SoundAgent(object):
         self.robot_body.set_car_motion(self.speed_x, 0, self.speed_z)
         move_duration = 0.5
 
-        self.camera.get_img(2)
-        self.camera.get_img(2)
-        frame = self.camera.get_img(2)
-        if frame is None:
-            if self.verbose >= 1:
-                print('Frame is None.')
-            time.sleep(0.5)
-            return
+        # get the strongest sound direction as an angle
+        # TODO: check this. 0° is the front of the robot, 90° is the right side of the robot, 180° is the back of the robot,
+        #  270° is the left side of the robot
+        target_angle = self.microphone.direction
 
-        target_info = self.detector.find_target(
-            frame=frame,
-            model_name=self.robot_head.model_list[self.robot_head.model_pos],
-            target_name=self.robot_head.tracking_target_list[self.robot_head.tracking_target_pos],
-            save=self.save_images,
-        )
-        # target_info = {
-        #     'num_targets': int,
-        #     'highest_confidence': float [0, 1],
-        #     'distance_from_center_x': float [-1, 1],
-        #     'distance_from_center_y': float [-1, 1],
-        # }
         if self.verbose >= 2:
-            print(f'num_targets: {target_info["num_targets"]}')
-        if target_info['num_targets'] > 0:
+            print(f'target angle: {target_angle}')
+        if target_angle:
             # show target-found light (green)
             if self.use_gpio_led:
                 self.gpio_led.set_color('green')
-            self.no_target_counter = 0
             distance_from_center_x = target_info['distance_from_center_x']
             # print(f'target x: {distance_from_center_x}')
             # if the robot is almost aligned with the target (angle < steer_threshold_1)
