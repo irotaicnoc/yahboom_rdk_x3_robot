@@ -34,8 +34,6 @@ MAX_VOLTAGE = 8.4  # 100% battery
 MIN_VOLTAGE = 6.4  # 0% battery
 
 # COMPUTER VISION MODEL
-CPU_DEVICE = 'cpu'
-TPU_DEVICE = 'edgetpu'
 YOLO_CLASS_DICT = {
     0: 'person',
     1: 'bicycle',
