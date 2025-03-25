@@ -14,45 +14,16 @@ class YoloDetector(object):
             **kwargs,
         )
 
-        self.model_name = parameters['model_name']
-        self.model_folder = gc.GENERIC_MODEL_FOLDER_PATH
-        self.model_path = self.model_folder + self.model_name
+        self.backup_model_name = parameters['backup_model_name']
         self.camera_image_size = parameters['camera_image_size']
         self.verbose = parameters['verbose']
         self.confidence_threshold = parameters['confidence_threshold']
-        self.device = gc.CPU_DEVICE
-        self.frame_counter = 0
-        self.save = parameters['save']
+        self.model_name = None
+        self.model_path = None
+        self.model = None
+        self.model_class_dict = None
         self.stop = False
-
-        if gc.TPU_DEVICE in parameters['model_name']:
-            self.device = gc.TPU_DEVICE
-
-        if self.verbose >= 1:
-            print(f'Using Computer Vision model: {self.model_name}')
-
-        if self.device == gc.TPU_DEVICE:
-            try:
-                if self.verbose >= 1:
-                    print('\ton edge TPU device.')
-                self.model = YOLO(model=self.model_path, task='detect', verbose=self.verbose)
-                self.model_class_dict = self.model.names
-
-            except Exception as e:
-                warnings.warn(f'could not initialize TPU model {self.model_name} in folder {self.model_folder}...')
-                if self.verbose >= 1:
-                    print(e)
-                self.device = gc.CPU_DEVICE
-                self.model_name = parameters['backup_model_name']
-                self.model_folder = gc.GENERIC_MODEL_FOLDER_PATH
-                self.model_path = self.model_folder + self.model_name
-                if self.verbose >= 1:
-                    print(f'Switching to backup CPU model {self.model_name} in folder {self.model_folder}...')
-
-        if self.device == gc.CPU_DEVICE:
-            # Download model in folder if not present, and load it
-            self.model = YOLO(model=self.model_path, verbose=self.verbose)
-            self.model_class_dict = self.model.names
+        self.save = parameters['save']
 
         self.target_class_name = None
         self.target_class_id : int = -1
@@ -63,7 +34,28 @@ class YoloDetector(object):
             'distance_from_center_y': 0,
         }
 
-        self.results = None
+    def select_model(self, model_name: str) -> None:
+        if self.model_name == model_name:
+            return
+        self.model_name = model_name
+        self.model_path = gc.GENERIC_MODEL_FOLDER_PATH + model_name
+        if self.verbose >= 1:
+            print(f'Loading Computer Vision model: {self.model_name}')
+
+        # load YOLO model
+        try:
+            self.model = YOLO(model=self.model_path, task='detect', verbose=self.verbose)
+            self.model_class_dict = self.model.names
+        except Exception as e:
+            warnings.warn(f'could not initialize model {self.model_path}...')
+            if self.verbose >= 1:
+                print(e)
+            self.model_name = self.backup_model_name
+            self.model_path = gc.GENERIC_MODEL_FOLDER_PATH + self.model_name
+            if self.verbose >= 1:
+                print(f'Switching to backup model {self.model_path}...')
+            self.model = YOLO(model=self.model_path, task='detect', verbose=self.verbose)
+            self.model_class_dict = self.model.names
 
     def start_search(self):
         self.stop = False
@@ -132,8 +124,9 @@ class YoloDetector(object):
     def stop_search(self):
         self.stop = True
 
-    def select_target(self, target_name: str) -> None:
+    def find_target(self, model_name: str, target_name: str) -> None:
         # target to track (only one allowed)
+        self.select_model(model_name=model_name)
         if self.target_class_name != target_name:
             try:
                 self.target_class_id = utils.get_class_id_from_name(
