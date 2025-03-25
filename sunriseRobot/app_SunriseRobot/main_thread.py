@@ -112,9 +112,11 @@ def task_screen(**kwargs):
                 print('---OLED CLEARED!---')
                 break
             time.sleep(1)
-    except KeyboardInterrupt:
+    except KeyboardInterrupt as e:
         del oled
-        print('---Program closed!---')
+        print('Oled Error:')
+        print(e)
+        print(e.__traceback__)
 
 
 if __name__ == '__main__':
