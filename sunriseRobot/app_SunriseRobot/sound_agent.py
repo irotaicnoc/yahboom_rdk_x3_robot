@@ -129,7 +129,7 @@ class SoundAgent(object):
 
             if abs(target_angle_robot) > self.turn_only_angle:
                 self.speed_x = 0
-                self.speed_z = self.angular_speed_range[1]
+                self.speed_z = self.angular_speed_range[1] * self.robot_head.speed_coefficient
 
             else:
                 self.speed_x, self.speed_z = utils.sound_angle_to_robot_speed(
@@ -138,6 +138,8 @@ class SoundAgent(object):
                     forward_speed_range=self.forward_speed_range,
                     angular_speed_range=self.angular_speed_range,
                 )
+                self.speed_x *= self.robot_head.speed_coefficient
+                self.speed_z *= self.robot_head.speed_coefficient
 
             if self.verbose >= 2:
                 print(f'thinking time: {round(time.time() - start_thinking, 3)}')
