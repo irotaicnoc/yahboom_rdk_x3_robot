@@ -146,7 +146,9 @@ class VisionAgent(object):
                 self.gpio_led.set_color('green')
             self.no_target_counter = 0
             distance_from_center_x = target_info['distance_from_center_x']
-            # print(f'target x: {distance_from_center_x}')
+            if self.verbose >= 2:
+                print(f'X distance from img center: {distance_from_center_x}')
+
             # if the robot is almost aligned with the target (angle < steer_threshold_1)
             #     the robot will advance
             # if the robot is almost somewhat aligned with the target (steer_threshold_1 < angle < steer_threshold_2)
@@ -154,8 +156,8 @@ class VisionAgent(object):
             # if the robot is not aligned with the target (angle > steer_threshold_2)
             #     the robot will steer
             # otherwise move forward
-            if self.verbose >= 2:
-                print(f'X distance from img center: {distance_from_center_x}')
+            # TODO: change it to a continuous forward and rotational movement, instead of having three discreet cases,
+            #  it should do a linear interpolation between forward and rotational movement, depending on the angle
             if abs(distance_from_center_x) > self.steer_threshold_2:
                 self.speed_x = 0
                 self.speed_z = utils.x_displacement_to_angular_speed(
