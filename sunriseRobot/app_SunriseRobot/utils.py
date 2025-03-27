@@ -229,7 +229,7 @@ def microphone_angle_to_robot_angle(direction_of_arrival: float, microphone_robo
     # The microphone array is mounted on the robot with a rotation of microphone_robot_angle°.
 
     converted_doa = direction_of_arrival + microphone_robot_angle
-    if converted_doa >= 180:
+    while converted_doa >= 180:
         converted_doa -= 360
     assert -180 <= converted_doa < 180, f'Error in DOA conversion: {converted_doa}°'
 
