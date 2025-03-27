@@ -21,16 +21,18 @@ class SoundAgent(object):
             **kwargs,
         )
         self.verbose = parameters['verbose']
-
         self.agent_active = False
+
+        # microphone initialization
         self.microphone = None
+        self.microphone_robot_angle = parameters['microphone_robot_angle']
 
         # motion initialization
-        self.steer_threshold_1 = parameters['steer_threshold_1']
-        self.steer_threshold_2 = parameters['steer_threshold_2']
         self.angular_speed_range = parameters['angular_speed_range']
-        self.vendor_id = parameters['vendor_id']
+        self.forward_speed_range = parameters['forward_speed_range']
+        self.turn_only_angle = parameters['turn_only_angle']
         self.product_id = parameters['product_id']
+        self.vendor_id = parameters['vendor_id']
         self.speed_x = 0
         self.speed_z = 0
 
@@ -101,82 +103,64 @@ class SoundAgent(object):
         move_duration = 0.5
 
         # get the strongest sound direction as an angle
-        # TODO: check this. 0° is the front of the robot, 90° is the right side of the robot, 180° is the back of the robot,
-        #  270° is the left side of the robot
-        target_angle = self.microphone.direction
-
+        # anti-clockwise from 0 to 360 degrees
+        target_angle_microphone = self.microphone.direction
         if self.verbose >= 2:
-            print(f'target angle: {target_angle}')
-        if target_angle:
+            print(f'target_angle_microphone: {target_angle_microphone}')
+        if target_angle_microphone:
             # show target-found light (green)
             if self.use_gpio_led:
                 self.gpio_led.set_color('green')
-            distance_from_center_x = target_info['distance_from_center_x']
-            # print(f'target x: {distance_from_center_x}')
-            # if the robot is almost aligned with the target (angle < steer_threshold_1)
-            #     the robot will advance
-            # if the robot is almost somewhat aligned with the target (steer_threshold_1 < angle < steer_threshold_2)
-            #     the robot will steer AND advance
-            # if the robot is not aligned with the target (angle > steer_threshold_2)
-            #     the robot will steer
-            # otherwise move forward
-            if self.verbose >= 2:
-                print(f'X distance from img center: {distance_from_center_x}')
-            if abs(distance_from_center_x) > self.steer_threshold_2:
-                self.speed_x = 0
-                self.speed_z = utils.x_displacement_to_angular_speed(
-                    x_distance_from_img_center=distance_from_center_x,
-                    steer_threshold=self.steer_threshold_2,
-                    angular_speed_range=self.angular_speed_range,
-                )
-                if self.verbose >= 2:
-                    print(f'Steer: {self.speed_z}')
 
-            elif self.steer_threshold_1 < abs(distance_from_center_x) < self.steer_threshold_2:
-                self.speed_x = self.robot_head.speed_coefficient / 2
-                self.speed_z = utils.x_displacement_to_angular_speed(
-                    x_distance_from_img_center=distance_from_center_x,
-                    steer_threshold=self.steer_threshold_2,
-                    angular_speed_range=self.angular_speed_range,
-                ) / 2
-                if self.verbose >= 2:
-                    print(f'Forward: {self.speed_x}')
-                    print(f'Steer: {self.speed_z}')
+            # convert the sound direction angle from the microphone to the robot
+            # 0 is in front of the robot
+            # 90 is on the left side of the robot
+            # -90 is on the right side of the robot
+            # 179/-180 is behind the robot
+            target_angle_robot = utils.microphone_angle_to_robot_angle(
+                direction_of_arrival=target_angle_microphone,
+                microphone_robot_angle=self.microphone_robot_angle,
+            )
+            if self.verbose >= 2:
+                print(f'target_angle_robot: {target_angle_robot}')
+
+            # if the target is behind or almost behind the robot (angle => turn_only_angle),
+            #   the robot will only rotate in place
+            # if the robot is almost somewhat aligned with the target (0 <= angle < turn_only_angle), the
+            #   robot will steer AND advance. The proportion between steering and advancing is determined by the angle
+
+            if abs(target_angle_robot) > self.turn_only_angle:
+                self.speed_x = 0
+                self.speed_z = self.angular_speed_range[1]
 
             else:
-                self.speed_x = self.robot_head.speed_coefficient
-                if self.verbose >= 2:
-                    print(f'Forward: {self.speed_x}')
-                self.speed_z = 0
-                # move_duration = 0.6
+                self.speed_x, self.speed_z = utils.sound_angle_to_robot_speed(
+                    sound_angle=target_angle_robot,
+                    turn_only_angle=self.turn_only_angle,
+                    forward_speed_range=self.forward_speed_range,
+                    angular_speed_range=self.angular_speed_range,
+                )
+
+            if self.verbose >= 2:
+                print(f'thinking time: {round(time.time() - start_thinking, 3)}')
+                print(f'Forward: {self.speed_x}')
+                print(f'Steer: {self.speed_z}')
+            self.robot_body.set_car_motion(self.speed_x, 0, self.speed_z)
+            time.sleep(move_duration)
+
         else:
             # show target-not-found/searching light (red_and_green)
             if self.use_gpio_led:
                 self.gpio_led.set_color('red_and_green')
 
             self.speed_x = 0
-            if self.no_target_counter < self.think_steps_if_no_target:
-                self.no_target_counter += 1
-                if self.verbose >= 2:
-                    print('\nThink more before moving')
-                time.sleep(0.1)
-                return
-            else:
-                if self.verbose >= 2:
-                    print('Searching...')
-                self.speed_z = self.robot_head.speed_coefficient * 5
-                self.no_target_counter = 0
-                if self.verbose >= 2:
-                    print(f'Steer: {self.speed_z}')
-        if self.verbose >= 2:
-            stop_thinking = time.time()
-            print(f'thinking time: {round(stop_thinking - start_thinking, 3)}')
+            self.speed_z = 0
+            if self.verbose >= 2:
+                print(f'thinking time: {round(time.time() - start_thinking, 3)}')
+                print(f'Forward: {self.speed_x}')
+                print(f'Steer: {self.speed_z}')
 
-        # start_moving = time.time()
-        self.robot_body.set_car_motion(self.speed_x, 0, self.speed_z)
-        time.sleep(move_duration)
-        # stop_moving = time.time()
-        # print(f'moving time AI: {round(stop_moving - start_moving, 3)}')
+            time.sleep(0.05)
 
     def __del__(self):
         self.deactivate_agent()

@@ -153,6 +153,35 @@ def x_displacement_to_angular_speed(x_distance_from_img_center: float,
     return speed_z
 
 
+def sound_angle_to_robot_speed(sound_angle: float,
+                               turn_only_angle: float,
+                               forward_speed_range: list,
+                               angular_speed_range: list,
+                               ) -> (float, float):
+    # sound_angle: [-turn_only_angle, turn_only_angle]
+    # speed_x: [0, 0.6] forward-stationary (no backward movement)
+    # speed_z: [-3, 3] left-right
+    speed_x = change_range(
+        val=-abs(sound_angle),
+        original_min_val=-turn_only_angle,
+        original_max_val=0,
+        new_min_val=forward_speed_range[0],
+        new_max_val=forward_speed_range[1],
+    )
+    speed_x = abs(speed_x)
+
+    speed_z = change_range(
+        val=abs(sound_angle),
+        original_min_val=0,
+        original_max_val=turn_only_angle,
+        new_min_val=angular_speed_range[0],
+        new_max_val=angular_speed_range[1],
+    )
+    if sound_angle > 0:
+        speed_z *= -1
+    return speed_x, speed_z
+
+
 def display_image(image: np.ndarray,
                   proportion: float = 1.0,
                   window_name: str = 'Display image',
@@ -182,3 +211,18 @@ def voltage_to_percent(voltage: float) -> float:
                         new_min_val=0,
                         new_max_val=100,
                         )
+
+
+def microphone_angle_to_robot_angle(direction_of_arrival: float, microphone_robot_angle: float) -> float:
+    assert 0 <= direction_of_arrival < 360, f'Invalid DOA angle: {direction_of_arrival}°'
+    assert 0 <= microphone_robot_angle < 360, f'Invalid microphone forward angle: {microphone_robot_angle}°'
+
+    # The DOA angle is the angle of the sound source relative to the microphone array.
+    # The microphone array is mounted on the robot with a rotation of microphone_robot_angle°.
+
+    converted_doa = direction_of_arrival + microphone_robot_angle
+    if converted_doa >= 180:
+        converted_doa -= 360
+    assert -180 <= direction_of_arrival < 180, f'Error in DOA conversion: {converted_doa}°'
+
+    return converted_doa

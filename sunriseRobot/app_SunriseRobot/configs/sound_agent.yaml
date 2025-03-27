@@ -1,14 +1,20 @@
 verbose: 0
+use_gpio_led: True
+
+# min and max forward speed of the robot
+forward_speed_range: [0, 0.6]
+# min and max turning speed of the robot
+angular_speed_range: [0, 3.0]
 
 #ReSpeaker 4-Mic Array v2.0 identification numbers
 vendor_id: 0x2886
 product_id: 0x0018
 
-# if the robot is almost aligned with the target (angle < steer_threshold_1)
-#     the robot will advance
-# if the robot is almost somewhat aligned with the target (steer_threshold_1 < angle < steer_threshold_2)
-#     the robot will steer AND advance
-# if the robot is not aligned with the target (angle > steer_threshold_2)
-#     the robot will steer
-steer_threshold_1: 0.25
-steer_threshold_2: 0.4
+# the forward direction of the microphone array (DOA=0) relative to the robot's forward direction (see
+# microphone_orientation.png)
+microphone_robot_angle: 0.0
+
+# if the target is behind or almost behind the robot (angle => turn_only_angle), the robot will only rotate in place
+# if the robot is almost somewhat aligned with the target (0 <= angle < turn_only_angle), the robot will steer
+#  AND advance. the proportion between steering and advancing is determined by the angle
+turn_only_angle: 50.0
