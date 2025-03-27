@@ -8,6 +8,8 @@ verbose: 0
 #     the robot will steer
 steer_threshold_1: 0.25
 steer_threshold_2: 0.4
+
+# min and max turning speed of the robot
 angular_speed_range: [1.0, 2.0]
 save_images: False
 use_gpio_led: True

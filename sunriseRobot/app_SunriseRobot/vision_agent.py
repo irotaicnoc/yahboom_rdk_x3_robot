@@ -151,7 +151,7 @@ class VisionAgent(object):
 
             # if the robot is almost aligned with the target (angle < steer_threshold_1)
             #     the robot will advance
-            # if the robot is almost somewhat aligned with the target (steer_threshold_1 < angle < steer_threshold_2)
+            # if the robot is somewhat aligned with the target (steer_threshold_1 < angle < steer_threshold_2)
             #     the robot will steer AND advance
             # if the robot is not aligned with the target (angle > steer_threshold_2)
             #     the robot will steer
