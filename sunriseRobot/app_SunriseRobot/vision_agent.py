@@ -165,8 +165,6 @@ class VisionAgent(object):
                     steer_threshold=self.steer_threshold_2,
                     angular_speed_range=self.angular_speed_range,
                 )
-                if self.verbose >= 2:
-                    print(f'Steer: {self.speed_z}')
 
             elif self.steer_threshold_1 < abs(distance_from_center_x) < self.steer_threshold_2:
                 self.speed_x = self.robot_head.speed_coefficient / 2
@@ -175,16 +173,16 @@ class VisionAgent(object):
                     steer_threshold=self.steer_threshold_2,
                     angular_speed_range=self.angular_speed_range,
                 ) / 2
-                if self.verbose >= 2:
-                    print(f'Forward: {self.speed_x}')
-                    print(f'Steer: {self.speed_z}')
 
             else:
                 self.speed_x = self.robot_head.speed_coefficient
-                if self.verbose >= 2:
-                    print(f'Forward: {self.speed_x}')
                 self.speed_z = 0
                 # move_duration = 0.6
+
+            if self.verbose >= 2:
+                print(f'Forward: {self.speed_x}')
+                print(f'Steer: {self.speed_z}')
+
         else:
             # show target-not-found/searching light (red_and_green)
             if self.use_gpio_led:
@@ -203,6 +201,7 @@ class VisionAgent(object):
                 self.speed_z = self.robot_head.speed_coefficient * 5
                 self.no_target_counter = 0
                 if self.verbose >= 2:
+                    print(f'Forward: {self.speed_x}')
                     print(f'Steer: {self.speed_z}')
         if self.verbose >= 2:
             stop_thinking = time.time()
