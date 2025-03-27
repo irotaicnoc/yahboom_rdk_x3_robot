@@ -231,6 +231,6 @@ def microphone_angle_to_robot_angle(direction_of_arrival: float, microphone_robo
     converted_doa = direction_of_arrival + microphone_robot_angle
     if converted_doa >= 180:
         converted_doa -= 360
-    assert -180 <= direction_of_arrival < 180, f'Error in DOA conversion: {converted_doa}°'
+    assert -180 <= converted_doa < 180, f'Error in DOA conversion: {converted_doa}°'
 
     return converted_doa
