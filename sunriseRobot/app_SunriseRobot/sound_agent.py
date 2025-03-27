@@ -76,6 +76,7 @@ class SoundAgent(object):
             warnings.warn('Failed to open microphone.')
             warnings.warn('Impossible to run sound agent.')
             self.agent_active = False
+            raise Exception('Failed to open microphone.')
 
     def autonomous_behavior(self):
         if self.robot_head.robot_mode == 'autonomous_sound':

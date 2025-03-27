@@ -91,6 +91,7 @@ class VisionAgent(object):
             warnings.warn('Failed to open camera.')
             warnings.warn('Impossible to run vision agent.')
             self.agent_active = False
+            raise Exception('Failed to open camera.')
 
     def autonomous_behavior(self):
         if self.robot_head.robot_mode == 'autonomous_vision':
