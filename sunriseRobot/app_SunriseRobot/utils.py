@@ -132,6 +132,14 @@ def deactivate_ros2(verbose: int = 0):
 
 
 def change_range(val, original_min_val, original_max_val, new_min_val, new_max_val):
+    assert original_min_val < original_max_val,\
+        f'Invalid input: original_min_val {original_min_val} must be smaller than original_max_val {original_max_val}'
+    assert new_min_val < new_max_val, \
+        f'Invalid input: new_min_val {new_min_val} must be smaller than new_max_val {new_max_val}'
+    assert original_min_val < val, \
+        f'Invalid input: value {val} must be bigger than original_min_val {original_min_val}'
+    assert original_max_val < val, \
+        f'Invalid input: value {val} must be smaller than original_max_val {original_max_val}'
     return (val - original_min_val) * (new_max_val - new_min_val) / (original_max_val - original_min_val) + new_min_val
 
 
