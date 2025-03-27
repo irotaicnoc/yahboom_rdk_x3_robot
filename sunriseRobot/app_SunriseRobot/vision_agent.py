@@ -55,12 +55,12 @@ class VisionAgent(object):
     def set_zero_speed(self):
         self.speed_x = 0
         self.speed_z = 0
+        self.robot_body.set_car_motion(0, 0, 0)
 
     def deactivate_agent(self):
         if self.verbose >= 1:
             print('Deactivating vision agent...')
         self.set_zero_speed()
-        self.robot_body.set_car_motion(self.speed_x, 0, self.speed_z)
         self.agent_active = False
         if self.camera_is_open == 0:
             self.camera_is_open = -1
@@ -76,7 +76,6 @@ class VisionAgent(object):
         if self.verbose >= 1:
             print('Activating vision agent...')
         self.set_zero_speed()
-        self.robot_body.set_car_motion(self.speed_x, 0, self.speed_z)
         self.camera_is_open = -1
         if video_capture_kwargs is None:
             self.camera_is_open = self.camera.open_cam(**self.video_capture_kwargs)
@@ -116,7 +115,6 @@ class VisionAgent(object):
         if self.verbose >= 2:
             start_thinking = time.time()
         self.set_zero_speed()
-        self.robot_body.set_car_motion(self.speed_x, 0, self.speed_z)
 
         self.camera.get_img(2)
         self.camera.get_img(2)

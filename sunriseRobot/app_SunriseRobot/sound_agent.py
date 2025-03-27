@@ -44,14 +44,13 @@ class SoundAgent(object):
     def set_zero_speed(self):
         self.speed_x = 0
         self.speed_z = 0
+        self.robot_body.set_car_motion(v_x=0, v_y=0, v_z=0)
 
     def deactivate_agent(self):
         if self.verbose >= 1:
             print('Deactivating sound agent...')
         self.set_zero_speed()
-        self.robot_body.set_car_motion(v_x=self.speed_x, v_y=0, v_z=self.speed_z)
         self.agent_active = False
-
         self.microphone.close()
 
         # turn off gpio led
@@ -62,7 +61,6 @@ class SoundAgent(object):
         if self.verbose >= 1:
             print('Activating sound agent...')
         self.set_zero_speed()
-        self.robot_body.set_car_motion(self.speed_x, 0, self.speed_z)
 
         # microphone initialization
         # ReSpeaker 4-Mic Array v2.0
@@ -101,7 +99,6 @@ class SoundAgent(object):
         if self.verbose >= 2:
             start_thinking = time.time()
         self.set_zero_speed()
-        self.robot_body.set_car_motion(self.speed_x, 0, self.speed_z)
 
         # get the strongest sound direction as an angle
         # anti-clockwise from 0 to 360 degrees
