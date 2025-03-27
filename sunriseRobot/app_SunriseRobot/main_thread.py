@@ -92,7 +92,9 @@ def task_joystick(**kwargs):
 
 
 def task_vision_agent(**kwargs):
+    robot_head = kwargs['robot_head']
     try:
+        robot_head.robot_mode_list.append('autonomous_vision')
         if kwargs['camera_type'] == 'internal':
             from vision_agent import VisionAgent
         elif kwargs['camera_type'] == 'usb_v1':
@@ -112,27 +114,29 @@ def task_vision_agent(**kwargs):
         else:
             raise ValueError(f'Unknown camera_type: {kwargs["camera_type"]}')
         vision_agent = VisionAgent(**kwargs)
-        robot_head = kwargs['robot_head']
-        robot_head.robot_mode_list.append('autonomous_vision')
         while True:
             vision_agent.autonomous_behavior()
     except Exception as e:
         print('Vision Agent Error:')
         print(e)
         print(e.__traceback__)
+        if 'autonomous_vision' in robot_head.robot_mode_list:
+            robot_head.robot_mode_list.remove('autonomous_vision')
 
 
 def task_sound_agent(**kwargs):
+    robot_head = kwargs['robot_head']
     try:
-        sound_agent = SoundAgent(**kwargs)
-        robot_head = kwargs['robot_head']
         robot_head.robot_mode_list.append('autonomous_sound')
+        sound_agent = SoundAgent(**kwargs)
         while True:
             sound_agent.autonomous_behavior()
     except Exception as e:
         print('Sound Agent Error:')
         print(e)
         print(e.__traceback__)
+        if 'autonomous_sound' in robot_head.robot_mode_list:
+            robot_head.robot_mode_list.remove('autonomous_sound')
 
 
 # oled screen
