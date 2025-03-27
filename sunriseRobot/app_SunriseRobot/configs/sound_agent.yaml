@@ -12,7 +12,7 @@ product_id: 0x0018
 
 # the forward direction of the microphone array (DOA=0) relative to the robot's forward direction (see
 # microphone_orientation.png)
-microphone_robot_angle: 0.0
+microphone_robot_angle: 296.0
 
 # if the target is behind or almost behind the robot (angle => turn_only_angle), the robot will only rotate in place
 # if the robot is almost somewhat aligned with the target (0 <= angle < turn_only_angle), the robot will steer
