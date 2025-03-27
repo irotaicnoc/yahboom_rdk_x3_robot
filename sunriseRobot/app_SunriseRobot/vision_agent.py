@@ -46,6 +46,7 @@ class VisionAgent(object):
         self.angular_speed_range = parameters['angular_speed_range']
         self.speed_x = 0
         self.speed_z = 0
+        self.move_duration = parameters['move_duration']
 
         # gpio led
         self.gpio_led = gpio_led
@@ -116,7 +117,6 @@ class VisionAgent(object):
             start_thinking = time.time()
         self.set_zero_speed()
         self.robot_body.set_car_motion(self.speed_x, 0, self.speed_z)
-        move_duration = 0.5
 
         self.camera.get_img(2)
         self.camera.get_img(2)
@@ -178,7 +178,6 @@ class VisionAgent(object):
             else:
                 self.speed_x = self.robot_head.speed_coefficient
                 self.speed_z = 0
-                # move_duration = 0.6
 
             if self.verbose >= 2:
                 print(f'Forward: {self.speed_x}')
@@ -210,7 +209,7 @@ class VisionAgent(object):
 
         # start_moving = time.time()
         self.robot_body.set_car_motion(self.speed_x, 0, self.speed_z)
-        time.sleep(move_duration)
+        time.sleep(self.move_duration)
         # stop_moving = time.time()
         # print(f'moving time AI: {round(stop_moving - start_moving, 3)}')
 

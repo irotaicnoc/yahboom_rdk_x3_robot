@@ -35,6 +35,7 @@ class SoundAgent(object):
         self.vendor_id = parameters['vendor_id']
         self.speed_x = 0
         self.speed_z = 0
+        self.move_duration = parameters['move_duration']
 
         # gpio led
         self.gpio_led = gpio_led
@@ -101,7 +102,6 @@ class SoundAgent(object):
             start_thinking = time.time()
         self.set_zero_speed()
         self.robot_body.set_car_motion(self.speed_x, 0, self.speed_z)
-        move_duration = 0.5
 
         # get the strongest sound direction as an angle
         # anti-clockwise from 0 to 360 degrees
@@ -147,7 +147,7 @@ class SoundAgent(object):
                 print(f'Forward: {self.speed_x}')
                 print(f'Steer: {self.speed_z}')
             self.robot_body.set_car_motion(self.speed_x, 0, self.speed_z)
-            time.sleep(move_duration)
+            time.sleep(self.move_duration)
 
         else:
             # show target-not-found/searching light (red_and_green)

@@ -1,5 +1,7 @@
 verbose: 0
 
+move_duration: 0.5
+
 # if the robot is almost aligned with the target (angle < steer_threshold_1)
 #     the robot will advance
 # if the robot is almost somewhat aligned with the target (steer_threshold_1 < angle < steer_threshold_2)
