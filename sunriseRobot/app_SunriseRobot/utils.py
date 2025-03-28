@@ -185,7 +185,7 @@ def sound_angle_to_robot_speed(sound_angle: float,
         new_min_val=angular_speed_range[0],
         new_max_val=angular_speed_range[1],
     )
-    if sound_angle > 0:
+    if sound_angle < 0:
         speed_z *= -1
     return speed_x, speed_z
 
