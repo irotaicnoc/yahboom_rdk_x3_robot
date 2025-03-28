@@ -125,10 +125,16 @@ class OLED:
         return 'Ros Inactive'
 
     def get_controller_mode_status(self) -> tuple:
+        # discard file extension
+        model_name = self.robot_head.model_list[self.robot_head.model_pos].split('.')[0]
+        # remove resolution and replace '_' with ' '
+        model_name = model_name.replace("_640_480", "").replace("_", " ")
+        # capitalize the first letter of each word
+        model_name = model_name.title()
         status = (
             self.robot_head.robot_mode.replace('_', ' ').title(),
             f'target: {self.robot_head.tracking_target_list[self.robot_head.tracking_target_pos].replace("_", " ").title()}',
-            f'model: {self.robot_head.model_list[self.robot_head.model_pos].replace("_", " ").title()}',
+            f'model: {model_name}',
         )
         return status
 
