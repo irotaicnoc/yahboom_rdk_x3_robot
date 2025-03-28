@@ -130,7 +130,7 @@ class SoundAgent(object):
             if abs(target_angle_robot) > self.turn_only_angle:
                 self.speed_x = 0
                 self.speed_z = self.angular_speed_range[1] * self.robot_head.speed_coefficient
-                if target_angle_robot > 0:
+                if target_angle_robot < 0:
                     self.speed_z *= -1
 
             else:
