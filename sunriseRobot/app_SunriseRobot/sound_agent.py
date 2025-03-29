@@ -60,7 +60,7 @@ class SoundAgent(object):
         if self.use_gpio_led:
             self.gpio_led.set_color('off')
 
-    def activate_agent(self, video_capture_kwargs=None):
+    def activate_agent(self):
         if self.verbose >= 1:
             print('Activating sound agent...')
         self.set_zero_speed()
