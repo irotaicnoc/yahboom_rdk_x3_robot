@@ -68,6 +68,10 @@ class RobotHead:
 
     def increase_speed_coefficient(self):
         self.speed_coefficient = min(1.0, self.speed_coefficient + 0.1)
+        if self.verbose >= 2:
+            print(f'Speed coefficient: {self.speed_coefficient}')
 
     def decrease_speed_coefficient(self):
         self.speed_coefficient = max(0.1, self.speed_coefficient - 0.1)
+        if self.verbose >= 2:
+            print(f'Speed coefficient: {self.speed_coefficient}')
