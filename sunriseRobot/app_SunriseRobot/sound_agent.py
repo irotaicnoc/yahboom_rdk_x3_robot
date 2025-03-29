@@ -72,7 +72,7 @@ class SoundAgent(object):
         if self.microphone:
             self.agent_active = True
             self.gpio_led.set_color('off')
-            if self.verbose >= 2:
+            if self.verbose >= 1:
                 print('Microphone opened correctly.')
         else:
             warnings.warn('Failed to open microphone.')
@@ -102,9 +102,9 @@ class SoundAgent(object):
         self.speed_x = 0
         self.speed_z = 0
         self.no_sound_counter += 1
-        if self.verbose >= 2:
-            if self.no_sound_counter % 20 == 19:
-                print('No sound detected')
+        # if self.verbose >= 2:
+        #     if self.no_sound_counter % 20 == 19:
+        #         print('No sound detected')
 
         time.sleep(0.05)
 
@@ -120,8 +120,8 @@ class SoundAgent(object):
         # get the strongest sound direction as an angle
         # anti-clockwise from 0 to 360 degrees
         target_angle_microphone = self.microphone.direction
-        if self.verbose >= 2:
-            print(f'target_angle_microphone: {target_angle_microphone}')
+        # if self.verbose >= 2:
+        #     print(f'target_angle_microphone: {target_angle_microphone}')
         if target_angle_microphone:
             # show target-found light (green)
             if self.use_gpio_led:
@@ -136,8 +136,8 @@ class SoundAgent(object):
                 direction_of_arrival=target_angle_microphone,
                 microphone_robot_angle=self.microphone_robot_angle,
             )
-            if self.verbose >= 2:
-                print(f'target_angle_robot: {target_angle_robot}')
+            # if self.verbose >= 2:
+            #     print(f'target_angle_robot: {target_angle_robot}')
 
             # if ignore_self_noise is True, the robot will ignore all sounds that come from the back of the
             # microphone array this will remove the sounds of the robot, but also the sounds of the target if
@@ -169,10 +169,10 @@ class SoundAgent(object):
                 self.speed_x *= self.robot_head.speed_coefficient
                 self.speed_z *= self.robot_head.speed_coefficient
 
-            if self.verbose >= 2:
-                print(f'thinking time: {round(time.time() - start_thinking, 3)}')
-                print(f'Forward: {self.speed_x}')
-                print(f'Steer: {self.speed_z}')
+            # if self.verbose >= 2:
+            #     print(f'thinking time: {round(time.time() - start_thinking, 3)}')
+            #     print(f'Forward: {self.speed_x}')
+            #     print(f'Steer: {self.speed_z}')
             self.robot_body.set_car_motion(self.speed_x, 0, self.speed_z)
             time.sleep(self.move_duration)
 
