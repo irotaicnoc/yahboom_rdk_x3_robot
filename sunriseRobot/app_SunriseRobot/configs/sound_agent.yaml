@@ -20,3 +20,9 @@ microphone_robot_angle: 64.0
 # if the robot is almost somewhat aligned with the target (0 <= angle < turn_only_angle), the robot will steer
 #  AND advance. the proportion between steering and advancing is determined by the angle
 turn_only_angle: 50.0
+
+# if True, the robot will ignore all sounds that come from the back of the microphone array
+# this will remove the sounds of the robot, but also the sounds of the target if it is behind the robot
+ignore_self_noise: True
+# angle (in degrees) after which the sound is considered to be coming from the back of the robot
+ignore_angle: 150.0

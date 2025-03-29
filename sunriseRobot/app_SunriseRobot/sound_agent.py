@@ -22,10 +22,13 @@ class SoundAgent(object):
         )
         self.verbose = parameters['verbose']
         self.agent_active = False
+        self.no_sound_counter = 0
 
         # microphone initialization
         self.microphone = None
         self.microphone_robot_angle = parameters['microphone_robot_angle']
+        self.ignore_self_noise = parameters['ignore_self_noise']
+        self.ignore_angle = parameters['ignore_angle']
 
         # motion initialization
         self.angular_speed_range = parameters['angular_speed_range']
@@ -91,6 +94,20 @@ class SoundAgent(object):
             else:
                 time.sleep(2)
 
+    def no_sound_detected(self):
+        # show target-not-found/searching light (red_and_green)
+        if self.use_gpio_led:
+            self.gpio_led.set_color('red_and_green')
+
+        self.speed_x = 0
+        self.speed_z = 0
+        self.no_sound_counter += 1
+        if self.verbose >= 2:
+            if self.no_sound_counter % 20 == 19:
+                print('No sound detected')
+
+        time.sleep(0.05)
+
     # stop -> listen -> think -> move for n seconds -> repeat until interrupted
     def detect_and_move(self) -> None:
         # show thinking light (red)
@@ -122,6 +139,15 @@ class SoundAgent(object):
             if self.verbose >= 2:
                 print(f'target_angle_robot: {target_angle_robot}')
 
+            # if ignore_self_noise is True, the robot will ignore all sounds that come from the back of the
+            # microphone array this will remove the sounds of the robot, but also the sounds of the target if
+            # it is behind the robot
+            if self.ignore_self_noise:
+                if abs(target_angle_robot) > self.ignore_angle:
+                    self.no_sound_detected()
+                    return
+
+            self.no_sound_counter = 0
             # if the target is behind or almost behind the robot (angle => turn_only_angle),
             #   the robot will only rotate in place
             # if the robot is almost somewhat aligned with the target (0 <= angle < turn_only_angle), the
@@ -151,18 +177,7 @@ class SoundAgent(object):
             time.sleep(self.move_duration)
 
         else:
-            # show target-not-found/searching light (red_and_green)
-            if self.use_gpio_led:
-                self.gpio_led.set_color('red_and_green')
-
-            self.speed_x = 0
-            self.speed_z = 0
-            if self.verbose >= 2:
-                print(f'thinking time: {round(time.time() - start_thinking, 3)}')
-                print(f'Forward: {self.speed_x}')
-                print(f'Steer: {self.speed_z}')
-
-            time.sleep(0.05)
+            self.no_sound_detected()
 
     def __del__(self):
         self.deactivate_agent()
