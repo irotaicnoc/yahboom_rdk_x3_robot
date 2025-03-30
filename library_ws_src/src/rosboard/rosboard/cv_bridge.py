@@ -115,6 +115,7 @@ def imgmsg_to_cv2(data, desired_encoding="passthrough", flip_channels=False):
         print("Unsupported encoding %s" % encoding)
         return None
 
+
 def cv2_to_imgmsg(cv2img, encoding='bgr8'):
     """
     Converts an OpenCV image to a ROS image without using the cv_bridge package,
@@ -129,5 +130,23 @@ def cv2_to_imgmsg(cv2img, encoding='bgr8'):
     msg.encoding = encoding
     msg.step = BPP[encoding]*cv2img.shape[1]
     msg.data = numpy.ascontiguousarray(cv2img).tobytes()
+
+    return msg
+
+
+def jpeg_to_compressed_imgmsg(cv2img, encoding='bgr8'):
+    """
+    Converts an OpenCV image to a ROS image without using the cv_bridge package,
+    for compatibility purposes.
+    """
+
+    from sensor_msgs.msg import CompressedImage
+
+    msg = CompressedImage()
+    # msg.width = cv2img.shape[1]
+    # msg.height = cv2img.shape[0]
+    # msg.encoding = encoding
+    # msg.step = BPP[encoding]*cv2img.shape[1]
+    # msg.data = numpy.ascontiguousarray(cv2img).tobytes()
 
     return msg
