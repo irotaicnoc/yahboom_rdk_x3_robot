@@ -222,8 +222,8 @@ def voltage_to_percent(voltage: float) -> float:
     return change_range(val=voltage,
                         original_min_val=gc.MIN_VOLTAGE,
                         original_max_val=gc.MAX_VOLTAGE,
-                        new_min_val=0,
-                        new_max_val=100,
+                        new_min_val=0.0,
+                        new_max_val=100.0,
                         )
 
 
