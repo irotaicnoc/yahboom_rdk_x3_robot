@@ -33,17 +33,13 @@ def format_camera_frames(frame,
     #     print(f'{new_size=}')
     #     frame_rgb = cv2.resize(frame_rgb, dsize=new_size)
     #     print(f'frame resized shape: {frame_rgb.shape}')
+    return frame_rgb
 
     # Convert to JPEG
-    encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 85]
-    _, jpeg_buffer = cv2.imencode('.jpg', frame_rgb, encode_param)
-
-    # Option 1: to bytes
-    # return jpeg_buffer.tobytes()
-
-    # Option 2: to numpy array
-    jpeg_image = cv2.imdecode(jpeg_buffer, cv2.IMREAD_COLOR)
-    return jpeg_image
+    # encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 85]
+    # _, jpeg_buffer = cv2.imencode('.jpg', frame_rgb, encode_param)
+    # jpeg_image = cv2.imdecode(jpeg_buffer, cv2.IMREAD_COLOR)
+    # return jpeg_image
 
 
 # def sensor_reset_shell():
