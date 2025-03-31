@@ -34,18 +34,17 @@ def format_camera_frames(frame,
     #     frame_rgb = cv2.resize(frame_rgb, dsize=new_size)
     #     print(f'frame resized shape: {frame_rgb.shape}')
 
-    # Converti in JPEG direttamente in memoria
+    # Convert to JPEG
     encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 85]
     _, jpeg_buffer = cv2.imencode('.jpg', frame_rgb, encode_param)
 
-    # Opzione 1: Ritorna i bytes JPEG per passarli direttamente a YOLO se supporta
+    # Option 1: to bytes
     # return jpeg_buffer.tobytes()
 
-    # Opzione 2: Riconverti in array numpy se YOLO ha bisogno di un'immagine
+    # Option 2: to numpy array
     jpeg_image = cv2.imdecode(jpeg_buffer, cv2.IMREAD_COLOR)
     return jpeg_image
 
-    # return frame_rgb
 
 # def sensor_reset_shell():
 #    os.system('echo 19 > /sys/class/gpio/export')
