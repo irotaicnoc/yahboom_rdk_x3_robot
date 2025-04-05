@@ -91,32 +91,6 @@ class Joystick(object):
             0x0207: 'WSAD_UP_DOWN',
         }
 
-        # Green LED Mode
-        # self.KEYS = {
-        #     # BUTTON FUNCTION
-        #     0x0100 : 'A',
-        #     0x0101 : 'B',
-        #     0x0102 : 'X',
-        #     0x0103 : 'Y',
-        #     0x0104 : 'L1',
-        #     0x0105 : 'R1',
-        #     0x0106 : 'SELECT',
-        #     0x0107 : 'START',
-        #     0x0108 : 'MODE',
-        #     0x0109 : 'BTN_RK1',
-        #     0x010A : 'BTN_RK2',
-
-        #     # AXIS FUNCTION
-        #     0x0200 : 'RK1_LEFT_RIGHT',
-        #     0x0201 : 'RK1_UP_DOWN',
-        #     0x0202 : 'L2',
-        #     0x0203 : 'RK2_LEFT_RIGHT',
-        #     0x0204 : 'RK2_UP_DOWN',
-        #     0x0205 : 'R2',
-        #     0x0206 : 'WSAD_LEFT_RIGHT',
-        #     0x0207 : 'WSAD_UP_DOWN',
-        # }
-
     def __del__(self):
         if self.__js_isOpen:
             self.__jsdev.close()
@@ -131,6 +105,15 @@ class Joystick(object):
                 if self.verbose >= 3:
                     print('%s : %.3f' % (name, value))
                 self.__speed_y = value * self.robot_head.speed_coefficient
+                self.robot_body.set_car_motion(self.__speed_x, self.__speed_y, self.__speed_z)
+
+            if self.robot_head.robot_mode == 'robot_arm':
+                value = -value / 32767
+                if self.verbose >= 1:
+                    print('%s : %.3f' % (name, value))
+                self.__speed_y = value * self.robot_head.speed_coefficient
+                if self.verbose >= 1:
+                    print('speed_y : %.3f' % self.__speed_y)
                 self.robot_body.set_car_motion(self.__speed_x, self.__speed_y, self.__speed_z)
 
         elif name == 'RK1_UP_DOWN':
