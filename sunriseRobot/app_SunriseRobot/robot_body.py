@@ -2,6 +2,8 @@
 # coding: utf-8
 
 import time
+import warnings
+
 import serial
 import struct
 import threading
@@ -326,8 +328,7 @@ class RobotBody(object):
     def create_receive_threading(self) -> None:
         try:
             if self.__uart_state == 0:
-                name1 = 'task_serial_receive'
-                task_receive = threading.Thread(target=self.__receive_data, name=name1)
+                task_receive = threading.Thread(target=self.__receive_data, name='task_serial_receive')
                 task_receive.setDaemon(True)
                 task_receive.start()
                 print('----------------create receive threading--------------')
@@ -663,7 +664,7 @@ class RobotBody(object):
     # pulse_value=[96, 4000] indicates the position to which the steering gear will run.
     # run_time indicates the running time (ms). The shorter the time, the faster the steering gear rotates.
     # The minimum value is 0 and the maximum value is 2000
-    def set_uart_servo(self, servo_id, pulse_value, run_time=500) -> None:
+    def set_uart_servo(self, servo_id, pulse_value, run_time=0) -> None:
         try:
             if not self.__arm_ctrl_enable:
                 return
@@ -671,9 +672,8 @@ class RobotBody(object):
                 print('set uart servo input error')
                 return
             if run_time > 2000:
+                warnings.warn(f'Maximum run_time allowed is 2000ms, set from {run_time} to 2000ms')
                 run_time = 2000
-            if run_time < 0:
-                run_time = 0
             s_id = int(servo_id) & 0xff
             value = bytearray(struct.pack('h', int(pulse_value)))
             r_time = bytearray(struct.pack('h', int(run_time)))
@@ -700,48 +700,47 @@ class RobotBody(object):
             print('---set_uart_servo error!---')
             pass
 
-    # Set bus steering gear Angle interface: s_id:[1,6], s_angle: 1-4:[0, 180], 5:[0, 270], 6:[0, 180],
-    # set steering gear to move to the Angle.
+    # Set bus steering gear Angle interface: s_id:[1,6], s_angle: 1-4:[0, 180], 5:[0, 270], 6:[0, 180].
     # run_time indicates the running time (ms). The shorter the time, the faster the steering gear rotates.
     # The minimum value is 0 and the maximum value is 2000
-    def set_uart_servo_angle(self, s_id: int, s_angle, run_time=500) -> None:
+    def set_uart_servo_angle(self, s_id: int, s_angle, run_time=0) -> None:
         try:
             if s_id == 1:
                 if 0 <= s_angle <= 180:
                     value = self.__arm_convert_value(s_id, s_angle)
                     self.set_uart_servo(s_id, value, run_time)
                 else:
-                    print('angle_1 set error!')
+                    print(f'Servo {s_id} error! Set angle {s_angle} outside valid range [0, 180]')
             elif s_id == 2:
                 if 0 <= s_angle <= 180:
                     value = self.__arm_convert_value(s_id, s_angle)
                     self.set_uart_servo(s_id, value, run_time)
                 else:
-                    print('angle_2 set error!')
+                    print(f'Servo {s_id} error! Set angle {s_angle} outside valid range [0, 180]')
             elif s_id == 3:
                 if 0 <= s_angle <= 180:
                     value = self.__arm_convert_value(s_id, s_angle)
                     self.set_uart_servo(s_id, value, run_time)
                 else:
-                    print('angle_3 set error!')
+                    print(f'Servo {s_id} error! Set angle {s_angle} outside valid range [0, 180]')
             elif s_id == 4:
                 if 0 <= s_angle <= 180:
                     value = self.__arm_convert_value(s_id, s_angle)
                     self.set_uart_servo(s_id, value, run_time)
                 else:
-                    print('angle_4 set error!')
+                    print(f'Servo {s_id} error! Set angle {s_angle} outside valid range [0, 180]')
             elif s_id == 5:
                 if 0 <= s_angle <= 270:
                     value = self.__arm_convert_value(s_id, s_angle)
                     self.set_uart_servo(s_id, value, run_time)
                 else:
-                    print('angle_5 set error!')
+                    print(f'Servo {s_id} error! Set angle {s_angle} outside valid range [0, 270]')
             elif s_id == 6:
                 if 0 <= s_angle <= 180:
                     value = self.__arm_convert_value(s_id, s_angle)
                     self.set_uart_servo(s_id, value, run_time)
                 else:
-                    print('angle_6 set error!')
+                    print(f'Servo {s_id} error! Set angle {s_angle} outside valid range [0, 180]')
         except:
             print('---set_uart_servo_angle error! ID=%d---' % s_id)
             pass

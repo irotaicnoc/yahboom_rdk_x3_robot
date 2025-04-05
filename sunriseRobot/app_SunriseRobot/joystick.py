@@ -103,7 +103,7 @@ class Joystick(object):
     def __data_processing(self, name, value):
         if name == 'RK1_LEFT_RIGHT':
             if self.robot_head.robot_mode == 'user_controlled':
-                value = -value / 32767
+                value = -value / self.MAX_INPUT_VALUE
                 if self.verbose >= 3:
                     print('%s : %.3f' % (name, value))
                 self.__speed_y = value * self.robot_head.speed_coefficient
@@ -124,7 +124,7 @@ class Joystick(object):
 
         elif name == 'RK1_UP_DOWN':
             if self.robot_head.robot_mode == 'user_controlled':
-                value = -value / 32767
+                value = -value / self.MAX_INPUT_VALUE
                 if self.verbose >= 3:
                     print('%s : %.3f' % (name, value))
                 self.__speed_x = value * self.robot_head.speed_coefficient
@@ -132,7 +132,7 @@ class Joystick(object):
 
         elif name == 'RK2_LEFT_RIGHT':
             if self.robot_head.robot_mode == 'user_controlled':
-                value = -value / 32767
+                value = -value / self.MAX_INPUT_VALUE
                 if self.verbose >= 3:
                     print('%s : %.3f' % (name, value))
                 self.__speed_z = value * self.robot_head.speed_coefficient * self.robot_head.steer_speed_proportion
@@ -140,7 +140,7 @@ class Joystick(object):
 
         elif name == 'RK2_UP_DOWN':
             if self.robot_head.robot_mode == 'user_controlled':
-                value = -value / 32767
+                value = -value / self.MAX_INPUT_VALUE
                 if self.verbose >= 3:
                     print('%s : %.3f' % (name, value))
 
@@ -252,7 +252,7 @@ class Joystick(object):
                 self.robot_head.increase_speed_coefficient()
 
         elif name == 'WSAD_LEFT_RIGHT':
-            value = -value / 32767
+            value = -value / self.MAX_INPUT_VALUE
             if self.robot_head.robot_mode == 'user_controlled':
                 if self.verbose >= 3:
                     print('%s : %.3f' % (name, value))
@@ -270,7 +270,7 @@ class Joystick(object):
 
         elif name == 'WSAD_UP_DOWN':
             # in user_controlled mode robot forward/backward
-            value = -value / 32767
+            value = -value / self.MAX_INPUT_VALUE
             if self.robot_head.robot_mode == 'user_controlled':
                 if self.verbose >= 3:
                     print('%s : %.3f' % (name, value))
