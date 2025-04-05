@@ -33,6 +33,8 @@ class Joystick(object):
         self.STATE_DISCONNECT = 2
         self.STATE_KEY_BREAK = 3
 
+        self.MAX_INPUT_VALUE = 32767
+
         self.__speed_x = 0
         self.__speed_y = 0
         self.__speed_z = 0
@@ -108,13 +110,17 @@ class Joystick(object):
                 self.robot_body.set_car_motion(self.__speed_x, self.__speed_y, self.__speed_z)
 
             if self.robot_head.robot_mode == 'robot_arm':
-                value = -value / 32767
+                servo_1_angle = utils.change_range(
+                    val=value,
+                    original_min_val=-self.MAX_INPUT_VALUE,
+                    original_max_val=self.MAX_INPUT_VALUE,
+                    new_min_val=0,
+                    new_max_val=180
+                )
                 if self.verbose >= 1:
-                    print('%s : %.3f' % (name, value))
-                self.__speed_y = value * self.robot_head.speed_coefficient
-                if self.verbose >= 1:
-                    print('speed_y : %.3f' % self.__speed_y)
-                self.robot_body.set_car_motion(self.__speed_x, self.__speed_y, self.__speed_z)
+                    print(f'servo_1_angle : servo_1_angle.1f')
+
+                self.robot_body.set_uart_servo_angle(s_id=1, s_angle=servo_1_angle, run_time=0)
 
         elif name == 'RK1_UP_DOWN':
             if self.robot_head.robot_mode == 'user_controlled':
