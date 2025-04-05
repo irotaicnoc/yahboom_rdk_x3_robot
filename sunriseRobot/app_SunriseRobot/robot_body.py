@@ -746,7 +746,7 @@ class RobotBody(object):
             print('---set_uart_servo_angle error! ID=%d---' % s_id)
             pass
 
-    # Set the bus servo ID(Use with caution), servo_id=[1-250].
+    # Set the bus servo ID (Use with caution), servo_id=[1-250].
     # Before running this function, please confirm that only one bus actuator is connected. Otherwise, all
     # connected bus actuators will be set to the same ID, resulting in confusion of control
     def set_uart_servo_id(self, servo_id) -> None:
