@@ -112,8 +112,10 @@ class Joystick(object):
 
             if self.robot_head.robot_mode == 'robot_arm':
                 arm_servo_1_angle = self.robot_body.get_uart_servo_angle(s_id=1)
+                print(f'original arm_servo_1_angle: {arm_servo_1_angle}')
                 value = -value / self.MAX_INPUT_VALUE
                 arm_servo_1_angle += value * self.robot_head.speed_coefficient
+                print(f'new arm_servo_1_angle: {arm_servo_1_angle}')
                 self.robot_body.set_uart_servo_angle(s_id=1, s_angle=arm_servo_1_angle, run_time=0)
 
         elif name == 'RK1_UP_DOWN':
@@ -125,8 +127,10 @@ class Joystick(object):
                 self.robot_body.set_car_motion(self.__speed_x, self.__speed_y, self.__speed_z)
             if self.robot_head.robot_mode == 'robot_arm':
                 arm_servo_2_angle = self.robot_body.get_uart_servo_angle(s_id=2)
+                print(f'original arm_servo_2_angle: {arm_servo_2_angle}')
                 value = -value / self.MAX_INPUT_VALUE
                 arm_servo_2_angle += value * self.robot_head.speed_coefficient
+                print(f'new arm_servo_2_angle: {arm_servo_2_angle}')
                 self.robot_body.set_uart_servo_angle(s_id=2, s_angle=arm_servo_2_angle, run_time=0)
 
         elif name == 'RK2_LEFT_RIGHT':
