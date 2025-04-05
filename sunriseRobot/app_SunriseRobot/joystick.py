@@ -21,6 +21,7 @@ class Joystick(object):
                  js_id=0,
                  verbose: int = 0,
                  ):
+
         self.verbose = verbose
         self.robot_body = robot_body
 
@@ -118,7 +119,7 @@ class Joystick(object):
                     new_max_val=180
                 )
                 if self.verbose >= 1:
-                    print(f'servo_1_angle : servo_1_angle.1f')
+                    print(f'servo_1_angle : {servo_1_angle}.1f')
 
                 self.robot_body.set_uart_servo_angle(s_id=1, s_angle=servo_1_angle, run_time=0)
 
