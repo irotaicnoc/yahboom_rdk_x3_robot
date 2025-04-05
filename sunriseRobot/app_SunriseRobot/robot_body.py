@@ -124,7 +124,7 @@ class RobotBody(object):
             print('cmd_delay=' + str(self.__delay_time) + 's')
 
         if self.ser.isOpen():
-            print('Sunrise Robot Serial Opened! Baudrate = 115200')
+            print(f'Sunrise Robot Serial Opened! Baudrate = {baud_rate}')
         else:
             print('Serial Open Failed!')
         # Turn on the torque of the robot arm to avoid the situation where the angle of the No. 6 servo cannot be
