@@ -169,9 +169,9 @@ class VisionAgent(object):
                 self.speed_x = self.robot_head.speed_coefficient / 2
                 self.speed_z = utils.x_displacement_to_angular_speed(
                     x_distance_from_img_center=distance_from_center_x,
-                    steer_threshold=self.steer_threshold_2,
+                    steer_threshold=self.steer_threshold_1,
                     angular_speed_range=self.angular_speed_range,
-                ) / 2
+                )
 
             else:
                 self.speed_x = self.robot_head.speed_coefficient
