@@ -19,7 +19,6 @@ class RobotBody(object):
         # com = '/dev/myserial'
 
         self.ser = serial.Serial(com, baud_rate)
-
         self.__delay_time = delay
         self.verbose = verbose
 
@@ -36,6 +35,7 @@ class RobotBody(object):
         self.FUNC_RGB = 0x05
         self.FUNC_RGB_EFFECT = 0x06
 
+        # Sensors
         self.FUNC_REPORT_SPEED = 0x0A
         self.FUNC_REPORT_MPU_RAW = 0x0B
         self.FUNC_REPORT_IMU_ATT = 0x0C
@@ -44,6 +44,7 @@ class RobotBody(object):
 
         self.FUNC_RESET_STATE = 0x0F
 
+        # Wheels
         self.FUNC_MOTOR = 0x10
         self.FUNC_CAR_RUN = 0x11
         self.FUNC_MOTION = 0x12
@@ -51,14 +52,12 @@ class RobotBody(object):
         self.FUNC_SET_YAW_PID = 0x14
         self.FUNC_SET_CAR_TYPE = 0x15
 
+        # Arm
         self.FUNC_UART_SERVO = 0x20
         self.FUNC_UART_SERVO_ID = 0x21
         self.FUNC_UART_SERVO_TORQUE = 0x22
         self.FUNC_ARM_CTRL = 0x23
         self.FUNC_ARM_OFFSET = 0x24
-
-        self.FUNC_AKM_DEF_ANGLE = 0x30
-        self.FUNC_AKM_STEER_ANGLE = 0x31
 
         self.FUNC_REQUEST_DATA = 0x50
         self.FUNC_VERSION = 0x51
@@ -113,10 +112,6 @@ class RobotBody(object):
         self.__arm_ctrl_enable = True
 
         self.__battery_voltage = 0
-
-        self.__akm_def_angle = 100
-        self.__akm_readed_angle = False
-        self.__AKM_SERVO_ID = 0x01
 
         self.__read_car_type = 0
 
@@ -236,13 +231,6 @@ class RobotBody(object):
                 self.__arm_offset_state = struct.unpack('B', bytearray(ext_data[1:2]))[0]
                 if self.verbose >= 3:
                     print('FUNC_ARM_OFFSET:', self.__arm_offset_id, self.__arm_offset_state)
-
-            elif ext_type == self.FUNC_AKM_DEF_ANGLE:
-                id = struct.unpack('B', bytearray(ext_data[0:1]))[0]
-                self.__akm_def_angle = struct.unpack('B', bytearray(ext_data[1:2]))[0]
-                self.__akm_readed_angle = True
-                if self.verbose >= 3:
-                    print('FUNC_AKM_DEF_ANGLE:', id, self.__akm_def_angle)
 
             elif ext_type == self.FUNC_SET_CAR_TYPE:
                 car_type = struct.unpack('B', bytearray(ext_data[0:1]))[0]
@@ -880,57 +868,6 @@ class RobotBody(object):
             print('---set_uart_servo_offset error!---')
             pass
 
-    # Set the default Angle of akerman type (R2) car front wheel, Angle =[60, 120]
-    # forever=True for permanent, =False for temporary.
-    # Since permanent storage needs to be written into the chip flash, which takes a long time to operate, delay
-    # is added to avoid packet loss caused by MCU.
-    # Temporary effect fast response, single effective, data will not be maintained after restarting the single chip
-    def set_akm_default_angle(self, angle, forever: bool = False) -> None:
-        try:
-            if int(angle) > 120 or int(angle) < 60:
-                return
-            id = self.__AKM_SERVO_ID
-            state = 0
-            if forever:
-                state = 0x5F
-                self.__akm_def_angle = angle
-            cmd = [self.__HEAD, self.__DEVICE_ID, 0x00, self.FUNC_AKM_DEF_ANGLE, id, int(angle), state]
-            cmd[2] = len(cmd) - 1
-            checksum = sum(cmd, self.__COMPLEMENT) & 0xff
-            cmd.append(checksum)
-            self.ser.write(cmd)
-            if self.verbose >= 3:
-                print('akm set def angle:', cmd)
-            time.sleep(self.__delay_time)
-            if forever:
-                time.sleep(.1)
-        except:
-            print('---set_akm_default_angle error!---')
-            pass
-
-    # Control the steering Angle of ackman type (R2) car relative to the default Angle, negative for left
-    # and positive for right, Angle =[-45, 45].
-    # If ctrl_car=False, only control the steering gear Angle.
-    # If ctrl_car=True, control the steering gear Angle and modify the speed of the left and right motors.
-    def set_akm_steering_angle(self, angle, ctrl_car: bool = False) -> None:
-        try:
-            if int(angle) > 45 or int(angle) < -45:
-                return
-            id = self.__AKM_SERVO_ID
-            if ctrl_car:
-                id = self.__AKM_SERVO_ID + 0x80
-            cmd = [self.__HEAD, self.__DEVICE_ID, 0x00, self.FUNC_AKM_STEER_ANGLE, id, int(angle) & 0xFF]
-            cmd[2] = len(cmd) - 1
-            checksum = sum(cmd, self.__COMPLEMENT) & 0xff
-            cmd.append(checksum)
-            self.ser.write(cmd)
-            if self.verbose >= 3:
-                print('akm_steering_angle:', cmd)
-            time.sleep(self.__delay_time)
-        except:
-            print('---set_akm_steering_angle error!---')
-            pass
-
     # Reset the car flash saved data, restore the factory default value
     def reset_flash_value(self) -> None:
         try:
@@ -968,20 +905,6 @@ class RobotBody(object):
         self.__gx, self.__gy, self.__gz = 0, 0, 0
         self.__mx, self.__my, self.__mz = 0, 0, 0
         self.__yaw, self.__roll, self.__pitch = 0, 0, 0
-
-    # Read the default angle of the front wheel servo of the Ackerman type (R2) car.
-    def get_akm_default_angle(self) -> int:
-        if not self.__akm_readed_angle:
-            self.__request_data(self.FUNC_AKM_DEF_ANGLE, self.__AKM_SERVO_ID)
-            akm_count = 0
-            while True:
-                if self.__akm_readed_angle:
-                    break
-                akm_count = akm_count + 1
-                if akm_count > 100:
-                    return -1
-                time.sleep(self.__delay_time)
-        return self.__akm_def_angle
 
     # Read bus servo position parameters, servo_id=[1-250], return: read ID, current position parameters
     def get_uart_servo_value(self, servo_id) -> (int, int):
