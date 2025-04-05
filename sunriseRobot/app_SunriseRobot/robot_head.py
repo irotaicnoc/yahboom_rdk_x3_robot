@@ -30,6 +30,7 @@ class RobotHead:
 
         # motion parameters
         self.steer_speed_proportion = parameters['steer_speed_proportion']
+        self.arm_speed_proportion = parameters['arm_speed_proportion']
         self.speed_coefficient = parameters['speed_coefficient']
         self.verbose = parameters['verbose']
 
