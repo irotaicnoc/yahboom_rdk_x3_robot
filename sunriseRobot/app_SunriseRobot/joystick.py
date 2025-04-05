@@ -116,7 +116,7 @@ class Joystick(object):
                 self.robot_body.set_uart_servo_angle(
                     s_id=1,
                     s_angle=self.robot_body.servo_desired_angles[1],
-                    run_time=0,
+                    run_time=200,
                 )
 
         elif name == 'RK1_UP_DOWN':
@@ -133,7 +133,7 @@ class Joystick(object):
                 self.robot_body.set_uart_servo_angle(
                     s_id=2,
                     s_angle=self.robot_body.servo_desired_angles[2],
-                    run_time=0,
+                    run_time=200,
                 )
 
         elif name == 'RK2_LEFT_RIGHT':
