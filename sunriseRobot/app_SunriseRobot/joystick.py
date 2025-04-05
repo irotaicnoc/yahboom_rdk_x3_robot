@@ -42,7 +42,7 @@ class Joystick(object):
 
         # accept only one button input per cooldown
         self.last_select_press = 0  # Add timestamp for SELECT button
-        self.select_delay = 5.0  # Minimum seconds between SELECT presses
+        self.SELECT_DELAY = 5.0  # Minimum seconds between SELECT presses
         self.robot_head = robot_head
         self.temp_counter = 0
         self.internal_light = internal_light
@@ -202,11 +202,12 @@ class Joystick(object):
                     print(name, ':', value)
 
         # switch between user-controlled mode and autonomous mode
+        # only allow one press every self.SELECT_DELAY
         elif name == 'SELECT':
             if self.verbose >= 3:
                 print(name, ':', value)
             current_time = time.time()
-            if value == 1 and (current_time - self.last_select_press) >= self.select_delay:
+            if value == 1 and (current_time - self.last_select_press) >= self.SELECT_DELAY:
                 self.last_select_press = current_time
                 self.robot_head.next_mode()
 
