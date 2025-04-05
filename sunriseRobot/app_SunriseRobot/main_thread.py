@@ -19,7 +19,7 @@ def main_loop(**kwargs):
 
     robot_body = RobotBody(com=parameters['com'], baud_rate=parameters['baud_rate'], verbose=parameters['verbose'])
     robot_body.create_receive_threading()
-    robot_head = RobotHead()
+    robot_head = RobotHead(verbore=parameters['verbose'])
     # LIGHTS
     internal_light = Light(verbose=parameters['verbose'])
     gpio_led = GpioLed()
