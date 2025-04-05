@@ -12,3 +12,6 @@ baud_rate: 115200
 camera_type: internal
 #camera_type: usb_v1
 #camera_type: usb_v2
+
+# whether a robotic arm is attached to the robot
+arm_present: true

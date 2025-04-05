@@ -111,13 +111,13 @@ class Joystick(object):
                 self.robot_body.set_car_motion(self.__speed_x, self.__speed_y, self.__speed_z)
 
             if self.robot_head.robot_mode == 'user_control_arm':
-                arm_servo_1_angle = self.robot_body.get_uart_servo_angle(s_id=1)
-                print(f'original arm_servo_1_angle: {arm_servo_1_angle}')
-                if 0 < arm_servo_1_angle < 180:
-                    value = -value / self.MAX_INPUT_VALUE
-                    arm_servo_1_angle += value * self.robot_head.speed_coefficient
-                    print(f'new arm_servo_1_angle: {arm_servo_1_angle}')
-                    self.robot_body.set_uart_servo_angle(s_id=1, s_angle=arm_servo_1_angle, run_time=0)
+                value = -value / self.MAX_INPUT_VALUE * self.robot_head.speed_coefficient
+                self.robot_body.update_servo_desired_angle(servo_id=1, quantity=value)
+                self.robot_body.set_uart_servo_angle(
+                    s_id=1,
+                    s_angle=self.robot_body.servo_desired_angles[1],
+                    run_time=0,
+                )
 
         elif name == 'RK1_UP_DOWN':
             if self.robot_head.robot_mode == 'user_control_wheels':
@@ -128,13 +128,13 @@ class Joystick(object):
                 self.robot_body.set_car_motion(self.__speed_x, self.__speed_y, self.__speed_z)
 
             if self.robot_head.robot_mode == 'user_control_arm':
-                arm_servo_2_angle = self.robot_body.get_uart_servo_angle(s_id=2)
-                print(f'original arm_servo_2_angle: {arm_servo_2_angle}')
-                if 0 < arm_servo_2_angle < 180:
-                    value = -value / self.MAX_INPUT_VALUE
-                    arm_servo_2_angle += value * self.robot_head.speed_coefficient
-                    print(f'new arm_servo_2_angle: {arm_servo_2_angle}')
-                    self.robot_body.set_uart_servo_angle(s_id=2, s_angle=arm_servo_2_angle, run_time=0)
+                value = -value / self.MAX_INPUT_VALUE * self.robot_head.speed_coefficient
+                self.robot_body.update_servo_desired_angle(servo_id=2, quantity=value)
+                self.robot_body.set_uart_servo_angle(
+                    s_id=2,
+                    s_angle=self.robot_body.servo_desired_angles[2],
+                    run_time=0,
+                )
 
         elif name == 'RK2_LEFT_RIGHT':
             if self.robot_head.robot_mode == 'user_control_wheels':

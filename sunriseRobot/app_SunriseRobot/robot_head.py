@@ -30,9 +30,13 @@ class RobotHead:
 
         # motion parameters
         self.steer_speed_proportion = parameters['steer_speed_proportion']
-        self.arm_speed_proportion = parameters['arm_speed_proportion']
         self.speed_coefficient = parameters['speed_coefficient']
         self.verbose = parameters['verbose']
+
+        # arm parameters
+        if parameters['arm_present']:
+            self.robot_mode_list.append('user_control_arm')
+            self.arm_speed_proportion = parameters['arm_speed_proportion']
 
     def next_mode(self):
         if self.verbose >= 1:

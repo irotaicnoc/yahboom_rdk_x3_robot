@@ -60,6 +60,7 @@ class RobotBody(object):
         self.FUNC_UART_SERVO_TORQUE = 0x22
         self.FUNC_ARM_CTRL = 0x23
         self.FUNC_ARM_OFFSET = 0x24
+        self.servo_desired_angles = [90, 90, 90, 90, 90, 90]
 
         self.FUNC_REQUEST_DATA = 0x50
         self.FUNC_VERSION = 0x51
@@ -658,6 +659,15 @@ class RobotBody(object):
             time.sleep(.1)
         else:
             print('set_car_type input invalid')
+
+    def update_servo_desired_angle(self, servo_id: int, quantity: float) -> None:
+        assert 0 <= servo_id <= 5, f'Servo ID {servo_id} out of range [0, 6]'
+        backup = self.servo_desired_angles[servo_id]
+        self.servo_desired_angles[servo_id] += quantity
+        if self.servo_desired_angles[servo_id] < 0:
+            self.servo_desired_angles[servo_id] = 0
+        if self.servo_desired_angles[servo_id] > 180:
+            self.servo_desired_angles[servo_id] = 180
 
     # Control bus steering gear. Servo_id :[1-255], indicating the ID of the steering gear to be controlled.
     # If ID=254, control all connected steering gear.

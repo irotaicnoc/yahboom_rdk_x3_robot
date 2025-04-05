@@ -19,7 +19,9 @@ def main_loop(**kwargs):
 
     robot_body = RobotBody(com=parameters['com'], baud_rate=parameters['baud_rate'], verbose=parameters['verbose'])
     robot_body.create_receive_threading()
-    robot_head = RobotHead(verbore=parameters['verbose'])
+    if parameters['arm_present']:
+        robot_body.servo_desired_angles = robot_body.get_uart_servo_angle_array()
+    robot_head = RobotHead(verbore=parameters['verbose'], arm_present=parameters['arm_present'])
     # LIGHTS
     internal_light = Light(verbose=parameters['verbose'])
     gpio_led = GpioLed()
