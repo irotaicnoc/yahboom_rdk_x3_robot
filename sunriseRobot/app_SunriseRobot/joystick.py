@@ -103,42 +103,41 @@ class Joystick(object):
     # Control robot
     def __data_processing(self, name, value):
         if name == 'RK1_LEFT_RIGHT':
-            if self.robot_head.robot_mode == 'user_controlled':
+            if self.robot_head.robot_mode == 'user_control_wheels':
                 value = -value / self.MAX_INPUT_VALUE
                 if self.verbose >= 3:
                     print('%s : %.3f' % (name, value))
                 self.__speed_y = value * self.robot_head.speed_coefficient
                 self.robot_body.set_car_motion(self.__speed_x, self.__speed_y, self.__speed_z)
 
-            if self.robot_head.robot_mode == 'robot_arm':
+            if self.robot_head.robot_mode == 'user_control_arm':
                 arm_servo_1_angle = self.robot_body.get_uart_servo_angle(s_id=1)
                 print(f'original arm_servo_1_angle: {arm_servo_1_angle}')
                 if 0 < arm_servo_1_angle < 180:
                     value = -value / self.MAX_INPUT_VALUE
-                    arm_servo_1_angle += (value * self.robot_head.speed_coefficient *
-                                          self.robot_head.arm_speed_proportion)
+                    arm_servo_1_angle += value * self.robot_head.speed_coefficient
                     print(f'new arm_servo_1_angle: {arm_servo_1_angle}')
                     self.robot_body.set_uart_servo_angle(s_id=1, s_angle=arm_servo_1_angle, run_time=0)
 
         elif name == 'RK1_UP_DOWN':
-            if self.robot_head.robot_mode == 'user_controlled':
+            if self.robot_head.robot_mode == 'user_control_wheels':
                 value = -value / self.MAX_INPUT_VALUE
                 if self.verbose >= 3:
                     print('%s : %.3f' % (name, value))
                 self.__speed_x = value * self.robot_head.speed_coefficient
                 self.robot_body.set_car_motion(self.__speed_x, self.__speed_y, self.__speed_z)
-            if self.robot_head.robot_mode == 'robot_arm':
+
+            if self.robot_head.robot_mode == 'user_control_arm':
                 arm_servo_2_angle = self.robot_body.get_uart_servo_angle(s_id=2)
                 print(f'original arm_servo_2_angle: {arm_servo_2_angle}')
                 if 0 < arm_servo_2_angle < 180:
                     value = -value / self.MAX_INPUT_VALUE
-                    arm_servo_2_angle += (value * self.robot_head.speed_coefficient *
-                                          self.robot_head.arm_speed_proportion)
+                    arm_servo_2_angle += value * self.robot_head.speed_coefficient
                     print(f'new arm_servo_2_angle: {arm_servo_2_angle}')
                     self.robot_body.set_uart_servo_angle(s_id=2, s_angle=arm_servo_2_angle, run_time=0)
 
         elif name == 'RK2_LEFT_RIGHT':
-            if self.robot_head.robot_mode == 'user_controlled':
+            if self.robot_head.robot_mode == 'user_control_wheels':
                 value = -value / self.MAX_INPUT_VALUE
                 if self.verbose >= 3:
                     print('%s : %.3f' % (name, value))
@@ -146,7 +145,7 @@ class Joystick(object):
                 self.robot_body.set_car_motion(self.__speed_x, self.__speed_y, self.__speed_z)
 
         elif name == 'RK2_UP_DOWN':
-            if self.robot_head.robot_mode == 'user_controlled':
+            if self.robot_head.robot_mode == 'user_control_wheels':
                 value = -value / self.MAX_INPUT_VALUE
                 if self.verbose >= 3:
                     print('%s : %.3f' % (name, value))
@@ -162,7 +161,7 @@ class Joystick(object):
                 print(name, ':', value)
 
             if value == 1:
-                if self.robot_head.robot_mode == 'user_controlled':
+                if self.robot_head.robot_mode == 'user_control_wheels':
                     self.gpio_led.next_color()
 
         elif name == 'X':
@@ -193,7 +192,7 @@ class Joystick(object):
 
         # activate/deactivate ROS2
         elif name == 'R1':
-            if self.robot_head.robot_mode == 'user_controlled':
+            if self.robot_head.robot_mode == 'user_control_wheels':
                 if value == 1:
                     if self.robot_head.ros2_status == 'inactive':
                         self.robot_head.ros2_status = 'processing'
@@ -261,7 +260,7 @@ class Joystick(object):
 
         elif name == 'WSAD_LEFT_RIGHT':
             value = -value / self.MAX_INPUT_VALUE
-            if self.robot_head.robot_mode == 'user_controlled':
+            if self.robot_head.robot_mode == 'user_control_wheels':
                 if self.verbose >= 3:
                     print('%s : %.3f' % (name, value))
                 if value > 0:
@@ -277,9 +276,9 @@ class Joystick(object):
                     self.robot_head.previous_model()
 
         elif name == 'WSAD_UP_DOWN':
-            # in user_controlled mode robot forward/backward
+            # in user_control_wheels mode robot forward/backward
             value = -value / self.MAX_INPUT_VALUE
-            if self.robot_head.robot_mode == 'user_controlled':
+            if self.robot_head.robot_mode == 'user_control_wheels':
                 if self.verbose >= 3:
                     print('%s : %.3f' % (name, value))
                 if value > 0:

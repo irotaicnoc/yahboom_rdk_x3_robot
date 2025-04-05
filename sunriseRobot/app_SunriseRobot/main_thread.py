@@ -123,7 +123,7 @@ def task_vision_agent(**kwargs):
         if 'autonomous_vision' in robot_head.robot_mode_list:
             robot_head.robot_mode_list.remove('autonomous_vision')
             if robot_head.robot_mode == 'autonomous_vision':
-                robot_head.robot_mode = 'user_controlled'
+                robot_head.robot_mode = 'user_control_wheels'
 
 
 def task_sound_agent(**kwargs):
@@ -140,7 +140,7 @@ def task_sound_agent(**kwargs):
         if 'autonomous_sound' in robot_head.robot_mode_list:
             robot_head.robot_mode_list.remove('autonomous_sound')
             if robot_head.robot_mode == 'autonomous_sound':
-                robot_head.robot_mode = 'user_controlled'
+                robot_head.robot_mode = 'user_control_wheels'
 
 
 # oled screen
