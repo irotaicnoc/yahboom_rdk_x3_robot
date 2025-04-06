@@ -12,7 +12,7 @@ from flask import Flask, render_template, Response
 
 
 from robot_body import RobotBody
-from camera import Camera
+from sunriseRobot.app_SunriseRobot.vision.camera import Camera
 from joystick import Joystick
 from robot_body import Mipi_Camera
 
