@@ -8,8 +8,8 @@ import args
 import utils
 import global_constants as gc
 from robot_head import RobotHead
-from detector import YoloDetector
 from gpio_pin_control import GpioLed
+from vision.detector import YoloDetector
 
 
 class VisionAgent(object):
