@@ -335,6 +335,9 @@ class Joystick(object):
 
     # Handles events for joystick
     def joystick_handle(self):
+        current_time_j = time.time()
+        elapsed_time = current_time_j - self.start_time
+        print(f'elapsed_time: {elapsed_time:.1f}s, current_time: {current_time_j:.1f}s')
         if not self.__js_isOpen:
             if self.verbose >= 2:
                 print('Failed To Open Joystick')
