@@ -5,10 +5,10 @@ import time
 import struct
 
 import utils
-from light import Light
-from robot_head import RobotHead
 from robot_body import RobotBody
-from gpio_pin_control import GpioLed
+from robot_head import RobotHead
+from physical_accessories.light import Light
+from physical_accessories.gpio_pin_control import GpioLed
 
 
 # V1.0.4

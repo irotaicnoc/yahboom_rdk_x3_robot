@@ -2,14 +2,14 @@ import cv2
 import time
 import warnings
 
-from robot_body import RobotBody
 
 import args
 import utils
 import global_constants as gc
+from robot_body import RobotBody
 from robot_head import RobotHead
-from gpio_pin_control import GpioLed
 from vision.detector_usb_camera_v1 import YoloDetector
+from physical_accessories.gpio_pin_control import GpioLed
 
 
 class VisionAgent(object):

@@ -1,14 +1,13 @@
 import time
 import warnings
 
-from sound import tuning
-from robot_body import RobotBody
-
 import args
 import utils
+from sound import tuning
 import global_constants as gc
+from robot_body import RobotBody
 from robot_head import RobotHead
-from gpio_pin_control import GpioLed
+from physical_accessories.gpio_pin_control import GpioLed
 
 
 class SoundAgent(object):

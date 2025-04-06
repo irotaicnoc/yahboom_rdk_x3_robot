@@ -2,16 +2,15 @@ import time
 import warnings
 import threading
 
-from oled import OLED
-from joystick import Joystick
-from robot_body import RobotBody
-
 import args
-from light import Light
+from joystick import Joystick
 import global_constants as gc
+from robot_body import RobotBody
 from robot_head import RobotHead
-from gpio_pin_control import GpioLed
 from sound.sound_agent import SoundAgent
+from physical_accessories.oled import OLED
+from physical_accessories.light import Light
+from physical_accessories.gpio_pin_control import GpioLed
 
 
 def main_loop(**kwargs):
