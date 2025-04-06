@@ -344,6 +344,7 @@ class Joystick(object):
             return self.STATE_NO_OPEN
         try:
             evbuf = self.__jsdev.read(8)
+            print(f'evbuf: {evbuf}')
             if evbuf:
                 _time, value, _type, number = struct.unpack('IhBB', evbuf)
                 func = _type << 8 | number
