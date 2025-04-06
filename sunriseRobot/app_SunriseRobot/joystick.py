@@ -111,7 +111,8 @@ class Joystick(object):
                 self.robot_body.set_car_motion(self.__speed_x, self.__speed_y, self.__speed_z)
 
             if self.robot_head.robot_mode == 'user_control_arm':
-                value = -value / self.MAX_INPUT_VALUE * self.robot_head.speed_coefficient
+                value = (-value / self.MAX_INPUT_VALUE * self.robot_head.speed_coefficient *
+                         self.robot_head.arm_speed_proportion)
                 self.robot_body.update_servo_desired_angle(servo_id=1, quantity=value)
                 self.robot_body.set_uart_servo_angle(
                     s_id=1,
@@ -128,7 +129,8 @@ class Joystick(object):
                 self.robot_body.set_car_motion(self.__speed_x, self.__speed_y, self.__speed_z)
 
             if self.robot_head.robot_mode == 'user_control_arm':
-                value = -value / self.MAX_INPUT_VALUE * self.robot_head.speed_coefficient
+                value = (-value / self.MAX_INPUT_VALUE * self.robot_head.speed_coefficient *
+                         self.robot_head.arm_speed_proportion)
                 self.robot_body.update_servo_desired_angle(servo_id=2, quantity=value)
                 self.robot_body.set_uart_servo_angle(
                     s_id=2,
