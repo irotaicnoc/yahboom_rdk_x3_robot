@@ -103,7 +103,9 @@ class Joystick(object):
 
     # Control robot
     def __data_processing(self, name, value):
-        elapsed_time = time.time() - self.start_time
+        current_time = time.time()
+        elapsed_time = current_time - self.start_time
+        self.start_time = current_time
         print(f'elapsed_time: {elapsed_time:.1f}s')
         if name == 'RK1_LEFT_RIGHT':
             if self.robot_head.robot_mode == 'user_control_wheels':
