@@ -158,7 +158,7 @@ class Joystick(object):
                 self.__speed_x = value * self.robot_head.speed_coefficient
                 self.robot_body.set_car_motion(self.__speed_x, self.__speed_y, self.__speed_z)
 
-            if self.robot_head.robot_mode == 'user_control_arm':
+            # if self.robot_head.robot_mode == 'user_control_arm':
                 # print(f'servo 2 old: {self.robot_body.servo_desired_angles[2]}')
                 # value = (-value / self.MAX_INPUT_VALUE * self.robot_head.speed_coefficient *
                 #          self.robot_head.arm_speed_proportion)
