@@ -278,26 +278,6 @@ class Joystick(object):
             else:
                 self.robot_body.set_beep(0)
 
-        # elif name == 'MODE':
-        #     if self.verbose >= 3:
-        #         print(name, ':', value)
-        #
-        # elif name == 'BTN_RK1':
-        #     if self.verbose >= 3:
-        #         print(name, ':', value)
-        #
-        # elif name == 'BTN_RK2':
-        #     if self.verbose >= 3:
-        #         print(name, ':', value)
-        #
-        # elif name == 'L2':
-        #     if self.verbose >= 3:
-        #         print('%s : %.3f' % (name, value))
-        #
-        # elif name == 'R2':
-        #     if self.verbose >= 3:
-        #         print('%s : %.3f' % (name, value))
-
         # decrease sensibility
         elif name == 'L2_1':
             if self.verbose >= 3:
@@ -363,6 +343,7 @@ class Joystick(object):
                 _time, value, _type, number = struct.unpack('IhBB', evbuf)
                 func = _type << 8 | number
                 name = self.__function_names.get(func)
+                print(f'_time: {_time}, name: {name}')
                 # print('evbuf:', _time, value, _type, number)
                 # if self.verbose >= 3:
                 #     print('func:0x%04X, %s, %d' % (func, name, value))
@@ -371,7 +352,7 @@ class Joystick(object):
                 else:
                     if self.__ignore_count > 0:
                         self.__ignore_count = self.__ignore_count - 1
-                    if self.verbose and self.__ignore_count == 0:
+                    if self.verbose >= 2 and self.__ignore_count == 0:
                         print('Key Value Invalid')
             return self.STATE_OK
         except KeyboardInterrupt as ki:
