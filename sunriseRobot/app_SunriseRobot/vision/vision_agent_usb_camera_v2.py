@@ -6,7 +6,7 @@ import args
 import utils
 import global_constants as gc
 from robot_head import RobotHead
-from detector_usb_camera_v2 import YoloDetector
+from vision.detector_usb_camera_v2 import YoloDetector
 from gpio_pin_control import GpioLed
 
 
