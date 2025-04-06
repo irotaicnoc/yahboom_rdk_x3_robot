@@ -11,7 +11,8 @@ class RobotHead:
             **kwargs,
         )
         # autonomous mode parameters
-        self.robot_mode_list = ['user_control_wheels', ]
+        # self.robot_mode_list = ['user_control_wheels', ]
+        self.robot_mode_list = []
         self.robot_mode = self.robot_mode_list[0]
         self.tracking_target_list = parameters['tracking_target_list']
         self.tracking_target_pos = 0
@@ -36,6 +37,7 @@ class RobotHead:
         # arm parameters
         if parameters['arm_present']:
             self.robot_mode_list.append('user_control_arm')
+            self.robot_mode_list.append('user_control_wheels')
             self.arm_speed_proportion = parameters['arm_speed_proportion']
 
     def next_mode(self):
