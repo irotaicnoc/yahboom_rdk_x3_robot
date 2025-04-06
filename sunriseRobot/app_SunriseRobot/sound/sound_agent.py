@@ -1,7 +1,7 @@
 import time
 import warnings
 
-import tuning
+from sound import tuning
 from robot_body import RobotBody
 
 import args

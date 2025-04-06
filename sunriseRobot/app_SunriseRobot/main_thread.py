@@ -10,8 +10,8 @@ import args
 from light import Light
 import global_constants as gc
 from robot_head import RobotHead
-from sound_agent import SoundAgent
 from gpio_pin_control import GpioLed
+from sound.sound_agent import SoundAgent
 
 
 def main_loop(**kwargs):
