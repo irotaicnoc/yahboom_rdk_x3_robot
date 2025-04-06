@@ -40,6 +40,8 @@ class RobotHead:
         # TODO: rimettili in cima
         self.robot_mode_list.append('user_control_wheels')
         self.robot_mode = self.robot_mode_list[0]
+        if self.verbose >= 1:
+            print(f'Robot mode: {self.robot_mode}')
 
     def next_mode(self):
         if self.verbose >= 1:
