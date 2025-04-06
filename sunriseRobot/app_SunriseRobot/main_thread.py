@@ -99,21 +99,21 @@ def task_vision_agent(**kwargs):
     try:
         robot_head.robot_mode_list.append('autonomous_vision')
         if kwargs['camera_type'] == 'internal':
-            from sunriseRobot.app_SunriseRobot.vision.vision_agent import VisionAgent
+            from vision.vision_agent import VisionAgent
         elif kwargs['camera_type'] == 'usb_v1':
             try:
-                from sunriseRobot.app_SunriseRobot.vision.vision_agent_usb_camera_v1 import VisionAgent
+                from vision.vision_agent_usb_camera_v1 import VisionAgent
             except:
                 warnings.warn(f'Could not find camera {kwargs["camera_type"]}. Switching to internal camera...')
                 kwargs['camera_type'] = 'internal'
-                from sunriseRobot.app_SunriseRobot.vision.vision_agent import VisionAgent
+                from vision.vision_agent import VisionAgent
         elif kwargs['camera_type'] == 'usb_v2':
             try:
-                from sunriseRobot.app_SunriseRobot.vision.vision_agent_usb_camera_v2 import VisionAgent
+                from vision.vision_agent_usb_camera_v2 import VisionAgent
             except:
                 warnings.warn(f'Could not find camera {kwargs["camera_type"]}. Switching to internal camera...')
                 kwargs['camera_type'] = 'internal'
-                from sunriseRobot.app_SunriseRobot.vision.vision_agent import VisionAgent
+                from vision.vision_agent import VisionAgent
         else:
             raise ValueError(f'Unknown camera_type: {kwargs["camera_type"]}')
         vision_agent = VisionAgent(**kwargs)
