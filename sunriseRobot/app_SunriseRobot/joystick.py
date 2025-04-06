@@ -132,17 +132,18 @@ class Joystick(object):
                     self.robot_body.set_uart_servo_angle(
                         s_id=1,
                         s_angle=180,
-                        run_time=500,
+                        run_time=2000,
                     )
                 elif value < -0.1:
                     self.robot_body.set_uart_servo_angle(
                         s_id=1,
                         s_angle=0,
-                        run_time=500,
+                        run_time=2000,
                     )
                 else:
                     # stop arm
                     current_angle = self.robot_body.get_uart_servo_angle(1)
+                    print(f'stop arm, current angle: {current_angle}')
                     self.robot_body.set_uart_servo_angle(
                         s_id=1,
                         s_angle=current_angle,
@@ -168,27 +169,28 @@ class Joystick(object):
                 #     s_angle=self.robot_body.servo_desired_angles[2],
                 #     run_time=0,
                 # )
-                value = -value / self.MAX_INPUT_VALUE
-                if value > 0.1:
-                    self.robot_body.set_uart_servo_angle(
-                        s_id=2,
-                        s_angle=180,
-                        run_time=500,
-                    )
-                elif value < -0.1:
-                    self.robot_body.set_uart_servo_angle(
-                        s_id=2,
-                        s_angle=0,
-                        run_time=500,
-                    )
-                else:
-                    # stop arm
-                    current_angle = self.robot_body.get_uart_servo_angle(2)
-                    self.robot_body.set_uart_servo_angle(
-                        s_id=2,
-                        s_angle=current_angle,
-                        run_time=0,
-                    )
+                # value = -value / self.MAX_INPUT_VALUE
+                # if value > 0.1:
+                #     self.robot_body.set_uart_servo_angle(
+                #         s_id=2,
+                #         s_angle=180,
+                #         run_time=2000,
+                #     )
+                # elif value < -0.1:
+                #     self.robot_body.set_uart_servo_angle(
+                #         s_id=2,
+                #         s_angle=0,
+                #         run_time=2000,
+                #     )
+                # else:
+                #     # stop arm
+                #     current_angle = self.robot_body.get_uart_servo_angle(2)
+                #     print(f'stop arm, current angle: {current_angle}')
+                #     self.robot_body.set_uart_servo_angle(
+                #         s_id=2,
+                #         s_angle=current_angle,
+                #         run_time=0,
+                #     )
 
         elif name == 'RK2_LEFT_RIGHT':
             if self.robot_head.robot_mode == 'user_control_wheels':
