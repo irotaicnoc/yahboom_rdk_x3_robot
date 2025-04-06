@@ -1,10 +1,10 @@
 import os
 import cv2
+import psutil
 import numpy as np
 from ultralytics import YOLO
 
 import global_constants as gc
-from kill_process import kill_process_
 
 
 def format_camera_frames(frame,
@@ -240,3 +240,21 @@ def microphone_angle_to_robot_angle(direction_of_arrival: float, microphone_robo
     assert -180 <= converted_doa < 180, f'Error in DOA conversion: {converted_doa}°'
 
     return converted_doa
+
+
+def kill_process_(process_name: str, verbose: int = 0):
+    target_found = True
+    while target_found:
+        target_found = False
+        process_list = psutil.process_iter()
+        if verbose >= 2:
+            print(f'Killing process "{process_name}"...')
+        for process in process_list:
+            if process_name in process.name():
+                target_found = True
+                if verbose >= 1:
+                    print(f'\t\t{process.name()} is running')
+                os.kill(process.pid, 9)
+                if verbose >= 2:
+                    print(f'\t\t{process.name()} killed')
+                os.system('sleep 0.1')
