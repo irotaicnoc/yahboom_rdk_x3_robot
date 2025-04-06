@@ -37,6 +37,7 @@ def main_loop(**kwargs):
     thread_joystick = threading.Thread(target=task_joystick, name='task_joystick', kwargs=joystick_kwargs)
     thread_joystick.start()
 
+    # OLED SCREEN
     screen_kwargs = {
         'robot_body': robot_body,
         'robot_head': robot_head,
@@ -152,11 +153,12 @@ def task_screen(**kwargs):
         while True:
             state = oled.main_program()
             oled.clear(True)
-            if state:
+            if not state:
                 del oled
-                print('---OLED CLEARED!---')
+                warnings.warn('Oled error. Oled deactivated')
                 break
-            time.sleep(1)
+            print('Oled cleared')
+            time.sleep(2)
     except KeyboardInterrupt as e:
         del oled
         print('Oled Error:')

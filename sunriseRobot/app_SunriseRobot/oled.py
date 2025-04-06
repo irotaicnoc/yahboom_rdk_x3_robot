@@ -45,7 +45,7 @@ class OLED:
     def __del__(self):
         self.clear(True)
         if self.verbose >= 1:
-            print('---OLED-DEL---')
+            print('OLED deactivated')
 
     # Initialize OLED, return True on success, False on failure
     def begin(self):
@@ -55,7 +55,7 @@ class OLED:
             self.__oled.clear()
             self.__oled.display()
             if self.verbose >= 1:
-                print('---OLED begin ok!---')
+                print('OLED started correctly!')
             return True
         except:
             if self.verbose >= 1:
@@ -77,7 +77,8 @@ class OLED:
     # Refresh =True Refresh immediately, refresh=False refresh not
     def add_text(self, start_x, start_y, text, refresh=False):
         if start_x > self.__WIDTH or start_x < 0 or start_y < 0 or start_y > self.__HEIGHT:
-            print('oled text: x, y input error!')
+            if self.verbose >= 1:
+                print('oled text: x, y input error')
             return
         x = int(start_x + self.__x)
         y = int(start_y + self.__top)
@@ -89,7 +90,8 @@ class OLED:
     # Write a line of character text.  Refresh =True Refresh immediately, refresh=False refresh not.
     def add_line(self, text, line=1, refresh=False):
         if line < 1 or line > 4:
-            print('oled line input error!')
+            if self.verbose >= 1:
+                print('oled line input error')
             return
         y = int(8 * (line - 1))
         self.add_text(0, y, text, refresh)
@@ -142,7 +144,7 @@ class OLED:
         try:
             voltage = self.robot_body.get_battery_voltage()
             percent = utils.voltage_to_percent(voltage)
-            return f'Battery: {percent}.1f%'
+            return f'Battery: {percent:.1f}%'
         except:
             return f'Battery: error'
 
@@ -159,12 +161,13 @@ class OLED:
                     self.add_line(controller_mode[2], line=3)
                 else:
                     self.add_line(self.get_ros2_mode_status(), line=2)
-                    self.add_line('IP:' + self.get_local_ip(), line=3)
+                    self.add_line('IP: ' + self.get_local_ip(), line=3)
                 self.add_line(self.get_battery_voltage(), line=4)
                 # Display image
                 self.refresh()
                 time.sleep(2)
             return False
         except:
-            print('!!!---OLED refresh error---!!!')
+            if self.verbose >= 1:
+                print('OLED main_program error')
             return False
