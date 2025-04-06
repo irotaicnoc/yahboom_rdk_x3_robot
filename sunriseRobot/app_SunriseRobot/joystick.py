@@ -345,10 +345,7 @@ class Joystick(object):
                 _time, value, _type, number = struct.unpack('IhBB', evbuf)
                 func = _type << 8 | number
                 name = self.__function_names.get(func)
-                print(f'_time: {_time}, name: {name}')
-                # print('evbuf:', _time, value, _type, number)
-                # if self.verbose >= 3:
-                #     print('func:0x%04X, %s, %d' % (func, name, value))
+                print(f'_time: {_time}, name: {name}, value: {value}')
                 if name is not None:
                     self.__data_processing(name, value)
                 else:
