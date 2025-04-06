@@ -124,7 +124,7 @@ class Joystick(object):
                 self.robot_body.set_uart_servo_angle(
                     s_id=1,
                     s_angle=self.robot_body.servo_desired_angles[1],
-                    run_time=200,
+                    run_time=0,
                 )
                 # time.sleep(0.01)
 
@@ -145,7 +145,7 @@ class Joystick(object):
                 self.robot_body.set_uart_servo_angle(
                     s_id=2,
                     s_angle=self.robot_body.servo_desired_angles[2],
-                    run_time=200,
+                    run_time=0,
                 )
                 time.sleep(0.01)
 
