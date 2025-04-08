@@ -347,13 +347,15 @@ class PS2(Gamepad):
             0x0201: 'RK1_UP_DOWN',
             0x0202: 'RK2_LEFT_RIGHT',
             0x0203: 'RK2_UP_DOWN',
-            0x0204: 'WSAD_LEFT_RIGHT',
-            0x0205: 'WSAD_UP_DOWN',
+            0x0204: 'IGNORE_AXIS_R',
+            0x0205: 'IGNORE_AXIS_L',
+            0x0206: 'WSAD_LEFT_RIGHT',
+            0x0207: 'WSAD_UP_DOWN',
         }
         self.buttonNames = {
             0x0100: 'A',
             0x0101: 'B',
-            0x0102: 'X',
+            0x0103: 'X',
             0x0104: 'Y',
             0x0106: 'L1',
             0x0107: 'R1',
