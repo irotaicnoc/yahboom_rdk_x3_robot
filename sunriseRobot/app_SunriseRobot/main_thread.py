@@ -3,11 +3,11 @@ import warnings
 import threading
 
 import args
-from joystick import Joystick
 import global_constants as gc
 from robot_body import RobotBody
 from robot_head import RobotHead
 from sound.sound_agent import SoundAgent
+from controllers.joystick import Joystick
 from physical_accessories.oled import OLED
 from physical_accessories.light import Light
 from physical_accessories.gpio_pin_control import GpioLed
@@ -21,6 +21,7 @@ def main_loop(**kwargs):
     if parameters['arm_present']:
         robot_body.servo_desired_angles = robot_body.get_uart_servo_angle_array()
     robot_head = RobotHead(verbose=parameters['verbose'], arm_present=parameters['arm_present'])
+
     # LIGHTS
     internal_light = Light(verbose=parameters['verbose'])
     gpio_led = GpioLed()
