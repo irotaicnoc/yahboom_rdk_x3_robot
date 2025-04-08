@@ -7,12 +7,12 @@ import Gamepad
 
 # Gamepad settings
 gamepadType = Gamepad.PS2
-buttonHappy = 'CROSS'
-buttonBeep = 'CIRCLE'
-buttonExit = 'PS'
-joystickSpeed = 'LEFT-Y'
-joystickSteering = 'RIGHT-X'
-pollInterval = 0.1
+buttonHappy = 'B'
+buttonBeep = 'A'
+buttonExit = 'START'
+joystickSpeed = 'RK1_UP_DOWN'
+joystickSteering = 'RK2_LEFT_RIGHT'
+pollInterval = 0.3
 
 # Wait for a connection
 if not Gamepad.available():
