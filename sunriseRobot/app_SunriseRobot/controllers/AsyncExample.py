@@ -9,7 +9,7 @@ import Gamepad
 gamepadType = Gamepad.PS2
 buttonHappy = 'R2'
 buttonBeep = 'L2'
-buttonExit = 'START'
+buttonExit = 'A'
 joystickSpeed = 'RK1_UP_DOWN'
 joystickSteering = 'RK2_LEFT_RIGHT'
 pollInterval = 0.3
