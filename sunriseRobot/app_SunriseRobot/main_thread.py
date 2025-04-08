@@ -7,7 +7,7 @@ import global_constants as gc
 from robot_body import RobotBody
 from robot_head import RobotHead
 from sound.sound_agent import SoundAgent
-from controllers.joystick import Joystick
+from controllers.ps2_controller import PS2Controller
 from physical_accessories.oled import OLED
 from physical_accessories.light import Light
 from physical_accessories.gpio_pin_control import GpioLed
@@ -26,16 +26,16 @@ def main_loop(**kwargs):
     internal_light = Light(verbose=parameters['verbose'])
     gpio_led = GpioLed()
 
-    # JOYSTICK
-    joystick_kwargs = {
+    # CONTROLLER
+    controller_kwargs = {
         'robot_body': robot_body,
         'robot_head': robot_head,
         'internal_light': internal_light,
         'gpio_led': gpio_led,
         'verbose': parameters['verbose'],
     }
-    thread_joystick = threading.Thread(target=task_joystick, name='task_joystick', kwargs=joystick_kwargs)
-    thread_joystick.start()
+    thread_controller = threading.Thread(target=task_controller, name='task_controller', kwargs=controller_kwargs)
+    thread_controller.start()
 
     # OLED SCREEN
     screen_kwargs = {
@@ -44,7 +44,7 @@ def main_loop(**kwargs):
         'verbose': parameters['verbose'],
     }
     # "daemon = True" means that when this is the only thread running, (or when only other daemonic threads remain)
-    # the containing thread (the main) will exit. The oled screen is daemonic, if there are no more joystick and/or
+    # the containing thread (the main) will exit. The oled screen is daemonic, if there are no more controller and/or
     # vision_agent left, then the main can stop.
     thread_screen = threading.Thread(target=task_screen, name='task_screen', kwargs=screen_kwargs, daemon=True)
     thread_screen.start()
@@ -83,15 +83,15 @@ def main_loop(**kwargs):
 
 
 # USB wireless gamepad
-def task_joystick(**kwargs):
-    js = Joystick(**kwargs)
+def task_controller(**kwargs):
+    ps2_controller = PS2Controller(**kwargs)
     while True:
-        state = js.joystick_handle()
-        if state != js.STATE_OK:
-            if state == js.STATE_KEY_BREAK:
+        state = ps2_controller.event_listener()
+        if state != ps2_controller.STATE_OK:
+            if state == ps2_controller.STATE_KEY_BREAK:
                 break
             time.sleep(1)
-            js.reconnect()
+            ps2_controller.reconnect()
 
 
 def task_vision_agent(**kwargs):
