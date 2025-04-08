@@ -41,55 +41,6 @@ class PS3(Gamepad):
         self._setupReverseMaps()
 
 
-# PS3 controller settings for older Raspbian versions
-#class PS3(Gamepad):
-#    fullName = 'PlayStation 3 controller'
-#
-#    def __init__(self, joystickNumber = 0):
-#        Gamepad.__init__(self, joystickNumber)
-#        self.axisNames = {
-#            0:  'LEFT-X',
-#            1:  'LEFT-Y',
-#            2:  'RIGHT-X',
-#            3:  'RIGHT-Y',
-#            4:  'roll-1',
-#            5:  'pitch',
-#            6:  'roll-2',
-#            8:  'DPAD-UP',
-#            9:  'DPAD-RIGHT',
-#            10: 'DPAD-DOWN',
-#            11: 'DPAD-LEFT',
-#            12: 'L2',
-#            13: 'R2',
-#            14: 'L1',
-#            15: 'R1',
-#            16: 'TRIANGLE',
-#            17: 'CIRCLE',
-#            18: 'CROSS',
-#            19: 'SQUARE'
-#        }
-#        self.buttonNames = {
-#            0:  'SELECT',
-#            1:  'L3',
-#            2:  'R3',
-#            3:  'START',
-#            4:  'DPAD-UP',
-#            5:  'DPAD-RIGHT',
-#            6:  'DPAD-DOWN',
-#            7:  'DPAD-LEFT',
-#            8:  'L2',
-#            9:  'R2',
-#            10: 'L1',
-#            11: 'R1',
-#            12: 'TRIANGLE',
-#            13: 'CIRCLE',
-#            14: 'CROSS',
-#            15: 'SQUARE',
-#            16: 'PS'
-#        }
-#        self._setupReverseMaps()
-
-
 class PS4(Gamepad):
     fullName = 'PlayStation 4 controller'
 
@@ -343,28 +294,30 @@ class PS2(Gamepad):
     def __init__(self, joystickNumber = 0):
         Gamepad.__init__(self, joystickNumber)
         self.axisNames = {
-            0: 'RK1_X',
-            1: 'RK1_Y',
-            2: 'RK2_X',
-            3: 'RK2_Y',
+            0x0200: 'RK1_LEFT_RIGHT',
+            0x0201: 'RK1_UP_DOWN',
+            0x0202: 'RK2_LEFT_RIGHT',
+            0x0203: 'RK2_UP_DOWN',
             # 0x0204: 'IGNORE_AXIS_R',
             # 0x0205: 'IGNORE_AXIS_L',
-            4: 'WSAD_X',
-            5: 'WSAD_Y',
+            0x0109: 'IGNORE_AXIS_R',
+            0x0108: 'IGNORE_AXIS_L',
+            0x0206: 'WSAD_LEFT_RIGHT',
+            0x0207: 'WSAD_UP_DOWN',
         }
         self.buttonNames = {
-            0: 'A',
-            1: 'B',
-            2: 'X',
-            3: 'Y',
-            4: 'L1',
-            5: 'R1',
-            6: 'L2',
-            7: 'R2',
-            8: 'SELECT',
-            9: 'START',
-            10: 'BTN_RK1',
-            11: 'BTN_RK2',
+            0x0100: 'A',
+            0x0101: 'B',
+            0x0103: 'X',
+            0x0104: 'Y',
+            0x0106: 'L1',
+            0x0107: 'R1',
+            0x0108: 'L2',
+            0x0109: 'R2',
+            0x010A: 'SELECT',
+            0x010B: 'START',
+            0x010D: 'BTN_RK1',
+            0x010E: 'BTN_RK2',
         }
 
         self._setupReverseMaps()
