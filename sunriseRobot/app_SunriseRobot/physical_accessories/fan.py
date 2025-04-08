@@ -2,26 +2,22 @@ import time
 
 import smbus
 
-import args
-import global_constants as gc
-
 
 class Fan:
-    def __init__(self, verbose: int = None):
-        if verbose is None:
-            parameters = args.import_args(
-                yaml_path=gc.CONFIG_FOLDER_PATH + 'main_thread.yaml',
-            )
-            self.verbose = parameters['verbose']
-        else:
-            self.verbose = verbose
+    BUS_ARG_1 = 0x0d
+    BUS_ARG_2_STATE = 0x08
+    START_CMD = 1
+    STOP_CMD = 0
+
+    def __init__(self, verbose: int = 0):
         self.bus = smbus.SMBus(0)
+        self.verbose = verbose
         self.start()
 
     def start(self):
         if self.verbose >= 2:
             print('Starting fan...', end='')
-        self.bus.write_byte_data(gc.BUS_ARG_1, gc.BUS_ARG_2_FAN_STATE, gc.FAN_START_CMD)
+        self.bus.write_byte_data(Fan.BUS_ARG_1, Fan.BUS_ARG_2_STATE, Fan.START_CMD)
         time.sleep(.05)
         if self.verbose >= 2:
             print('Done.')
@@ -29,7 +25,7 @@ class Fan:
     def stop(self):
         if self.verbose >= 2:
             print('Stopping fan...', end='')
-        self.bus.write_byte_data(gc.BUS_ARG_1, gc.BUS_ARG_2_FAN_STATE, gc.FAN_STOP_CMD)
+        self.bus.write_byte_data(Fan.BUS_ARG_1, Fan.BUS_ARG_2_STATE, Fan.STOP_CMD)
         time.sleep(.05)
         if self.verbose >= 2:
             print('Done.')
