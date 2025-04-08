@@ -7,9 +7,9 @@ import Gamepad
 
 # Gamepad settings
 gamepadType = Gamepad.PS2
-buttonHappy = 'B'
-buttonBeep = 'A'
-buttonExit = 'Y'
+buttonHappy = 'R2'
+buttonBeep = 'L2'
+buttonExit = 'START'
 joystickSpeed = 'RK1_UP_DOWN'
 joystickSteering = 'RK2_LEFT_RIGHT'
 pollInterval = 0.3

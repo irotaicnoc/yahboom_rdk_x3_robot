@@ -343,29 +343,28 @@ class PS2(Gamepad):
     def __init__(self, joystickNumber = 0):
         Gamepad.__init__(self, joystickNumber)
         self.axisNames = {
+            0x0200: 'RK1_LEFT_RIGHT',
+            0x0201: 'RK1_UP_DOWN',
+            0x0202: 'RK2_LEFT_RIGHT',
+            0x0203: 'RK2_UP_DOWN',
+            0x0206: 'WSAD_LEFT_RIGHT',
+            0x0207: 'WSAD_UP_DOWN',
+        }
+        self.buttonNames = {
             0x0100: 'A',
             0x0101: 'B',
             0x0103: 'X',
             0x0104: 'Y',
             0x0106: 'L1',
             0x0107: 'R1',
-            0x0108: 'L2_1',
-            0x0109: 'R2_1',
+            0x0108: 'L2',
+            0x0109: 'R2',
             0x010A: 'SELECT',
             0x010B: 'START',
             0x010D: 'BTN_RK1',
             0x010E: 'BTN_RK2',
         }
-        self.buttonNames = {
-            0x0200: 'RK1_LEFT_RIGHT',
-            0x0201: 'RK1_UP_DOWN',
-            0x0202: 'RK2_LEFT_RIGHT',
-            0x0203: 'RK2_UP_DOWN',
-            0x0204: 'R2',
-            0x0205: 'L2',
-            0x0206: 'WSAD_LEFT_RIGHT',
-            0x0207: 'WSAD_UP_DOWN',
-        }
+
         self._setupReverseMaps()
 
 
