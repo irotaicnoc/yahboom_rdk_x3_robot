@@ -36,20 +36,14 @@ class ControllerFunctions(object):
         if self.robot_head.robot_mode == 'user_control_wheels':
             self.controller_loop.speed_y = value * self.robot_head.speed_coefficient
         elif self.robot_head.robot_mode == 'user_control_arm':
-            print(f'servo 1 old: {self.controller_loop.arm_servo_speed[0]}')
-            print(f'value 1: {value}')
             self.controller_loop.arm_servo_speed[0] = value * self.robot_head.speed_coefficient * self.robot_head.arm_speed_proportion
-            print(f'servo 1 new: {self.controller_loop.arm_servo_speed[0]}')
 
     def axis_left_y(self, value: float):
         assert -1 <= value <= 1, f'Value {value} is out of range [-1, 1]'
         if self.robot_head.robot_mode == 'user_control_wheels':
             self.controller_loop.speed_x = value * self.robot_head.speed_coefficient
         elif self.robot_head.robot_mode == 'user_control_arm':
-            print(f'servo 2 old: {self.controller_loop.arm_servo_speed[1]}')
-            print(f'value 2: {value}')
             self.controller_loop.arm_servo_speed[1] = value * self.robot_head.speed_coefficient * self.robot_head.arm_speed_proportion
-            print(f'servo 2 new: {self.controller_loop.arm_servo_speed[1]}')
 
     def axis_right_x(self, value: float):
         assert -1 <= value <= 1, f'Value {value} is out of range [-1, 1]'
@@ -57,28 +51,19 @@ class ControllerFunctions(object):
             self.controller_loop.speed_z = (value * self.robot_head.speed_coefficient
                                             * self.robot_head.steer_speed_proportion)
         elif self.robot_head.robot_mode == 'user_control_arm':
-            print(f'servo 5 old: {self.controller_loop.arm_servo_speed[4]}')
-            print(f'value 5: {value}')
             self.controller_loop.arm_servo_speed[4] = value * self.robot_head.speed_coefficient * self.robot_head.arm_speed_proportion
-            print(f'servo 5 new: {self.controller_loop.arm_servo_speed[4]}')
 
     def axis_right_y(self, value: float):
         assert -1 <= value <= 1, f'Value {value} is out of range [-1, 1]'
         if self.robot_head.robot_mode == 'user_control_arm':
-            print(f'servo 6 old: {self.controller_loop.arm_servo_speed[5]}')
-            print(f'value 6: {value}')
             self.controller_loop.arm_servo_speed[5] = value * self.robot_head.speed_coefficient * self.robot_head.arm_speed_proportion
-            print(f'servo 6 new: {self.controller_loop.arm_servo_speed[5]}')
 
     def axis_arrows_x(self, value: float):
         assert -1 <= value <= 1, f'Value {value} is out of range [-1, 1]'
         if self.robot_head.robot_mode == 'user_control_wheels':
             self.controller_loop.speed_y = value * self.robot_head.speed_coefficient
         # elif self.robot_head.robot_mode == 'user_control_arm':
-        #     print(f'servo 1 old: {self.controller_loop.arm_servo_speed[0]}')
-        #     print(f'value 1: {value}')
         #     self.controller_loop.arm_servo_speed[0] = value * self.robot_head.speed_coefficient * self.robot_head.arm_speed_proportion
-        #     print(f'servo 1 new: {self.controller_loop.arm_servo_speed[0]}')
         elif self.robot_head.robot_mode == 'autonomous_vision':
             if value > self.arrow_activation_threshold:
                 self.robot_head.next_target()
@@ -90,10 +75,7 @@ class ControllerFunctions(object):
         if self.robot_head.robot_mode == 'user_control_wheels':
             self.controller_loop.speed_x = value * self.robot_head.speed_coefficient
         # elif self.robot_head.robot_mode == 'user_control_arm':
-        #     print(f'servo 2 old: {self.controller_loop.arm_servo_speed[1]}')
-        #     print(f'value 2: {value}')
         #     self.controller_loop.arm_servo_speed[1] = value * self.robot_head.speed_coefficient * self.robot_head.arm_speed_proportion
-        #     print(f'servo 2 new: {self.controller_loop.arm_servo_speed[1]}')
         elif self.robot_head.robot_mode == 'autonomous_vision':
             if value > self.arrow_activation_threshold:
                 self.robot_head.next_model()
@@ -103,18 +85,13 @@ class ControllerFunctions(object):
     def button_south(self, value: bool):
         # activate buzzer
         if self.robot_head.robot_mode == 'user_control_wheels':
-            print(f'buzzer status {self.controller_loop.buzzer_is_active}')
             self.controller_loop.buzzer_is_active = value
-            print(f'changed to {self.controller_loop.buzzer_is_active}')
         # servo 3 down
         elif self.robot_head.robot_mode == 'user_control_arm':
-            print(f'servo 3 old: {self.controller_loop.arm_servo_speed[2]}')
-            print(f'value 3: {value}')
             if value:
                 self.controller_loop.arm_servo_speed[2] -= self.robot_head.speed_coefficient * self.robot_head.arm_speed_proportion
             else:
                 self.controller_loop.arm_servo_speed[2] += self.robot_head.speed_coefficient * self.robot_head.arm_speed_proportion
-            print(f'servo 3 new: {self.controller_loop.arm_servo_speed[2]}')
 
     def button_east(self, value: bool):
         if self.robot_head.robot_mode == 'user_control_wheels':
@@ -123,24 +100,18 @@ class ControllerFunctions(object):
                     self.gpio_led.next_color()
         # servo 3 up
         elif self.robot_head.robot_mode == 'user_control_arm':
-            print(f'servo 3 old: {self.controller_loop.arm_servo_speed[2]}')
-            print(f'value 3: {value}')
             if value:
                 self.controller_loop.arm_servo_speed[2] += self.robot_head.speed_coefficient * self.robot_head.arm_speed_proportion
             else:
                 self.controller_loop.arm_servo_speed[2] -= self.robot_head.speed_coefficient * self.robot_head.arm_speed_proportion
-            print(f'servo 3 new: {self.controller_loop.arm_servo_speed[2]}')
 
     def button_west(self, value: bool):
         # servo 4 down
         if self.robot_head.robot_mode == 'user_control_arm':
-            print(f'servo 4 old: {self.controller_loop.arm_servo_speed[3]}')
-            print(f'value 4: {value}')
             if value:
                 self.controller_loop.arm_servo_speed[3] -= self.robot_head.speed_coefficient * self.robot_head.arm_speed_proportion
             else:
                 self.controller_loop.arm_servo_speed[3] += self.robot_head.speed_coefficient * self.robot_head.arm_speed_proportion
-            print(f'servo 4 new: {self.controller_loop.arm_servo_speed[3]}')
 
     def button_north(self, value: bool):
         # change light effect
@@ -149,13 +120,10 @@ class ControllerFunctions(object):
                 self.internal_light.next_light_effect()
         # servo 4 up
         elif self.robot_head.robot_mode == 'user_control_arm':
-            print(f'servo 4 old: {self.controller_loop.arm_servo_speed[3]}')
-            print(f'value 4: {value}')
             if value:
                 self.controller_loop.arm_servo_speed[3] += self.robot_head.speed_coefficient * self.robot_head.arm_speed_proportion
             else:
                 self.controller_loop.arm_servo_speed[3] -= self.robot_head.speed_coefficient * self.robot_head.arm_speed_proportion
-            print(f'servo 4 new: {self.controller_loop.arm_servo_speed[3]}')
 
     def button_l1(self, value: bool):
         # activate/deactivate hotspot
