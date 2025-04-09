@@ -57,20 +57,22 @@ class ControllerLoop(object):
 
         else:
             # wheels
-            self.robot_body.set_car_motion(self.speed_x, self.speed_y, self.speed_z)
+            if self.robot_head.robot_mode == 'user_control_wheels':
+                self.robot_body.set_car_motion(self.speed_x, self.speed_y, self.speed_z)
 
             # arm servos
-            self.update_servos_desired_angle()
-            # convert speed [0.1, 1] to arm runtime [0, 2000]
-            # high speed -> low run time
-            arm_run_time = utils.change_range(
-                val=self.robot_head.speed_coefficient,
-                original_min_val=0.1,
-                original_max_val=1,
-                new_min_val=2000,
-                new_max_val=0,
-            )
-            self.robot_body.set_uart_servo_angle_array(angle_s=self.arm_servos_desired_angle, run_time=arm_run_time)
+            if self.robot_head.robot_mode == 'user_control_arm':
+                self.update_servos_desired_angle()
+                # convert speed [0.1, 1] to arm runtime [0, 2000]
+                # high speed -> low run time
+                arm_run_time = utils.change_range(
+                    val=self.robot_head.speed_coefficient,
+                    original_min_val=0.1,
+                    original_max_val=1,
+                    new_min_val=2000,
+                    new_max_val=0,
+                )
+                self.robot_body.set_uart_servo_angle_array(angle_s=self.arm_servos_desired_angle, run_time=arm_run_time)
 
             # buzzer
             if self.buzzer_is_active:
