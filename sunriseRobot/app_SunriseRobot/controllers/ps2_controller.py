@@ -3,7 +3,7 @@
 import os
 import struct
 
-from controller_interface import ControllerFunctions
+from controllers.controller_interface import ControllerFunctions
 
 
 class PS2Controller(object):
@@ -150,10 +150,6 @@ class PS2Controller(object):
 
     # Handles events for controller
     def event_listener(self):
-        # current_time_j = time.time()
-        # elapsed_time = current_time_j - self.start_time
-        # self.start_time = current_time_j
-        # print(f'elapsed_time: {elapsed_time:.1f}s, current_time: {current_time_j:.1f}s')
         if not self._js_isOpen:
             if self.verbose >= 2:
                 print('Failed to open controller')
