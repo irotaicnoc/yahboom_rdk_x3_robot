@@ -7,9 +7,10 @@ import global_constants as gc
 from robot_body import RobotBody
 from robot_head import RobotHead
 from sound.sound_agent import SoundAgent
-from controllers.ps2_controller import PS2Controller
 from physical_accessories.oled import OLED
 from physical_accessories.light import Light
+from controllers.ps2_controller import PS2Controller
+from controllers.controller_loop import ControllerLoop
 from physical_accessories.gpio_pin_control import GpioLed
 
 
@@ -27,8 +28,21 @@ def main_loop(**kwargs):
     gpio_led = GpioLed()
 
     # CONTROLLER
+    controller_loop = ControllerLoop(
+        robot_body=robot_body,
+        robot_head=robot_head,
+        arm_servos_initial_angles=robot_body.get_uart_servo_angle_array(),
+        verbose=parameters['verbose'],
+    )
+    controller_loop_kwargs = {'controller_loop': controller_loop}
+    thread_controller_loop = threading.Thread(
+        target=task_controller_loop,
+        name='task_controller_loop',
+        kwargs=controller_loop_kwargs,
+    )
+    thread_controller_loop.start()
     controller_kwargs = {
-        'robot_body': robot_body,
+        'controller_loop': controller_loop,
         'robot_head': robot_head,
         'internal_light': internal_light,
         'gpio_led': gpio_led,
@@ -84,14 +98,30 @@ def main_loop(**kwargs):
 
 # USB wireless gamepad
 def task_controller(**kwargs):
-    ps2_controller = PS2Controller(**kwargs)
-    while True:
-        state = ps2_controller.event_listener()
-        if state != ps2_controller.STATE_OK:
-            if state == ps2_controller.STATE_KEY_BREAK:
-                break
-            time.sleep(1)
-            ps2_controller.reconnect()
+    try:
+        ps2_controller = PS2Controller(**kwargs)
+        while True:
+            state = ps2_controller.event_listener()
+            if state != ps2_controller.STATE_OK:
+                if state == ps2_controller.STATE_KEY_BREAK:
+                    break
+                time.sleep(1)
+                ps2_controller.reconnect()
+    except Exception as e:
+        print('Controller Error:')
+        print(e)
+        print(e.__traceback__)
+
+
+def task_controller_loop(**kwargs):
+    try:
+        controller_loop = kwargs['controller_loop']
+        while True:
+            controller_loop.update_robot_loop()
+    except Exception as e:
+        print('Controller Loop Error:')
+        print(e)
+        print(e.__traceback__)
 
 
 def task_vision_agent(**kwargs):

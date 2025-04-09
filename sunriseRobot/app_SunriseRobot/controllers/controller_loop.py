@@ -10,13 +10,14 @@ class ControllerLoop(object):
     def __init__(self,
                  robot_body,
                  robot_head,
-                 arm_servos_desired_angle: list = (90, 90, 90, 90, 90, 90),
+                 arm_servos_initial_angles: list = (90, 90, 90, 90, 90, 90),
                  verbose: int = 0,
                  ):
 
         self.robot_body = robot_body
         self.robot_head = robot_head
         self.verbose = verbose
+        self.connected_controllers = 0
 
         # MODIFIED ASYNCHRONOUSLY BY THE CONTROLLER
         # wheel speed
@@ -31,7 +32,7 @@ class ControllerLoop(object):
         # all servos to 90 degrees means vertical position
         # during each loop iteration, the desired angle is updated by adding the speed
         # and the real angle is moved closer to the desired angle
-        self.arm_servos_desired_angle = arm_servos_desired_angle
+        self.arm_servos_desired_angle = arm_servos_initial_angles
         if len(self.arm_servos_desired_angle) > 6:
             warnings.warn(f'controls supports at most a 6-servos arm,'
                           f' but {len(self.arm_servos_desired_angle)} were provided. ')
@@ -47,27 +48,35 @@ class ControllerLoop(object):
             self.arm_servos_desired_angle[servo_id] = temp_angle
 
     def update_robot_loop(self):
-        # wheels
-        self.robot_body.set_car_motion(self.speed_x, self.speed_y, self.speed_z)
+        assert self.connected_controllers >= 0, (f'connected_controllers cannot be negative,'
+                                                 f' but the current value is {self.connected_controllers}')
+        if self.connected_controllers == 0:
+            if self.verbose >= 2:
+                print('No controller connected, waiting for one...')
+            time.sleep(2)
 
-        # arm servos
-        self.update_servos_desired_angle()
-        # convert speed [0.1, 1] to arm runtime [0, 2000]
-        # high speed -> low run time
-        arm_run_time = utils.change_range(
-            val=self.robot_head.speed_coefficient,
-            original_min_val=0.1,
-            original_max_val=1,
-            new_min_val=2000,
-            new_max_val=0,
-        )
-        self.robot_body.set_uart_servo_angle_array(angle_s=self.arm_servos_desired_angle, run_time=arm_run_time)
-
-        # buzzer
-        if self.buzzer_is_active:
-            self.robot_body.set_beep(1)
         else:
-            self.robot_body.set_beep(0)
+            # wheels
+            self.robot_body.set_car_motion(self.speed_x, self.speed_y, self.speed_z)
 
-        time.sleep(0.05)
+            # arm servos
+            self.update_servos_desired_angle()
+            # convert speed [0.1, 1] to arm runtime [0, 2000]
+            # high speed -> low run time
+            arm_run_time = utils.change_range(
+                val=self.robot_head.speed_coefficient,
+                original_min_val=0.1,
+                original_max_val=1,
+                new_min_val=2000,
+                new_max_val=0,
+            )
+            self.robot_body.set_uart_servo_angle_array(angle_s=self.arm_servos_desired_angle, run_time=arm_run_time)
+
+            # buzzer
+            if self.buzzer_is_active:
+                self.robot_body.set_beep(1)
+            else:
+                self.robot_body.set_beep(0)
+
+            time.sleep(0.05)
 

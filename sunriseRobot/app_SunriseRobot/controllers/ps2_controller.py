@@ -3,9 +3,11 @@
 import os
 import struct
 
+from controller_interface import ControllerFunctions
+
 
 class PS2Controller(object):
-    def __init__(self, controller_functions, js_id: int = 0, verbose: int = 0):
+    def __init__(self, controller_loop, robot_head, internal_light, gpio_led, js_id: int = 0, verbose: int = 0):
         self.verbose = verbose
 
         # controller state
@@ -18,7 +20,15 @@ class PS2Controller(object):
         self.STATE_KEY_BREAK = 3
         self.MAX_INPUT_VALUE = 32767
 
-        self.controller_functions = controller_functions
+        self.controller_loop = controller_loop
+
+        self.controller_functions = ControllerFunctions(
+            controller_loop=controller_loop,
+            robot_head=robot_head,
+            internal_light=internal_light,
+            gpio_led=gpio_led,
+            verbose=verbose,
+        )
 
         if self.verbose >= 3:
             print('Available controllers:')
@@ -34,6 +44,7 @@ class PS2Controller(object):
             self._js_isOpen = True
             if self.verbose >= 1:
                 print(f'Controller {self._js_id} opened successfully')
+            self.controller_loop.connected_controllers += 1
         except:
             self._js_isOpen = False
             if self.verbose >= 1:
@@ -71,6 +82,7 @@ class PS2Controller(object):
             self._js_dev.close()
         if self.verbose >= 1:
             print(f'Controller {self._js_id} closed successfully')
+        self.controller_loop.connected_controllers -= 1
 
     def standardize_signal(self, name: str, value):
         if self.verbose >= 3:
@@ -164,11 +176,13 @@ class PS2Controller(object):
         except KeyboardInterrupt as ki:
             print('Keyboard interrupt')
             print(ki)
+            self.controller_loop.connected_controllers -= 1
             return self.STATE_KEY_BREAK
         except Exception as e:
             self._js_isOpen = False
             print('Controller disconnected')
             print(e)
+            self.controller_loop.connected_controllers -= 1
             return self.STATE_DISCONNECT
 
     # reconnect controller
@@ -179,6 +193,7 @@ class PS2Controller(object):
             self._js_isOpen = True
             self._ignore_count = 24
             print(f'Controller with id {self._js_id} opened successfully')
+            self.controller_loop.connected_controllers += 1
             return True
         except:
             self._js_isOpen = False
