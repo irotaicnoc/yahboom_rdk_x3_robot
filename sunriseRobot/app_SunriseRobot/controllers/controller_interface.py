@@ -187,6 +187,7 @@ class ControllerFunctions(object):
         if value:
             if (current_time - self.last_start_press) >= self.BUTTON_COOLDOWN:
                 if self.robot_head.robot_mode == 'user_control_arm':
+                    self.last_start_press = current_time
                     self.robot_head.toggle_arm_rigid()
             else:
                 if self.verbose >= 2:
