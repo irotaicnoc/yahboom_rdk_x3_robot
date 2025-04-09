@@ -37,6 +37,7 @@ class RobotHead:
         if parameters['arm_present']:
             self.robot_mode_list.append('user_control_arm')
             self.arm_control_sensibility = parameters['arm_control_sensibility']
+            self.arm_speed_proportion = parameters['arm_speed_proportion']
             self.arm_is_rigid = True
 
         # TODO: rimettili in cima

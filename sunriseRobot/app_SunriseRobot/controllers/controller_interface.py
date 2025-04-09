@@ -38,7 +38,7 @@ class ControllerFunctions(object):
         elif self.robot_head.robot_mode == 'user_control_arm':
             print(f'servo 1 old: {self.controller_loop.arm_servo_speed[0]}')
             print(f'value 1: {value}')
-            self.controller_loop.arm_servo_speed[0] = value * self.robot_head.arm_control_sensibility
+            self.controller_loop.arm_servo_speed[0] = value * self.robot_head.arm_control_sensibility * self.robot_head.arm_speed_proportion
             print(f'servo 1 new: {self.controller_loop.arm_servo_speed[0]}')
 
     def axis_left_y(self, value: float):
@@ -48,7 +48,7 @@ class ControllerFunctions(object):
         elif self.robot_head.robot_mode == 'user_control_arm':
             print(f'servo 2 old: {self.controller_loop.arm_servo_speed[1]}')
             print(f'value 2: {value}')
-            self.controller_loop.arm_servo_speed[1] = value * self.robot_head.arm_control_sensibility
+            self.controller_loop.arm_servo_speed[1] = value * self.robot_head.arm_control_sensibility * self.robot_head.arm_speed_proportion
             print(f'servo 2 new: {self.controller_loop.arm_servo_speed[1]}')
 
     def axis_right_x(self, value: float):
@@ -59,7 +59,7 @@ class ControllerFunctions(object):
         elif self.robot_head.robot_mode == 'user_control_arm':
             print(f'servo 5 old: {self.controller_loop.arm_servo_speed[4]}')
             print(f'value 5: {value}')
-            self.controller_loop.arm_servo_speed[4] = value * self.robot_head.arm_control_sensibility
+            self.controller_loop.arm_servo_speed[4] = value * self.robot_head.arm_control_sensibility * self.robot_head.arm_speed_proportion
             print(f'servo 5 new: {self.controller_loop.arm_servo_speed[4]}')
 
     def axis_right_y(self, value: float):
@@ -67,7 +67,7 @@ class ControllerFunctions(object):
         if self.robot_head.robot_mode == 'user_control_arm':
             print(f'servo 6 old: {self.controller_loop.arm_servo_speed[5]}')
             print(f'value 6: {value}')
-            self.controller_loop.arm_servo_speed[5] = value * self.robot_head.arm_control_sensibility
+            self.controller_loop.arm_servo_speed[5] = value * self.robot_head.arm_control_sensibility * self.robot_head.arm_speed_proportion
             print(f'servo 6 new: {self.controller_loop.arm_servo_speed[5]}')
 
     def axis_arrows_x(self, value: float):
@@ -77,7 +77,7 @@ class ControllerFunctions(object):
         # elif self.robot_head.robot_mode == 'user_control_arm':
         #     print(f'servo 1 old: {self.controller_loop.arm_servo_speed[0]}')
         #     print(f'value 1: {value}')
-        #     self.controller_loop.arm_servo_speed[0] = value * self.robot_head.arm_control_sensibility
+        #     self.controller_loop.arm_servo_speed[0] = value * self.robot_head.arm_control_sensibility * self.robot_head.arm_speed_proportion
         #     print(f'servo 1 new: {self.controller_loop.arm_servo_speed[0]}')
         elif self.robot_head.robot_mode == 'autonomous_vision':
             if value > self.arrow_activation_threshold:
@@ -92,7 +92,7 @@ class ControllerFunctions(object):
         # elif self.robot_head.robot_mode == 'user_control_arm':
         #     print(f'servo 2 old: {self.controller_loop.arm_servo_speed[1]}')
         #     print(f'value 2: {value}')
-        #     self.controller_loop.arm_servo_speed[1] = value * self.robot_head.arm_control_sensibility
+        #     self.controller_loop.arm_servo_speed[1] = value * self.robot_head.arm_control_sensibility * self.robot_head.arm_speed_proportion
         #     print(f'servo 2 new: {self.controller_loop.arm_servo_speed[1]}')
         elif self.robot_head.robot_mode == 'autonomous_vision':
             if value > self.arrow_activation_threshold:
@@ -111,9 +111,9 @@ class ControllerFunctions(object):
             print(f'servo 3 old: {self.controller_loop.arm_servo_speed[2]}')
             print(f'value 3: {value}')
             if value:
-                self.controller_loop.arm_servo_speed[2] -= self.robot_head.arm_control_sensibility
+                self.controller_loop.arm_servo_speed[2] -= self.robot_head.arm_control_sensibility * self.robot_head.arm_speed_proportion
             else:
-                self.controller_loop.arm_servo_speed[2] += self.robot_head.arm_control_sensibility
+                self.controller_loop.arm_servo_speed[2] += self.robot_head.arm_control_sensibility * self.robot_head.arm_speed_proportion
             print(f'servo 3 new: {self.controller_loop.arm_servo_speed[2]}')
 
     def button_east(self, value: bool):
@@ -126,9 +126,9 @@ class ControllerFunctions(object):
             print(f'servo 3 old: {self.controller_loop.arm_servo_speed[2]}')
             print(f'value 3: {value}')
             if value:
-                self.controller_loop.arm_servo_speed[2] += self.robot_head.arm_control_sensibility
+                self.controller_loop.arm_servo_speed[2] += self.robot_head.arm_control_sensibility * self.robot_head.arm_speed_proportion
             else:
-                self.controller_loop.arm_servo_speed[2] -= self.robot_head.arm_control_sensibility
+                self.controller_loop.arm_servo_speed[2] -= self.robot_head.arm_control_sensibility * self.robot_head.arm_speed_proportion
             print(f'servo 3 new: {self.controller_loop.arm_servo_speed[2]}')
 
     def button_west(self, value: bool):
@@ -137,9 +137,9 @@ class ControllerFunctions(object):
             print(f'servo 4 old: {self.controller_loop.arm_servo_speed[3]}')
             print(f'value 4: {value}')
             if value:
-                self.controller_loop.arm_servo_speed[3] -= self.robot_head.arm_control_sensibility
+                self.controller_loop.arm_servo_speed[3] -= self.robot_head.arm_control_sensibility * self.robot_head.arm_speed_proportion
             else:
-                self.controller_loop.arm_servo_speed[3] += self.robot_head.arm_control_sensibility
+                self.controller_loop.arm_servo_speed[3] += self.robot_head.arm_control_sensibility * self.robot_head.arm_speed_proportion
             print(f'servo 4 new: {self.controller_loop.arm_servo_speed[3]}')
 
     def button_north(self, value: bool):
@@ -152,9 +152,9 @@ class ControllerFunctions(object):
             print(f'servo 4 old: {self.controller_loop.arm_servo_speed[3]}')
             print(f'value 4: {value}')
             if value:
-                self.controller_loop.arm_servo_speed[3] += self.robot_head.arm_control_sensibility
+                self.controller_loop.arm_servo_speed[3] += self.robot_head.arm_control_sensibility * self.robot_head.arm_speed_proportion
             else:
-                self.controller_loop.arm_servo_speed[3] -= self.robot_head.arm_control_sensibility
+                self.controller_loop.arm_servo_speed[3] -= self.robot_head.arm_control_sensibility * self.robot_head.arm_speed_proportion
             print(f'servo 4 new: {self.controller_loop.arm_servo_speed[3]}')
 
     def button_l1(self, value: bool):
