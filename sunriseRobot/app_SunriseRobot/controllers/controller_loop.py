@@ -81,4 +81,4 @@ class ControllerLoop(object):
             else:
                 self.robot_body.set_beep(0)
 
-            time.sleep(0.05)
+            time.sleep(0.02)

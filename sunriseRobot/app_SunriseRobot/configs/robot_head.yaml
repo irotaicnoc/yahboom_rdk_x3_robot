@@ -2,7 +2,7 @@ verbose: 0
 hotspot_ip: 192.168.8.88
 # maximum wheel speed [0.1, 1]
 # all controller inputs are scaled according to this value
-speed_coefficient: 0.3
+speed_coefficient: 0.5
 steer_speed_proportion: 5
 # arm control sensibility [0.1, 1]
 # how much a controller input changes the position of the arm
