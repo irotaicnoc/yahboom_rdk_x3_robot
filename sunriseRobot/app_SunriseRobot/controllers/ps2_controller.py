@@ -71,8 +71,8 @@ class PS2Controller(object):
             0x0201: 'AXIS_ROCKER_LEFT_Y',
             0x0202: 'AXIS_ROCKER_RIGHT_X',
             0x0203: 'AXIS_ROCKER_RIGHT_Y',
-            # 0x0204: 'AXIS_R2',
-            # 0x0205: 'AXIS_L2',
+            0x0204: 'AXIS_R2',
+            0x0205: 'AXIS_L2',
             0x0206: 'AXIS_ARROWS_X',
             0x0207: 'AXIS_ARROWS_Y',
         }
@@ -143,6 +143,12 @@ class PS2Controller(object):
 
         elif name == 'BUTTON_START':
             self.controller_functions.button_start(value)
+
+        elif name == 'AXIS_L2' or name == 'AXIS_R2':
+            # ignore this command, but catch it in this branch otherwise it will generate  an error and cause the
+            # controller to be disconnected. This is caused by L2 and R2 generating both a button and an axis event
+            # (sometimes even a few axis events). This is a bug in the controller.
+            pass
 
         else:
             if self.verbose >= 2:
