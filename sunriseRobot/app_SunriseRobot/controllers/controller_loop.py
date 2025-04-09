@@ -10,7 +10,7 @@ class ControllerLoop(object):
     def __init__(self,
                  robot_body,
                  robot_head,
-                 arm_servos_initial_angles: list = (90, 90, 90, 90, 90, 90),
+                 arm_servos_initial_angles: list = [90, 90, 90, 90, 90, 90],
                  verbose: int = 0,
                  ):
 
@@ -27,7 +27,7 @@ class ControllerLoop(object):
         # buzzer
         self.buzzer_is_active = False
         # arm servos
-        self.arm_servo_speed = (0, 0, 0, 0, 0, 0)
+        self.arm_servo_speed = [0, 0, 0, 0, 0, 0]
         # servo angles have to be in the range [0, 180], except for servo 4 which has range [0, 270]
         # all servos to 90 degrees means vertical position
         # during each loop iteration, the desired angle is updated by adding the speed
