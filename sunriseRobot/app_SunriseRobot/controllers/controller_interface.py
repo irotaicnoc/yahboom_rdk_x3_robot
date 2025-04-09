@@ -26,6 +26,8 @@ class ControllerFunctions(object):
         self.last_start_press = 0  # Add timestamp for START button
         self.BUTTON_COOLDOWN = 5.0  # Minimum seconds between button presses
 
+        self.arrow_activation_threshold = 0.3  # Threshold for arrows to be considered pressed
+
     # value is True or False for buttons
     # value is a float in range [-1, 1] for axes
     # for arrows 'value' is a float in range [-1, 1], but it can only assume the values -1, 0 or 1
@@ -67,6 +69,36 @@ class ControllerFunctions(object):
             print(f'value 6: {value}')
             self.controller_loop.arm_servo_speed[5] = value * self.robot_head.arm_control_sensibility
             print(f'servo 6 new: {self.controller_loop.arm_servo_speed[5]}')
+
+    def axis_arrows_x(self, value: float):
+        assert -1 <= value <= 1, f'Value {value} is out of range [-1, 1]'
+        if self.robot_head.robot_mode == 'user_control_wheels':
+            self.controller_loop.speed_y = value * self.robot_head.speed_coefficient
+        # elif self.robot_head.robot_mode == 'user_control_arm':
+        #     print(f'servo 1 old: {self.controller_loop.arm_servo_speed[0]}')
+        #     print(f'value 1: {value}')
+        #     self.controller_loop.arm_servo_speed[0] = value * self.robot_head.arm_control_sensibility
+        #     print(f'servo 1 new: {self.controller_loop.arm_servo_speed[0]}')
+        elif self.robot_head.robot_mode == 'autonomous_vision':
+            if value > self.arrow_activation_threshold:
+                self.robot_head.next_target()
+            if value < -self.arrow_activation_threshold:
+                self.robot_head.previous_target()
+
+    def axis_arrows_y(self, value: float):
+        assert -1 <= value <= 1, f'Value {value} is out of range [-1, 1]'
+        if self.robot_head.robot_mode == 'user_control_wheels':
+            self.controller_loop.speed_x = value * self.robot_head.speed_coefficient
+        # elif self.robot_head.robot_mode == 'user_control_arm':
+        #     print(f'servo 2 old: {self.controller_loop.arm_servo_speed[1]}')
+        #     print(f'value 2: {value}')
+        #     self.controller_loop.arm_servo_speed[1] = value * self.robot_head.arm_control_sensibility
+        #     print(f'servo 2 new: {self.controller_loop.arm_servo_speed[1]}')
+        elif self.robot_head.robot_mode == 'autonomous_vision':
+            if value > self.arrow_activation_threshold:
+                self.robot_head.next_model()
+            if value < -self.arrow_activation_threshold:
+                self.robot_head.previous_model()
 
     def button_south(self, value: bool):
         # activate buzzer

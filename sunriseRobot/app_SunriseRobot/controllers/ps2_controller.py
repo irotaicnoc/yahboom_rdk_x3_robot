@@ -108,11 +108,11 @@ class PS2Controller(object):
 
         elif name == 'AXIS_ARROWS_X':
             value = -value / self.MAX_INPUT_VALUE
-            self.controller_functions.axis_left_x(value)
+            self.controller_functions.axis_arrows_x(value)
 
         elif name == 'AXIS_ARROWS_Y':
             value = -value / self.MAX_INPUT_VALUE
-            self.controller_functions.axis_left_y(value)
+            self.controller_functions.axis_arrows_y(value)
 
         elif name == 'BUTTON_A':
             self.controller_functions.button_south(value)
