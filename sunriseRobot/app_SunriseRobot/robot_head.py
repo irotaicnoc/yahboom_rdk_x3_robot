@@ -36,7 +36,6 @@ class RobotHead:
         # arm parameters
         if parameters['arm_present']:
             self.robot_mode_list.append('user_control_arm')
-            self.arm_control_sensibility = parameters['arm_control_sensibility']
             self.arm_speed_proportion = parameters['arm_speed_proportion']
             self.arm_is_rigid = True
 
@@ -88,16 +87,6 @@ class RobotHead:
         self.speed_coefficient = max(0.1, self.speed_coefficient - 0.1)
         if self.verbose >= 2:
             print(f'Speed coefficient: {self.speed_coefficient}')
-
-    def increase_arm_control_sensibility(self):
-        self.arm_control_sensibility = min(1.0, self.arm_control_sensibility + 0.1)
-        if self.verbose >= 2:
-            print(f'Arm Control Sensibility: {self.arm_control_sensibility}')
-
-    def decrease_arm_control_sensibility(self):
-        self.arm_control_sensibility = max(0.1, self.arm_control_sensibility - 0.1)
-        if self.verbose >= 2:
-            print(f'Arm Control Sensibility coefficient: {self.arm_control_sensibility}')
 
     def toggle_arm_rigid(self):
         self.arm_is_rigid = not self.arm_is_rigid

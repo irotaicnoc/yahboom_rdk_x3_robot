@@ -65,14 +65,14 @@ class ControllerLoop(object):
                 self.update_servos_desired_angle()
                 # convert speed [0.1, 1] to arm runtime [0, 2000]
                 # high speed -> low run time
-                arm_run_time = utils.change_range(
-                    val=self.robot_head.speed_coefficient,
-                    original_min_val=0.1,
-                    original_max_val=1,
-                    new_min_val=2000,
-                    new_max_val=0,
-                )
-                self.robot_body.set_uart_servo_angle_array(angle_s=self.arm_servos_desired_angle, run_time=arm_run_time)
+                # arm_run_time = utils.change_range(
+                #     val=self.robot_head.speed_coefficient,
+                #     original_min_val=0.1,
+                #     original_max_val=1,
+                #     new_min_val=2000,
+                #     new_max_val=0,
+                # )
+                self.robot_body.set_uart_servo_angle_array(angle_s=self.arm_servos_desired_angle, run_time=0)
 
             # buzzer
             if self.buzzer_is_active:
@@ -81,4 +81,4 @@ class ControllerLoop(object):
             else:
                 self.robot_body.set_beep(0)
 
-            time.sleep(0.02)
+            time.sleep(0.01)
