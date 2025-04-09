@@ -167,7 +167,7 @@ class PS2Controller(object):
                     if self._ignore_count > 0:
                         self._ignore_count = self._ignore_count - 1
                     if self.verbose >= 2 and self._ignore_count == 0:
-                        print('Key value invalid')
+                        print(f'func {func} not in _function_names')
             return self.STATE_OK
         except KeyboardInterrupt as ki:
             print('Keyboard interrupt')
