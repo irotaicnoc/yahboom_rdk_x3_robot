@@ -52,7 +52,8 @@ class ControllerFunctions(object):
     def axis_right_x(self, value: float):
         assert -1 <= value <= 1, f'Value {value} is out of range [-1, 1]'
         if self.robot_head.robot_mode == 'user_control_wheels':
-            self.controller_loop.speed_z = value * self.robot_head.speed_coefficient * self.robot_head.steer_speed_proportion
+            self.controller_loop.speed_z = (value * self.robot_head.speed_coefficient
+                                            * self.robot_head.steer_speed_proportion)
         elif self.robot_head.robot_mode == 'user_control_arm':
             print(f'servo 5 old: {self.controller_loop.arm_servo_speed[4]}')
             print(f'value 5: {value}')
