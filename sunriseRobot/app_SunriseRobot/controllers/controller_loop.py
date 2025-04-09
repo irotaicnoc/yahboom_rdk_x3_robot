@@ -74,6 +74,7 @@ class ControllerLoop(object):
 
             # buzzer
             if self.buzzer_is_active:
+                print('buzzer should be on')
                 self.robot_body.set_beep(1)
             else:
                 self.robot_body.set_beep(0)

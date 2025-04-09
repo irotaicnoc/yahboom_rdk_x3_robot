@@ -71,7 +71,9 @@ class ControllerFunctions(object):
     def button_south(self, value: bool):
         # activate buzzer
         if self.robot_head.robot_mode == 'user_control_wheels':
+            print(f'buzzer status {self.controller_loop.buzzer_is_active}')
             self.controller_loop.buzzer_is_active = value
+            print(f'changed to {self.controller_loop.buzzer_is_active}')
         # servo 3 down
         elif self.robot_head.robot_mode == 'user_control_arm':
             print(f'servo 3 old: {self.controller_loop.arm_servo_speed[2]}')
