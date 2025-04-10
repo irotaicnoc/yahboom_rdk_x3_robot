@@ -41,10 +41,10 @@ class ControllerLoop(object):
         for servo_id in range(len(self.arm_servo_speed)):
             servo_speed = self.arm_servo_speed[servo_id]
             temp_angle = self.arm_servos_desired_angle[servo_id] + servo_speed
-            if temp_angle < 1:
-                temp_angle = 1
-            if temp_angle > 179:
-                temp_angle = 179
+            if temp_angle < 0:
+                temp_angle = 0
+            if temp_angle > 180:
+                temp_angle = 180
             self.arm_servos_desired_angle[servo_id] = temp_angle
 
     def update_robot_loop(self):
@@ -81,4 +81,4 @@ class ControllerLoop(object):
             else:
                 self.robot_body.set_beep(0)
 
-            time.sleep(0.01)
+            time.sleep(0.02)
