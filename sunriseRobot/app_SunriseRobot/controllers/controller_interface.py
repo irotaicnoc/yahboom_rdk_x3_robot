@@ -62,8 +62,14 @@ class ControllerFunctions(object):
         assert -1 <= value <= 1, f'Value {value} is out of range [-1, 1]'
         if self.robot_head.robot_mode == 'user_control_wheels':
             self.controller_loop.speed_y = value * self.robot_head.speed_coefficient
-        # elif self.robot_head.robot_mode == 'user_control_arm':
-        #     self.controller_loop.arm_servo_speed[0] = value * self.robot_head.speed_coefficient * self.robot_head.arm_speed_proportion
+        elif self.robot_head.robot_mode == 'user_control_arm':
+            # servo 4
+            if value > self.arrow_activation_threshold:
+                self.controller_loop.arm_servo_speed[3] = self.robot_head.speed_coefficient * self.robot_head.arm_speed_proportion
+            if value < -self.arrow_activation_threshold:
+                self.controller_loop.arm_servo_speed[3] = self.robot_head.speed_coefficient * self.robot_head.arm_speed_proportion
+            else:
+                self.controller_loop.arm_servo_speed[3] = 0
         elif self.robot_head.robot_mode == 'autonomous_vision':
             if value > self.arrow_activation_threshold:
                 self.robot_head.next_target()
@@ -74,8 +80,14 @@ class ControllerFunctions(object):
         assert -1 <= value <= 1, f'Value {value} is out of range [-1, 1]'
         if self.robot_head.robot_mode == 'user_control_wheels':
             self.controller_loop.speed_x = value * self.robot_head.speed_coefficient
-        # elif self.robot_head.robot_mode == 'user_control_arm':
-        #     self.controller_loop.arm_servo_speed[1] = value * self.robot_head.speed_coefficient * self.robot_head.arm_speed_proportion
+        elif self.robot_head.robot_mode == 'user_control_arm':
+            # servo 3
+            if value > self.arrow_activation_threshold:
+                self.controller_loop.arm_servo_speed[2] = self.robot_head.speed_coefficient * self.robot_head.arm_speed_proportion
+            if value < -self.arrow_activation_threshold:
+                self.controller_loop.arm_servo_speed[2] = self.robot_head.speed_coefficient * self.robot_head.arm_speed_proportion
+            else:
+                self.controller_loop.arm_servo_speed[2] = 0
         elif self.robot_head.robot_mode == 'autonomous_vision':
             if value > self.arrow_activation_threshold:
                 self.robot_head.next_model()
@@ -84,46 +96,26 @@ class ControllerFunctions(object):
 
     def button_south(self, value: bool):
         # activate buzzer
-        if self.robot_head.robot_mode == 'user_control_wheels':
-            self.controller_loop.buzzer_is_active = value
-        # servo 3 down
-        elif self.robot_head.robot_mode == 'user_control_arm':
-            if value:
-                self.controller_loop.arm_servo_speed[2] -= self.robot_head.speed_coefficient * self.robot_head.arm_speed_proportion
-            else:
-                self.controller_loop.arm_servo_speed[2] += self.robot_head.speed_coefficient * self.robot_head.arm_speed_proportion
+        # if self.robot_head.robot_mode == 'user_control_wheels':
+        self.controller_loop.buzzer_is_active = value
 
     def button_east(self, value: bool):
-        if self.robot_head.robot_mode == 'user_control_wheels':
+        if self.robot_head.robot_mode == 'user_control_wheels' or self.robot_head.robot_mode == 'user_control_arm':
             if value:
-                if self.robot_head.robot_mode == 'user_control_wheels':
-                    self.gpio_led.next_color()
-        # servo 3 up
-        elif self.robot_head.robot_mode == 'user_control_arm':
-            if value:
-                self.controller_loop.arm_servo_speed[2] += self.robot_head.speed_coefficient * self.robot_head.arm_speed_proportion
-            else:
-                self.controller_loop.arm_servo_speed[2] -= self.robot_head.speed_coefficient * self.robot_head.arm_speed_proportion
+                self.gpio_led.next_color()
 
     def button_west(self, value: bool):
         # servo 4 down
         if self.robot_head.robot_mode == 'user_control_arm':
             if value:
-                self.controller_loop.arm_servo_speed[3] -= self.robot_head.speed_coefficient * self.robot_head.arm_speed_proportion
-            else:
-                self.controller_loop.arm_servo_speed[3] += self.robot_head.speed_coefficient * self.robot_head.arm_speed_proportion
+                # TODO: set arm to vertical position, all servos to 90 degrees
+                pass
 
     def button_north(self, value: bool):
         # change light effect
-        if self.robot_head.robot_mode == 'user_control_wheels':
+        if self.robot_head.robot_mode == 'user_control_wheels' or self.robot_head.robot_mode == 'user_control_arm':
             if value:
                 self.internal_light.next_light_effect()
-        # servo 4 up
-        elif self.robot_head.robot_mode == 'user_control_arm':
-            if value:
-                self.controller_loop.arm_servo_speed[3] += self.robot_head.speed_coefficient * self.robot_head.arm_speed_proportion
-            else:
-                self.controller_loop.arm_servo_speed[3] -= self.robot_head.speed_coefficient * self.robot_head.arm_speed_proportion
 
     def button_l1(self, value: bool):
         # activate/deactivate hotspot
@@ -181,6 +173,8 @@ class ControllerFunctions(object):
                 if self.robot_head.robot_mode == 'user_control_arm':
                     self.last_start_press = current_time
                     self.robot_head.toggle_arm_rigid()
+                    # TODO:
+                    # self.robot_body.set_uart_servo_torque(enable=self.robot_head.arm_is_rigid)
             else:
                 if self.verbose >= 2:
                     print('Button START on cooldown...')
