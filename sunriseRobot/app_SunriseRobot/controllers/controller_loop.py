@@ -19,7 +19,9 @@ class ControllerLoop(object):
         self.verbose = verbose
         self.connected_controllers = 0
 
-        # MODIFIED ASYNCHRONOUSLY BY THE CONTROLLER
+        # TODO: sposta queste variabili in robot_head perchè possono essere usate anche da agenti autonomi
+        # TODO: poi checka se ha senso cambiare le dipendenze fra le classi ControllerLoop,
+        #  ControllerFunctions, PS2Controller, e RobotHead
         # wheel speed
         self.speed_x = 0
         self.speed_y = 0
@@ -56,29 +58,20 @@ class ControllerLoop(object):
             time.sleep(2)
 
         else:
-            # wheels
-            if self.robot_head.robot_mode == 'user_control_wheels':
-                self.robot_body.set_car_motion(self.speed_x, self.speed_y, self.speed_z)
-
-            # arm servos
-            if self.robot_head.robot_mode == 'user_control_arm':
-                self.update_servos_desired_angle()
-                # convert speed [0.1, 1] to arm runtime [0, 2000]
-                # high speed -> low run time
-                # arm_run_time = utils.change_range(
-                #     val=self.robot_head.speed_coefficient,
-                #     original_min_val=0.1,
-                #     original_max_val=1,
-                #     new_min_val=2000,
-                #     new_max_val=0,
-                # )
-                self.robot_body.set_uart_servo_angle_array(angle_s=self.arm_servos_desired_angle, run_time=0)
-
             # buzzer
             if self.buzzer_is_active:
-                print('buzzer should be on')
                 self.robot_body.set_beep(1)
             else:
                 self.robot_body.set_beep(0)
+
+            # wheels
+            if self.robot_head.robot_mode == 'user_control_wheels':
+                self.robot_body.set_car_motion(self.speed_x, self.speed_y, self.speed_z)
+            # arm servos
+            elif self.robot_head.robot_mode == 'user_control_arm':
+                self.update_servos_desired_angle()
+                self.robot_body.set_uart_servo_angle_array(angle_s=self.arm_servos_desired_angle, run_time=0)
+            else:
+                time.sleep(2)
 
             time.sleep(0.02)
