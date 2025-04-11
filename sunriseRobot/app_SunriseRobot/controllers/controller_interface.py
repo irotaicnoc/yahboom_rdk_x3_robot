@@ -9,12 +9,14 @@ import utils
 class ControllerFunctions(object):
     def __init__(self,
                  robot_head,
+                 robot_body,
                  internal_light,
                  gpio_led,
                  verbose: int = 0,
                  ):
 
         self.robot_head = robot_head
+        self.robot_body = robot_body
         self.internal_light = internal_light
         self.gpio_led = gpio_led
         self.verbose = verbose
@@ -23,6 +25,8 @@ class ControllerFunctions(object):
         self.last_select_press = 0  # timestamp for SELECT button
         self.last_start_press = 0  # timestamp for START button
         self.BUTTON_COOLDOWN = 5.0  # minimum seconds between button presses
+
+        self.memorized_arm_position = {}
 
     # value is True or False for buttons
     # value is a float in range [-1, 1] for axes
@@ -81,14 +85,23 @@ class ControllerFunctions(object):
                 self.robot_head.previous_model()
 
     def button_south(self, value: bool):
+        # memorize current arm position or reach memorized arm position
+        if self.robot_head.robot_mode == 'user_control_arm':
+            if value:
+                self.memorize_or_reach_arm_position(button='button_south')
         # activate buzzer
-        # if self.robot_head.robot_mode == 'user_control_wheels':
-        self.robot_head.buzzer_is_active = value
+        else:
+            self.robot_head.buzzer_is_active = value
 
     def button_east(self, value: bool):
-        if self.robot_head.robot_mode == 'user_control_wheels' or self.robot_head.robot_mode == 'user_control_arm':
+        # move robot
+        if self.robot_head.robot_mode == 'user_control_wheels':
             if value:
                 self.gpio_led.next_color()
+        # memorize current arm position or reach memorized arm position
+        if self.robot_head.robot_mode == 'user_control_arm':
+            if value:
+                self.memorize_or_reach_arm_position(button='button_east')
 
     def button_west(self, value: bool):
         # move arm to vertical position
@@ -97,8 +110,12 @@ class ControllerFunctions(object):
                 self.robot_head.arm_desired_angles = [90, 90, 90, 90, 90, 90]
 
     def button_north(self, value: bool):
-        # change light effect
-        if self.robot_head.robot_mode == 'user_control_wheels' or self.robot_head.robot_mode == 'user_control_arm':
+        # memorize current arm position or reach memorized arm position
+        if self.robot_head.robot_mode == 'user_control_arm':
+            if value:
+                self.memorize_or_reach_arm_position(button='button_north')
+        # change internal light effect
+        else:
             if value:
                 self.internal_light.next_light_effect()
 
@@ -185,3 +202,14 @@ class ControllerFunctions(object):
         else:
             if self.verbose >= 1:
                 print(f'Controller with id {controller_id} tried to disconnect, but this id is not connected')
+
+    def memorize_or_reach_arm_position(self, button: str):
+        if button not in self.memorized_arm_position:
+            self.memorized_arm_position[button] = None
+        if self.memorized_arm_position[button] is None:
+            self.memorized_arm_position[button] = self.robot_body.get_arm_angle_list()
+        else:
+            if not self.robot_head.arm_is_rigid:
+                self.memorized_arm_position[button] = self.robot_body.get_arm_angle_list()
+            else:
+                self.robot_head.set_arm_desired_angles(angle_list=self.memorized_arm_position[button])

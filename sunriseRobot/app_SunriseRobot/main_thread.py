@@ -48,6 +48,7 @@ def main_loop(**kwargs):
     controller_kwargs = {
         'controller_id': parameters['controller_id'],
         'robot_head': robot_head,
+        'robot_body': robot_body,
         'internal_light': internal_light,
         'gpio_led': gpio_led,
         'verbose': parameters['verbose'],
@@ -105,6 +106,7 @@ def task_controller(**kwargs):
     try:
         controller_functions = ControllerFunctions(
             robot_head=kwargs['robot_head'],
+            robot_body=kwargs['robot_body'],
             internal_light=kwargs['internal_light'],
             gpio_led=kwargs['gpio_led'],
             verbose=kwargs['verbose'],
