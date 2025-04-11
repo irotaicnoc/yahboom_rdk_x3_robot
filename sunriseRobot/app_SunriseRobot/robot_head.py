@@ -59,6 +59,11 @@ class RobotHead:
                 if self.verbose >= 1:
                     print(f'The robot supports at most a 6-servos arm,'
                           f' but {len(self.arm_servos_desired_angle)} were provided. ')
+            # speed with which the arm reaches the desired angle [0, 2000]
+            # 0 is the fastest speed, 2000 is the slowest speed
+            # for manual control use 0, for arbitrary position specified directly via arm_servos_desired_angle
+            # use a slower speed (higher value)
+            self.run_time = 0
 
         # TODO: rimettili in cima
         self.robot_mode_list.append('user_control_wheels')
@@ -118,7 +123,8 @@ class RobotHead:
             else:
                 print(f'Arm can be moved manually, but cannot be controlled by the controller')
 
-    def update_servos_desired_angle(self) -> None:
+    def update_arm_desired_angles(self) -> None:
+        self.run_time = 0
         for servo_id in range(len(self.arm_servo_speed)):
             servo_speed = self.arm_servo_speed[servo_id]
             temp_angle = self.arm_servos_desired_angle[servo_id] + servo_speed
@@ -127,3 +133,9 @@ class RobotHead:
             if temp_angle > 180:
                 temp_angle = 180
             self.arm_servos_desired_angle[servo_id] = temp_angle
+
+    def set_arm_desired_angles(self, angle_list: list) -> None:
+        assert len(angle_list) == len(self.arm_servos_desired_angle), (f'Length of angle_list {len(angle_list)} is not'
+                                           f' equal to arm_servos_desired_angle {len(self.arm_servos_desired_angle)}')
+        self.arm_servos_desired_angle = angle_list
+        self.run_time = 1000

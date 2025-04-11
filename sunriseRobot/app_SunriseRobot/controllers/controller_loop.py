@@ -53,10 +53,10 @@ class ControllerLoop(object):
                     self.robot_body.set_uart_servo_torque(enable=self.robot_head.arm_is_rigid)
 
                 if self.robot_head.arm_is_rigid:
-                    self.robot_head.update_servos_desired_angle()
+                    self.robot_head.update_arm_desired_angles()
                     self.robot_body.set_uart_servo_angle_array(
                         angle_s=self.robot_head.arm_servos_desired_angle,
-                        run_time=0,
+                        run_time=self.robot_head.run_time,
                     )
             else:
                 time.sleep(2)
