@@ -49,13 +49,13 @@ class ControllerLoop(object):
                     self.robot_head.arm_state_not_updated = False
                     # manually set configuration is maintained
                     if self.robot_head.arm_is_rigid:
-                        self.robot_head.arm_servos_desired_angle = self.robot_body.get_uart_servo_angle_array()
-                    self.robot_body.set_uart_servo_torque(enable=self.robot_head.arm_is_rigid)
+                        self.robot_head.arm_desired_angles = self.robot_body.get_arm_angle_list()
+                    self.robot_body.set_arm_torque(enable=self.robot_head.arm_is_rigid)
 
                 if self.robot_head.arm_is_rigid:
                     self.robot_head.update_arm_desired_angles()
-                    self.robot_body.set_uart_servo_angle_array(
-                        angle_s=self.robot_head.arm_servos_desired_angle,
+                    self.robot_body.set_arm_angle_list(
+                        angle_s=self.robot_head.arm_desired_angles,
                         run_time=self.robot_head.run_time,
                     )
             else:

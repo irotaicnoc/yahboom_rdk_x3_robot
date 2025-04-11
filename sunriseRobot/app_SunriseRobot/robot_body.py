@@ -124,7 +124,7 @@ class RobotBody(object):
             warnings.warn('Serial open failed')
         # Turn on the torque of the robot arm to avoid the situation where the angle of the No. 6 servo cannot be
         # read when it is first plugged in.
-        self.set_uart_servo_torque(True)
+        self.set_arm_torque(True)
         time.sleep(self._delay_time)
 
     def __del__(self):
@@ -650,7 +650,7 @@ class RobotBody(object):
     # pulse_value=[96, 4000] indicates the position to which the steering gear will run.
     # run_time indicates the running time (ms). The shorter the time, the faster the steering gear rotates.
     # The minimum value is 0 and the maximum value is 2000
-    def set_uart_servo(self, servo_id, pulse_value, run_time=500) -> None:
+    def set_arm_angle(self, servo_id, pulse_value, run_time=500) -> None:
         try:
             if not self._arm_ctrl_enable:
                 return
@@ -686,7 +686,7 @@ class RobotBody(object):
                 print('uartServo:', servo_id, int(pulse_value), cmd)
             time.sleep(self._delay_time)
         except:
-            warnings.warn('set_uart_servo error')
+            warnings.warn('set_arm_angle error')
 
     # Set bus steering gear Angle interface: s_id:[1,6], s_angle: 1-4:[0, 180], 5:[0, 270], 6:[0, 180],
     # set steering gear to move to the Angle.
@@ -697,13 +697,13 @@ class RobotBody(object):
             if s_id == 1 or s_id == 2 or s_id == 3 or s_id == 4 or s_id == 6:
                 if 0 <= s_angle <= 180:
                     value = self._arm_convert_value(s_id, s_angle)
-                    self.set_uart_servo(s_id, value, run_time)
+                    self.set_arm_angle(s_id, value, run_time)
                 else:
                     warnings.warn(f'Servo {s_id} error: angle {s_angle} outside valid range [0, 180]')
             elif s_id == 5:
                 if 0 <= s_angle <= 270:
                     value = self._arm_convert_value(s_id, s_angle)
-                    self.set_uart_servo(s_id, value, run_time)
+                    self.set_arm_angle(s_id, value, run_time)
                 else:
                     warnings.warn(f'Servo {s_id} error: angle {s_angle} outside valid range [0, 270]')
         except:
@@ -730,7 +730,7 @@ class RobotBody(object):
     # Turn off/on the bus steering gear torque force, enable=[0, 1]. If enable=0: turn off the torque force of the
     # steering gear, the steering gear can be turned by hand, but the command cannot control the rotation.
     # If enable=1: Turn on torque force, command can control rotation, can not turn steering gear by hand
-    def set_uart_servo_torque(self, enable: bool) -> None:
+    def set_arm_torque(self, enable: bool) -> None:
         try:
             on = 0
             if enable:
@@ -743,7 +743,7 @@ class RobotBody(object):
                 print('uartServo_torque:', cmd)
             time.sleep(self._delay_time)
         except:
-            warnings.warn('set_uart_servo_torque error')
+            warnings.warn('set_arm_torque error')
 
     # Set the control switch of the manipulator. enable=True indicates that the control protocol is normally sent.
     # enable=False indicates that the control protocol is not sent
@@ -751,7 +751,7 @@ class RobotBody(object):
         self._arm_ctrl_enable = enable
 
     # Meanwhile, the Angle of all steering gear of the manipulator is controlled
-    def set_uart_servo_angle_array(self, angle_s: list = [90, 90, 90, 90, 90, 180], run_time=500) -> None:
+    def set_arm_angle_list(self, angle_s: list = [90, 90, 90, 90, 90, 180], run_time=500) -> None:
         try:
             if not self._arm_ctrl_enable:
                 return
@@ -797,7 +797,7 @@ class RobotBody(object):
             else:
                 warnings.warn('angle_s input error')
         except:
-            warnings.warn('set_uart_servo_angle_array error')
+            warnings.warn('set_arm_angle_list error')
 
     # Run the following command to set the mid-bit deviation of the manipulator: servo_id=0 to 6, =0 Restore the
     # factory default values
@@ -936,7 +936,7 @@ class RobotBody(object):
 
     # Read the angles of three steering gear [xx, xx, xx, xx, xx, xx] at one time.
     # If one steering gear is wrong, that one is -1
-    def get_uart_servo_angle_array(self) -> list:
+    def get_arm_angle_list(self) -> list:
         try:
             # angle = [-1, -1, -1, -1, -1, -1]
             # for i in range(6):
@@ -964,7 +964,7 @@ class RobotBody(object):
                 time.sleep(self._delay_time)
             return angle
         except:
-            warnings.warn('get_uart_servo_angle_array error')
+            warnings.warn('get_arm_angle_list error')
             return [-2, -2, -2, -2, -2, -2]
 
     # Get accelerometer tri-axial data, return a_x, a_y, a_z

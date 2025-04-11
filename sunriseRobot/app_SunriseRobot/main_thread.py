@@ -20,13 +20,13 @@ def main_loop(**kwargs):
 
     robot_body = RobotBody(com=parameters['com'], baud_rate=parameters['baud_rate'], verbose=parameters['verbose'])
     robot_body.create_receive_threading()
-    arm_servos_initial_angles = [90, 90, 90, 90, 90, 90]
+    arm_initial_angles = [90, 90, 90, 90, 90, 90]
     if parameters['arm_present']:
-        arm_servos_initial_angles = robot_body.get_uart_servo_angle_array()
+        arm_initial_angles = robot_body.get_arm_angle_list()
     robot_head = RobotHead(
         verbose=parameters['verbose'],
         arm_present=parameters['arm_present'],
-        arm_servos_initial_angles=arm_servos_initial_angles,
+        arm_initial_angles=arm_initial_angles,
     )
 
     # LIGHTS
