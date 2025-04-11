@@ -36,14 +36,16 @@ class ControllerFunctions(object):
         if self.robot_head.robot_mode == 'user_control_wheels':
             self.robot_head.speed_y = value * self.robot_head.speed_coefficient
         elif self.robot_head.robot_mode == 'user_control_arm':
-            self.robot_head.arm_speed[0] = value * self.robot_head.speed_coefficient * self.robot_head.arm_speed_proportion
+            # servo 1
+            self.robot_head.update_arm_speed(servo_id=0, value=value)
 
     def axis_left_y(self, value: float):
         assert -1 <= value <= 1, f'Value {value} is out of range [-1, 1]'
         if self.robot_head.robot_mode == 'user_control_wheels':
             self.robot_head.speed_x = value * self.robot_head.speed_coefficient
         elif self.robot_head.robot_mode == 'user_control_arm':
-            self.robot_head.arm_speed[1] = value * self.robot_head.speed_coefficient * self.robot_head.arm_speed_proportion
+            # servo 2
+            self.robot_head.update_arm_speed(servo_id=1, value=value)
 
     def axis_right_x(self, value: float):
         assert -1 <= value <= 1, f'Value {value} is out of range [-1, 1]'
@@ -51,12 +53,14 @@ class ControllerFunctions(object):
             self.robot_head.speed_z = (value * self.robot_head.speed_coefficient
                                        * self.robot_head.steer_speed_proportion)
         elif self.robot_head.robot_mode == 'user_control_arm':
-            self.robot_head.arm_speed[4] = value * self.robot_head.speed_coefficient * self.robot_head.arm_speed_proportion
+            # servo 5
+            self.robot_head.update_arm_speed(servo_id=4, value=value)
 
     def axis_right_y(self, value: float):
         assert -1 <= value <= 1, f'Value {value} is out of range [-1, 1]'
         if self.robot_head.robot_mode == 'user_control_arm':
-            self.robot_head.arm_speed[5] = value * self.robot_head.speed_coefficient * self.robot_head.arm_speed_proportion
+            # servo 6
+            self.robot_head.update_arm_speed(servo_id=5, value=value)
 
     def axis_arrows_x(self, value: float):
         assert -1 <= value <= 1, f'Value {value} is out of range [-1, 1]'
@@ -64,7 +68,7 @@ class ControllerFunctions(object):
             self.robot_head.speed_y = value * self.robot_head.speed_coefficient
         elif self.robot_head.robot_mode == 'user_control_arm':
             # servo 4
-            self.robot_head.arm_speed[3] = value * self.robot_head.speed_coefficient * self.robot_head.arm_speed_proportion
+            self.robot_head.update_arm_speed(servo_id=3, value=value)
         elif self.robot_head.robot_mode == 'autonomous_vision':
             if value > 0:
                 self.robot_head.next_target()
@@ -77,7 +81,7 @@ class ControllerFunctions(object):
             self.robot_head.speed_x = value * self.robot_head.speed_coefficient
         elif self.robot_head.robot_mode == 'user_control_arm':
             # servo 3
-            self.robot_head.arm_speed[2] = value * self.robot_head.speed_coefficient * self.robot_head.arm_speed_proportion
+            self.robot_head.update_arm_speed(servo_id=2, value=value)
         elif self.robot_head.robot_mode == 'autonomous_vision':
             if value > 0:
                 self.robot_head.next_model()

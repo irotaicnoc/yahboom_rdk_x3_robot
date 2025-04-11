@@ -123,8 +123,11 @@ class RobotHead:
             else:
                 print(f'Arm can be moved manually, but cannot be controlled by the controller')
 
-    def update_arm_desired_angles(self) -> None:
+    def update_arm_speed(self, servo_id: int, value) -> None:
         self.run_time = 0
+        self.arm_speed[servo_id] = value * self.speed_coefficient * self.arm_speed_proportion
+
+    def update_arm_desired_angles(self) -> None:
         for servo_id in range(len(self.arm_speed)):
             servo_speed = self.arm_speed[servo_id]
             temp_angle = self.arm_desired_angles[servo_id] + servo_speed
@@ -137,5 +140,5 @@ class RobotHead:
     def set_arm_desired_angles(self, angle_list: list) -> None:
         assert len(angle_list) == len(self.arm_desired_angles), (f'Length of angle_list {len(angle_list)} is not'
                                            f' equal to arm_servos_desired_angle {len(self.arm_desired_angles)}')
-        self.arm_desired_angles = angle_list
         self.run_time = 1000
+        self.arm_desired_angles = angle_list
