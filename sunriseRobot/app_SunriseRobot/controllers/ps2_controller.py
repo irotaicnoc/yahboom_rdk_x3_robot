@@ -3,16 +3,14 @@
 import os
 import struct
 
-from controllers.controller_interface import ControllerFunctions
-
 
 class PS2Controller(object):
-    def __init__(self, controller_loop, robot_head, internal_light, gpio_led, js_id: int = 0, verbose: int = 0):
+    def __init__(self, controller_functions, controller_id: int = 0, verbose: int = 0):
         self.verbose = verbose
 
         # controller state
-        self._js_id = int(js_id)
-        self._js_isOpen = False
+        self.controller_id = int(controller_id)
+        self._is_connected = False
         self._ignore_count = 24
         self.STATE_OK = 0
         self.STATE_NO_OPEN = 1
@@ -20,15 +18,7 @@ class PS2Controller(object):
         self.STATE_KEY_BREAK = 3
         self.MAX_INPUT_VALUE = 32767
 
-        self.controller_loop = controller_loop
-
-        self.controller_functions = ControllerFunctions(
-            controller_loop=controller_loop,
-            robot_head=robot_head,
-            internal_light=internal_light,
-            gpio_led=gpio_led,
-            verbose=verbose,
-        )
+        self.controller_functions = controller_functions
 
         if self.verbose >= 3:
             print('Available controllers:')
@@ -39,16 +29,16 @@ class PS2Controller(object):
 
         # Open the controller device
         try:
-            js = '/dev/input/js' + str(self._js_id)
-            self._js_dev = open(js, 'rb')
-            self._js_isOpen = True
+            controller_path = '/dev/input/js' + str(self.controller_id)
+            self._controller = open(controller_path, 'rb')
+            self._is_connected = True
             if self.verbose >= 1:
-                print(f'Controller {self._js_id} opened successfully')
-            self.controller_loop.connected_controllers += 1
+                print(f'Controller {self.controller_id} opened successfully')
+            self.controller_functions.connected(controller_id=self.controller_id)
         except:
-            self._js_isOpen = False
+            self._is_connected = False
             if self.verbose >= 1:
-                print(f'Failed to open controller {self._js_id}')
+                print(f'Failed to open controller {self.controller_id}')
 
         # Defining Functional List
         self._function_names = {
@@ -78,11 +68,11 @@ class PS2Controller(object):
         }
 
     def __del__(self):
-        if self._js_isOpen:
-            self._js_dev.close()
+        if self._is_connected:
+            self._controller.close()
+            self.controller_functions.disconnected(controller_id=self.controller_id)
         if self.verbose >= 1:
-            print(f'Controller {self._js_id} closed successfully')
-        self.controller_loop.connected_controllers -= 1
+            print(f'Controller {self.controller_id} closed successfully')
 
     def standardize_signal(self, name: str, value):
         if self.verbose >= 3:
@@ -90,6 +80,7 @@ class PS2Controller(object):
                 print(f'{name}: {value:.2f}')
             else:
                 print(f'{name}: {value}')
+
         if name == 'AXIS_ROCKER_LEFT_X':
             value = -value / self.MAX_INPUT_VALUE
             self.controller_functions.axis_left_x(value)
@@ -145,23 +136,22 @@ class PS2Controller(object):
             self.controller_functions.button_start(value)
 
         elif name == 'AXIS_L2' or name == 'AXIS_R2':
-            # ignore this command, but catch it in this branch otherwise it will generate  an error and cause the
-            # controller to be disconnected. This is caused by L2 and R2 generating both a button and an axis event
-            # (sometimes even a few axis events). This is a bug in the controller.
+            # ignore this command but catch it in this branch, otherwise it will generate an error and cause the
+            # controller to be continuously disconnected and reconnected. This is caused by L2 and R2 generating both
+            # a button and an axis event (sometimes more than one axis events). This is a bug in the controller.
             pass
 
         else:
-            if self.verbose >= 2:
-                print('Unknown button')
+            self.controller_functions.unknown_input(name, value)
 
     # Handles events for controller
     def event_listener(self):
-        if not self._js_isOpen:
+        if not self._is_connected:
             if self.verbose >= 2:
                 print('Failed to open controller')
             return self.STATE_NO_OPEN
         try:
-            raw_output = self._js_dev.read(8)
+            raw_output = self._controller.read(8)
             if raw_output:
                 _time, value, _type, number = struct.unpack('IhBB', raw_output)
                 func = _type << 8 | number
@@ -173,32 +163,33 @@ class PS2Controller(object):
                     if self._ignore_count > 0:
                         self._ignore_count = self._ignore_count - 1
                     if self.verbose >= 2 and self._ignore_count == 0:
-                        print(f'func {func} not in _function_names')
+                        print(f'The received controller input {func}, is not in "_function_names"')
             return self.STATE_OK
         except KeyboardInterrupt as ki:
+            self._is_connected = False
             print('Keyboard interrupt')
             print(ki)
-            self.controller_loop.connected_controllers -= 1
+            self.controller_functions.disconnected(controller_id=self.controller_id)
             return self.STATE_KEY_BREAK
         except Exception as e:
-            self._js_isOpen = False
+            self._is_connected = False
             print('Controller disconnected')
             print(e)
-            self.controller_loop.connected_controllers -= 1
+            self.controller_functions.disconnected(controller_id=self.controller_id)
             return self.STATE_DISCONNECT
 
     # reconnect controller
     def reconnect(self):
         try:
-            js = '/dev/input/js' + str(self._js_id)
-            self._js_dev = open(js, 'rb')
-            self._js_isOpen = True
+            controller_path = '/dev/input/js' + str(self.controller_id)
+            self._controller = open(controller_path, 'rb')
+            self._is_connected = True
             self._ignore_count = 24
-            print(f'Controller with id {self._js_id} opened successfully')
-            self.controller_loop.connected_controllers += 1
+            print(f'Controller with id {self.controller_id} opened successfully')
+            self.controller_functions.connected(controller_id=self.controller_id)
             return True
         except:
-            self._js_isOpen = False
+            self._is_connected = False
             if self.verbose >= 2:
-                print(f'Failed to open controller with id {self._js_id}')
+                print(f'Failed to open controller with id {self.controller_id}')
             return False

@@ -12,6 +12,7 @@ from physical_accessories.light import Light
 from controllers.ps2_controller import PS2Controller
 from controllers.controller_loop import ControllerLoop
 from physical_accessories.gpio_pin_control import GpioLed
+from controllers.controller_interface import ControllerFunctions
 
 
 def main_loop(**kwargs):
@@ -19,22 +20,25 @@ def main_loop(**kwargs):
 
     robot_body = RobotBody(com=parameters['com'], baud_rate=parameters['baud_rate'], verbose=parameters['verbose'])
     robot_body.create_receive_threading()
+    arm_servos_initial_angles = [90, 90, 90, 90, 90, 90]
     if parameters['arm_present']:
-        robot_body.servo_desired_angles = robot_body.get_uart_servo_angle_array()
-    robot_head = RobotHead(verbose=parameters['verbose'], arm_present=parameters['arm_present'])
+        arm_servos_initial_angles = robot_body.get_uart_servo_angle_array()
+    robot_head = RobotHead(
+        verbose=parameters['verbose'],
+        arm_present=parameters['arm_present'],
+        arm_servos_initial_angles=arm_servos_initial_angles,
+    )
 
     # LIGHTS
     internal_light = Light(verbose=parameters['verbose'])
     gpio_led = GpioLed()
 
     # CONTROLLER
-    controller_loop = ControllerLoop(
-        robot_body=robot_body,
-        robot_head=robot_head,
-        arm_servos_initial_angles=robot_body.get_uart_servo_angle_array(),
-        verbose=parameters['verbose'],
-    )
-    controller_loop_kwargs = {'controller_loop': controller_loop}
+    controller_loop_kwargs = {
+        'robot_body': robot_body,
+        'robot_head': robot_head,
+        'verbose': parameters['verbose'],
+    }
     thread_controller_loop = threading.Thread(
         target=task_controller_loop,
         name='task_controller_loop',
@@ -42,7 +46,7 @@ def main_loop(**kwargs):
     )
     thread_controller_loop.start()
     controller_kwargs = {
-        'controller_loop': controller_loop,
+        'controller_id': parameters['controller_id'],
         'robot_head': robot_head,
         'internal_light': internal_light,
         'gpio_led': gpio_led,
@@ -99,7 +103,13 @@ def main_loop(**kwargs):
 # USB wireless gamepad
 def task_controller(**kwargs):
     try:
-        ps2_controller = PS2Controller(**kwargs)
+        controller_functions = ControllerFunctions(
+            robot_head=kwargs['robot_head'],
+            internal_light=kwargs['internal_light'],
+            gpio_led=kwargs['gpio_led'],
+            verbose=kwargs['verbose'],
+        )
+        ps2_controller = PS2Controller(controller_functions=controller_functions, controller_id=kwargs['controller_id'])
         while True:
             state = ps2_controller.event_listener()
             if state != ps2_controller.STATE_OK:
@@ -115,7 +125,7 @@ def task_controller(**kwargs):
 
 def task_controller_loop(**kwargs):
     try:
-        controller_loop = kwargs['controller_loop']
+        controller_loop = ControllerLoop(**kwargs)
         while True:
             controller_loop.update_robot_loop()
     except Exception as e:

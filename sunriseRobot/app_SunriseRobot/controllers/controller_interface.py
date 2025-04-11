@@ -8,23 +8,21 @@ import utils
 
 class ControllerFunctions(object):
     def __init__(self,
-                 controller_loop,
                  robot_head,
                  internal_light,
                  gpio_led,
                  verbose: int = 0,
                  ):
 
-        self.controller_loop = controller_loop
         self.robot_head = robot_head
         self.internal_light = internal_light
         self.gpio_led = gpio_led
         self.verbose = verbose
 
         # accept only one button input per cooldown
-        self.last_select_press = 0  # Add timestamp for SELECT button
-        self.last_start_press = 0  # Add timestamp for START button
-        self.BUTTON_COOLDOWN = 5.0  # Minimum seconds between button presses
+        self.last_select_press = 0  # timestamp for SELECT button
+        self.last_start_press = 0  # timestamp for START button
+        self.BUTTON_COOLDOWN = 5.0  # minimum seconds between button presses
 
         self.arrow_activation_threshold = 0.3  # Threshold for arrows to be considered pressed
 
@@ -34,42 +32,42 @@ class ControllerFunctions(object):
     def axis_left_x(self, value: float):
         assert -1 <= value <= 1, f'Value {value} is out of range [-1, 1]'
         if self.robot_head.robot_mode == 'user_control_wheels':
-            self.controller_loop.speed_y = value * self.robot_head.speed_coefficient
+            self.robot_head.speed_y = value * self.robot_head.speed_coefficient
         elif self.robot_head.robot_mode == 'user_control_arm':
-            self.controller_loop.arm_servo_speed[0] = value * self.robot_head.speed_coefficient * self.robot_head.arm_speed_proportion
+            self.robot_head.arm_servo_speed[0] = value * self.robot_head.speed_coefficient * self.robot_head.arm_speed_proportion
 
     def axis_left_y(self, value: float):
         assert -1 <= value <= 1, f'Value {value} is out of range [-1, 1]'
         if self.robot_head.robot_mode == 'user_control_wheels':
-            self.controller_loop.speed_x = value * self.robot_head.speed_coefficient
+            self.robot_head.speed_x = value * self.robot_head.speed_coefficient
         elif self.robot_head.robot_mode == 'user_control_arm':
-            self.controller_loop.arm_servo_speed[1] = value * self.robot_head.speed_coefficient * self.robot_head.arm_speed_proportion
+            self.robot_head.arm_servo_speed[1] = value * self.robot_head.speed_coefficient * self.robot_head.arm_speed_proportion
 
     def axis_right_x(self, value: float):
         assert -1 <= value <= 1, f'Value {value} is out of range [-1, 1]'
         if self.robot_head.robot_mode == 'user_control_wheels':
-            self.controller_loop.speed_z = (value * self.robot_head.speed_coefficient
+            self.robot_head.speed_z = (value * self.robot_head.speed_coefficient
                                             * self.robot_head.steer_speed_proportion)
         elif self.robot_head.robot_mode == 'user_control_arm':
-            self.controller_loop.arm_servo_speed[4] = value * self.robot_head.speed_coefficient * self.robot_head.arm_speed_proportion
+            self.robot_head.arm_servo_speed[4] = value * self.robot_head.speed_coefficient * self.robot_head.arm_speed_proportion
 
     def axis_right_y(self, value: float):
         assert -1 <= value <= 1, f'Value {value} is out of range [-1, 1]'
         if self.robot_head.robot_mode == 'user_control_arm':
-            self.controller_loop.arm_servo_speed[5] = value * self.robot_head.speed_coefficient * self.robot_head.arm_speed_proportion
+            self.robot_head.arm_servo_speed[5] = value * self.robot_head.speed_coefficient * self.robot_head.arm_speed_proportion
 
     def axis_arrows_x(self, value: float):
         assert -1 <= value <= 1, f'Value {value} is out of range [-1, 1]'
         if self.robot_head.robot_mode == 'user_control_wheels':
-            self.controller_loop.speed_y = value * self.robot_head.speed_coefficient
+            self.robot_head.speed_y = value * self.robot_head.speed_coefficient
         elif self.robot_head.robot_mode == 'user_control_arm':
             # servo 4
             if value > self.arrow_activation_threshold:
-                self.controller_loop.arm_servo_speed[3] = self.robot_head.speed_coefficient * self.robot_head.arm_speed_proportion
+                self.robot_head.arm_servo_speed[3] = self.robot_head.speed_coefficient * self.robot_head.arm_speed_proportion
             if value < -self.arrow_activation_threshold:
-                self.controller_loop.arm_servo_speed[3] = self.robot_head.speed_coefficient * self.robot_head.arm_speed_proportion
+                self.robot_head.arm_servo_speed[3] = self.robot_head.speed_coefficient * self.robot_head.arm_speed_proportion
             else:
-                self.controller_loop.arm_servo_speed[3] = 0
+                self.robot_head.arm_servo_speed[3] = 0
         elif self.robot_head.robot_mode == 'autonomous_vision':
             if value > self.arrow_activation_threshold:
                 self.robot_head.next_target()
@@ -79,15 +77,15 @@ class ControllerFunctions(object):
     def axis_arrows_y(self, value: float):
         assert -1 <= value <= 1, f'Value {value} is out of range [-1, 1]'
         if self.robot_head.robot_mode == 'user_control_wheels':
-            self.controller_loop.speed_x = value * self.robot_head.speed_coefficient
+            self.robot_head.speed_x = value * self.robot_head.speed_coefficient
         elif self.robot_head.robot_mode == 'user_control_arm':
             # servo 3
             if value > self.arrow_activation_threshold:
-                self.controller_loop.arm_servo_speed[2] = self.robot_head.speed_coefficient * self.robot_head.arm_speed_proportion
+                self.robot_head.arm_servo_speed[2] = self.robot_head.speed_coefficient * self.robot_head.arm_speed_proportion
             if value < -self.arrow_activation_threshold:
-                self.controller_loop.arm_servo_speed[2] = self.robot_head.speed_coefficient * self.robot_head.arm_speed_proportion
+                self.robot_head.arm_servo_speed[2] = self.robot_head.speed_coefficient * self.robot_head.arm_speed_proportion
             else:
-                self.controller_loop.arm_servo_speed[2] = 0
+                self.robot_head.arm_servo_speed[2] = 0
         elif self.robot_head.robot_mode == 'autonomous_vision':
             if value > self.arrow_activation_threshold:
                 self.robot_head.next_model()
@@ -97,7 +95,7 @@ class ControllerFunctions(object):
     def button_south(self, value: bool):
         # activate buzzer
         # if self.robot_head.robot_mode == 'user_control_wheels':
-        self.controller_loop.buzzer_is_active = value
+        self.robot_head.buzzer_is_active = value
 
     def button_east(self, value: bool):
         if self.robot_head.robot_mode == 'user_control_wheels' or self.robot_head.robot_mode == 'user_control_arm':
@@ -105,11 +103,10 @@ class ControllerFunctions(object):
                 self.gpio_led.next_color()
 
     def button_west(self, value: bool):
-        # servo 4 down
+        # move arm to vertical position
         if self.robot_head.robot_mode == 'user_control_arm':
             if value:
-                # TODO: set arm to vertical position, all servos to 90 degrees
-                pass
+                self.robot_head.arm_servos_desired_angle = [90, 90, 90, 90, 90, 90]
 
     def button_north(self, value: bool):
         # change light effect
@@ -173,12 +170,30 @@ class ControllerFunctions(object):
                 if self.robot_head.robot_mode == 'user_control_arm':
                     self.last_start_press = current_time
                     self.robot_head.toggle_arm_rigid()
-                    # TODO:
-                    # self.robot_body.set_uart_servo_torque(enable=self.robot_head.arm_is_rigid)
             else:
                 if self.verbose >= 2:
                     print('Button START on cooldown...')
 
-    def unknown(self, value):
+    def unknown_input(self, name: str, value):
         if self.verbose >= 2:
-            warnings.warn(f'Unknown button with value {value}')
+            warnings.warn(f'Unknown button input received (name: {name}, value: {value})')
+
+    def connected(self, controller_id: int):
+        if controller_id not in self.robot_head.controller_id_list:
+            self.robot_head.connected_controllers += 1
+            self.robot_head.controller_id_list.append(controller_id)
+            if self.verbose >= 3:
+                print(f'Controller {controller_id} connected')
+        else:
+            if self.verbose >= 1:
+                print(f'Controller with id {controller_id} tried to connect, but this id is already connected')
+
+    def disconnected(self, controller_id: int):
+        if controller_id in self.robot_head.controller_id_list:
+            self.robot_head.connected_controllers -= 1
+            self.robot_head.controller_id_list.remove(controller_id)
+            if self.verbose >= 3:
+                print(f'Controller {controller_id} disconnected')
+        else:
+            if self.verbose >= 1:
+                print(f'Controller with id {controller_id} tried to disconnect, but this id is not connected')
