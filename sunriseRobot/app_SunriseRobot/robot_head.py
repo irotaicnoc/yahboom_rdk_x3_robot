@@ -140,5 +140,5 @@ class RobotHead:
     def set_arm_desired_angles(self, angle_list: list) -> None:
         assert len(angle_list) == len(self.arm_desired_angles), (f'Length of angle_list {len(angle_list)} is not'
                                            f' equal to arm_servos_desired_angle {len(self.arm_desired_angles)}')
-        self.run_time = 1000
+        self.run_time = 800
         self.arm_desired_angles = angle_list

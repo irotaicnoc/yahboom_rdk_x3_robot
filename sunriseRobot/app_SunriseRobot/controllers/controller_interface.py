@@ -111,7 +111,7 @@ class ControllerFunctions(object):
         # move arm to vertical position
         if self.robot_head.robot_mode == 'user_control_arm':
             if value:
-                self.robot_head.arm_desired_angles = [90, 90, 90, 90, 90, 90]
+                self.robot_head.set_arm_desired_angles(angle_list=[90, 90, 90, 90, 90, 90])
 
     def button_north(self, value: bool):
         # memorize current arm position or reach memorized arm position
