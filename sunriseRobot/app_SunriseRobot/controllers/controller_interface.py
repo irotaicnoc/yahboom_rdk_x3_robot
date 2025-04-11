@@ -208,12 +208,18 @@ class ControllerFunctions(object):
                 print(f'Controller with id {controller_id} tried to disconnect, but this id is not connected')
 
     def memorize_or_reach_arm_position(self, button: str):
+        print(f'Button {button} pressed')
         if button not in self.memorized_arm_position:
+            print('\tnot in dictionary')
             self.memorized_arm_position[button] = None
         if self.memorized_arm_position[button] is None:
+            print('\twas empty, memorizing...')
             self.memorized_arm_position[button] = self.robot_body.get_arm_angle_list()
         else:
             if not self.robot_head.arm_is_rigid:
+                print('\twas not empty, but arm not rigid, so memorizing...')
                 self.memorized_arm_position[button] = self.robot_body.get_arm_angle_list()
             else:
+                print('\tarm rigid and not empty, so reaching memorized position...')
                 self.robot_head.set_arm_desired_angles(angle_list=self.memorized_arm_position[button])
+                print()
