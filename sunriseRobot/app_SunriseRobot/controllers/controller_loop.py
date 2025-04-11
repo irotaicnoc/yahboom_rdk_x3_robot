@@ -45,7 +45,7 @@ class ControllerLoop(object):
             elif self.robot_head.robot_mode == 'user_control_arm':
                 if self.robot_head.arm_state_not_updated:
                     # 20 millisecond beep to signal the change in arm state
-                    self.robot_body.set_beep(20)
+                    self.robot_body.set_beep(50)
                     self.robot_head.arm_state_not_updated = False
                     # manually set configuration is maintained
                     if self.robot_head.arm_is_rigid:

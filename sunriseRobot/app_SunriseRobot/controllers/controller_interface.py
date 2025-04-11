@@ -24,8 +24,6 @@ class ControllerFunctions(object):
         self.last_start_press = 0  # timestamp for START button
         self.BUTTON_COOLDOWN = 5.0  # minimum seconds between button presses
 
-        self.arrow_activation_threshold = 0.3  # Threshold for arrows to be considered pressed
-
     # value is True or False for buttons
     # value is a float in range [-1, 1] for axes
     # for arrows 'value' is a float in range [-1, 1], but it can only assume the values -1, 0 or 1
@@ -47,7 +45,7 @@ class ControllerFunctions(object):
         assert -1 <= value <= 1, f'Value {value} is out of range [-1, 1]'
         if self.robot_head.robot_mode == 'user_control_wheels':
             self.robot_head.speed_z = (value * self.robot_head.speed_coefficient
-                                            * self.robot_head.steer_speed_proportion)
+                                       * self.robot_head.steer_speed_proportion)
         elif self.robot_head.robot_mode == 'user_control_arm':
             self.robot_head.arm_servo_speed[4] = value * self.robot_head.speed_coefficient * self.robot_head.arm_speed_proportion
 
@@ -62,16 +60,11 @@ class ControllerFunctions(object):
             self.robot_head.speed_y = value * self.robot_head.speed_coefficient
         elif self.robot_head.robot_mode == 'user_control_arm':
             # servo 4
-            if value > self.arrow_activation_threshold:
-                self.robot_head.arm_servo_speed[3] = self.robot_head.speed_coefficient * self.robot_head.arm_speed_proportion
-            if value < -self.arrow_activation_threshold:
-                self.robot_head.arm_servo_speed[3] = self.robot_head.speed_coefficient * self.robot_head.arm_speed_proportion
-            else:
-                self.robot_head.arm_servo_speed[3] = 0
+            self.robot_head.arm_servo_speed[3] = value * self.robot_head.speed_coefficient * self.robot_head.arm_speed_proportion
         elif self.robot_head.robot_mode == 'autonomous_vision':
-            if value > self.arrow_activation_threshold:
+            if value > 0:
                 self.robot_head.next_target()
-            if value < -self.arrow_activation_threshold:
+            if value < 0:
                 self.robot_head.previous_target()
 
     def axis_arrows_y(self, value: float):
@@ -80,16 +73,11 @@ class ControllerFunctions(object):
             self.robot_head.speed_x = value * self.robot_head.speed_coefficient
         elif self.robot_head.robot_mode == 'user_control_arm':
             # servo 3
-            if value > self.arrow_activation_threshold:
-                self.robot_head.arm_servo_speed[2] = self.robot_head.speed_coefficient * self.robot_head.arm_speed_proportion
-            if value < -self.arrow_activation_threshold:
-                self.robot_head.arm_servo_speed[2] = self.robot_head.speed_coefficient * self.robot_head.arm_speed_proportion
-            else:
-                self.robot_head.arm_servo_speed[2] = 0
+            self.robot_head.arm_servo_speed[2] = value * self.robot_head.speed_coefficient * self.robot_head.arm_speed_proportion
         elif self.robot_head.robot_mode == 'autonomous_vision':
-            if value > self.arrow_activation_threshold:
+            if value > 0:
                 self.robot_head.next_model()
-            if value < -self.arrow_activation_threshold:
+            if value < 0:
                 self.robot_head.previous_model()
 
     def button_south(self, value: bool):
