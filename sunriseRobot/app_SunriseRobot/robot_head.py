@@ -66,6 +66,8 @@ class RobotHead:
             # for manual control use 0, for arbitrary position specified directly via arm_desired_angles
             # use a slower speed (higher value)
             self.run_time = 0
+            self.button_press_time = 0
+            self.one_time_check = False
 
         # TODO: rimettili in cima
         self.robot_mode_list.append('user_control_wheels')

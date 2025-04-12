@@ -25,7 +25,6 @@ class ControllerFunctions(object):
         self.BUTTON_COOLDOWN = 5.0  # minimum seconds between button presses
 
         self.memorized_arm_position = {}
-        self.button_press_time = 0
         self.MEMORIZE_TIME = 2  # seconds to memorize arm position
 
     # value is True or False for buttons
@@ -207,22 +206,22 @@ class ControllerFunctions(object):
     def memorize_or_reach_arm_position(self, button: str, value: bool) -> None:
         if self.robot_head.robot_mode == 'user_control_arm':
             if value:
-                self.button_press_time = time.time()
                 self.gpio_led.set_color('red_and_green')
+                self.robot_head.one_time_check = True
+                self.robot_head.button_press_time = time.time()
             else:
-                elapsed_time = time.time() - self.button_press_time
+                elapsed_time = time.time() - self.robot_head.button_press_time
+                self.robot_head.button_press_time = 0
                 if elapsed_time >= self.MEMORIZE_TIME:
-                    self.gpio_led.set_color('green')
                     print(f'Button {button} pressed for at least 2 seconds in arm mode')
                     self.memorized_arm_position[button] = self.robot_body.get_arm_angle_list()
-                    print('\tposition memorized')
-                    self.robot_body.set_beep(50)
+                    print(f'\tposition memorized {self.memorized_arm_position[button]}')
 
                 else:
                     print(f'Button {button} pressed for less than 2 seconds in arm mode')
                     if button in self.memorized_arm_position:
                         self.robot_head.set_arm_desired_angles(angle_list=self.memorized_arm_position[button])
-                        print('\treaching memorized position')
+                        print(f'\treaching memorized position {self.memorized_arm_position[button]}')
                     else:
                         print('\tbut no memorized position, so not doing anything')
                 self.gpio_led.set_color('off')
