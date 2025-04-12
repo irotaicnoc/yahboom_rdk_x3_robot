@@ -23,15 +23,18 @@ def main_loop(**kwargs):
     arm_initial_angles = [90, 90, 90, 90, 90, 90]
     if parameters['arm_present']:
         arm_initial_angles = robot_body.get_arm_angle_list()
-    robot_head = RobotHead(
-        verbose=parameters['verbose'],
-        arm_present=parameters['arm_present'],
-        arm_initial_angles=arm_initial_angles,
-    )
 
     # LIGHTS
     internal_light = Light(verbose=parameters['verbose'])
     gpio_led = GpioLed()
+
+    robot_head = RobotHead(
+        arm_present=parameters['arm_present'],
+        arm_initial_angles=arm_initial_angles,
+        internal_light=internal_light,
+        gpio_led=gpio_led,
+        verbose=parameters['verbose'],
+    )
 
     # CONTROLLER
     controller_loop_kwargs = {

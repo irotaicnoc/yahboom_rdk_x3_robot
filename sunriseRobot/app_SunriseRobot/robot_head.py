@@ -39,8 +39,10 @@ class RobotHead:
         self.speed_y = 0
         self.speed_z = 0
 
-        # buzzer
+        # buzzer, leds, and lights
         self.buzzer_is_active = False
+        self.internal_light = parameters['internal_light']
+        self.gpio_led = parameters['gpio_led']
 
         # arm parameters
         if parameters['arm_present']:
@@ -77,6 +79,9 @@ class RobotHead:
         self.robot_mode = self.robot_mode_list[
             (self.robot_mode_list.index(self.robot_mode) + 1) % len(self.robot_mode_list)
         ]
+        self.gpio_led.set_color('off')
+        self.internal_light.stop()
+
         if self.verbose >= 1:
             print(f'Switching to {self.robot_mode} mode.')
 
