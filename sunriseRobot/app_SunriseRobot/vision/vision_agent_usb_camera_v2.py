@@ -1,17 +1,13 @@
 import time
 
-from robot_body import RobotBody
-
 import args
 import utils
 import global_constants as gc
-from robot_head import RobotHead
 from vision.detector_usb_camera_v2 import YoloDetector
-from physical_accessories.gpio_pin_control import GpioLed
 
 
 class VisionAgent(object):
-    def __init__(self, robot_body: RobotBody, robot_head: RobotHead, gpio_led: GpioLed, **kwargs):
+    def __init__(self, robot_body, robot_head, **kwargs):
         # general initialization
         self.robot_body = robot_body
         self.robot_head = robot_head
@@ -44,7 +40,7 @@ class VisionAgent(object):
         self.speed_z = 0
 
         # gpio led
-        self.gpio_led = gpio_led
+        self.gpio_led = robot_head.gpio_led
         self.use_gpio_led = parameters['use_gpio_led']
 
     def set_zero_speed(self):

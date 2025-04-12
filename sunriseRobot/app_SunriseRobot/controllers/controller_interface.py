@@ -10,15 +10,13 @@ class ControllerFunctions(object):
     def __init__(self,
                  robot_head,
                  robot_body,
-                 internal_light,
-                 gpio_led,
                  verbose: int = 0,
                  ):
 
         self.robot_head = robot_head
         self.robot_body = robot_body
-        self.internal_light = internal_light
-        self.gpio_led = gpio_led
+        self.internal_light = robot_head.internal_light
+        self.gpio_led = robot_head.gpio_led
         self.verbose = verbose
 
         # accept only one button input per cooldown

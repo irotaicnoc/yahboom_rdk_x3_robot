@@ -52,8 +52,6 @@ def main_loop(**kwargs):
         'controller_id': parameters['controller_id'],
         'robot_head': robot_head,
         'robot_body': robot_body,
-        'internal_light': internal_light,
-        'gpio_led': gpio_led,
         'verbose': parameters['verbose'],
     }
     thread_controller = threading.Thread(target=task_controller, name='task_controller', kwargs=controller_kwargs)
@@ -75,7 +73,6 @@ def main_loop(**kwargs):
     vision_agent_kwargs = {
         'robot_body': robot_body,
         'robot_head': robot_head,
-        'gpio_led': gpio_led,
         'camera_type': parameters['camera_type'],
         'verbose': parameters['verbose'],
     }
@@ -90,7 +87,6 @@ def main_loop(**kwargs):
     sound_agent_kwargs = {
         'robot_body': robot_body,
         'robot_head': robot_head,
-        'gpio_led': gpio_led,
         'verbose': parameters['verbose'],
     }
     thread_sound_agent = threading.Thread(
@@ -110,8 +106,6 @@ def task_controller(**kwargs):
         controller_functions = ControllerFunctions(
             robot_head=kwargs['robot_head'],
             robot_body=kwargs['robot_body'],
-            internal_light=kwargs['internal_light'],
-            gpio_led=kwargs['gpio_led'],
             verbose=kwargs['verbose'],
         )
         ps2_controller = PS2Controller(controller_functions=controller_functions, controller_id=kwargs['controller_id'])

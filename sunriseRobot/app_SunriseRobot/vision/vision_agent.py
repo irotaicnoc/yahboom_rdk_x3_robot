@@ -1,19 +1,16 @@
 import time
 import warnings
 
-from robot_body import RobotBody
 from hobot_vio import libsrcampy as camera_lib
 
 import args
 import utils
 import global_constants as gc
-from robot_head import RobotHead
 from vision.detector import YoloDetector
-from physical_accessories.gpio_pin_control import GpioLed
 
 
 class VisionAgent(object):
-    def __init__(self, robot_body: RobotBody, robot_head: RobotHead, gpio_led: GpioLed, **kwargs):
+    def __init__(self, robot_body, robot_head, **kwargs):
         # general initialization
         self.robot_body = robot_body
         self.robot_head = robot_head
@@ -49,7 +46,7 @@ class VisionAgent(object):
         self.move_duration = parameters['move_duration']
 
         # gpio led
-        self.gpio_led = gpio_led
+        self.gpio_led = robot_head.gpio_led
         self.use_gpio_led = parameters['use_gpio_led']
 
     def set_zero_speed(self):

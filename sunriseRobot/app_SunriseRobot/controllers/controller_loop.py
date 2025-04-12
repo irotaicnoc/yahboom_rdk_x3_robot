@@ -15,6 +15,8 @@ class ControllerLoop(object):
         self.robot_body = robot_body
         self.robot_head = robot_head
         self.verbose = verbose
+        self.beep_time = 50  # milliseconds
+        self.gpio_led = robot_head.gpio_led
 
         # TODO: poi checka se ha senso cambiare le dipendenze fra le classi ControllerLoop,
         #  ControllerFunctions, PS2Controller, e RobotHead
@@ -44,8 +46,8 @@ class ControllerLoop(object):
             # arm servos
             elif self.robot_head.robot_mode == 'user_control_arm':
                 if self.robot_head.arm_state_not_updated:
-                    # 20 millisecond beep to signal the change in arm state
-                    self.robot_body.set_beep(50)
+                    # beep to signal the change in arm state
+                    self.robot_body.set_beep(self.beep_time)
                     self.robot_head.arm_state_not_updated = False
                     # manually set configuration is maintained
                     if self.robot_head.arm_is_rigid:

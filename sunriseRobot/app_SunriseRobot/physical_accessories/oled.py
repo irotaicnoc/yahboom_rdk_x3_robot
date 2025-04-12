@@ -6,19 +6,13 @@ from PIL import ImageDraw
 from PIL import ImageFont
 import Adafruit_SSD1306 as SSD
 
-from robot_body import RobotBody
-
 import utils
-from robot_head import RobotHead
-
-AUTONOMOUS_MODE = 'Autonomous Vision'
 
 
-# V1.0.10
 class OLED:
     def __init__(self,
-                 robot_body: RobotBody,
-                 robot_head: RobotHead,
+                 robot_body,
+                 robot_head,
                  i2c_bus=0,
                  clear=False,
                  verbose: int = 0,
@@ -41,6 +35,8 @@ class OLED:
         self.__image = Image.new('1', (self.__WIDTH, self.__HEIGHT))
         self.__draw = ImageDraw.Draw(self.__image)
         self.__font = ImageFont.load_default()
+
+        self.AUTONOMOUS_MODE = 'Autonomous Vision'
 
     def __del__(self):
         self.clear(True)
@@ -156,7 +152,7 @@ class OLED:
                 self.clear(refresh=self.__clear)
                 controller_mode = self.get_controller_mode_status()
                 self.add_line(controller_mode[0], line=1)
-                if controller_mode[0] == AUTONOMOUS_MODE:
+                if controller_mode[0] == self.AUTONOMOUS_MODE:
                     self.add_line(controller_mode[1], line=2)
                     self.add_line(controller_mode[2], line=3)
                 else:
