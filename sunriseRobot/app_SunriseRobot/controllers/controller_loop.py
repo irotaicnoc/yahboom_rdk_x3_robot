@@ -18,9 +18,6 @@ class ControllerLoop(object):
         self.beep_time = 50  # milliseconds
         self.gpio_led = robot_head.gpio_led
 
-        # TODO: poi checka se ha senso cambiare le dipendenze fra le classi ControllerLoop,
-        #  ControllerFunctions, PS2Controller, e RobotHead
-
     def update_robot_loop(self):
         assert self.robot_head.connected_controllers >= 0, (f'connected_controllers cannot be negative, but the '
                                                             f'current value is {self.robot_head.connected_controllers}')
