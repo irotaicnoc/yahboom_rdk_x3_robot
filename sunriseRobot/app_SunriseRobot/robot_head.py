@@ -1,6 +1,7 @@
 import args
 from pathlib import Path
 
+import utils
 import global_constants as gc
 
 
@@ -147,5 +148,12 @@ class RobotHead:
     def set_arm_desired_angles(self, angle_list: list) -> None:
         assert len(angle_list) == len(self.arm_desired_angles), (f'Length of angle_list {len(angle_list)} is not'
                                            f' equal to arm_servos_desired_angle {len(self.arm_desired_angles)}')
-        self.run_time = 800
+        self.run_time = utils.change_range(
+            val=self.speed_coefficient,
+            original_min_val=0.1,
+            original_max_val=1,
+            new_min_val=2000,
+            new_max_val=400,
+        )
+        print(f'check run_time: {self.run_time}')
         self.arm_desired_angles = angle_list
