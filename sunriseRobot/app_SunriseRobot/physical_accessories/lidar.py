@@ -1,13 +1,11 @@
-# Steps:
-# Create a shared library: Run the following command in your terminal to create a shared library from the static library:
-# g++ -shared -o liboradar_sdk.so -Wl,--whole-archive library_ws_src/src/oradar_lidar/sdk/build/liboradar_sdk.a -Wl,--no-whole-archive
-
 import ctypes
 import os
 
 # Define the path to the shared library
 project_root = os.path.dirname(os.path.abspath(__file__))  # Adjust to your project root
+print(f'Project root: {project_root}')
 library_path = os.path.join(project_root, "../../library_ws_src/src/oradar_lidar/sdk/build/liboradar_sdk.so")
+print(f'Library path: {library_path}')
 
 # Load the shared library
 try:
