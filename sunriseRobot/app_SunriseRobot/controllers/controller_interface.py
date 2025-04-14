@@ -123,28 +123,13 @@ class ControllerFunctions(object):
         # activate/deactivate hotspot
         if self.robot_head.robot_mode == 'user_control_wheels':
             if value:
-                if self.robot_head.hotspot_status == 'inactive':
-                    self.robot_head.hotspot_status = 'processing'
-                    utils.activate_hotspot(hotspot_ip=self.robot_head.hotspot_ip, verbose=self.verbose)
-                    self.robot_head.hotspot_status = 'active'
-
-                elif self.robot_head.hotspot_status == 'active':
-                    self.robot_head.hotspot_status = 'processing'
-                    utils.deactivate_hotspot(verbose=self.verbose)
-                    self.robot_head.hotspot_status = 'inactive'
+                self.robot_head.toggle_hotspot()
 
     def button_r1(self, value: bool) -> None:
         # activate/deactivate ROS2
         if self.robot_head.robot_mode == 'user_control_wheels':
             if value:
-                if self.robot_head.ros2_status == 'inactive':
-                    self.robot_head.ros2_status = 'processing'
-                    utils.activate_ros2_vr_connection(verbose=self.verbose)
-                    self.robot_head.ros2_status = 'active'
-                elif self.robot_head.ros2_status == 'active':
-                    self.robot_head.ros2_status = 'processing'
-                    utils.deactivate_ros2(verbose=self.verbose)
-                    self.robot_head.ros2_status = 'inactive'
+                self.robot_head.toggle_ros2_vr_connection()
 
     def button_l2(self, value: bool) -> None:
         # decrease speed sensibility

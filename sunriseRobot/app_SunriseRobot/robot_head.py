@@ -1,6 +1,8 @@
-import args
+import os
+import time
 from pathlib import Path
 
+import args
 import utils
 import global_constants as gc
 
@@ -18,6 +20,10 @@ class RobotHead:
         # autonomous mode parameters
         # self.robot_mode_list = ['user_control_wheels', ]
         self.robot_mode_list = []
+        self.robot_mode_list.append('user_control_wheels')
+        self.robot_mode = self.robot_mode_list[0]
+        if self.verbose >= 1:
+            print(f'Robot mode: {self.robot_mode}')
         self.tracking_target_list = parameters['tracking_target_list']
         self.tracking_target_pos = 0
         # search for models in the model folder
@@ -28,7 +34,7 @@ class RobotHead:
             self.model_list.append(model_path.name)
 
         # hotspot and ROS2 parameters
-        self.ros2_status = 'inactive'
+        self.ros2_vr_connection_status = 'inactive'
         self.hotspot_status = 'inactive'
         self.hotspot_ip = parameters['hotspot_ip']
 
@@ -70,11 +76,8 @@ class RobotHead:
             self.button_press_time = 0
             self.one_time_check = False
 
-        # TODO: rimettili in cima
-        self.robot_mode_list.append('user_control_wheels')
-        self.robot_mode = self.robot_mode_list[0]
-        if self.verbose >= 1:
-            print(f'Robot mode: {self.robot_mode}')
+        # lidar parameters
+        self.lidar_is_active = False
 
     def next_mode(self):
         if self.verbose >= 3:
@@ -146,8 +149,10 @@ class RobotHead:
             self.arm_desired_angles[servo_id] = temp_angle
 
     def set_arm_desired_angles(self, angle_list: list) -> None:
-        assert len(angle_list) == len(self.arm_desired_angles), (f'Length of angle_list {len(angle_list)} is not'
-                                           f' equal to arm_servos_desired_angle {len(self.arm_desired_angles)}')
+        assert len(angle_list) == len(self.arm_desired_angles), \
+            (f'Length of angle_list {len(angle_list)} is not equal'
+             f' to arm_servos_desired_angle {len(self.arm_desired_angles)}')
+
         self.run_time = utils.change_range(
             val=self.speed_coefficient,
             original_min_val=0.1,
@@ -157,3 +162,104 @@ class RobotHead:
         )
         print(f'check run_time: {self.run_time}')
         self.arm_desired_angles = angle_list
+
+    def activate_hotspot(self):
+        if self.hotspot_status == 'active':
+            if self.verbose >= 2:
+                print('Hotspot is already active.')
+            return
+        self.hotspot_status = 'processing'
+        utils.start_generic_process(robot_head=self, name='Starting hotspot')
+        os.system('sleep 2')
+        os.system('systemctl stop wpa_supplicant')
+        os.system('ip addr flush dev wlan0')
+        os.system('sleep 0.5')
+        os.system('ifconfig wlan0 down')
+        os.system('sleep 1')
+        os.system('ifconfig wlan0 up')
+        os.system(f'hostapd -B {gc.MAIN_FOLDER_PATH}hotspot/etc/hostapd.conf')
+        os.system(f'ifconfig wlan0 {self.hotspot_ip} netmask 255.255.255.0')
+        os.system('systemctl start isc-dhcp-server')
+        self.hotspot_status = 'active'
+        utils.finish_generic_process(robot_head=self)
+
+    def deactivate_hotspot(self):
+        if self.hotspot_status == 'inactive':
+            if self.verbose >= 2:
+                print('Hotspot is already inactive.')
+            return
+        self.hotspot_status = 'processing'
+        utils.start_generic_process(robot_head=self, name='Stopping hotspot')
+        utils.kill_process_(process_name='hostapd', verbose=self.verbose)
+        os.system('systemctl stop isc-dhcp-server')
+        os.system('ip addr flush dev wlan0')
+        os.system('sleep 0.5')
+        os.system('ifconfig wlan0 down')
+        os.system('sleep 1')
+        os.system('ifconfig wlan0 up')
+        os.system('systemctl start wpa_supplicant')
+        self.hotspot_status = 'inactive'
+        utils.finish_generic_process(robot_head=self)
+
+    def toggle_hotspot(self):
+        if self.hotspot_status == 'inactive':
+            self.activate_hotspot()
+        elif self.hotspot_status == 'active':
+            self.deactivate_hotspot()
+        else:
+            print(f'Hotspot is in "{self.hotspot_status}" state. Cannot be changed now.')
+
+    def activate_ros2_vr_connection(self):
+        if self.ros2_vr_connection_status == 'active':
+            if self.verbose >= 2:
+                print('ROS2 VR connection is already active.')
+            return
+        self.ros2_vr_connection_status = 'processing'
+        utils.start_generic_process(robot_head=self, name='Starting ROS2')
+        # os.system(f'{gc.SCRIPT_FOLDER_PATH}start_ros2.sh')
+        os.system('gnome-terminal -- bash -c "source /opt/ros/foxy/setup.bash;cd /root/marco_ros2_ws/;'
+                  'source install/local_setup.bash;ros2 launch ros_tcp_endpoint endpoint_launch.py;exec bash"')
+        self.hotspot_status = 'active'
+        utils.finish_generic_process(robot_head=self)
+
+    def deactivate_ros2(self):
+        # TODO: it does not really kill the process in the separate console
+        if self.ros2_vr_connection_status == 'inactive':
+            if self.verbose >= 2:
+                print('ROS2 is already inactive.')
+            return
+        self.ros2_vr_connection_status = 'processing'
+        utils.start_generic_process(robot_head=self, name='Stopping ROS2')
+        utils.kill_process_(process_name='ros2', verbose=self.verbose)
+        self.gpio_led.set_color('green')
+        self.ros2_vr_connection_status = 'inactive'
+        utils.finish_generic_process(robot_head=self)
+
+    def toggle_ros2_vr_connection(self):
+        if self.ros2_vr_connection_status == 'inactive':
+            self.activate_ros2_vr_connection()
+        elif self.ros2_vr_connection_status == 'active':
+            self.deactivate_ros2()
+        else:
+            print(f'ROS2 is in "{self.ros2_vr_connection_status}" state. Cannot be changed now.')
+
+    # def activate_lidar(self):
+    #     try:
+    #         self.lidar = LidarSubscriberNode(
+    #             lidar_topic='/scan',
+    #             queue_size=10,
+    #             verbose=self.verbose,
+    #         )
+    #         self.lidar_is_active = True
+    #         if self.verbose >= 1:
+    #             print(f'Lidar activated')
+    #     except Exception as e:
+    #         print('Failed to activate lidar with error:')
+    #         print(e)
+    #         print(e.__traceback__)
+    #         self.lidar_is_active = False
+    #
+    # def deactivate_lidar(self):
+    #     self.lidar_is_active = False
+    #     if self.verbose >= 1:
+    #         print(f'Lidar deactivated')

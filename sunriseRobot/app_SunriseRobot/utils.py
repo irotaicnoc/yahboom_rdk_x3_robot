@@ -1,5 +1,6 @@
 import os
 import cv2
+import time
 import psutil
 import numpy as np
 from ultralytics import YOLO
@@ -82,71 +83,6 @@ def pretty_print_dict(data, _level: int = 0) -> None:
             pretty_print_dict(data[key], _level=_level + 1)
     else:
         print(data)
-
-
-def activate_hotspot(hotspot_ip: str, verbose: int = 0):
-    if verbose >= 1:
-        print('Starting Hotspot...', end='')
-    os.system('sleep 2')
-    os.system('systemctl stop wpa_supplicant')
-    os.system('ip addr flush dev wlan0')
-    os.system('sleep 0.5')
-    os.system('ifconfig wlan0 down')
-    os.system('sleep 1')
-    os.system('ifconfig wlan0 up')
-    os.system(f'hostapd -B {gc.MAIN_FOLDER_PATH}hotspot/etc/hostapd.conf')
-    os.system(f'ifconfig wlan0 {hotspot_ip} netmask 255.255.255.0')
-    os.system('systemctl start isc-dhcp-server')
-    if verbose >= 1:
-        print('Done.')
-
-
-def deactivate_hotspot(verbose: int = 0):
-    if verbose >= 1:
-        print('Stopping Hotspot...', end='')
-    kill_process_(process_name='hostapd', verbose=verbose)
-    os.system('systemctl stop isc-dhcp-server')
-    os.system('ip addr flush dev wlan0')
-    os.system('sleep 0.5')
-    os.system('ifconfig wlan0 down')
-    os.system('sleep 1')
-    os.system('ifconfig wlan0 up')
-    os.system('systemctl start wpa_supplicant')
-    if verbose >= 1:
-        print('Done.')
-
-
-def activate_ros2_vr_connection(verbose: int = 0):
-    if verbose >= 1:
-        print('Starting ROS2...', end='')
-    # os.system(f'{gc.SCRIPT_FOLDER_PATH}start_ros2.sh')
-    os.system('gnome-terminal -- bash -c "source /opt/ros/foxy/setup.bash;cd /root/marco_ros2_ws/;'
-              'source install/local_setup.bash;ros2 launch ros_tcp_endpoint endpoint_launch.py;exec bash"')
-    # os.system('wait')
-    # os.system('exit 0')
-    if verbose >= 1:
-        print('Done.')
-
-
-def activate_ros2_lidar_listener(verbose: int = 0):
-    if verbose >= 1:
-        print('Starting ROS2...', end='')
-    os.system('gnome-terminal -- bash -c "source /opt/ros/foxy/setup.bash;cd /root/software/library_ws/;'
-              'source install/local_setup.bash;ros2 launch oradar_lidar ms200_scan.launch.py;exec bash"')
-
-    # os.system('wait')
-    # os.system('exit 0')
-    if verbose >= 1:
-        print('Done.')
-
-
-def deactivate_ros2(verbose: int = 0):
-    # TODO: it does not really kill the process in the separate console
-    if verbose >= 1:
-        print('Stopping ROS2...', end='')
-    kill_process_(process_name='ros2', verbose=verbose)
-    if verbose >= 1:
-        print('Done.')
 
 
 def change_range(val, original_min_val, original_max_val, new_min_val, new_max_val):
@@ -262,3 +198,20 @@ def kill_process_(process_name: str, verbose: int = 0):
                 if verbose >= 2:
                     print(f'\t\t{process.name()} killed')
                 os.system('sleep 0.1')
+
+
+def start_generic_process(robot_head, name: str = None):
+    robot_head.gpio_led.set_color('orange')
+    if name is not None and robot_head.verbose >= 1:
+        print(f'{name}...', end='')
+
+
+def finish_generic_process(robot_head):
+    robot_head.gpio_led.set_color('green')
+    buzzer_previous_state = robot_head.buzzer_is_active
+    robot_head.buzzer_is_active = True
+    if robot_head.verbose >= 1:
+        print('Done.')
+    time.sleep(0.5)
+    robot_head.gpio_led.set_color('off')
+    robot_head.buzzer_is_active = buzzer_previous_state
