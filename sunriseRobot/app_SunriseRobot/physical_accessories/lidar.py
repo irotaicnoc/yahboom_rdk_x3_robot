@@ -3,27 +3,24 @@ import ctypes
 import global_constants as gc
 
 
-def load_lidar_library():
+ORADAR_MS200 = 1
+ORADAR_TYPE_SERIAL = 0x0
+
+
+class lidar_python():
     """
     Load the Lidar library using ctypes.
     """
-    # Check if the library path is set correctly
-    if not gc.LIDAR_LIB_PATH:
-        raise ValueError("LIDAR_LIB_PATH is not set in global_constants.")
 
-    # Print the library path for debugging
-    print(f'Library path: {gc.LIDAR_LIB_PATH}')
-    # Load the shared library
-    try:
-        lidar_lib = ctypes.CDLL(gc.LIDAR_LIB_PATH)
-        print("Lidar library loaded successfully.")
-    except OSError as e:
-        print(f"Failed to load the lidar library: {e}")
+    def __init__(self):
+        # Load the shared library
+        try:
+            lidar_lib = ctypes.CDLL(gc.LIDAR_LIB_PATH)
+            print("Lidar library loaded successfully.")
+            # Set the argument and return types for the Init function
+            self.lidar = lidar_lib.OrdlidarDriver(ORADAR_TYPE_SERIAL, ORADAR_MS200)
+            self.lidar.SetSerialPort('/dev/ttyACM0', 230400)
 
-    # Example: Define a function from the library (adjust based on the actual API)
-    # lidar_lib.some_function.argtypes = [ctypes.c_int, ctypes.c_double]
-    # lidar_lib.some_function.restype = ctypes.c_int
-
-    # Replace some_function with the actual function names from the library.
-    # Define the argument and return types for each function you want to use.
-    # Ensure the shared library is in the correct path relative to your Python script.
+        except OSError as e:
+            print(f"Failed to load the lidar library: {e}")
+            raise Exception('Failed to open lidar.')
