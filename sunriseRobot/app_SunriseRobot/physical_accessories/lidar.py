@@ -7,7 +7,7 @@ ORADAR_MS200 = 1
 ORADAR_TYPE_SERIAL = 0x0
 
 
-class lidar_python():
+class LidarPython:
     """
     Load the Lidar library using ctypes.
     """
