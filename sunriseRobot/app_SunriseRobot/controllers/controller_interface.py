@@ -204,6 +204,7 @@ class ControllerFunctions(object):
                 print(f'Controller with id {controller_id} tried to disconnect, but this id is not connected')
 
     def memorize_or_reach_arm_position(self, button: str, value: bool) -> None:
+        # TODO: remove debug prints
         if self.robot_head.robot_mode == 'user_control_arm':
             if value:
                 self.gpio_led.set_color('red_and_green')

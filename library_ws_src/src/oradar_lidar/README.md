@@ -1,25 +1,25 @@
-# ORADAR ROS package
+# ORADAR ROS Package
 
-ORADAR ROS 包用于连接Oradar MS200激光雷达，此ROS包支持ROS和ROS2环境。其中ROS支持 Indigo，Kinetic，Melodic等ROS版本；ROS2支持Ubuntu 20.04 ROS2 foxy版本及以上。
+The ORADAR ROS package is used to connect the Oradar MS200 LiDAR. This ROS package supports both ROS and ROS2 environments. For ROS, it supports versions such as Indigo, Kinetic, and Melodic. For ROS2, it supports Ubuntu 20.04 ROS2 Foxy and later versions.
 
-## 使用方法： 
+## Usage:
 
-1. 在系统中安装ROS环境，具体安装方法参考下面连接：
+1. Install the ROS environment on your system. Refer to the following links for installation instructions:
 
-   ROS安装链接：http://wiki.ros.org/kinetic/Installation/Ubuntu 
+   ROS installation link: http://wiki.ros.org/kinetic/Installation/Ubuntu
 
-   ROS2安装链接：https://docs.ros.org/en/foxy/Installation/Ubuntu-Install-Debians.html
+   ROS2 installation link: https://docs.ros.org/en/foxy/Installation/Ubuntu-Install-Debians.html
 
-   **请不要在一台电脑上同时安装ROS和ROS2，以避免可能的版本冲突和手工安装其他库的麻烦**
+   **Do not install both ROS and ROS2 on the same computer to avoid potential version conflicts and the hassle of manually installing other libraries.**
 
-2. 将oradar_ros源码复制到ros工作目录下的src目录，修改相应文件
+2. Copy the `oradar_ros` source code to the `src` directory of your ROS workspace and modify the corresponding files:
 
-   ```shell
+   ```
    mkdir -p ~/lidar_ros_ws/src
    cp -ar oradar_ros ~/lidar_ros_ws/src/
    ```
 
-   (1) 当使用ROS时，需要打开oradar_ros源码根目录下的*CMakeLists.txt*文件，将文件顶部的变量**COMPILE_METHOD**改为**CATKIN**，
+   (1) When using ROS, open the CMakeLists.txt file in the root directory of the oradar_ros source code and change the variable COMPILE_METHOD at the top of the file to CATKIN:
 
    ```cmake
    #=======================================
@@ -28,10 +28,10 @@ ORADAR ROS 包用于连接Oradar MS200激光雷达，此ROS包支持ROS和ROS2�
    set(COMPILE_METHOD CATKIN)
    ```
 
-   然后把*package_ros1.xml*文件复制一份，命名为为*package.xml*。
+   Then copy the package_ros1.xml file and rename it to package.xml.
 
-   (2) 当使用ROS2时，需要打开oradar_ros源码根目录下的*CMakeLists.txt*文件，将文件顶部的变量**COMPILE_METHOD**改为**COLCON**，
-
+   (2) When using ROS2, open the CMakeLists.txt file in the root directory of the oradar_ros source code and change the variable COMPILE_METHOD at the top of the file to COLCON:
+   
    ```cmake
    #=======================================
    # Compile setup (ORIGINAL,CATKIN,COLCON)
@@ -39,68 +39,63 @@ ORADAR ROS 包用于连接Oradar MS200激光雷达，此ROS包支持ROS和ROS2�
    set(COMPILE_METHOD COLCON)
    ```
 
-   然后把*package_ros2.xml*文件复制一份，命名为*package.xml*。
-
-
-3. 编译工程、设置环境变量
-
-   当环境是ROS时：
-
-   ```shell
+   Then copy the package_ros2.xml file and rename it to package.xml.
+   
+   
+   Compile the project and set environment variables:
+   
+   For ROS:
+   ```
    cd ~/lidar_ros_ws
    catkin_make
    source devel/setup.sh
    ```
 
-   当环境是ROS2时：
-
+   For ROS2:
    ```
    cd ~/lidar_ros_ws
    colcon build
    source install/setup.bash
    ```
 
-4. 配置上位机串口
+   Configure the serial port port_name and baud rate. The default configuration is port_name as /dev/ttyACM0 and baud rate as 230400.
 
-   配置串口port_name和波特率： 默认配置port_name为/dev/ttyACM0, 波特率为230400
-
-5. 配置雷达参数
-
-   打开oradar_ros/launch/ms200_scan.launch 进行参数配置或者oradar_ros/launch/ms200_scan.launch.py 进行参数配置
-
-   参数说明如下：
-
-   | 参数名      | 数据类型 | 描述                                                         |
-   | ----------- | -------- | ------------------------------------------------------------ |
-   | frame_id    | string   | 激光雷达坐标系名称。 默认为laser_frame                       |
-   | scan_topic  | string   | LaserScan主题名。 默认为scan                                 |
-   | port_name   | string   | 激光雷达串口名称。 默认值为/dev/ttyACM0                      |
-   | baudrate    | int      | 雷达串口波特率.。 默认值为230400                             |
-   | angle_min   | double   | 最小角度，单位度，取值范围[0, 360]。 默认值为0 |
-   | angle_max   | double   | 最大角度，单位度，取值范围[0, 360]。 默认值为360 |
-   | range_min   | double   | 最小距离，单位米，默认值为0.05                               |
-   | range_max   | double   | 最大距离，单位米，默认值为20.0                               |
-   | clockwise    | bool     | 配置点云方向，true为顺时针， false为逆时针。默认为false |
-   | motor_speed | int      | 雷达转速，单位Hz，取值范围为5~15Hz。默认值为10Hz             |
-
+   Configure LiDAR parameters:
    
+   Open oradar_ros/launch/ms200_scan.launch for parameter configuration or oradar_ros/launch/ms200_scan.launch.py for parameter configuration.
+   
+   Parameter descriptions are as follows:
 
-6. 启动Oradar ros节点
+   | Name        | Type   | Description                                                                                        |
+   |-------------|--------|----------------------------------------------------------------------------------------------------|
+   | frame_id    | string | Name of the LiDAR coordinate frame. Default is laser_frame                                         |
+   | scan_topic  | string | LaserScan topic name. Default is scan                                                              |
+   | port_name   | string | LiDAR serial port name. Default is /dev/ttyACM0                                                    |
+   | baudrate    | int    | LiDAR serial port baud rate. Default is 230400                                                     |
+   | angle_min   | double | Minimum angle in degrees, range [0, 360]. Default is 0                                             |
+   | angle_max   | double | Maximum angle in degrees, range [0, 360]. Default is 360                                           |
+   | range_min   | double | Minimum range in meters. Default is 0.05                                                           |
+   | range_max   | double | Maximum range in meters. Default is 20.0                                                           |
+   | clockwise   | bool   | Configures point cloud direction. true for clockwise, false for counterclockwise. Default is false |
+   | motor_speed | int    | LiDAR rotation speed in Hz, range [5, 15]. Default is 10Hz                                         |
 
-   当环境是ROS时：
 
-   ```shell
+   Start the Oradar ROS node:
+   
+   For ROS:
+   ```
    roslaunch oradar_lidar ms200_scan.launch
-   或者
-   roslaunch oradar_lidar ms200_scan_view.launch (使用rviz显示) 
+   ```
+   Or:
+   ```
+   roslaunch oradar_lidar ms200_scan_view.launch (to display using RViz)
    ```
 
-   当环境是ROS2时：
-
+   For ROS2:
    ```
    ros2 launch oradar_lidar ms200_scan.launch.py
-   或者
-   ros2 launch oradar_lidar ms200_scan_view.launch.py（使用rviz2显示）
    ```
-
-   
+   Or:
+   ```
+   ros2 launch oradar_lidar ms200_scan_view.launch.py (to display using RViz2)
+   ```

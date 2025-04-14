@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
     {
         if (device.Connect())
         {
-            printf("scan_frame_data lidar device connect succuss..\n");
+            printf("scan_frame_data lidar device connect success..\n");
             break;
         }
         else
