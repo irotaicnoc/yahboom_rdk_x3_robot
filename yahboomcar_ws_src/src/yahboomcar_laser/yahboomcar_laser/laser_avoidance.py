@@ -14,13 +14,13 @@ class laserAvoid(Node):
     def __init__(self, name):
         super().__init__(name)
 
-        #create sub
+        # create sub
         self.sub_laser = self.create_subscription(LaserScan, "/scan", self.registerScan, 1)
         self.sub_JoyState = self.create_subscription(Bool, "/JoyState", self.JoyStateCallback, 1)
-        #create pub
+        # create pub
         self.pub_vel = self.create_publisher(Twist, "/cmd_vel", 1)
 
-        #declare params
+        # declare params
         self.right_warning = 0
         self.left_warning = 0
         self.front_warning = 0
@@ -38,7 +38,7 @@ class laserAvoid(Node):
         self.declare_parameter("LaserAngle",40.0)
         self.LaserAngle = self.get_parameter('LaserAngle').get_parameter_value().double_value
 
-        #create timer
+        # create timer
         self.timer = self.create_timer(0.01, self.on_timer)
 
     def on_timer(self):
@@ -79,14 +79,14 @@ class laserAvoid(Node):
         self.Moving = True
         twist = Twist()
         if self.front_warning > 10 and self.left_warning > 10 and self.right_warning > 10:
-            print ('1, there are obstacles in the left and right, turn right')
+            print('1, there are obstacles in the left and right, turn right')
             twist.linear.x = self.linear
             twist.angular.z = -self.angular
             self.pub_vel.publish(twist)
             sleep(0.2)
         
         elif self.front_warning > 10 and self.left_warning <= 10 and self.right_warning > 10:
-            print ('2, there is an obstacle in the middle right, turn left')
+            print('2, there is an obstacle in the middle right, turn left')
             twist.linear.x = self.linear
             twist.angular.z = self.angular
             self.pub_vel.publish(twist)
@@ -98,7 +98,7 @@ class laserAvoid(Node):
                 sleep(0.5)
         
         elif self.front_warning > 10 and self.left_warning > 10 and self.right_warning <= 10:
-            print ('4. there is an obstacle in the middle left, turn right')
+            print('4. there is an obstacle in the middle left, turn right')
             twist.linear.x = self.linear
             twist.angular.z = -self.angular
             self.pub_vel.publish(twist)
@@ -110,35 +110,35 @@ class laserAvoid(Node):
                 sleep(0.5)
         
         elif self.front_warning > 10 and self.left_warning < 10 and self.right_warning < 10:
-            print ('6, there is an obstacle in the middle, turn left')
+            print('6, there is an obstacle in the middle, turn left')
             twist.linear.x = self.linear
             twist.angular.z = self.angular
             self.pub_vel.publish(twist)
             sleep(0.2)
 
         elif self.front_warning < 10 and self.left_warning > 10 and self.right_warning > 10:
-            print ('7. there are obstacles on the left and right, turn right')
+            print('7. there are obstacles on the left and right, turn right')
             twist.linear.x = self.linear
             twist.angular.z = -self.angular
             self.pub_vel.publish(twist)
             sleep(0.4)
 
         elif self.front_warning < 10 and self.left_warning > 10 and self.right_warning <= 10:
-            print ('8, there is an obstacle on the left, turn right')
+            print('8, there is an obstacle on the left, turn right')
             twist.linear.x = self.linear
             twist.angular.z = -self.angular
             self.pub_vel.publish(twist)
             sleep(0.2)
 
         elif self.front_warning < 10 and self.left_warning <= 10 and self.right_warning > 10:
-            print ('9, there is an obstacle on the right, turn left')
+            print('9, there is an obstacle on the right, turn left')
             twist.linear.x = self.linear
             twist.angular.z = self.angular
             self.pub_vel.publish(twist)
             sleep(0.2)
             
         elif self.front_warning <= 10 and self.left_warning <= 10 and self.right_warning <= 10:
-            print ('10, no obstacles, go forward')
+            print('10, no obstacles, go forward')
             twist.linear.x = self.linear
             twist.angular.z = 0.0
             self.pub_vel.publish(twist)

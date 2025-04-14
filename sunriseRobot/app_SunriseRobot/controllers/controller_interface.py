@@ -139,7 +139,7 @@ class ControllerFunctions(object):
             if value:
                 if self.robot_head.ros2_status == 'inactive':
                     self.robot_head.ros2_status = 'processing'
-                    utils.activate_ros2(verbose=self.verbose)
+                    utils.activate_ros2_vr_connection(verbose=self.verbose)
                     self.robot_head.ros2_status = 'active'
                 elif self.robot_head.ros2_status == 'active':
                     self.robot_head.ros2_status = 'processing'
