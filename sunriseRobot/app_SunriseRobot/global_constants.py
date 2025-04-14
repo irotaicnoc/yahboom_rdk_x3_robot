@@ -12,6 +12,8 @@ GPIO_LED_COLOR_LIST = ['off', 'red', 'green', 'red_and_green']
 # OS PATHS
 MAIN_FOLDER_PATH = '/root/GIT/yahboom_rdk_x3_robot/sunriseRobot/'
 APP_FOLDER_PATH = '/root/GIT/yahboom_rdk_x3_robot/sunriseRobot/app_SunriseRobot/'
+# LIDAR_LIB_PATH = '/root/GIT/yahboom_rdk_x3_robot/library_ws_src/src/oradar_lidar/sdk/build/liboradar_sdk.so'
+LIDAR_LIB_PATH = '/root/software/library_ws/src/oradar_lidar/sdk/build/liboradar_sdk.so'
 CONFIG_FOLDER_PATH = APP_FOLDER_PATH + 'configs/'
 OUTPUT_FOLDER_PATH = APP_FOLDER_PATH + 'output/'
 GENERIC_MODEL_FOLDER_PATH = APP_FOLDER_PATH + 'models/generic_detector/'

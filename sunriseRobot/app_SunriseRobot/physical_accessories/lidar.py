@@ -1,15 +1,12 @@
 import ctypes
-import os
 
-# Define the path to the shared library
-project_root = os.path.dirname(os.path.abspath(__file__))  # Adjust to your project root
-print(f'Project root: {project_root}')
-library_path = os.path.join(project_root, "../../library_ws_src/src/oradar_lidar/sdk/build/liboradar_sdk.so")
-print(f'Library path: {library_path}')
+import global_constants as gc
 
+
+print(f'Library path: {gc.LIDAR_LIB_PATH}')
 # Load the shared library
 try:
-    lidar_lib = ctypes.CDLL(library_path)
+    lidar_lib = ctypes.CDLL(gc.LIDAR_LIB_PATH)
     print("Lidar library loaded successfully.")
 except OSError as e:
     print(f"Failed to load the lidar library: {e}")
