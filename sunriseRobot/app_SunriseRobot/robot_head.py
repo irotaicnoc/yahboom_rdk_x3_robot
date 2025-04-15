@@ -1,5 +1,4 @@
 import os
-import time
 from pathlib import Path
 
 import args
@@ -75,9 +74,6 @@ class RobotHead:
             self.run_time = 0
             self.button_press_time = 0
             self.one_time_check = False
-
-        # lidar parameters
-        self.lidar_is_active = False
 
     def next_mode(self):
         if self.verbose >= 3:
@@ -242,24 +238,3 @@ class RobotHead:
             self.deactivate_ros2()
         else:
             print(f'ROS2 is in "{self.ros2_vr_connection_status}" state. Cannot be changed now.')
-
-    # def activate_lidar(self):
-    #     try:
-    #         self.lidar = LidarSubscriberNode(
-    #             lidar_topic='/scan',
-    #             queue_size=10,
-    #             verbose=self.verbose,
-    #         )
-    #         self.lidar_is_active = True
-    #         if self.verbose >= 1:
-    #             print(f'Lidar activated')
-    #     except Exception as e:
-    #         print('Failed to activate lidar with error:')
-    #         print(e)
-    #         print(e.__traceback__)
-    #         self.lidar_is_active = False
-    #
-    # def deactivate_lidar(self):
-    #     self.lidar_is_active = False
-    #     if self.verbose >= 1:
-    #         print(f'Lidar deactivated')

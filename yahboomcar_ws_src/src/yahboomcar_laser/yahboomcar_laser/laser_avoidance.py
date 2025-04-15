@@ -1,14 +1,15 @@
-#ros lib
+# ros lib
 import rclpy
 from rclpy.node import Node
+from std_msgs.msg import Bool
 from geometry_msgs.msg import Twist
 from sensor_msgs.msg import LaserScan
 
-#common lib
+# common lib
 import numpy as np
 from math import pi
 from time import sleep
-from std_msgs.msg import Bool
+
 
 class laserAvoid(Node):
     def __init__(self, name):
@@ -35,7 +36,7 @@ class laserAvoid(Node):
         self.linear = self.get_parameter("linear").get_parameter_value().double_value
         self.declare_parameter("angular", 1.0)
         self.angular = self.get_parameter("angular").get_parameter_value().double_value
-        self.declare_parameter("LaserAngle",40.0)
+        self.declare_parameter("LaserAngle", 40.0)
         self.LaserAngle = self.get_parameter('LaserAngle').get_parameter_value().double_value
 
         # create timer
@@ -49,11 +50,13 @@ class laserAvoid(Node):
         self.LaserAngle = self.get_parameter("LaserAngle").get_parameter_value().double_value
 
     def JoyStateCallback(self, msg):
-        if not isinstance(msg, Bool): return
+        if not isinstance(msg, Bool):
+            return
         self.Joy_active = msg.data
-    
+
     def registerScan(self, scan_data):
-        if not isinstance(scan_data, LaserScan): return
+        if not isinstance(scan_data, LaserScan):
+            return
         self.right_warning = 0
         self.left_warning = 0
         self.front_warning = 0
@@ -62,7 +65,8 @@ class laserAvoid(Node):
         for i in range(len(ranges)):
             if ranges[i] < self.ResponseDist:
                 angle = (scan_data.angle_min + scan_data.angle_increment * i) * 180 / pi
-                if angle > 180: angle = angle - 360
+                if angle > 180:
+                    angle = angle - 360
                 if -self.LaserAngle < angle < -20:
                     self.right_warning += 1
                 elif abs(angle) <= 20:
@@ -75,7 +79,7 @@ class laserAvoid(Node):
                 self.pub_vel.publish(Twist())
                 self.Moving = not self.Moving
             return
-        
+
         self.Moving = True
         twist = Twist()
         if self.front_warning > 10 and self.left_warning > 10 and self.right_warning > 10:
@@ -84,7 +88,7 @@ class laserAvoid(Node):
             twist.angular.z = -self.angular
             self.pub_vel.publish(twist)
             sleep(0.2)
-        
+
         elif self.front_warning > 10 and self.left_warning <= 10 and self.right_warning > 10:
             print('2, there is an obstacle in the middle right, turn left')
             twist.linear.x = self.linear
@@ -96,7 +100,7 @@ class laserAvoid(Node):
                 twist.angular.z = -self.angular
                 self.pub_vel.publish(twist)
                 sleep(0.5)
-        
+
         elif self.front_warning > 10 and self.left_warning > 10 and self.right_warning <= 10:
             print('4. there is an obstacle in the middle left, turn right')
             twist.linear.x = self.linear
@@ -108,7 +112,7 @@ class laserAvoid(Node):
                 twist.angular.z = self.angular
                 self.pub_vel.publish(twist)
                 sleep(0.5)
-        
+
         elif self.front_warning > 10 and self.left_warning < 10 and self.right_warning < 10:
             print('6, there is an obstacle in the middle, turn left')
             twist.linear.x = self.linear
@@ -136,7 +140,7 @@ class laserAvoid(Node):
             twist.angular.z = self.angular
             self.pub_vel.publish(twist)
             sleep(0.2)
-            
+
         elif self.front_warning <= 10 and self.left_warning <= 10 and self.right_warning <= 10:
             print('10, no obstacles, go forward')
             twist.linear.x = self.linear

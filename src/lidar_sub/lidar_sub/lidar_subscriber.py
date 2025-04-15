@@ -1,13 +1,7 @@
-# standard libraries
-import time
-
 # ros2 libraries
 import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import LaserScan
-
-# robot libraries
-import smbus
 
 # my libraries
 from lidar_sub import utils
