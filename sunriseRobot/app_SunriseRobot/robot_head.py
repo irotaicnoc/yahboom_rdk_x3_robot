@@ -92,25 +92,25 @@ class RobotHead:
         self.tracking_target_pos += 1
         self.tracking_target_pos = self.tracking_target_pos % len(self.tracking_target_list)
         if self.verbose >= 1:
-            print(f'New target: {self.tracking_target_list[self.tracking_target_pos]}')
+            print(f'Switching to target: {self.tracking_target_list[self.tracking_target_pos]}')
 
     def previous_target(self):
         self.tracking_target_pos -= 1
         self.tracking_target_pos = self.tracking_target_pos % len(self.tracking_target_list)
         if self.verbose >= 1:
-            print(f'New target: {self.tracking_target_list[self.tracking_target_pos]}')
+            print(f'Switching to target: {self.tracking_target_list[self.tracking_target_pos]}')
 
     def next_model(self):
         self.model_pos += 1
         self.model_pos = self.model_pos % len(self.model_list)
         if self.verbose >= 1:
-            print(f'New model: {self.model_list[self.model_pos]}')
+            print(f'Switching to model: {self.model_list[self.model_pos]}')
 
     def previous_model(self):
         self.model_pos -= 1
         self.model_pos = self.model_pos % len(self.model_list)
         if self.verbose >= 1:
-            print(f'New model: {self.model_list[self.model_pos]}')
+            print(f'Switching to model: {self.model_list[self.model_pos]}')
 
     def increase_speed_coefficient(self):
         self.speed_coefficient = min(1.0, self.speed_coefficient + 0.1)
