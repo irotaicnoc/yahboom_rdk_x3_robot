@@ -7,7 +7,7 @@ import numpy as np
 
 
 class LidarListener(Node):
-    def __init__(self, topic_name: str, queue_size: int = 10, laser_angle: float = 40.0, response_dist: float = 0.8):
+    def __init__(self, topic_name: str, queue_size: int, laser_angle: float, response_dist: float):
         super().__init__('lidar_listener')
         self.subscription = self.create_subscription(
             LaserScan,
@@ -22,13 +22,16 @@ class LidarListener(Node):
         self.obstacle_right = False
         self.obstacle_left = False
         self.obstacle_front = False
+        self.FRONT_CONE_ANGLE = 20
+        self.OBSTACLE_FOUND_THRESHOLD = 10
 
     def lidar_scan_callback(self, msg: LaserScan) -> None:
         # self.get_logger().info('Published processed lidar data')
-        self.lidar_data = self.process_lidar_data(msg)
+        self.lidar_data = msg
+        self.search_obstacles(msg)
         self.lidar_data_is_new = True
 
-    def check_obstacles(self, scan_data: LaserScan) -> None:
+    def search_obstacles(self, scan_data: LaserScan) -> None:
         if not isinstance(scan_data, LaserScan):
             return
         right_warnings = 0
@@ -41,22 +44,22 @@ class LidarListener(Node):
                 angle = (scan_data.angle_min + scan_data.angle_increment * i) * 180 / np.pi
                 if angle > 180:
                     angle = angle - 360
-                if -self.laser_angle < angle < -20:
+                if -self.laser_angle < angle < -self.FRONT_CONE_ANGLE:
                     right_warnings += 1
-                elif abs(angle) <= 20:
+                elif abs(angle) <= self.FRONT_CONE_ANGLE:
                     front_warnings += 1
-                elif 20 < angle < self.laser_angle:
+                elif self.FRONT_CONE_ANGLE < angle < self.laser_angle:
                     left_warnings += 1
 
-        if right_warnings > 10:
+        if right_warnings > self.OBSTACLE_FOUND_THRESHOLD:
             self.obstacle_right = True
         else:
             self.obstacle_right = False
-        if left_warnings > 10:
+        if left_warnings > self.OBSTACLE_FOUND_THRESHOLD:
             self.obstacle_left = True
         else:
             self.obstacle_left = False
-        if front_warnings > 10:
+        if front_warnings > self.OBSTACLE_FOUND_THRESHOLD:
             self.obstacle_front = True
         else:
             self.obstacle_front = False
@@ -69,66 +72,66 @@ class LidarListener(Node):
         #
         # self.Moving = True
         # twist = Twist()
-        # if self.front_warning > 10 and self.left_warning > 10 and self.right_warning > 10:
+        # if self.obstacle_front and self.obstacle_left and self.obstacle_right:
         #     print('1, there are obstacles in the left and right, turn right')
         #     twist.linear.x = self.linear
         #     twist.angular.z = -self.angular
         #     self.pub_vel.publish(twist)
         #     time.sleep(0.2)
         #
-        # elif self.front_warning > 10 and self.left_warning <= 10 and self.right_warning > 10:
+        # elif self.obstacle_front and not self.obstacle_left and self.obstacle_right:
         #     print('2, there is an obstacle in the middle right, turn left')
         #     twist.linear.x = self.linear
         #     twist.angular.z = self.angular
         #     self.pub_vel.publish(twist)
         #     time.sleep(0.2)
-        #     if self.left_warning > 10 and self.right_warning <= 10:
+        #     if self.obstacle_left and not self.obstacle_right:
         #         twist.linear.x = self.linear
         #         twist.angular.z = -self.angular
         #         self.pub_vel.publish(twist)
         #         time.sleep(0.5)
         #
-        # elif self.front_warning > 10 and self.left_warning > 10 and self.right_warning <= 10:
+        # elif self.obstacle_front and self.obstacle_left and not self.obstacle_right:
         #     print('4. there is an obstacle in the middle left, turn right')
         #     twist.linear.x = self.linear
         #     twist.angular.z = -self.angular
         #     self.pub_vel.publish(twist)
         #     time.sleep(0.2)
-        #     if self.left_warning <= 10 and self.right_warning > 10:
+        #     if not self.obstacle_left and self.obstacle_right:
         #         twist.linear.x = self.linear
         #         twist.angular.z = self.angular
         #         self.pub_vel.publish(twist)
         #         time.sleep(0.5)
         #
-        # elif self.front_warning > 10 and self.left_warning < 10 and self.right_warning < 10:
+        # elif self.obstacle_front and not self.obstacle_left and not self.obstacle_right:
         #     print('6, there is an obstacle in the middle, turn left')
         #     twist.linear.x = self.linear
         #     twist.angular.z = self.angular
         #     self.pub_vel.publish(twist)
         #     time.sleep(0.2)
         #
-        # elif self.front_warning < 10 and self.left_warning > 10 and self.right_warning > 10:
+        # elif not self.obstacle_front and self.obstacle_left and self.obstacle_right:
         #     print('7. there are obstacles on the left and right, turn right')
         #     twist.linear.x = self.linear
         #     twist.angular.z = -self.angular
         #     self.pub_vel.publish(twist)
         #     time.sleep(0.4)
         #
-        # elif self.front_warning < 10 and self.left_warning > 10 and self.right_warning <= 10:
+        # elif not self.obstacle_front and self.obstacle_left and not self.obstacle_right:
         #     print('8, there is an obstacle on the left, turn right')
         #     twist.linear.x = self.linear
         #     twist.angular.z = -self.angular
         #     self.pub_vel.publish(twist)
         #     time.sleep(0.2)
         #
-        # elif self.front_warning < 10 and self.left_warning <= 10 and self.right_warning > 10:
+        # elif not self.obstacle_front and not self.obstacle_left and self.obstacle_right:
         #     print('9, there is an obstacle on the right, turn left')
         #     twist.linear.x = self.linear
         #     twist.angular.z = self.angular
         #     self.pub_vel.publish(twist)
         #     time.sleep(0.2)
         #
-        # elif self.front_warning <= 10 and self.left_warning <= 10 and self.right_warning <= 10:
+        # elif not self.obstacle_front and not self.obstacle_left and not self.obstacle_right:
         #     print('10, no obstacles, go forward')
         #     twist.linear.x = self.linear
         #     twist.angular.z = 0.0
@@ -143,7 +146,13 @@ class LidarListener(Node):
 
 
 class ThreadedLidarListener:
-    def __init__(self, topic_name: str, queue_size: int, verbose: int = 0):
+    def __init__(self,
+                 topic_name: str,
+                 queue_size: int = 10,
+                 laser_angle: float = 40.0,
+                 response_dist: float = 0.8,
+                 verbose: int = 0,
+                 ):
         self.topic_name = topic_name
         self.queue_size = queue_size
         self.lidar_listener_node = None
@@ -154,6 +163,8 @@ class ThreadedLidarListener:
             self.lidar_listener_node = LidarListener(
                 topic_name=topic_name,
                 queue_size=queue_size,
+                laser_angle=laser_angle,
+                response_dist=response_dist
             )
             # Spin the node in a separate thread
             self.spin_thread = threading.Thread(
@@ -178,6 +189,25 @@ class ThreadedLidarListener:
                 except:
                     pass
 
+    def read_lidar_data(self) -> LaserScan:
+        if self.lidar_listener_node is not None:
+            return self.lidar_listener_node.read_lidar_data()
+
+        if self.verbose >= 2:
+            print('Lidar listener node is None')
+        return None
+
+    def get_obstacle_data(self) -> tuple:
+        if self.lidar_listener_node is not None:
+            return (
+                self.lidar_listener_node.obstacle_right,
+                self.lidar_listener_node.obstacle_left,
+                self.lidar_listener_node.obstacle_front
+            )
+        if self.verbose >= 2:
+            print('Lidar listener node is None')
+        return False, False, False
+
     def delete_listener(self):
         if self.spin_thread is not None:
             if self.verbose >= 2:
@@ -191,10 +221,5 @@ class ThreadedLidarListener:
             if self.verbose >= 1:
                 print('Lidar listener not stopped, thread is already None')
 
-    def read_lidar_data(self):
-        if self.lidar_listener_node is not None:
-            return self.lidar_listener_node.read_lidar_data()
-
-        if self.verbose >= 2:
-            print('Lidar listener node is None')
-        return None
+    def __del__(self):
+        self.delete_listener()
