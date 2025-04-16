@@ -1,9 +1,10 @@
+import os
+import threading
+import numpy as np
+
 import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import LaserScan
-
-import threading
-import numpy as np
 
 
 class LidarListener(Node):
@@ -64,79 +65,6 @@ class LidarListener(Node):
         else:
             self.obstacle_front = False
 
-        # if self.Joy_active == True or self.Switch == False:
-        #     if self.Moving == True:
-        #         self.pub_vel.publish(Twist())
-        #         self.Moving = not self.Moving
-        #     return
-        #
-        # self.Moving = True
-        # twist = Twist()
-        # if self.obstacle_front and self.obstacle_left and self.obstacle_right:
-        #     print('1, there are obstacles in the left and right, turn right')
-        #     twist.linear.x = self.linear
-        #     twist.angular.z = -self.angular
-        #     self.pub_vel.publish(twist)
-        #     time.sleep(0.2)
-        #
-        # elif self.obstacle_front and not self.obstacle_left and self.obstacle_right:
-        #     print('2, there is an obstacle in the middle right, turn left')
-        #     twist.linear.x = self.linear
-        #     twist.angular.z = self.angular
-        #     self.pub_vel.publish(twist)
-        #     time.sleep(0.2)
-        #     if self.obstacle_left and not self.obstacle_right:
-        #         twist.linear.x = self.linear
-        #         twist.angular.z = -self.angular
-        #         self.pub_vel.publish(twist)
-        #         time.sleep(0.5)
-        #
-        # elif self.obstacle_front and self.obstacle_left and not self.obstacle_right:
-        #     print('4. there is an obstacle in the middle left, turn right')
-        #     twist.linear.x = self.linear
-        #     twist.angular.z = -self.angular
-        #     self.pub_vel.publish(twist)
-        #     time.sleep(0.2)
-        #     if not self.obstacle_left and self.obstacle_right:
-        #         twist.linear.x = self.linear
-        #         twist.angular.z = self.angular
-        #         self.pub_vel.publish(twist)
-        #         time.sleep(0.5)
-        #
-        # elif self.obstacle_front and not self.obstacle_left and not self.obstacle_right:
-        #     print('6, there is an obstacle in the middle, turn left')
-        #     twist.linear.x = self.linear
-        #     twist.angular.z = self.angular
-        #     self.pub_vel.publish(twist)
-        #     time.sleep(0.2)
-        #
-        # elif not self.obstacle_front and self.obstacle_left and self.obstacle_right:
-        #     print('7. there are obstacles on the left and right, turn right')
-        #     twist.linear.x = self.linear
-        #     twist.angular.z = -self.angular
-        #     self.pub_vel.publish(twist)
-        #     time.sleep(0.4)
-        #
-        # elif not self.obstacle_front and self.obstacle_left and not self.obstacle_right:
-        #     print('8, there is an obstacle on the left, turn right')
-        #     twist.linear.x = self.linear
-        #     twist.angular.z = -self.angular
-        #     self.pub_vel.publish(twist)
-        #     time.sleep(0.2)
-        #
-        # elif not self.obstacle_front and not self.obstacle_left and self.obstacle_right:
-        #     print('9, there is an obstacle on the right, turn left')
-        #     twist.linear.x = self.linear
-        #     twist.angular.z = self.angular
-        #     self.pub_vel.publish(twist)
-        #     time.sleep(0.2)
-        #
-        # elif not self.obstacle_front and not self.obstacle_left and not self.obstacle_right:
-        #     print('10, no obstacles, go forward')
-        #     twist.linear.x = self.linear
-        #     twist.angular.z = 0.0
-        #     self.pub_vel.publish(twist)
-
     def read_lidar_data(self):
         if self.lidar_data_is_new:
             self.lidar_data_is_new = False
@@ -175,6 +103,9 @@ class ThreadedLidarListener:
             self.spin_thread.start()
             if self.verbose >= 1:
                 print('Lidar listener created and listening')
+
+            os.system('gnome-terminal -- bash -c "source /opt/ros/foxy/setup.bash;cd /root/marco_ros2_ws/;'
+                      'source install/local_setup.bash;ros2 launch oradar_lidar ms200_scan.launch.py;exec bash"')
 
         except Exception as e:
             print('Lidar listener creation error:')
