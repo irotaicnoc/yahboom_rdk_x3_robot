@@ -8,6 +8,8 @@ def obstacle_sensor():
     This function initializes the LidarListener class, which subscribes to a LIDAR topic and processes the incoming data.
     It checks for obstacles in the robot's path and publishes velocity commands accordingly.
     """
+    print('Experiment started')
+    print('Initializing LidarListener...')
     # Initialize the LidarListener
     lidar_listener_node = lidar_listener.ThreadedLidarListener(
         topic_name='/scan',
@@ -16,6 +18,8 @@ def obstacle_sensor():
         response_dist=1,
         verbose=3,
     )
+    print('LidarListener initialized')
+
     while True:
         time.sleep(0.5)
         obstacle_right, obstacle_left, obstacle_front = lidar_listener_node.get_obstacle_data()
