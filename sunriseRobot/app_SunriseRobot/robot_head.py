@@ -216,7 +216,7 @@ class RobotHead:
         # os.system(f'{gc.SCRIPT_FOLDER_PATH}start_ros2.sh')
         os.system('gnome-terminal -- bash -c "source /opt/ros/foxy/setup.bash;cd /root/marco_ros2_ws/;'
                   'source install/local_setup.bash;ros2 launch ros_tcp_endpoint endpoint_launch.py;exec bash"')
-        self.hotspot_status = 'active'
+        self.ros2_vr_connection_status = 'active'
         utils.finish_generic_process(robot_head=self)
 
     def deactivate_ros2(self):
