@@ -1,7 +1,7 @@
 # ros2 libraries
 import rclpy
 from rclpy.node import Node
-# from cv_bridge import CvBridge
+from cv_bridge import CvBridge
 from sensor_msgs.msg import Image
 
 # robot libraries
@@ -41,7 +41,7 @@ class CameraPublisherNode(Node):
             self.destroy_node()
 
         # convert images from cv2 to ros message format
-        # self.cv_ros_bridge = CvBridge()
+        self.cv_ros_bridge = CvBridge()
 
         # publisher
         self.topic_name = camera_topic
