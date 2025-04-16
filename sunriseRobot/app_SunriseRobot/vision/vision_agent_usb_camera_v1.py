@@ -173,9 +173,9 @@ class VisionAgent(object):
                 self.speed_z = 0
                 # move_duration = 0.6
         else:
-            # show target-not-found/searching light (red_and_green)
+            # show target-not-found/searching light (orange)
             if self.use_gpio_led:
-                self.gpio_led.set_color('red_and_green')
+                self.gpio_led.set_color('orange')
 
             self.speed_x = 0
             if self.no_target_counter < self.think_steps_if_no_target:

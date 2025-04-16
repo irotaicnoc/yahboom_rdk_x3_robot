@@ -192,7 +192,7 @@ class ControllerFunctions(object):
         # TODO: remove debug prints
         if self.robot_head.robot_mode == 'user_control_arm':
             if value:
-                self.gpio_led.set_color('red_and_green')
+                self.gpio_led.set_color('orange')
                 self.robot_head.one_time_check = True
                 self.robot_head.button_press_time = time.time()
             else:

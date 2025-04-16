@@ -7,7 +7,7 @@ BUS_ARG_2_LIGHT_MODE = 0x04
 #   bus arg 3
 LIGHT_STOP_CMD = 0
 LIGHT_EFFECT_CMD_LIST = [0, 1, 2, 3, 4]
-GPIO_LED_COLOR_LIST = ['off', 'red', 'green', 'red_and_green']
+GPIO_LED_COLOR_LIST = ['off', 'red', 'green', 'orange']
 
 # OS PATHS
 MAIN_FOLDER_PATH = '/root/GIT/yahboom_rdk_x3_robot/sunriseRobot/'

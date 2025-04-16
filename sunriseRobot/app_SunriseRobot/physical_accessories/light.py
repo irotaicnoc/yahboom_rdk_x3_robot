@@ -25,12 +25,12 @@ class Light:
         if state == gc.LIGHT_STOP_CMD:
             self.stop()
         else:
-            if self.verbose >= 2:
+            if self.verbose >= 3:
                 print(f'Setting light effect {state}...', end='')
             self.bus.write_byte_data(gc.BUS_ARG_1, gc.BUS_ARG_2_LIGHT_MODE, state)
             self.current_state = state
             time.sleep(.05)
-            if self.verbose >= 2:
+            if self.verbose >= 3:
                 print('Done.')
 
     def next_light_effect(self):
