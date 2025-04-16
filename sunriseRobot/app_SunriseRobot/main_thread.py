@@ -117,7 +117,7 @@ def task_controller(**kwargs):
                 time.sleep(1)
                 ps2_controller.reconnect()
     except Exception as e:
-        print('Controller Error:')
+        print('Controller error:')
         print(e)
         print(e.__traceback__)
 
@@ -128,7 +128,7 @@ def task_controller_loop(**kwargs):
         while True:
             controller_loop.update_robot_loop()
     except Exception as e:
-        print('Controller Loop Error:')
+        print('Controller loop error:')
         print(e)
         print(e.__traceback__)
 
@@ -159,7 +159,7 @@ def task_vision_agent(**kwargs):
         while True:
             vision_agent.autonomous_behavior()
     except Exception as e:
-        print('Vision Agent Error:')
+        print('Vision agent error:')
         print(e)
         print(e.__traceback__)
         if 'autonomous_vision' in robot_head.robot_mode_list:
@@ -176,7 +176,7 @@ def task_sound_agent(**kwargs):
         while True:
             sound_agent.autonomous_behavior()
     except Exception as e:
-        print('Sound Agent Error:')
+        print('Sound agent error:')
         print(e)
         print(e.__traceback__)
         if 'autonomous_sound' in robot_head.robot_mode_list:
@@ -200,7 +200,7 @@ def task_screen(**kwargs):
             time.sleep(2)
     except KeyboardInterrupt as e:
         del oled
-        print('Oled Error:')
+        print('Oled error:')
         print(e)
         print(e.__traceback__)
 
