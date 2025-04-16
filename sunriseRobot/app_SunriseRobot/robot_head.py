@@ -1,4 +1,5 @@
 import os
+import copy
 from pathlib import Path
 
 import args
@@ -157,7 +158,7 @@ class RobotHead:
             new_max=400,
         )
         print(f'check run_time: {self.run_time}')
-        self.arm_desired_angles = angle_list
+        self.arm_desired_angles = copy.deepcopy(angle_list)
 
     def activate_hotspot(self):
         if self.hotspot_status == 'active':
