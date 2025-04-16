@@ -85,8 +85,8 @@ def pretty_print_dict(data, _level: int = 0) -> None:
         print(data)
 
 
-def change_range(val, original_min_val, original_max_val, new_min_val, new_max_val):
-    return (val - original_min_val) * (new_max_val - new_min_val) / (original_max_val - original_min_val) + new_min_val
+def change_range(value, original_min, original_max, new_min, new_max):
+    return (value - original_min) * (new_max - new_min) / (original_max - original_min) + new_min
 
 
 def x_displacement_to_angular_speed(x_distance_from_img_center: float,
@@ -96,11 +96,11 @@ def x_displacement_to_angular_speed(x_distance_from_img_center: float,
     # x_distance_from_img_center: [-1, -steer_threshold] [steer_threshold, 1]
     # output: [-2, -1] [1, 2]
     speed_z = change_range(
-        val=abs(x_distance_from_img_center),
-        original_min_val=steer_threshold,
-        original_max_val=1,
-        new_min_val=angular_speed_range[0],
-        new_max_val=angular_speed_range[1],
+        value=abs(x_distance_from_img_center),
+        original_min=steer_threshold,
+        original_max=1,
+        new_min=angular_speed_range[0],
+        new_max=angular_speed_range[1],
     )
     if x_distance_from_img_center < 0:
         speed_z *= -1
@@ -116,20 +116,20 @@ def sound_angle_to_robot_speed(sound_angle: float,
     # speed_x: [0, 0.6] forward-stationary (no backward movement)
     # speed_z: [-3, 3] left-right
     speed_x = change_range(
-        val=-abs(sound_angle),
-        original_min_val=-turn_only_angle,
-        original_max_val=0,
-        new_min_val=forward_speed_range[0],
-        new_max_val=forward_speed_range[1],
+        value=-abs(sound_angle),
+        original_min=-turn_only_angle,
+        original_max=0,
+        new_min=forward_speed_range[0],
+        new_max=forward_speed_range[1],
     )
     speed_x = abs(speed_x)
 
     speed_z = change_range(
-        val=abs(sound_angle),
-        original_min_val=0,
-        original_max_val=turn_only_angle,
-        new_min_val=angular_speed_range[0],
-        new_max_val=angular_speed_range[1],
+        value=abs(sound_angle),
+        original_min=0,
+        original_max=turn_only_angle,
+        new_min=angular_speed_range[0],
+        new_max=angular_speed_range[1],
     )
     if sound_angle < 0:
         speed_z *= -1
@@ -159,11 +159,11 @@ def display_image(image: np.ndarray,
 
 
 def voltage_to_percent(voltage: float) -> float:
-    return change_range(val=voltage,
-                        original_min_val=gc.MIN_VOLTAGE,
-                        original_max_val=gc.MAX_VOLTAGE,
-                        new_min_val=0.0,
-                        new_max_val=100.0,
+    return change_range(value=voltage,
+                        original_min=gc.MIN_VOLTAGE,
+                        original_max=gc.MAX_VOLTAGE,
+                        new_min=0.0,
+                        new_max=100.0,
                         )
 
 

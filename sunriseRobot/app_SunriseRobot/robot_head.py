@@ -150,11 +150,11 @@ class RobotHead:
              f' to arm_servos_desired_angle {len(self.arm_desired_angles)}')
 
         self.run_time = utils.change_range(
-            val=self.speed_coefficient,
-            original_min_val=0.1,
-            original_max_val=1,
-            new_min_val=2000,
-            new_max_val=400,
+            value=self.speed_coefficient,
+            original_min=0.1,
+            original_max=1,
+            new_min=2000,
+            new_max=400,
         )
         print(f'check run_time: {self.run_time}')
         self.arm_desired_angles = angle_list
