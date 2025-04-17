@@ -17,10 +17,13 @@ def obstacle_sensor():
         verbose=3,
     )
     print('LidarListener initialized')
-    ascii_circle = [[' ' for _ in range(20)] for _ in range(20)]
-    for i in range(21):
-        for j in range(21):
-            if (i - 10) ** 2 + (j - 10) ** 2 <= 100:
+    circle_radius = 10
+    circle_diameter = circle_radius * 2
+
+    ascii_circle = [[' ' for _ in range(circle_diameter)] for _ in range(circle_diameter)]
+    for i in range(circle_diameter):
+        for j in range(circle_diameter):
+            if (i - circle_radius) ** 2 + (j - circle_radius) ** 2 <= circle_radius**2:
                 ascii_circle[i][j] = '.'
 
     try:
@@ -40,13 +43,13 @@ def obstacle_sensor():
                         angle_grad = (angle_grad + 90) % 360
                         angle_rad = np.deg2rad(angle_grad)
                         distance = average_distance_by_sector[sector_num]
-                        x = int(10 + distance * 40 * np.cos(angle_rad))
-                        y = int(10 - distance * 40 * np.sin(angle_rad))
-                        if 0 <= x < 20 and 0 <= y < 20:
+                        x = int(circle_radius + distance * 40 * np.cos(angle_rad))
+                        y = int(circle_radius - distance * 40 * np.sin(angle_rad))
+                        if 0 <= x < circle_diameter and 0 <= y < circle_diameter:
                             canvas[y][x] = '#'
 
                 # add the robot position as 'R'
-                canvas[10][10] = 'R'
+                canvas[circle_radius][circle_radius] = 'R'
 
             for row in canvas:
                 print(' '.join(row))
