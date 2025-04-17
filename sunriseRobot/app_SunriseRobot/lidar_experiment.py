@@ -21,7 +21,7 @@ def obstacle_sensor():
     for i in range(20):
         for j in range(20):
             if (i - 10) ** 2 + (j - 10) ** 2 <= 100:
-                ascii_circle[i][j] = 'O'
+                ascii_circle[i][j] = '.'
 
     try:
         counter = 0
@@ -43,7 +43,7 @@ def obstacle_sensor():
                         x = int(10 + distance * 20 * np.cos(angle_rad))
                         y = int(10 - distance * 20 * np.sin(angle_rad))
                         if 0 <= x < 20 and 0 <= y < 20:
-                            canvas[y][x] = 'X'
+                            canvas[y][x] = '='
 
             print(canvas)
 
