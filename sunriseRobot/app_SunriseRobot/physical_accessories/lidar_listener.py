@@ -44,7 +44,7 @@ class LidarListener(Node):
         ranges = np.array(scan_data.ranges)
         for i in range(len(ranges)):
             if ranges[i] < self.response_dist:
-                angle = (scan_data.angle_min + scan_data.angle_increment * i) * 180 / np.pi
+                angle = np.rad2deg(scan_data.angle_min + scan_data.angle_increment * i)
                 assert 0 <= angle <= 360, f'Angle {angle} is out of range [0, 360]'
                 # if angle > 180:
                 #     angle = angle - 360
@@ -128,15 +128,13 @@ class ThreadedLidarListener:
 
     def delete_listener(self):
         if self.spin_thread is not None:
-            if self.verbose >= 2:
-                print('Check stopping lidar listener...')
             self.lidar_listener_node.destroy_node()
             rclpy.shutdown()
             self.spin_thread.join()
-            if self.verbose >= 1:
+            if self.verbose >= 2:
                 print('Lidar listener stopped')
         else:
-            if self.verbose >= 1:
+            if self.verbose >= 2:
                 print('Lidar listener not stopped, thread is already None')
 
     def __del__(self):
