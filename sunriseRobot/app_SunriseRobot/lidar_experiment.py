@@ -18,24 +18,27 @@ def obstacle_sensor():
 
     try:
         while True:
-            os.system('clear')
-            _, obstacles_by_sector, average_distance_by_sector = lidar_listener_node.read_lidar_data()
-            # print an ascii art circle and add detected obstacles as 'X' using their direction and distance
-            ascii_circle = [[' ' for _ in range(20)] for _ in range(20)]
-            for i in range(20):
-                for j in range(20):
-                    if (i - 10) ** 2 + (j - 10) ** 2 <= 100:
-                        ascii_circle[i][j] = 'O'
-            for sector_num in range(len(obstacles_by_sector)):
-                if obstacles_by_sector[sector_num]:
-                    angle = sector_num * lidar_listener_node.sector_angle
-                    distance = average_distance_by_sector[sector_num]
-                    x = int(10 + distance * 10 * (angle / 180))
-                    y = int(10 - distance * 10 * (angle / 180))
-                    if 0 <= x < 20 and 0 <= y < 20:
-                        ascii_circle[y][x] = 'X'
+            # os.system('clear')
+            lidar_data = lidar_listener_node.read_lidar_data()
+            if lidar_data is not None:
+                _, obstacles_by_sector, average_distance_by_sector = lidar_data
+                # print an ascii art circle and add detected obstacles as 'X' using their direction and distance
+                ascii_circle = [[' ' for _ in range(20)] for _ in range(20)]
+                for i in range(20):
+                    for j in range(20):
+                        if (i - 10) ** 2 + (j - 10) ** 2 <= 100:
+                            ascii_circle[i][j] = 'O'
+                for sector_num in range(len(obstacles_by_sector)):
+                    if obstacles_by_sector[sector_num]:
+                        angle = sector_num * lidar_listener_node.sector_angle
+                        distance = average_distance_by_sector[sector_num]
+                        x = int(10 + distance * 10 * (angle / 180))
+                        y = int(10 - distance * 10 * (angle / 180))
+                        if 0 <= x < 20 and 0 <= y < 20:
+                            ascii_circle[y][x] = 'X'
 
             time.sleep(0.5)
+            os.system('clear')
     except KeyboardInterrupt:
         print('Experiment stopped by user.')
         lidar_listener_node.delete_listener()
