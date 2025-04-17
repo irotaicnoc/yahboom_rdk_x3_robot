@@ -1,42 +1,45 @@
+import os
 import time
 
 from physical_accessories import lidar_listener
 
 
 def obstacle_sensor():
-    """
-    This function initializes the LidarListener class, which subscribes to a LIDAR topic and processes the incoming data.
-    It checks for obstacles in the robot's path and publishes velocity commands accordingly.
-    """
     print('Experiment started')
     print('Initializing LidarListener...')
     # Initialize the LidarListener
     lidar_listener_node = lidar_listener.ThreadedLidarListener(
-        topic_name='/scan',
+        topic_name='scan',
         queue_size=10,
-        laser_angle=40,
-        response_dist=1,
+        response_dist=0.3,
         verbose=3,
     )
     print('LidarListener initialized')
 
     while True:
+        os.system('cls')
+        _, obstacles_by_sector, average_distance_by_sector = lidar_listener_node.read_lidar_data()
+        # print an ascii art circle and add detected obstacles as 'X' using their direction and distance
+        ascii_circle = [[' ' for _ in range(20)] for _ in range(20)]
+        for i in range(20):
+            for j in range(20):
+                if (i - 10) ** 2 + (j - 10) ** 2 <= 100:
+                    ascii_circle[i][j] = 'O'
+        for sector_num in range(len(obstacles_by_sector)):
+            if obstacles_by_sector[sector_num]:
+                angle = sector_num * lidar_listener_node.sector_angle
+                distance = average_distance_by_sector[sector_num]
+                x = int(10 + distance * 10 * (angle / 180))
+                y = int(10 - distance * 10 * (angle / 180))
+                if 0 <= x < 20 and 0 <= y < 20:
+                    ascii_circle[y][x] = 'X'
+
         time.sleep(0.5)
-        obstacle_right, obstacle_left, obstacle_front = lidar_listener_node.get_obstacle_data()
-        if obstacle_right:
-            print('Obstacle detected on the right side')
-        if obstacle_left:
-            print('Obstacle detected on the left side')
-        if obstacle_front:
-            print('Obstacle detected in front')
 
     lidar_listener_node.delete_listener()
 
 
 if __name__ == '__main__':
-    '''
-    Main function to run the obstacle sensor.
-    '''
     try:
         obstacle_sensor()
     except KeyboardInterrupt:
