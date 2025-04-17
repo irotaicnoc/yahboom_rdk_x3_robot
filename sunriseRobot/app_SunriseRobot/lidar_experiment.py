@@ -45,7 +45,8 @@ def obstacle_sensor():
                         if 0 <= x < 20 and 0 <= y < 20:
                             canvas[y][x] = '#'
 
-            print(canvas)
+            for row in canvas:
+                print(''.join(row))
             time.sleep(1)
             counter += 1
 
