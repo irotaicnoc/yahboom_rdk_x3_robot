@@ -22,21 +22,29 @@ def obstacle_sensor():
     circle_diameter = circle_radius * 2
     dist_proportion = circle_radius / response_dist
 
-    ascii_circle = [[' ' for _ in range(circle_diameter)] for _ in range(circle_diameter)]
+    base_canvas = [[' ' for _ in range(circle_diameter)] for _ in range(circle_diameter)]
+    # add detection area (circle)
     for i in range(circle_diameter):
         for j in range(circle_diameter):
             if (i - circle_radius) ** 2 + (j - circle_radius) ** 2 <= circle_radius**2:
-                ascii_circle[i][j] = '.'
+                base_canvas[i][j] = '.'
 
+    # add the robot
+    base_canvas[circle_radius - 1][circle_radius - 1] = '|'
+    base_canvas[circle_radius - 1][circle_radius + 1] = '|'
+    base_canvas[circle_radius + 1][circle_radius - 1] = '|'
+    base_canvas[circle_radius + 1][circle_radius + 1] = '|'
+    base_canvas[circle_radius][circle_radius - 1] = '|'
+    base_canvas[circle_radius][circle_radius + 1] = '|'
+    base_canvas[circle_radius][circle_radius] = 'R'
+    base_canvas[circle_radius - 1][circle_radius] = '_'
+    base_canvas[circle_radius + 1][circle_radius] = '_'
     try:
         counter = 0
         while True:
             os.system('clear')
             print(f'Counter: {counter}')
-            canvas = copy.deepcopy(ascii_circle)
-            # add the robot position
-            canvas[circle_radius - 1][circle_radius] = '^'
-            canvas[circle_radius][circle_radius] = '|'
+            canvas = copy.deepcopy(base_canvas)
 
             # add detected obstacles using their direction and distance
             lidar_data = lidar_listener_node.read_lidar_data()
@@ -55,7 +63,7 @@ def obstacle_sensor():
 
             for row in canvas:
                 print(' '.join(row))
-            time.sleep(1)
+            time.sleep(0.6)
             counter += 1
 
     except KeyboardInterrupt:
