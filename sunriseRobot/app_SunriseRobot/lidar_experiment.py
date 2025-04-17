@@ -50,9 +50,9 @@ def obstacle_sensor():
                         if 0 <= x < circle_diameter and 0 <= y < circle_diameter:
                             canvas[y][x] = '#'
 
-                # add the robot position as 'R'
-                canvas[circle_radius - 1][circle_radius] = '^'
-                canvas[circle_radius][circle_radius] = '|'
+            # add the robot position
+            canvas[circle_radius - 1][circle_radius] = '^'
+            canvas[circle_radius][circle_radius] = '|'
 
             for row in canvas:
                 print(' '.join(row))
