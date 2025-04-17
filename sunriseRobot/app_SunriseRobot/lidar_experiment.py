@@ -45,8 +45,8 @@ def obstacle_sensor():
                         if 0 <= x < 20 and 0 <= y < 20:
                             canvas[y][x] = '#'
 
-            # add the robot position as'R'
-            canvas[10][10] = 'R'
+                # add the robot position as 'R'
+                canvas[10][10] = 'R'
 
             for row in canvas:
                 print(' '.join(row))
