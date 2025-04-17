@@ -18,7 +18,7 @@ def obstacle_sensor():
         verbose=3,
     )
     print('LidarListener initialized')
-    circle_radius = 10
+    circle_radius = 15
     circle_diameter = circle_radius * 2
     dist_proportion = circle_radius / response_dist
 
