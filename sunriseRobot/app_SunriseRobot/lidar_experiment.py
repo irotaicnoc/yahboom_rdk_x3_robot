@@ -18,7 +18,7 @@ def obstacle_sensor():
 
     try:
         while True:
-            os.system('cls')
+            os.system('clear')
             _, obstacles_by_sector, average_distance_by_sector = lidar_listener_node.read_lidar_data()
             # print an ascii art circle and add detected obstacles as 'X' using their direction and distance
             ascii_circle = [[' ' for _ in range(20)] for _ in range(20)]
