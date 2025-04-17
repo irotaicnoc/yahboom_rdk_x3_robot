@@ -40,8 +40,8 @@ def obstacle_sensor():
                         angle_grad = (angle_grad + 90) % 360
                         angle_rad = np.deg2rad(angle_grad)
                         distance = average_distance_by_sector[sector_num]
-                        x = int(10 + distance * 20 * np.cos(angle_rad))
-                        y = int(10 - distance * 20 * np.sin(angle_rad))
+                        x = int(10 + distance * 40 * np.cos(angle_rad))
+                        y = int(10 - distance * 40 * np.sin(angle_rad))
                         if 0 <= x < 20 and 0 <= y < 20:
                             canvas[y][x] = '='
 
