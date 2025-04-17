@@ -26,8 +26,8 @@ def obstacle_sensor():
     try:
         counter = 0
         while True:
+            os.system('clear')
             print(f'Counter: {counter}')
-            # os.system('clear')
             canvas = copy.deepcopy(ascii_circle)
             lidar_data = lidar_listener_node.read_lidar_data()
             if lidar_data is not None:
@@ -46,12 +46,7 @@ def obstacle_sensor():
                             canvas[y][x] = '='
 
             print(canvas)
-
-            # wait for key press to continue
-            input()
-
-            # time.sleep(1)
-            os.system('clear')
+            time.sleep(1)
             counter += 1
 
     except KeyboardInterrupt:
