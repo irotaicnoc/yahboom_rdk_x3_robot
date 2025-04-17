@@ -34,11 +34,14 @@ def obstacle_sensor():
             os.system('clear')
             print(f'Counter: {counter}')
             canvas = copy.deepcopy(ascii_circle)
+            # add the robot position
+            canvas[circle_radius - 1][circle_radius] = '^'
+            canvas[circle_radius][circle_radius] = '|'
+
+            # add detected obstacles using their direction and distance
             lidar_data = lidar_listener_node.read_lidar_data()
             if lidar_data is not None:
                 _, obstacles_by_sector, average_distance_by_sector = lidar_data
-                # print an ascii art circle and add detected obstacles as 'X' using their direction and distance
-
                 for sector_num in range(len(obstacles_by_sector)):
                     if obstacles_by_sector[sector_num]:
                         angle_grad = sector_num * lidar_listener_node.sector_angle
@@ -49,10 +52,6 @@ def obstacle_sensor():
                         y = int(circle_radius - distance * dist_proportion * np.sin(angle_rad))
                         if 0 <= x < circle_diameter and 0 <= y < circle_diameter:
                             canvas[y][x] = '#'
-
-            # add the robot position
-            canvas[circle_radius - 1][circle_radius] = '^'
-            canvas[circle_radius][circle_radius] = '|'
 
             for row in canvas:
                 print(' '.join(row))
