@@ -1,6 +1,7 @@
-import copy
 import os
+import copy
 import time
+import numpy as np
 
 from physical_accessories import lidar_listener
 
@@ -35,10 +36,12 @@ def obstacle_sensor():
 
                 for sector_num in range(len(obstacles_by_sector)):
                     if obstacles_by_sector[sector_num]:
-                        angle = sector_num * lidar_listener_node.sector_angle
+                        angle_grad = sector_num * lidar_listener_node.sector_angle
+                        angle_grad = (angle_grad + 90) % 360
+                        angle_rad = np.deg2rad(angle_grad)
                         distance = average_distance_by_sector[sector_num]
-                        x = int(10 + distance * 10 * (angle / 180))
-                        y = int(10 - distance * 10 * (angle / 180))
+                        x = int(10 + distance * 20 * np.cos(angle_rad))
+                        y = int(10 - distance * 20 * np.sin(angle_rad))
                         if 0 <= x < 20 and 0 <= y < 20:
                             canvas[y][x] = 'X'
 
