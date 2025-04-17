@@ -199,15 +199,8 @@ class ControllerFunctions(object):
                 elapsed_time = time.time() - self.robot_head.button_press_time
                 self.robot_head.button_press_time = 0
                 if elapsed_time >= self.MEMORIZE_TIME:
-                    print(f'Button {button} pressed for at least 2 seconds in arm mode')
                     self.memorized_arm_position[button] = self.robot_body.get_arm_angle_list()
-                    print(f'\tposition memorized {self.memorized_arm_position[button]}')
-
                 else:
-                    print(f'Button {button} pressed for less than 2 seconds in arm mode')
                     if button in self.memorized_arm_position:
                         self.robot_head.set_arm_desired_angles(angle_list=self.memorized_arm_position[button])
-                        print(f'\treaching memorized position {self.memorized_arm_position[button]}')
-                    else:
-                        print('\tbut no memorized position, so not doing anything')
                 self.gpio_led.set_color('off')

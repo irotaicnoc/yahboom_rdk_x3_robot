@@ -125,7 +125,7 @@ class RobotHead:
     def toggle_arm_rigid(self):
         self.arm_is_rigid = not self.arm_is_rigid
         self.arm_state_not_updated = True
-        if self.verbose >= 1:
+        if self.verbose >= 2:
             if self.arm_is_rigid:
                 print(f'Arm is rigid')
             else:
@@ -157,7 +157,6 @@ class RobotHead:
             new_min=2000,
             new_max=400,
         )
-        print(f'check run_time: {self.run_time}')
         self.arm_desired_angles = copy.deepcopy(angle_list)
 
     def activate_hotspot(self):

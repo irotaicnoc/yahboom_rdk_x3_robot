@@ -24,7 +24,6 @@ class LidarListener(Node):
         self.obstacles_by_sector = np.zeros(shape=self.number_of_sectors, dtype=bool)
         self.counter_by_sector = np.zeros(shape=self.number_of_sectors, dtype=int)
         self.average_distance_by_sector = np.zeros(shape=self.number_of_sectors, dtype=float)
-        print(f'number_of_sectors: {self.number_of_sectors}')
 
         # narrower sectors (smaller angles) means less hits are required to detect an obstacle
         # self.obstacle_found_threshold = 5
