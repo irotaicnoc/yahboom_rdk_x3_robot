@@ -32,14 +32,14 @@ def obstacle_sensor():
                     base_canvas[i].append('.')
     base_canvas.append(copy.deepcopy(base_canvas[0]))
     # add the robot
-    base_canvas[circle_radius - 1][circle_radius - 1] = '|'
-    base_canvas[circle_radius - 1][circle_radius + 1] = '|'
+    base_canvas[circle_radius - 1][circle_radius - 1] = '/'
+    base_canvas[circle_radius - 1][circle_radius + 1] = '\\'
     base_canvas[circle_radius + 1][circle_radius - 1] = '|'
     base_canvas[circle_radius + 1][circle_radius + 1] = '|'
     base_canvas[circle_radius][circle_radius - 1] = '|'
     base_canvas[circle_radius][circle_radius + 1] = '|'
     base_canvas[circle_radius][circle_radius] = 'R'
-    base_canvas[circle_radius - 2][circle_radius] = '_'
+    # base_canvas[circle_radius - 2][circle_radius] = '_'
     base_canvas[circle_radius - 1][circle_radius] = '^'
     base_canvas[circle_radius + 1][circle_radius] = '_'
 
