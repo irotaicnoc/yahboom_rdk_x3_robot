@@ -34,8 +34,8 @@ def obstacle_sensor():
     # add the robot
     base_canvas[circle_radius - 1][circle_radius - 1] = '/'
     base_canvas[circle_radius - 1][circle_radius + 1] = '\\'
-    base_canvas[circle_radius + 1][circle_radius - 1] = '|'
-    base_canvas[circle_radius + 1][circle_radius + 1] = '|'
+    base_canvas[circle_radius + 1][circle_radius - 1] = '\\'
+    base_canvas[circle_radius + 1][circle_radius + 1] = '/'
     base_canvas[circle_radius][circle_radius - 1] = '|'
     base_canvas[circle_radius][circle_radius + 1] = '|'
     base_canvas[circle_radius][circle_radius] = 'R'
