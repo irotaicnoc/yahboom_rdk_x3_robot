@@ -19,8 +19,8 @@ def obstacle_sensor():
     print('LidarListener initialized')
     ascii_circle = [[' ' for _ in range(20)] for _ in range(20)]
     for i in range(20):
-        for j in range(20):
-            if (i - 10) ** 2 + (j - 10) ** 2 <= 100:
+        for j in range(40):
+            if (i - 10) ** 2 + (j - 20) ** 2 <= 100:
                 ascii_circle[i][j] = '_'
 
     try:
