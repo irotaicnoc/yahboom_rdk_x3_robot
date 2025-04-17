@@ -10,15 +10,17 @@ def obstacle_sensor():
     print('Experiment started')
     print('Initializing LidarListener...')
     # Initialize the LidarListener
+    response_dist = 1.0
     lidar_listener_node = lidar_listener.ThreadedLidarListener(
         topic_name='scan',
         queue_size=10,
-        response_dist=0.3,
+        response_dist=response_dist,
         verbose=3,
     )
     print('LidarListener initialized')
     circle_radius = 10
     circle_diameter = circle_radius * 2
+    dist_proportion = circle_radius / response_dist
 
     ascii_circle = [[' ' for _ in range(circle_diameter)] for _ in range(circle_diameter)]
     for i in range(circle_diameter):
@@ -43,13 +45,14 @@ def obstacle_sensor():
                         angle_grad = (angle_grad + 90) % 360
                         angle_rad = np.deg2rad(angle_grad)
                         distance = average_distance_by_sector[sector_num]
-                        x = int(circle_radius + distance * 40 * np.cos(angle_rad))
-                        y = int(circle_radius - distance * 40 * np.sin(angle_rad))
+                        x = int(circle_radius + distance * dist_proportion * np.cos(angle_rad))
+                        y = int(circle_radius - distance * dist_proportion * np.sin(angle_rad))
                         if 0 <= x < circle_diameter and 0 <= y < circle_diameter:
                             canvas[y][x] = '#'
 
                 # add the robot position as 'R'
-                canvas[circle_radius][circle_radius] = 'R'
+                canvas[circle_radius][circle_radius - 1] = '^'
+                canvas[circle_radius][circle_radius] = '|'
 
             for row in canvas:
                 print(' '.join(row))
