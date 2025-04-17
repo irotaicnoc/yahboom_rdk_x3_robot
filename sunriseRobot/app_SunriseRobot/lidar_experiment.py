@@ -19,9 +19,9 @@ def obstacle_sensor():
     print('LidarListener initialized')
     ascii_circle = [[' ' for _ in range(20)] for _ in range(20)]
     for i in range(20):
-        for j in range(40):
-            if (i - 10) ** 2 + (j - 20) ** 2 <= 100:
-                ascii_circle[i][j] = '_'
+        for j in range(20):
+            if (i - 10) ** 2 + (j - 10) ** 2 <= 100:
+                ascii_circle[i][j] = '.'
 
     try:
         counter = 0
@@ -46,7 +46,7 @@ def obstacle_sensor():
                             canvas[y][x] = '#'
 
             for row in canvas:
-                print(''.join(row))
+                print(' '.join(row))
             time.sleep(1)
             counter += 1
 
