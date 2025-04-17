@@ -51,7 +51,7 @@ def obstacle_sensor():
                             canvas[y][x] = '#'
 
                 # add the robot position as 'R'
-                canvas[circle_radius][circle_radius - 1] = '^'
+                canvas[circle_radius - 1][circle_radius] = '^'
                 canvas[circle_radius][circle_radius] = '|'
 
             for row in canvas:
