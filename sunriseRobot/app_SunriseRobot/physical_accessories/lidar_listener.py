@@ -6,7 +6,7 @@ import rclpy
 from sensor_msgs.msg import LaserScan
 
 
-class LidarListener(rclpy.Node):
+class LidarListener(rclpy.node.Node):
     def __init__(self,
                  topic_name: str,
                  queue_size: int,
