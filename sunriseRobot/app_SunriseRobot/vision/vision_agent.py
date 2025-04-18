@@ -219,7 +219,6 @@ class VisionAgent(object):
                             if self.use_gpio_led:
                                 self.gpio_led.set_color('green')
                             self.robot_body.set_beep(1000)
-                            continue
 
             if self.verbose >= 2:
                 print(f'Forward: {self.speed_x}')
