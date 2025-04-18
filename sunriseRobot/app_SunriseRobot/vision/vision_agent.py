@@ -7,6 +7,7 @@ import args
 import utils
 import global_constants as gc
 from vision.detector import YoloDetector
+from physical_accessories.lidar_listener import ThreadedLidarListener
 
 
 class VisionAgent(object):
@@ -45,6 +46,11 @@ class VisionAgent(object):
         self.speed_z = 0
         self.move_duration = parameters['move_duration']
 
+        # lidar initialization
+        self.lidar_kwargs = parameters['lidar_kwargs']
+        self.lidar_listener = None
+        self.lidar_is_active = False
+
         # gpio led
         self.gpio_led = robot_head.gpio_led
         self.use_gpio_led = parameters['use_gpio_led']
@@ -69,6 +75,11 @@ class VisionAgent(object):
         if self.use_gpio_led:
             self.gpio_led.set_color('off')
 
+        # destroy lidar listener
+        if self.lidar_is_active:
+            self.lidar_listener.delete_listener()
+        self.lidar_is_active = False
+
     def activate_agent(self, video_capture_kwargs=None):
         if self.verbose >= 1:
             print('Activating vision agent...')
@@ -89,6 +100,20 @@ class VisionAgent(object):
             warnings.warn('Impossible to run vision agent.')
             self.agent_active = False
             raise Exception('Failed to open camera.')
+
+        # start lidar listener
+        try:
+            self.lidar_listener = ThreadedLidarListener(
+                **self.lidar_kwargs,
+                verbose=self.verbose,
+            )
+            self.lidar_is_active = True
+        # if there is an error, run vision agent without lidar
+        except Exception as e:
+            print('Failed to start lidar listener for Vision agent with error')
+            print(e)
+            print(e.__traceback__)
+            self.lidar_is_active = False
 
     def autonomous_behavior(self):
         if self.robot_head.robot_mode == 'autonomous_vision':
@@ -152,8 +177,6 @@ class VisionAgent(object):
             # if the robot is not aligned with the target (angle > steer_threshold_2)
             #     the robot will steer
             # otherwise move forward
-            # TODO: change it to a continuous forward and rotational movement, instead of having three discreet cases,
-            #  it should do a linear interpolation between forward and rotational movement, depending on the angle
             if abs(distance_from_center_x) > self.steer_threshold_2:
                 self.speed_x = 0
                 self.speed_z = utils.x_displacement_to_angular_speed(
@@ -171,6 +194,21 @@ class VisionAgent(object):
                 )
 
             else:
+                if self.lidar_is_active:
+                    # check if there are obstacles in the front
+                    obstacles_by_sector, average_distance_by_sector = self.lidar_listener.get_obstacles_by_sector()
+                    if obstacles_by_sector is not None:
+                        # check if there are obstacles in the front
+                        if obstacles_by_sector[0] or obstacles_by_sector[1]:
+                            self.speed_x = 0
+                            self.speed_z = 0
+                            # target reached!
+                            if self.verbose >= 1:
+                                print('Target reached!')
+                            if self.use_gpio_led:
+                                self.gpio_led.set_color('green')
+                                self.robot_body.set_beep(1000)
+
                 self.speed_x = self.robot_head.speed_coefficient
                 self.speed_z = 0
 
