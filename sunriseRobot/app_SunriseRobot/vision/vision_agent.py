@@ -28,7 +28,7 @@ class VisionAgent(object):
         # camera initialization
         self.camera_is_open = -1
         self.camera = camera_lib.Camera()
-        self.video_capture_kwargs = parameters['camera_kwargs']['video_capture_kwargs']
+        self.video_capture_kwargs = parameters['video_capture_kwargs']
         self.frame_width = self.video_capture_kwargs['width']
         self.frame_height = self.video_capture_kwargs['height']
 
