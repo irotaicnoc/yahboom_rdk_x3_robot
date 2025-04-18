@@ -38,14 +38,14 @@ class YoloDetector(object):
         self.model_name = model_name
         self.model_path = gc.GENERIC_MODEL_FOLDER_PATH + model_name
         if self.verbose >= 1:
-            print(f'Loading Computer Vision model: {self.model_name}')
+            print(f'Loading vision model: {self.model_name}')
 
         # load YOLO model
         try:
             self.model = YOLO(model=self.model_path, task='detect', verbose=self.verbose)
             self.model_class_dict = self.model.names
         except Exception as e:
-            warnings.warn(f'could not initialize model {self.model_path}...')
+            warnings.warn(f'Could not initialize model {self.model_path}...')
             if self.verbose >= 1:
                 print(e)
             self.model_name = self.backup_model_name
@@ -66,7 +66,7 @@ class YoloDetector(object):
                     class_dict=self.model_class_dict,
                 )
                 self.target_class_name = target_name
-                if self.verbose >= 2:
+                if self.verbose >= 3:
                     print(f'target: {target_name}')
                     # print(f'target_class_id: {self.target_class_id}')
             except ValueError as e:

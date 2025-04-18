@@ -138,7 +138,7 @@ class VisionAgent(object):
         # show thinking light (red)
         if self.use_gpio_led:
             self.gpio_led.set_color('red')
-        if self.verbose >= 2:
+        if self.verbose >= 3:
             start_thinking = time.time()
         self.set_zero_speed()
 
@@ -163,7 +163,7 @@ class VisionAgent(object):
         #     'distance_from_center_x': float [-1, 1],
         #     'distance_from_center_y': float [-1, 1],
         # }
-        if self.verbose >= 2:
+        if self.verbose >= 3:
             print(f'num_targets: {target_info["num_targets"]}')
         if target_info['num_targets'] > 0:
             # show target-found light (green)
@@ -171,7 +171,7 @@ class VisionAgent(object):
                 self.gpio_led.set_color('green')
             self.no_target_counter = 0
             distance_from_center_x = target_info['distance_from_center_x']
-            if self.verbose >= 2:
+            if self.verbose >= 3:
                 print(f'X distance from img center: {distance_from_center_x}')
 
             # if the robot is almost aligned with the target (angle < steer_threshold_1)
@@ -219,6 +219,7 @@ class VisionAgent(object):
                             if self.use_gpio_led:
                                 self.gpio_led.set_color('green')
                             self.robot_body.set_beep(1000)
+                    print(f'Target distance: {self.target_distance}')
 
             if self.verbose >= 2:
                 print(f'Forward: {self.speed_x}')
@@ -241,10 +242,10 @@ class VisionAgent(object):
                     print('Searching...')
                 self.speed_z = self.robot_head.speed_coefficient * 5
                 self.no_target_counter = 0
-                if self.verbose >= 2:
+                if self.verbose >= 3:
                     print(f'Forward: {self.speed_x}')
                     print(f'Steer: {self.speed_z}')
-        if self.verbose >= 2:
+        if self.verbose >= 3:
             stop_thinking = time.time()
             print(f'thinking time: {round(stop_thinking - start_thinking, 3)}')
 
