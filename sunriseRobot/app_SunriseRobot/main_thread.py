@@ -70,24 +70,6 @@ def main_loop(**kwargs):
     thread_screen = threading.Thread(target=task_screen, name='task_screen', kwargs=screen_kwargs, daemon=True)
     thread_screen.start()
 
-    try:
-        print('Experiment started')
-        print('Initializing LidarListener...')
-        # Initialize the LidarListener
-        response_dist = 1.0
-        lidar_listener_node = ThreadedLidarListener(
-            topic_name='scan',
-            queue_size=10,
-            response_dist=response_dist,
-            verbose=3,
-        )
-        print('LidarListener initialized')
-    except Exception as e:
-        print('LidarListener error:')
-        print(e)
-        print(e.__traceback__)
-        lidar_listener_node = None
-
     # VISION AGENT
     vision_agent_kwargs = {
         'robot_body': robot_body,
