@@ -1,3 +1,4 @@
+import math
 import time
 import warnings
 
@@ -50,6 +51,8 @@ class VisionAgent(object):
         self.lidar_kwargs = parameters['lidar_kwargs']
         self.lidar_listener = None
         self.lidar_is_active = False
+        self.target_distance = math.inf
+        self.target_reached_distance = parameters['target_reached_distance']
 
         # gpio led
         self.gpio_led = robot_head.gpio_led
@@ -107,6 +110,7 @@ class VisionAgent(object):
                 **self.lidar_kwargs,
                 verbose=self.verbose,
             )
+            self.target_distance = math.inf
             self.lidar_is_active = True
         # if there is an error, run vision agent without lidar
         except Exception as e:
@@ -194,23 +198,28 @@ class VisionAgent(object):
                 )
 
             else:
+                self.speed_x = self.robot_head.speed_coefficient
+                self.speed_z = 0
+
                 if self.lidar_is_active:
-                    # check if there are obstacles in the front
+                    self.target_distance = math.inf
                     obstacles_by_sector, average_distance_by_sector = self.lidar_listener.get_obstacles_by_sector()
                     if obstacles_by_sector is not None:
                         # check if there are obstacles in the front
-                        if obstacles_by_sector[0] or obstacles_by_sector[1]:
+                        if obstacles_by_sector[0]:
+                            self.target_distance = average_distance_by_sector[0]
+                        if obstacles_by_sector[-1]:
+                            self.target_distance = min(average_distance_by_sector[-1], self.target_distance)
+                        if self.target_distance < self.target_reached_distance:
+                            # stop the robot
                             self.speed_x = 0
-                            self.speed_z = 0
                             # target reached!
                             if self.verbose >= 1:
                                 print('Target reached!')
                             if self.use_gpio_led:
                                 self.gpio_led.set_color('green')
-                                self.robot_body.set_beep(1000)
-
-                self.speed_x = self.robot_head.speed_coefficient
-                self.speed_z = 0
+                            self.robot_body.set_beep(1000)
+                            continue
 
             if self.verbose >= 2:
                 print(f'Forward: {self.speed_x}')
