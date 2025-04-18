@@ -51,9 +51,8 @@ def obstacle_sensor():
             canvas = copy.deepcopy(base_canvas)
 
             # add detected obstacles using their direction and distance
-            lidar_data = lidar_listener_node.read_lidar_data()
-            if lidar_data is not None:
-                _, obstacles_by_sector, average_distance_by_sector = lidar_data
+            obstacles_by_sector, average_distance_by_sector = lidar_listener_node.get_obstacles_by_sector()
+            if obstacles_by_sector is not None:
                 for sector_num in range(len(obstacles_by_sector)):
                     if obstacles_by_sector[sector_num]:
                         angle_grad = sector_num * lidar_listener_node.sector_angle
