@@ -3,11 +3,10 @@ import threading
 import numpy as np
 
 import rclpy
-from rclpy.node import Node
 from sensor_msgs.msg import LaserScan
 
 
-class LidarListener(Node):
+class LidarListener(rclpy.Node):
     def __init__(self,
                  topic_name: str,
                  queue_size: int,

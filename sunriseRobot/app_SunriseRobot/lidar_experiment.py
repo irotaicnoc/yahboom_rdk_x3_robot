@@ -3,7 +3,7 @@ import copy
 import time
 import numpy as np
 
-from physical_accessories import lidar_listener
+from physical_accessories.lidar_listener import ThreadedLidarListener
 
 
 def obstacle_sensor():
@@ -11,7 +11,7 @@ def obstacle_sensor():
     print('Initializing LidarListener...')
     # Initialize the LidarListener
     response_dist = 1.0
-    lidar_listener_node = lidar_listener.ThreadedLidarListener(
+    lidar_listener_node = ThreadedLidarListener(
         topic_name='scan',
         queue_size=10,
         response_dist=response_dist,
