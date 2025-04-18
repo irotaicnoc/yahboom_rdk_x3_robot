@@ -6,7 +6,7 @@
 # main thread
 ###############################################################################
 
-gnome-terminal -- bash -c "python3 /root/GIT/yahboom_rdk_x3_robot/sunriseRobot/app_SunriseRobot/main_thread.py;exec bash"
+gnome-terminal -- bash -c "source /opt/ros/foxy/setup.bash;source /root/marco_ros2_ws/install/local_setup.bash;python3 /root/GIT/yahboom_rdk_x3_robot/sunriseRobot/app_SunriseRobot/main_thread.py;exec bash"
 
 wait
 exit 0
