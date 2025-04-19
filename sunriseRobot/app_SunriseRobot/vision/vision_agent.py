@@ -51,7 +51,7 @@ class VisionAgent(object):
         self.lidar_kwargs = parameters['lidar_kwargs']
         self.lidar_listener = None
         self.lidar_is_active = False
-        self.target_distance = math.inf
+        self.target_distance = self.lidar_kwargs['response_dist']
         self.target_reached_distance = parameters['target_reached_distance']
 
         # gpio led
@@ -110,7 +110,7 @@ class VisionAgent(object):
                 **self.lidar_kwargs,
                 verbose=self.verbose,
             )
-            self.target_distance = math.inf
+            self.target_distance = self.lidar_kwargs['response_dist']
             self.lidar_is_active = True
         # if there is an error, run vision agent without lidar
         except Exception as e:
@@ -202,7 +202,7 @@ class VisionAgent(object):
                 self.speed_z = 0
 
                 if self.lidar_is_active:
-                    self.target_distance = math.inf
+                    self.target_distance = self.lidar_kwargs['response_dist']
                     obstacles_by_sector, average_distance_by_sector = self.lidar_listener.get_obstacles_by_sector()
                     if obstacles_by_sector is not None:
                         # check if there are obstacles in the front
@@ -219,7 +219,10 @@ class VisionAgent(object):
                             if self.use_gpio_led:
                                 self.gpio_led.set_color('green')
                             self.robot_body.set_beep(1000)
-                    print(f'Target distance: {self.target_distance}')
+                    if self.target_distance == self.lidar_kwargs['response_dist']:
+                        print(f'Target farther than {self.target_distance} m')
+                    else:
+                        print(f'Target distance: {int(self.target_distance * 100)} cm')
 
             if self.verbose >= 2:
                 print(f'Forward: {self.speed_x}')
