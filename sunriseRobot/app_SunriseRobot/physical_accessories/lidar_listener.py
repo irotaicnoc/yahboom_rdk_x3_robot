@@ -41,9 +41,6 @@ class LidarListener(Node):
         self.obstacle_in_arc = False
         self.average_distance_in_arc = 0
         self.arc_scan_is_new = True
-        print('test print, which terminal?')
-        print('test print, which terminal?')
-        print('test print, which terminal?')
 
         # narrower sectors (smaller angles) means less hits are required to detect an obstacle
         # self.obstacle_found_threshold = 5
