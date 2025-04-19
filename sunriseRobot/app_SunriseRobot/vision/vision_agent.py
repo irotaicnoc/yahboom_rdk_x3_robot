@@ -1,4 +1,3 @@
-import math
 import time
 import warnings
 
@@ -8,7 +7,7 @@ import args
 import utils
 import global_constants as gc
 from vision.detector import YoloDetector
-from physical_accessories import lidar_listener
+from physical_accessories.lidar_listener import ThreadedLidarListener
 
 
 class VisionAgent(object):
@@ -106,7 +105,7 @@ class VisionAgent(object):
 
         # start lidar listener
         try:
-            self.lidar_listener = lidar_listener.ThreadedLidarListener(
+            self.lidar_listener = ThreadedLidarListener(
                 **self.lidar_kwargs,
                 verbose=self.verbose,
             )
