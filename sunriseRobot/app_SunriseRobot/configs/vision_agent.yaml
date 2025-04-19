@@ -36,4 +36,4 @@ lidar_kwargs:
   queue_size: 3
   response_dist: 2.0
   sector_angle: 20
-target_reached_distance: 0.3
+target_reached_distance: 0.4

@@ -209,7 +209,7 @@ class VisionAgent(object):
                             self.target_distance = average_distance_by_sector[0]
                         if obstacles_by_sector[-1]:
                             self.target_distance = min(average_distance_by_sector[-1], self.target_distance)
-                        if self.target_distance < self.target_reached_distance:
+                        if self.target_distance <= self.target_reached_distance:
                             # stop the robot
                             self.speed_x = 0
                             # target reached!
