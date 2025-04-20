@@ -29,6 +29,7 @@ class LidarListener(Node):
         self.lidar_data = None
         self.raw_scan_is_new = True
         self.response_dist = response_dist
+
         # sector_angle attributes
         self.sector_angle = sector_angle
         self.number_of_sectors = int(360 / sector_angle)
@@ -36,6 +37,7 @@ class LidarListener(Node):
         self.hit_counter_by_sector = np.zeros(shape=self.number_of_sectors, dtype=int)
         self.average_distance_by_sector = np.zeros(shape=self.number_of_sectors, dtype=float)
         self.obstacle_scan_is_new = True
+
         # search_only_arc attributes
         self.search_only_arc = search_only_arc
         self.obstacle_in_arc = False
