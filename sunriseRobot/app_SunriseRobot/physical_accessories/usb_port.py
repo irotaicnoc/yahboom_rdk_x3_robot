@@ -11,8 +11,6 @@ def find_usb_device_port(vendor_id, product_id, device_name=""):
             print(f"Device with VID:PID {vendor_id:04x}:{product_id:04x} not found.")
             return None
 
-        print(f"Found device: {usb.util.get_string(dev, 256, dev.iProduct) if dev.iProduct else device_name}")
-
         timeout = 100000
         version = dev.ctrl_transfer(
             usb.util.CTRL_IN | usb.util.CTRL_TYPE_VENDOR | usb.util.CTRL_RECIPIENT_DEVICE,
