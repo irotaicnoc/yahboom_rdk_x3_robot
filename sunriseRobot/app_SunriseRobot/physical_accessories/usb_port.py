@@ -13,6 +13,12 @@ def find_usb_device_port(vendor_id, product_id, device_name=""):
 
         print(f"Found device: {usb.util.get_string(dev, 256, dev.iProduct) if dev.iProduct else device_name}")
 
+        timeout = 100000
+        version = dev.ctrl_transfer(
+            usb.util.CTRL_IN | usb.util.CTRL_TYPE_VENDOR | usb.util.CTRL_RECIPIENT_DEVICE,
+            0, 0x80, 0, 1, timeout)[0]
+        print('version: {}'.format(version))
+
         bus = dev.bus
         address = dev.address
         try:
