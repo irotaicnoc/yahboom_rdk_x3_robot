@@ -17,12 +17,14 @@ class ControllerLoop(object):
                  robot_head,
                  verbose: int = 0,
                  ):
+        print(f' got verbose {verbose}')
         parameters = args.import_args(yaml_path=gc.CONFIG_FOLDER_PATH + 'controller_loop.yaml')
         self.robot_body = robot_body
         self.robot_head = robot_head
         self.gpio_led = robot_head.gpio_led
         self.beep_time = parameters['beep_time']
         self.verbose = verbose
+        print(f'self.verbose {self.verbose}')
 
         # lidar initialization
         self.lidar_listener = None
