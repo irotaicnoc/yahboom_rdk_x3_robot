@@ -43,6 +43,9 @@ class RobotHead:
         self.speed_y = 0
         self.speed_z = 0
 
+        # lidar parameters
+        self.lidar_listener_status = 'inactive'
+
         # buzzer, leds, and lights
         self.buzzer_is_active = False
         self.internal_light = parameters['internal_light']
@@ -235,3 +238,11 @@ class RobotHead:
             self.deactivate_ros2()
         else:
             print(f'ROS2 is in "{self.ros2_vr_connection_status}" state. Cannot be changed now.')
+
+    def toggle_lidar_listener(self):
+        if self.lidar_listener_status == 'inactive':
+            self.lidar_listener_status = 'processing'
+        elif self.lidar_listener_status == 'active':
+            self.lidar_listener_status = 'processing'
+        else:
+            print(f'Lidar listener is in "{self.lidar_listener_status}" state. Cannot be changed now.')

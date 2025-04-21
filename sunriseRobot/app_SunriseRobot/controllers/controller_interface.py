@@ -105,7 +105,10 @@ class ControllerFunctions(object):
             self.memorize_or_reach_arm_position(button='button_east', value=value)
 
     def button_west(self, value: bool) -> None:
-        # move arm to vertical position
+        if self.robot_head.robot_mode == 'user_control_wheels':
+            if value:
+                if self.cooldown(button='button_west'):
+                    self.robot_head.toggle_lidar_listener()
         if self.robot_head.robot_mode == 'user_control_arm':
             self.memorize_or_reach_arm_position(button='button_west', value=value)
 

@@ -172,6 +172,7 @@ class ControllerLoop(object):
             try:
                 self.lidar_listener = ThreadedLidarListener(**self.lidar_kwargs, verbose=self.verbose)
                 self.lidar_is_active = True
+                self.robot_head.lidar_listener_status = 'active'
                 if self.verbose >= 2:
                     print('Lidar listener started')
             except Exception as e:
@@ -180,7 +181,10 @@ class ControllerLoop(object):
                 print(e.__traceback__)
                 self.lidar_is_active = False
                 self.lidar_listener = None
+                self.robot_head.lidar_listener_status = 'inactive'
         else:
+            self.lidar_is_active = True
+            self.robot_head.lidar_listener_status = 'active'
             if self.verbose >= 2:
                 print('Lidar listener already started')
 
@@ -188,6 +192,10 @@ class ControllerLoop(object):
         if self.lidar_listener is not None:
             self.lidar_listener.stop()
             self.lidar_listener = None
-            self.lidar_is_active = False
             if self.verbose >= 2:
-                print('Lidar listener stopped.')
+                print('Lidar listener stopped')
+        else:
+            if self.verbose >= 2:
+                print('Lidar listener already stopped')
+        self.lidar_is_active = False
+        self.robot_head.lidar_listener_status = 'inactive'
