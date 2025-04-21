@@ -1,0 +1,10 @@
+# milliseconds
+beep_time: 50
+
+# lidar parameters
+lidar_kwargs:
+  topic_name: scan
+  queue_size: 3
+  response_dist: 0.6
+  sector_angle: 20
+min_allowed_distance: 0.3

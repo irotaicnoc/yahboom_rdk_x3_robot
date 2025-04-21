@@ -215,3 +215,32 @@ def finish_generic_process(robot_head):
     time.sleep(0.5)
     robot_head.gpio_led.set_color('off')
     robot_head.buzzer_is_active = buzzer_previous_state
+
+
+def calculate_robot_direction(speed_x: float, speed_y: float, speed_z: float) -> float:
+    # Calculate the direction of the robot given speed_x, speed_y, speed_z
+    # speed_x: forward-backward speed
+    # speed_y: translate left-right speed
+    # speed_z: rotate left-right speed
+    # Calculate the robot direction in degrees
+    if speed_x == 0 and speed_y == 0:
+        return 0
+    elif speed_x == 0:
+        if speed_y > 0:
+            return 90
+        else:
+            return 270
+    elif speed_y == 0:
+        if speed_x > 0:
+            return 0
+        else:
+            return 180
+    else:
+        angle = np.arctan2(speed_y, speed_x)
+        angle = np.degrees(angle)
+        if angle < 0:
+            angle += 360
+        # rotate by speed_z
+        angle += speed_z
+
+        return angle
