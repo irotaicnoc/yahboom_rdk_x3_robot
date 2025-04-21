@@ -54,12 +54,12 @@ def obstacle_sensor():
             if obstacles_by_sector is not None:
                 for sector_num in range(len(obstacles_by_sector)):
                     if obstacles_by_sector[sector_num]:
-                        angle_grad = sector_num * lidar_listener_node.sector_angle
-                        angle_grad = (angle_grad + 90) % 360
-                        angle_rad = np.deg2rad(angle_grad)
+                        angle_degrees = sector_num * lidar_listener_node.sector_angle
+                        angle_degrees = (angle_degrees + 90) % 360
+                        angle_radian = np.deg2rad(angle_degrees)
                         distance = average_distance_by_sector[sector_num]
-                        x = int(circle_radius + distance * dist_proportion * np.cos(angle_rad))
-                        y = int(circle_radius - distance * dist_proportion * np.sin(angle_rad))
+                        x = int(circle_radius + distance * dist_proportion * np.cos(angle_radian))
+                        y = int(circle_radius - distance * dist_proportion * np.sin(angle_radian))
                         if 0 <= x < circle_diameter and 0 <= y < circle_diameter:
                             canvas[y][x] = '#'
 
