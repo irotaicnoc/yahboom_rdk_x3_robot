@@ -41,7 +41,7 @@ class ControllerLoop(object):
                     self.base_canvas[i][j] = '.'
                     if j == 0:
                         self.base_canvas[i].append('.')
-        # self.base_canvas.append(copy.deepcopy(self.base_canvas[0]))
+        self.base_canvas.append(copy.deepcopy(self.base_canvas[0]))
         #   add the robot
         self.base_canvas[self.circle_radius - 1][self.circle_radius - 1] = '/'
         self.base_canvas[self.circle_radius - 1][self.circle_radius + 1] = '\\'
