@@ -124,12 +124,7 @@ def task_controller(**kwargs):
 
 def task_controller_loop(**kwargs):
     try:
-        print('verbose')
-        print(kwargs['verbose'])
-        print('starting controller loop')
         controller_loop = ControllerLoop(**kwargs)
-        print('controller loop started')
-        print('starting main loop')
         while True:
             controller_loop.update_robot_loop()
     except Exception as e:

@@ -20,9 +20,8 @@ class ControllerFunctions(object):
         self.verbose = verbose
 
         # accept only one button input per cooldown
-        self.last_select_press = 0  # timestamp for SELECT button
-        self.last_start_press = 0  # timestamp for START button
         self.BUTTON_COOLDOWN = 5.0  # minimum seconds between button presses
+        self.last_button_press = {}
 
         self.memorized_arm_position = {}
         self.MEMORIZE_TIME = 2  # seconds to memorize arm position
@@ -144,25 +143,14 @@ class ControllerFunctions(object):
     def button_select(self, value: bool) -> None:
         # switch between user-controlled mode and autonomous mode
         # only allow one press every self.BUTTON_COOLDOWN
-        current_time = time.time()
         if value:
-            if (current_time - self.last_select_press) >= self.BUTTON_COOLDOWN:
-                self.last_select_press = current_time
+            if self.cooldown(button='button_select'):
                 self.robot_head.next_mode()
-            else:
-                if self.verbose >= 2:
-                    print('Button SELECT on cooldown...')
 
     def button_start(self, value: bool) -> None:
-        current_time = time.time()
         if value:
-            if (current_time - self.last_start_press) >= self.BUTTON_COOLDOWN:
-                if self.robot_head.robot_mode == 'user_control_arm':
-                    self.last_start_press = current_time
-                    self.robot_head.toggle_arm_rigid()
-            else:
-                if self.verbose >= 2:
-                    print('Button START on cooldown...')
+            if self.cooldown(button='button_start'):
+                self.robot_head.toggle_arm_rigid()
 
     def unknown_input(self, name: str, value) -> None:
         if self.verbose >= 2:
@@ -204,3 +192,18 @@ class ControllerFunctions(object):
                     if button in self.memorized_arm_position:
                         self.robot_head.set_arm_desired_angles(angle_list=self.memorized_arm_position[button])
                 self.gpio_led.set_color('off')
+
+    def cooldown(self, button: str) -> bool:
+        # add/check cooldown to button press
+        if button not in self.last_button_press:
+            self.last_button_press[button] = time.time()
+            return True
+        else:
+            elapsed_time = time.time() - self.last_button_press[button]
+            if elapsed_time >= self.BUTTON_COOLDOWN:
+                self.last_button_press[button] = time.time()
+                return True
+            else:
+                if self.verbose >= 2:
+                    print(f'Button {button.split("_")[1]} on cooldown...')
+                return False
