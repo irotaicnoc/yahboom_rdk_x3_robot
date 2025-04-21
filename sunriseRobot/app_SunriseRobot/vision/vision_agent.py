@@ -44,9 +44,9 @@ class VisionAgent(object):
         self.move_duration = parameters['move_duration']
 
         # lidar initialization
-        self.lidar_kwargs = parameters['lidar_kwargs']
         self.lidar_listener = None
         self.lidar_is_active = False
+        self.lidar_kwargs = parameters['lidar_kwargs']
         self.target_distance = self.lidar_kwargs['response_dist']
         self.target_reached_distance = parameters['target_reached_distance']
 
@@ -78,6 +78,7 @@ class VisionAgent(object):
         if self.lidar_is_active:
             self.lidar_listener.delete_listener()
         self.lidar_is_active = False
+        self.lidar_listener = None
 
     def activate_agent(self, video_capture_kwargs=None):
         if self.verbose >= 1:
@@ -102,10 +103,7 @@ class VisionAgent(object):
 
         # start lidar listener
         try:
-            self.lidar_listener = ThreadedLidarListener(
-                **self.lidar_kwargs,
-                verbose=self.verbose,
-            )
+            self.lidar_listener = ThreadedLidarListener(**self.lidar_kwargs, verbose=self.verbose)
             self.target_distance = self.lidar_kwargs['response_dist']
             self.lidar_is_active = True
         # if there is an error, run vision agent without lidar
@@ -114,6 +112,7 @@ class VisionAgent(object):
             print(e)
             print(e.__traceback__)
             self.lidar_is_active = False
+            self.lidar_listener = None
 
     def autonomous_behavior(self):
         if self.robot_head.robot_mode == 'autonomous_vision':
