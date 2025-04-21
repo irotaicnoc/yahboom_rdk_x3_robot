@@ -73,6 +73,10 @@ class ControllerLoop(object):
                     # get the lidar data
                     obstacles_by_sector, average_distance_by_sector = self.lidar_listener.get_obstacles_by_sector()
                     if obstacles_by_sector is not None:
+                        self.print_state_ascii(
+                            obstacles_by_sector=obstacles_by_sector,
+                            average_distance_by_sector=average_distance_by_sector,
+                        )
                         # calculate the direction of the robot given speed_x, speed_y, speed_z
 
                         # # check if there are obstacles in the direction of the robot
@@ -141,7 +145,6 @@ class ControllerLoop(object):
                     if 0 <= x < self.circle_diameter and 0 <= y < self.circle_diameter:
                         canvas[y][x] = '#'
 
-
         robot_direction = utils.calculate_robot_direction(
             speed_x=self.robot_head.speed_x,
             speed_y=self.robot_head.speed_y,
@@ -154,7 +157,7 @@ class ControllerLoop(object):
 
         for row in canvas:
             print(' '.join(row))
-        time.sleep(0.6)
+        time.sleep(0.1)
 
     def start_lidar_listener(self):
         if self.lidar_listener is None:
