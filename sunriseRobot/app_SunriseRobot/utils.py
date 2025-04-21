@@ -240,6 +240,6 @@ def calculate_robot_direction(speed_x: float, speed_y: float, speed_z: float) ->
         angle_degrees = np.degrees(angle_radian)
         angle_degrees = (angle_degrees + 90) % 360
 
-    # rotate by speed_z with a coefficient of 90 degrees per second
+    # rotate by speed_z with a coefficient. It is arbitrary, for now it was chosen to be 90
     angle_degrees += speed_z * 90
     return angle_degrees

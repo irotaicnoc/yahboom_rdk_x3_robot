@@ -191,7 +191,7 @@ class ControllerLoop(object):
 
     def stop_lidar_listener(self):
         if self.lidar_listener is not None:
-            self.lidar_listener.stop()
+            self.lidar_listener.delete_listener()
             self.lidar_listener = None
             if self.verbose >= 2:
                 print('Lidar listener stopped')
