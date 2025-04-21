@@ -224,23 +224,22 @@ def calculate_robot_direction(speed_x: float, speed_y: float, speed_z: float) ->
     # speed_z: rotate left-right speed
     # Calculate the robot direction in degrees
     if speed_x == 0 and speed_y == 0:
-        return 0
+        return 90
     elif speed_x == 0:
         if speed_y > 0:
+            return 180
+        else:
+            return 0
+    elif speed_y == 0:
+        if speed_x > 0:
             return 90
         else:
             return 270
-    elif speed_y == 0:
-        if speed_x > 0:
-            return 0
-        else:
-            return 180
     else:
-        angle = np.arctan2(speed_y, speed_x)
-        angle = np.degrees(angle)
-        if angle < 0:
-            angle += 360
+        angle_radian = np.arctan2(speed_y, speed_x)
+        angle_degrees = np.degrees(angle_radian)
+        angle_degrees = (angle_degrees + 90) % 360
         # rotate by speed_z
-        angle += speed_z
+        angle_degrees += speed_z
 
-        return angle
+        return angle_degrees

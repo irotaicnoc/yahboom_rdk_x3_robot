@@ -41,7 +41,7 @@ class ControllerLoop(object):
                     self.base_canvas[i][j] = '.'
                     if j == 0:
                         self.base_canvas[i].append('.')
-        self.base_canvas.append(copy.deepcopy(self.base_canvas[0]))
+        # self.base_canvas.append(copy.deepcopy(self.base_canvas[0]))
         #   add the robot
         self.base_canvas[self.circle_radius - 1][self.circle_radius - 1] = '/'
         self.base_canvas[self.circle_radius - 1][self.circle_radius + 1] = '\\'
@@ -137,7 +137,7 @@ class ControllerLoop(object):
         time.sleep(0.02)
 
     def print_state_ascii(self, obstacles_by_sector, average_distance_by_sector):
-        # os.system('clear')
+        os.system('clear')
         canvas = copy.deepcopy(self.base_canvas)
 
         # add detected obstacles using their direction and distance
@@ -158,10 +158,11 @@ class ControllerLoop(object):
             speed_y=self.robot_head.speed_y,
             speed_z=self.robot_head.speed_z,
         )
-        x = int(self.circle_radius + 5 * np.cos(np.deg2rad(robot_direction)))
-        y = int(self.circle_radius - 5 * np.sin(np.deg2rad(robot_direction)))
-        if 0 <= x < self.circle_diameter and 0 <= y < self.circle_diameter:
-            canvas[y][x] = 'O'
+        for i in range(3, 6):
+            x = int(self.circle_radius + i * np.cos(np.deg2rad(robot_direction)))
+            y = int(self.circle_radius - i * np.sin(np.deg2rad(robot_direction)))
+            if 0 <= x < self.circle_diameter and 0 <= y < self.circle_diameter:
+                canvas[y][x] = 'o'
 
         for row in canvas:
             print(' '.join(row))
