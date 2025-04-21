@@ -1,0 +1,5 @@
+default rotation: counter-clockwise
+0°:     front
+90°:    left
+180°:   back
+270°:   right
