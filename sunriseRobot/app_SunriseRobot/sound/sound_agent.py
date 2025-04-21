@@ -10,12 +10,9 @@ import global_constants as gc
 class SoundAgent(object):
     def __init__(self, robot_body, robot_head, **kwargs):
         # general initialization
+        parameters = args.import_args(yaml_path=gc.CONFIG_FOLDER_PATH + 'sound_agent.yaml', **kwargs)
         self.robot_body = robot_body
         self.robot_head = robot_head
-        parameters = args.import_args(
-            yaml_path=gc.CONFIG_FOLDER_PATH + 'sound_agent.yaml',
-            **kwargs,
-        )
         self.verbose = parameters['verbose']
         self.agent_active = False
         self.no_sound_counter = 0

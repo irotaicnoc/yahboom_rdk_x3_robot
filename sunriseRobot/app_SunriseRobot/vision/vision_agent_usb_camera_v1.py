@@ -11,12 +11,9 @@ from vision.detector_usb_camera_v1 import YoloDetector
 class VisionAgent(object):
     def __init__(self, robot_body, robot_head, **kwargs):
         # general initialization
+        parameters = args.import_args(yaml_path=gc.CONFIG_FOLDER_PATH + 'vision_agent_usb_camera_v1.yaml', **kwargs)
         self.robot_body = robot_body
         self.robot_head = robot_head
-        parameters = args.import_args(
-            yaml_path=gc.CONFIG_FOLDER_PATH + 'vision_agent_usb_camera_v1.yaml',
-            **kwargs,
-        )
         self.verbose = parameters['verbose']
         self.agent_active = False
         self.think_steps_if_no_target = parameters['think_steps_if_no_target']

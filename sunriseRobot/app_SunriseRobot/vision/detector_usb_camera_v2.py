@@ -9,11 +9,7 @@ import global_constants as gc
 
 class YoloDetector(object):
     def __init__(self, **kwargs):
-        parameters = args.import_args(
-            yaml_path=gc.CONFIG_FOLDER_PATH + 'detector.yaml',
-            **kwargs,
-        )
-
+        parameters = args.import_args(yaml_path=gc.CONFIG_FOLDER_PATH + 'detector.yaml', **kwargs)
         self.backup_model_name = parameters['backup_model_name']
         self.camera_image_size = parameters['camera_image_size']
         self.verbose = parameters['verbose']
