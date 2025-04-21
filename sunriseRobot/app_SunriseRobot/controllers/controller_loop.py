@@ -158,7 +158,7 @@ class ControllerLoop(object):
             speed_y=self.robot_head.speed_y,
             speed_z=self.robot_head.speed_z,
         )
-        for i in range(3, 6):
+        for i in range(2, 6):
             x = int(self.circle_radius + i * np.cos(np.deg2rad(robot_direction)))
             y = int(self.circle_radius - i * np.sin(np.deg2rad(robot_direction)))
             if 0 <= x < self.circle_diameter and 0 <= y < self.circle_diameter:
