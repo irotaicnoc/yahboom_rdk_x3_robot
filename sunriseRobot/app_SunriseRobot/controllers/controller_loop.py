@@ -177,12 +177,14 @@ class ControllerLoop(object):
 
         # add detected obstacles using their direction and distance
         if obstacles_by_sector is not None:
-            for sector_num in range(len(obstacles_by_sector)):
-                if obstacles_by_sector[sector_num]:
-                    angle_degrees = sector_num * self.lidar_listener.sector_angle
-                    angle_degrees = (angle_degrees + 90) % 360
+            for sector_number in range(len(obstacles_by_sector)):
+                if obstacles_by_sector[sector_number]:
+                    angle_degrees = utils.circular_sector_to_degree_angle(
+                        sector_number=sector_number,
+                        sector_angle=self.lidar_listener.sector_angle,
+                    )
                     angle_radian = np.deg2rad(angle_degrees)
-                    distance = average_distance_by_sector[sector_num]
+                    distance = average_distance_by_sector[sector_number]
                     x = int(self.circle_radius + distance * self.dist_proportion * np.cos(angle_radian))
                     y = int(self.circle_radius - distance * self.dist_proportion * np.sin(angle_radian))
                     if 0 <= x < self.circle_diameter and 0 <= y < self.circle_diameter:

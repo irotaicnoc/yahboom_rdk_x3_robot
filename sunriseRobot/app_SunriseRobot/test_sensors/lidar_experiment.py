@@ -3,6 +3,7 @@ import copy
 import time
 import numpy as np
 
+import utils
 from physical_accessories.lidar_listener import ThreadedLidarListener
 
 
@@ -52,12 +53,14 @@ def obstacle_sensor():
             # add detected obstacles using their direction and distance
             obstacles_by_sector, average_distance_by_sector = lidar_listener_node.get_obstacles_by_sector()
             if obstacles_by_sector is not None:
-                for sector_num in range(len(obstacles_by_sector)):
-                    if obstacles_by_sector[sector_num]:
-                        angle_degrees = sector_num * lidar_listener_node.sector_angle
-                        angle_degrees = (angle_degrees + 90) % 360
+                for sector_number in range(len(obstacles_by_sector)):
+                    if obstacles_by_sector[sector_number]:
+                        angle_degrees = utils.circular_sector_to_degree_angle(
+                            sector_number=sector_number,
+                            sector_angle=lidar_listener_node.sector_angle,
+                        )
                         angle_radian = np.deg2rad(angle_degrees)
-                        distance = average_distance_by_sector[sector_num]
+                        distance = average_distance_by_sector[sector_number]
                         x = int(circle_radius + distance * dist_proportion * np.cos(angle_radian))
                         y = int(circle_radius - distance * dist_proportion * np.sin(angle_radian))
                         if 0 <= x < circle_diameter and 0 <= y < circle_diameter:

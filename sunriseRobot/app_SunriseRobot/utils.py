@@ -222,7 +222,6 @@ def calculate_robot_direction(speed_x: float, speed_y: float, speed_z: float) ->
     # speed_x: forward-backward speed
     # speed_y: translate left-right speed
     # speed_z: rotate left-right speed
-    angle_degrees = 0
     if speed_x == 0 and speed_y == 0:
         angle_degrees = 90
     elif speed_x == 0:
@@ -242,4 +241,11 @@ def calculate_robot_direction(speed_x: float, speed_y: float, speed_z: float) ->
 
     # rotate by speed_z with a coefficient. It is arbitrary
     angle_degrees += speed_z * 30
+    return angle_degrees
+
+
+def circular_sector_to_degree_angle(sector_number: int, sector_angle: float) -> float:
+    # angle: 0-360
+    angle_degrees = sector_number * sector_angle
+    angle_degrees = (angle_degrees + 90) % 360
     return angle_degrees
