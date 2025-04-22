@@ -97,7 +97,7 @@ class ControllerLoop(object):
                     sector_num = int(robot_direction / self.lidar_listener.sector_angle)
                     preceding_sector_num = (sector_num - 1) % len(obstacles_by_sector)
                     following_sector_num = (sector_num + 1) % len(obstacles_by_sector)
-                    print(f'len(obstacles_by_sector): {len(obstacles_by_sector)}')
+                    print(f'robot_direction: {robot_direction}')
                     print(f'preceding_sector_num: {preceding_sector_num}')
                     print(f'sector_num: {sector_num}')
                     print(f'following_sector_num: {following_sector_num}')
@@ -109,11 +109,14 @@ class ControllerLoop(object):
                     print(f'min_allowed_distance: {self.min_allowed_distance}')
 
                     obstacle = False
-                    if obstacles_by_sector[sector_num] and average_distance_by_sector[sector_num] < self.min_allowed_distance:
+                    if (obstacles_by_sector[sector_num] and
+                            average_distance_by_sector[sector_num] < self.min_allowed_distance):
                         obstacle = True
-                    if obstacles_by_sector[preceding_sector_num] and average_distance_by_sector[preceding_sector_num] < self.min_allowed_distance:
+                    if (obstacles_by_sector[preceding_sector_num] and
+                            average_distance_by_sector[preceding_sector_num] < self.min_allowed_distance):
                         obstacle = True
-                    if obstacles_by_sector[following_sector_num] and average_distance_by_sector[following_sector_num] < self.min_allowed_distance:
+                    if (obstacles_by_sector[following_sector_num] and
+                            average_distance_by_sector[following_sector_num] < self.min_allowed_distance):
                         obstacle = True
                     if obstacle:
                         # allow only rotation
