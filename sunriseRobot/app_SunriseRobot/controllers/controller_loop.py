@@ -91,6 +91,9 @@ class ControllerLoop(object):
                         speed_y=self.robot_head.speed_y,
                         speed_z=self.robot_head.speed_z / self.robot_head.speed_coefficient,
                     )
+                    if robot_direction is None:
+                        time.sleep(0.1)
+                        return
                     self.print_state_ascii(
                         obstacles_by_sector=self.obstacles_by_sector,
                         average_distance_by_sector=self.average_distance_by_sector,
