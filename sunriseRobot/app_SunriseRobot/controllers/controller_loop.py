@@ -108,9 +108,14 @@ class ControllerLoop(object):
                           f'{average_distance_by_sector[following_sector_num]}')
                     print(f'min_allowed_distance: {self.min_allowed_distance}')
 
-                    if (average_distance_by_sector[sector_num] < self.min_allowed_distance) or \
-                            (average_distance_by_sector[preceding_sector_num] < self.min_allowed_distance) or \
-                            (average_distance_by_sector[following_sector_num] < self.min_allowed_distance):
+                    obstacle = False
+                    if obstacles_by_sector[sector_num] and average_distance_by_sector[sector_num] < self.min_allowed_distance:
+                        obstacle = True
+                    if obstacles_by_sector[preceding_sector_num] and average_distance_by_sector[preceding_sector_num] < self.min_allowed_distance:
+                        obstacle = True
+                    if obstacles_by_sector[following_sector_num] and average_distance_by_sector[following_sector_num] < self.min_allowed_distance:
+                        obstacle = True
+                    if obstacle:
                         # allow only rotation
                         self.robot_body.set_car_motion(v_x=0, v_y=0, v_z=self.robot_head.speed_z)
                         if self.verbose >= 2:
