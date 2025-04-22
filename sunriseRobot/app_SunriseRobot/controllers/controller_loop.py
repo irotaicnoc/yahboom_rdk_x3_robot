@@ -124,6 +124,7 @@ class ControllerLoop(object):
                             self.average_distance_by_sector[following_sector_num] < self.min_allowed_distance):
                         obstacle = True
                     if obstacle:
+                        self.robot_body.set_beep(self.beep_time)
                         # allow only rotation
                         self.robot_body.set_car_motion(v_x=0, v_y=0, v_z=self.robot_head.speed_z)
                         if self.verbose >= 2:
