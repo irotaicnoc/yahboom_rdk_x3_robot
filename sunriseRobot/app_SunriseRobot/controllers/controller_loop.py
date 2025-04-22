@@ -8,7 +8,6 @@ import numpy as np
 import args
 import utils
 import global_constants as gc
-from coverage.cmdline import original_main
 from physical_accessories.lidar_listener import ThreadedLidarListener
 
 
