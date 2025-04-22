@@ -99,7 +99,7 @@ class ControllerLoop(object):
                     # calculate the direction of the robot given speed_x, speed_y, speed_z
                     # robot_direction is an angle in degrees in range [0, 360)
 
-                    sector_num = int(robot_direction / self.lidar_listener.sector_angle)
+                    sector_num = int(((robot_direction - 90) % 360) / self.lidar_listener.sector_angle)
                     preceding_sector_num = (sector_num - 1) % len(self.obstacles_by_sector)
                     following_sector_num = (sector_num + 1) % len(self.obstacles_by_sector)
                     print(f'robot_direction: {robot_direction}')
