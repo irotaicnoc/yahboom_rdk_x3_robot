@@ -81,17 +81,19 @@ class ControllerLoop(object):
                 # get the lidar data
                 obstacles_by_sector, average_distance_by_sector = self.lidar_listener.get_obstacles_by_sector()
                 if obstacles_by_sector is not None:
-                    self.print_state_ascii(
-                        obstacles_by_sector=obstacles_by_sector,
-                        average_distance_by_sector=average_distance_by_sector,
-                    )
-                    # calculate the direction of the robot given speed_x, speed_y, speed_z
-                    # robot_direction is an angle in degrees in range [0, 360)
                     robot_direction = utils.calculate_robot_direction(
                         speed_x=self.robot_head.speed_x,
                         speed_y=self.robot_head.speed_y,
                         speed_z=self.robot_head.speed_z,
                     )
+                    self.print_state_ascii(
+                        obstacles_by_sector=obstacles_by_sector,
+                        average_distance_by_sector=average_distance_by_sector,
+                        robot_direction=robot_direction,
+                    )
+                    # calculate the direction of the robot given speed_x, speed_y, speed_z
+                    # robot_direction is an angle in degrees in range [0, 360)
+
                     sector_num = int(robot_direction / self.lidar_listener.sector_angle)
                     preceding_sector_num = (sector_num - 1) % len(obstacles_by_sector)
                     following_sector_num = (sector_num + 1) % len(obstacles_by_sector)
@@ -140,7 +142,11 @@ class ControllerLoop(object):
 
         time.sleep(0.02)
 
-    def print_state_ascii(self, obstacles_by_sector, average_distance_by_sector):
+    def print_state_ascii(self,
+                          obstacles_by_sector: list,
+                          average_distance_by_sector: list,
+                          robot_direction: float
+                          ) -> None:
         os.system('clear')
         canvas = copy.deepcopy(self.base_canvas)
 
@@ -157,11 +163,6 @@ class ControllerLoop(object):
                     if 0 <= x < self.circle_diameter and 0 <= y < self.circle_diameter:
                         canvas[y][x] = '#'
 
-        robot_direction = utils.calculate_robot_direction(
-            speed_x=self.robot_head.speed_x,
-            speed_y=self.robot_head.speed_y,
-            speed_z=self.robot_head.speed_z,
-        )
         for i in range(2, 6):
             x = int(self.circle_radius + i * np.cos(np.deg2rad(robot_direction)))
             y = int(self.circle_radius - i * np.sin(np.deg2rad(robot_direction)))
@@ -172,7 +173,7 @@ class ControllerLoop(object):
             print(' '.join(row))
         time.sleep(0.1)
 
-    def start_lidar_listener(self):
+    def start_lidar_listener(self) -> None:
         if self.lidar_listener is None:
             try:
                 self.lidar_listener = ThreadedLidarListener(**self.lidar_kwargs, verbose=self.verbose)
@@ -193,7 +194,7 @@ class ControllerLoop(object):
             if self.verbose >= 2:
                 print('Lidar listener already started')
 
-    def stop_lidar_listener(self):
+    def stop_lidar_listener(self) -> None:
         if self.lidar_listener is not None:
             self.lidar_listener.delete_listener()
             self.lidar_listener = None
