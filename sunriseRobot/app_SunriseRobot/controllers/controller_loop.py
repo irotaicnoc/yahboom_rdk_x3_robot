@@ -86,20 +86,24 @@ class ControllerLoop(object):
                         average_distance_by_sector=average_distance_by_sector,
                     )
                     # calculate the direction of the robot given speed_x, speed_y, speed_z
-
-                    # # check if there are obstacles in the direction of the robot
-                    # if utils.check_obstacles_in_direction(
-                    #         obstacles_by_sector=obstacles_by_sector,
-                    #         average_distance_by_sector=average_distance_by_sector,
-                    #         robot_direction=robot_direction,
-                    #         min_allowed_distance=self.min_allowed_distance,
-                    # ):
-                    #     # stop the robot if there are obstacles in the direction of the robot
-                    #     self.robot_body.set_car_motion(v_x=0, v_y=0, v_z=0)
-                    #     if self.verbose >= 2:
-                    #         print('Obstacle detected, stopping the robot.')
-                    #     time.sleep(0.5)
-                    #     return
+                    # robot_direction is an angle in degrees in range [0, 360)
+                    robot_direction = utils.calculate_robot_direction(
+                        speed_x=self.robot_head.speed_x,
+                        speed_y=self.robot_head.speed_y,
+                        speed_z=self.robot_head.speed_z,
+                    )
+                    sector_num = int(robot_direction / self.lidar_listener.sector_angle)
+                    preceding_sector_num = (sector_num - 1) % len(obstacles_by_sector)
+                    following_sector_num = (sector_num + 1) % len(obstacles_by_sector)
+                    if average_distance_by_sector[sector_num] < self.min_allowed_distance or \
+                            average_distance_by_sector[preceding_sector_num] < self.min_allowed_distance or \
+                            average_distance_by_sector[following_sector_num] < self.min_allowed_distance:
+                        # allow only rotation
+                        self.robot_body.set_car_motion(v_x=0, v_y=0, v_z=self.robot_head.speed_z)
+                        if self.verbose >= 2:
+                            print('Obstacle detected, stopping the robot.')
+                        time.sleep(0.1)
+                        return
 
             self.robot_body.set_car_motion(
                 v_x=self.robot_head.speed_x,
