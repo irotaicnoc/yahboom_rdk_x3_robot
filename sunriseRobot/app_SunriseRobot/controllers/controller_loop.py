@@ -8,6 +8,7 @@ import numpy as np
 import args
 import utils
 import global_constants as gc
+from coverage.cmdline import original_main
 from physical_accessories.lidar_listener import ThreadedLidarListener
 
 
@@ -29,6 +30,9 @@ class ControllerLoop(object):
         self.lidar_is_active = False
         self.lidar_kwargs = parameters['lidar_kwargs']
         self.min_allowed_distance = parameters['min_allowed_distance']
+        assert self.min_allowed_distance[0] < self.min_allowed_distance[1], (f'min_allowed_distance[0] ('
+                                                        f'{self.min_allowed_distance[0]}) must be smaller than '
+                                                        f'min_allowed_distance[1] ({self.min_allowed_distance[1]}).')
         self.obstacles_by_sector = None
         self.average_distance_by_sector = None
         # print lidar and direction to console
@@ -103,14 +107,21 @@ class ControllerLoop(object):
                         preceding_sector_num = (sector_num - 1) % len(self.obstacles_by_sector)
                         following_sector_num = (sector_num + 1) % len(self.obstacles_by_sector)
                         obstacle = False
+                        min_allowed_distance = utils.change_range(
+                            value=self.robot_head.speed_coefficient,
+                            original_min=0.1,
+                            original_max=1.0,
+                            new_min=self.min_allowed_distance[0],
+                            new_max=self.min_allowed_distance[1],
+                        )
                         if (self.obstacles_by_sector[sector_num] and
-                                self.average_distance_by_sector[sector_num] < self.min_allowed_distance):
+                                self.average_distance_by_sector[sector_num] < min_allowed_distance):
                             obstacle = True
                         if (self.obstacles_by_sector[preceding_sector_num] and
-                                self.average_distance_by_sector[preceding_sector_num] < self.min_allowed_distance):
+                                self.average_distance_by_sector[preceding_sector_num] < min_allowed_distance):
                             obstacle = True
                         if (self.obstacles_by_sector[following_sector_num] and
-                                self.average_distance_by_sector[following_sector_num] < self.min_allowed_distance):
+                                self.average_distance_by_sector[following_sector_num] < min_allowed_distance):
                             obstacle = True
                         if obstacle:
                             self.robot_body.set_beep(self.beep_time)

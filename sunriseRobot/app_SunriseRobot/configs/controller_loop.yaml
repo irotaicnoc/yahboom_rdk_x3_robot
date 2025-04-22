@@ -5,6 +5,8 @@ beep_time: 50
 lidar_kwargs:
   topic_name: scan
   queue_size: 3
-  response_dist: 0.6
+  response_dist: 0.8
   sector_angle: 20
-min_allowed_distance: 0.25
+# if the robot is closer than this distance to an obstacle, it will stop
+# it is a range because it is dynamically calculated based on the current speed
+min_allowed_distance: [0.25, 0.5]
