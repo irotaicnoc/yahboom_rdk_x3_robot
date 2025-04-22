@@ -102,16 +102,16 @@ class ControllerLoop(object):
                     sector_num = int(((robot_direction - 90) % 360) / self.lidar_listener.sector_angle)
                     preceding_sector_num = (sector_num - 1) % len(self.obstacles_by_sector)
                     following_sector_num = (sector_num + 1) % len(self.obstacles_by_sector)
-                    print(f'robot_direction: {robot_direction}')
-                    print(f'preceding_sector_num: {preceding_sector_num}')
-                    print(f'sector_num: {sector_num}')
-                    print(f'following_sector_num: {following_sector_num}')
-                    print(f'average_distance_by_sector[sector_num]: {self.average_distance_by_sector[sector_num]}')
-                    print(f'average_distance_by_sector[preceding_sector_num]: '
-                          f'{self.average_distance_by_sector[preceding_sector_num]}')
-                    print(f'average_distance_by_sector[following_sector_num]: '
-                          f'{self.average_distance_by_sector[following_sector_num]}')
-                    print(f'min_allowed_distance: {self.min_allowed_distance}')
+                    # print(f'robot_direction: {robot_direction}')
+                    # print(f'preceding_sector_num: {preceding_sector_num}')
+                    # print(f'sector_num: {sector_num}')
+                    # print(f'following_sector_num: {following_sector_num}')
+                    # print(f'average_distance_by_sector[sector_num]: {self.average_distance_by_sector[sector_num]}')
+                    # print(f'average_distance_by_sector[preceding_sector_num]: '
+                    #       f'{self.average_distance_by_sector[preceding_sector_num]}')
+                    # print(f'average_distance_by_sector[following_sector_num]: '
+                    #       f'{self.average_distance_by_sector[following_sector_num]}')
+                    # print(f'min_allowed_distance: {self.min_allowed_distance}')
 
                     obstacle = False
                     if (self.obstacles_by_sector[sector_num] and
