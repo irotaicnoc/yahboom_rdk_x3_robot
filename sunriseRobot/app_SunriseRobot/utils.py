@@ -223,7 +223,7 @@ def calculate_robot_direction(speed_x: float, speed_y: float, speed_z: float) ->
     # speed_y: translate left-right speed
     # speed_z: rotate left-right speed
     if speed_x == 0 and speed_y == 0:
-        angle_degrees = None
+        return None
     elif speed_x == 0:
         if speed_y > 0:
             angle_degrees = 180
