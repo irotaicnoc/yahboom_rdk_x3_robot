@@ -89,7 +89,7 @@ class ControllerLoop(object):
                     robot_direction = utils.calculate_robot_direction(
                         speed_x=self.robot_head.speed_x,
                         speed_y=self.robot_head.speed_y,
-                        speed_z=self.robot_head.speed_z,
+                        speed_z=self.robot_head.speed_z / self.robot_head.speed_coefficient,
                     )
                     self.print_state_ascii(
                         obstacles_by_sector=self.obstacles_by_sector,
