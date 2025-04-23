@@ -13,7 +13,6 @@ from controllers.ps2_controller import PS2Controller
 from controllers.controller_loop import ControllerLoop
 from physical_accessories.gpio_pin_control import GpioLed
 from controllers.controller_interface import ControllerFunctions
-from physical_accessories.lidar_listener import ThreadedLidarListener
 
 
 def main_loop(**kwargs):
