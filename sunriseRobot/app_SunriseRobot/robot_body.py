@@ -965,7 +965,7 @@ class RobotBody(object):
             return angle
         except:
             warnings.warn('get_arm_angle_list error')
-            return [-2, -2, -2, -2, -2, -2]
+            return [-1, -1, -1, -1, -1, -1]
 
     # Get accelerometer tri-axial data, return a_x, a_y, a_z
     def get_accelerometer_data(self) -> (int, int, int):

@@ -19,16 +19,19 @@ def main_loop(**kwargs):
     parameters = args.import_args(yaml_path=gc.CONFIG_FOLDER_PATH + 'main_thread.yaml', **kwargs)
     robot_body = RobotBody(com=parameters['com'], baud_rate=parameters['baud_rate'], verbose=parameters['verbose'])
     robot_body.create_receive_threading()
-    arm_initial_angles = [90, 90, 90, 90, 90, 90]
-    if parameters['arm_present']:
-        arm_initial_angles = robot_body.get_arm_angle_list()
+
+    # ARM
+    arm_present = False
+    arm_initial_angles = robot_body.get_arm_angle_list()
+    if arm_initial_angles != [-1, -1, -1, -1, -1, -1]:
+        arm_present = True
 
     # LIGHTS
     internal_light = Light(verbose=parameters['verbose'])
     gpio_led = GpioLed()
 
     robot_head = RobotHead(
-        arm_present=parameters['arm_present'],
+        arm_present=arm_present,
         arm_initial_angles=arm_initial_angles,
         internal_light=internal_light,
         gpio_led=gpio_led,
