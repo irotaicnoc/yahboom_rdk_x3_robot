@@ -193,7 +193,7 @@ def task_screen(**kwargs):
         oled = OLED(clear=False, **kwargs)
         while True:
             state = oled.main_program()
-            oled.clear(True)
+            oled.clear(refresh=True)
             if not state:
                 del oled
                 warnings.warn('Oled error. Oled deactivated')

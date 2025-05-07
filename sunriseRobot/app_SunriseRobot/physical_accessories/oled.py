@@ -58,7 +58,7 @@ class OLED:
                 print('---OLED not found!---')
             return False
 
-    # Clear the display.  Refresh =True Refresh immediately, refresh=False refresh not
+    # Clear the display. Refresh =True Refresh immediately, refresh=False refresh not
     def clear(self, refresh=False):
         self.__draw.rectangle(
             (0, 0, self.__WIDTH, self.__HEIGHT), outline=0, fill=0)
