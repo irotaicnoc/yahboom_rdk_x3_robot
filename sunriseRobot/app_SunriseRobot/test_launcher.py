@@ -11,3 +11,7 @@ def main(**kwargs):
     robot_body.create_receive_threading()
 
     test_code.buzzer_song_mario.play(robot_body=robot_body)
+
+
+if __name__ == '__main__':
+    main()
