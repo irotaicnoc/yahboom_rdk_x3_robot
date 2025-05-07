@@ -1,6 +1,6 @@
-from sunriseRobot.app_SunriseRobot import args
-from sunriseRobot.app_SunriseRobot import global_constants as gc
+from .. import args
 from robot_body import RobotBody
+from .. import global_constants as gc
 
 
 kwargs = {}
