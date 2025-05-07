@@ -138,9 +138,10 @@ class OLED:
 
     def get_battery_voltage(self) -> str:
         try:
-            voltage = self.robot_body.get_battery_voltage()
-            percent = utils.voltage_to_percent(voltage)
-            return f'Battery: {percent:.1f}% ({voltage:.2f}V)'
+            # voltage = self.robot_body.get_battery_voltage()
+            percent = utils.voltage_to_percent(self.robot_body.get_battery_voltage())
+            # return f'Battery: {percent:.1f}% ({voltage:.2f}V)'
+            return f'Battery: {percent:.1f}%'
         except:
             return f'Battery: error'
 
