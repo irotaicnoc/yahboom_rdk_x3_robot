@@ -3,6 +3,7 @@ import time
 
 def play(robot_body):
     # Mario Theme
+
     robot_body.set_beep(100)
     robot_body.set_beep(0)
     time.sleep(0.05)
