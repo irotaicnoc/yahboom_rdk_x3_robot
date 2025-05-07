@@ -1,4 +1,4 @@
-from root.GIT.yahboom_rdk_x3_robot.sunriseRobot.app_SunriseRobot.robot_body import RobotBody
+from robot_body import RobotBody
 
 
 robot_body = RobotBody(verbose=2)
