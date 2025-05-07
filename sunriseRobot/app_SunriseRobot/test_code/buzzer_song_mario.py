@@ -1,8 +1,8 @@
-import args
-from robot_body import RobotBody
+import robot_body
+# from robot_body import RobotBody
 
 
-robot_body = RobotBody(verbose=2)
+robot_body = robot_body.RobotBody(verbose=2)
 robot_body.create_receive_threading()
 robot_body.set_beep(100)
 robot_body.set_beep(100)
