@@ -1,4 +1,4 @@
-import robot_body
+from .. import robot_body
 # from robot_body import RobotBody
 
 
