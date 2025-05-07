@@ -1,7 +1,5 @@
-import time
-
-import args
-import global_constants as gc
+from sunriseRobot.app_SunriseRobot import args
+from sunriseRobot.app_SunriseRobot import global_constants as gc
 from robot_body import RobotBody
 
 
