@@ -1,6 +1,6 @@
 import args
 # import utils
-import test_code
+from test_code import buzzer_song_mario
 import global_constants as gc
 from robot_body import RobotBody
 
@@ -10,7 +10,7 @@ def main(**kwargs):
     robot_body = RobotBody(com=parameters['com'], baud_rate=parameters['baud_rate'], verbose=parameters['verbose'])
     robot_body.create_receive_threading()
 
-    test_code.buzzer_song_mario.play(robot_body=robot_body)
+    buzzer_song_mario.play(robot_body=robot_body)
 
 
 if __name__ == '__main__':
