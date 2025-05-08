@@ -123,7 +123,7 @@ class ControllerLoop(object):
                             # allow only rotation
                             self.robot_body.set_car_motion(v_x=0, v_y=0, v_z=self.robot_head.speed_z)
                             if self.verbose >= 2:
-                                print('Obstacle detected, stopping the robot.')
+                                print('obstacle detected, stopping the robot')
                             time.sleep(0.1)
                             return
             self.robot_body.set_car_motion(

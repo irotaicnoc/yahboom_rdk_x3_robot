@@ -89,7 +89,6 @@ class ControllerFunctions(object):
                 self.robot_head.previous_model()
 
     def button_south(self, value: bool) -> None:
-        # memorize current arm position or reach memorized arm position
         if self.robot_head.robot_mode == 'user_control_arm':
             if value:
                 self.robot_head.set_arm_desired_angles(angle_list=[90, 90, 90, 90, 90, 90])
@@ -182,7 +181,6 @@ class ControllerFunctions(object):
                 print(f'Controller with id {controller_id} tried to disconnect, but this id is not connected')
 
     def memorize_or_reach_arm_position(self, button: str, value: bool) -> None:
-        # TODO: remove debug prints
         if self.robot_head.robot_mode == 'user_control_arm':
             if value:
                 self.gpio_led.set_color('orange')
