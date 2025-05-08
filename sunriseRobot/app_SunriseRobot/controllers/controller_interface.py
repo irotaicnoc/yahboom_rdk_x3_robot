@@ -3,7 +3,9 @@
 import time
 import warnings
 
+import args
 import utils
+import global_constants as gc
 
 
 class ControllerFunctions(object):
@@ -18,13 +20,16 @@ class ControllerFunctions(object):
         self.internal_light = robot_head.internal_light
         self.gpio_led = robot_head.gpio_led
         self.verbose = verbose
+        parameters = args.import_args(yaml_path=gc.CONFIG_FOLDER_PATH + 'controller_interface.yaml')
 
         # accept only one button input per cooldown
-        self.BUTTON_COOLDOWN = 5.0  # minimum seconds between button presses
+        # minimum seconds between button presses
+        self.button_cooldown = parameters['button_cooldown']
         self.last_button_press = {}
 
         self.memorized_arm_position = {}
-        self.MEMORIZE_TIME = 2  # seconds to memorize arm position
+        # button press seconds to memorize arm position
+        self.memorize_time = parameters['memorize_time']
 
     # value is True or False for buttons
     # value is a float in range [-1, 1] for axes
@@ -145,7 +150,7 @@ class ControllerFunctions(object):
 
     def button_select(self, value: bool) -> None:
         # switch between user-controlled mode and autonomous mode
-        # only allow one press every self.BUTTON_COOLDOWN
+        # only allow one press every self.button_cooldown
         if value:
             if self.cooldown(button='button_select'):
                 self.robot_head.next_mode()
@@ -189,7 +194,7 @@ class ControllerFunctions(object):
             else:
                 elapsed_time = time.time() - self.robot_head.button_press_time
                 self.robot_head.button_press_time = 0
-                if elapsed_time >= self.MEMORIZE_TIME:
+                if elapsed_time >= self.memorize_time:
                     self.memorized_arm_position[button] = self.robot_body.get_arm_angle_list()
                 else:
                     if button in self.memorized_arm_position:
@@ -203,7 +208,7 @@ class ControllerFunctions(object):
             return True
         else:
             elapsed_time = time.time() - self.last_button_press[button]
-            if elapsed_time >= self.BUTTON_COOLDOWN:
+            if elapsed_time >= self.button_cooldown:
                 self.last_button_press[button] = time.time()
                 return True
             else:
