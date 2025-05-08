@@ -144,9 +144,9 @@ class ControllerLoop(object):
                 self.robot_body.set_arm_torque(enable=self.robot_head.arm_is_rigid)
 
             for button in self.robot_head.button_press_timestamp:
-                if button in self.robot_head.memorizable_button_list:
-                    timestamp = self.robot_head.button_press_timestamp[button]
-                    if timestamp != 0:
+                timestamp = self.robot_head.button_press_timestamp[button]
+                if timestamp != 0:
+                    if button in self.robot_head.memorizable_button_list:
                         if time.time() - timestamp >= self.robot_head.button_press_required_time:
                             if self.robot_head.one_time_check[button]:
                                 self.robot_head.gpio_led.set_color('green')
