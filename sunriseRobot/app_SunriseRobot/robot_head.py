@@ -157,7 +157,7 @@ class RobotHead:
             original_min=0.1,
             original_max=1,
             new_min=2000,
-            new_max=400,
+            new_max=500,
         )
         self.arm_desired_angles = copy.deepcopy(angle_list)
 

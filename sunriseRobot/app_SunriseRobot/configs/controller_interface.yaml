@@ -1,4 +1,4 @@
 verbose: 0
 
 # minimum time between button presses (seconds)
-button_cooldown: 5
+button_cooldown: 4
