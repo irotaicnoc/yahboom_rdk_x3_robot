@@ -9,4 +9,4 @@ lidar_kwargs:
   sector_angle: 20
 # if the robot is closer than this distance to an obstacle, it will stop
 # it is a range because it is dynamically calculated based on the current speed
-min_allowed_distance: [0.25, 0.5]
+min_allowed_distance: [0.2, 0.4]
