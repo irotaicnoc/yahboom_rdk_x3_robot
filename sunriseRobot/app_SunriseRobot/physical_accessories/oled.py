@@ -10,13 +10,7 @@ import utils
 
 
 class OLED:
-    def __init__(self,
-                 robot_body,
-                 robot_head,
-                 i2c_bus=0,
-                 clear=False,
-                 verbose: int = 0,
-                 ):
+    def __init__(self, robot_body, robot_head, i2c_bus=0, clear=False, verbose: int = 0):
         self.verbose = verbose
         self.__i2c_bus = i2c_bus
         self.__clear = clear

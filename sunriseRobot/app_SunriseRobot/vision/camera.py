@@ -6,7 +6,7 @@ import cv2 as cv
 
 # V1.0.1
 class Camera(object):
-    def __init__(self, video_id=0, width=640, height=480, debug=False):
+    def __init__(self, video_id: int = 0, width: int = 640, height: int = 480, debug: bool = False):
         self.__debug = debug
         self.__video_id = int(video_id)
         self.__state = False
@@ -65,12 +65,12 @@ class Camera(object):
         self.__video.set(cv.CAP_PROP_FRAME_HEIGHT, self.__height)  # 480
 
     # Check whether the camera is enabled successfully
-    def isOpened(self):
+    def is_opened(self):
         return self.__video.isOpened()
 
     # Release the camera
     def clear(self):
-        if self.isOpened():
+        if self.is_opened():
             self.__video.release()
         self.__state = False
 
@@ -114,13 +114,13 @@ class Camera(object):
         return success, image
 
     # Gets the JPG image of the camera
-    def get_frame_jpg(self, text='', color=(0, 255, 0)):
+    def get_frame_jpg(self, text_to_add='', color=(0, 255, 0)):
         success, image = self.__video.read()
         if not success:
             return success, bytes({1})
-        if text != '':
-            # The parameters are: image, added text, top left coordinate, font, font size, color, font size
-            cv.putText(image, str(text), (10, 20), cv.FONT_HERSHEY_SIMPLEX, 0.5, color, 1)
+        if text_to_add != '':
+            # The parameters are: image, added text_to_add, top left coordinate, font, font size, color, font size
+            cv.putText(image, str(text_to_add), (10, 20), cv.FONT_HERSHEY_SIMPLEX, 0.5, color, 1)
         success, jpeg = cv.imencode('.jpg', image)
         return success, jpeg.tobytes()
 
@@ -130,7 +130,7 @@ if __name__ == '__main__':
     average = True
     m_fps = 0
     t_start = time.time()
-    while camera.isOpened():
+    while camera.is_opened():
         if average:
             ret, frame = camera.get_frame()
             m_fps = m_fps + 1

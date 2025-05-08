@@ -1,3 +1,5 @@
+verbose: 0
+
 # minimum time between button presses (seconds)
 button_cooldown: 5
 # time to memorize arm position (seconds)

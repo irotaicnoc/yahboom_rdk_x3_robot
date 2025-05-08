@@ -12,11 +12,7 @@ from physical_accessories.lidar_listener import ThreadedLidarListener
 
 
 class ControllerLoop(object):
-    def __init__(self,
-                 robot_body,
-                 robot_head,
-                 verbose: int = 0,
-                 ):
+    def __init__(self, robot_body, robot_head, verbose: int = 0):
         parameters = args.import_args(yaml_path=gc.CONFIG_FOLDER_PATH + 'controller_loop.yaml', verbose=verbose)
         self.robot_body = robot_body
         self.robot_head = robot_head

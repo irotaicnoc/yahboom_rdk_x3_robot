@@ -9,24 +9,21 @@ import global_constants as gc
 
 
 class ControllerFunctions(object):
-    def __init__(self,
-                 robot_head,
-                 robot_body,
-                 verbose: int = 0,
-                 ):
+    def __init__(self, robot_head, robot_body, **kwargs):
 
         self.robot_head = robot_head
         self.robot_body = robot_body
         self.internal_light = robot_head.internal_light
         self.gpio_led = robot_head.gpio_led
-        self.verbose = verbose
-        parameters = args.import_args(yaml_path=gc.CONFIG_FOLDER_PATH + 'controller_interface.yaml')
+        parameters = args.import_args(yaml_path=gc.CONFIG_FOLDER_PATH + 'controller_interface.yaml', **kwargs)
+        self.verbose = parameters['verbose']
 
         # accept only one button input per cooldown
         # minimum seconds between button presses
         self.button_cooldown = parameters['button_cooldown']
         self.last_button_press = {}
 
+        # memorize and go-to arm positions
         self.memorized_arm_position = {}
         # button press seconds to memorize arm position
         self.memorize_time = parameters['memorize_time']
