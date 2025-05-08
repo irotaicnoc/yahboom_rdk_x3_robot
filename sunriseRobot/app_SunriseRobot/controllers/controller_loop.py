@@ -143,13 +143,15 @@ class ControllerLoop(object):
                     self.robot_head.arm_desired_angles = self.robot_body.get_arm_angle_list()
                 self.robot_body.set_arm_torque(enable=self.robot_head.arm_is_rigid)
 
-            if self.robot_head.button_press_time != 0:
-                elapsed_time = time.time() - self.robot_head.button_press_time
-                if elapsed_time >= 2:
-                    if self.robot_head.one_time_check:
-                        self.robot_head.gpio_led.set_color('green')
-                        self.robot_head.one_time_check = False
-                        self.robot_body.set_beep(self.beep_time)
+            for button in self.robot_head.button_press_timestamp:
+                if button in self.robot_head.memorizable_button_list:
+                    timestamp = self.robot_head.button_press_timestamp[button]
+                    if timestamp != 0:
+                        if time.time() - timestamp >= self.robot_head.button_press_required_time:
+                            if self.robot_head.one_time_check[button]:
+                                self.robot_head.gpio_led.set_color('green')
+                                self.robot_head.one_time_check[button] = False
+                                self.robot_body.set_beep(self.beep_time)
 
             if self.robot_head.arm_is_rigid:
                 self.robot_head.update_arm_desired_angles()

@@ -25,8 +25,6 @@ class ControllerFunctions(object):
 
         # memorize and go-to arm positions
         self.memorized_arm_position = {}
-        # button press seconds to memorize arm position
-        self.memorize_time = parameters['memorize_time']
 
     # value is True or False for buttons
     # value is a float in range [-1, 1] for axes
@@ -181,15 +179,17 @@ class ControllerFunctions(object):
                 print(f'Controller with id {controller_id} tried to disconnect, but this id is not connected')
 
     def memorize_or_reach_arm_position(self, button: str, value: bool) -> None:
+        if button not in self.robot_head.memorizable_button_list:
+            self.robot_head.memorizable_button_list.append(button)
         if self.robot_head.robot_mode == 'user_control_arm':
             if value:
                 self.gpio_led.set_color('orange')
-                self.robot_head.one_time_check = True
-                self.robot_head.button_press_time = time.time()
+                self.robot_head.one_time_check[button] = True
+                self.robot_head.button_press_timestamp[button] = time.time()
             else:
-                elapsed_time = time.time() - self.robot_head.button_press_time
-                self.robot_head.button_press_time = 0
-                if elapsed_time >= self.memorize_time:
+                elapsed_time = time.time() - self.robot_head.button_press_timestamp[button]
+                self.robot_head.button_press_timestamp[button] = 0
+                if elapsed_time >= self.robot_head.button_press_required_time:
                     self.memorized_arm_position[button] = self.robot_body.get_arm_angle_list()
                 else:
                     if button in self.memorized_arm_position:

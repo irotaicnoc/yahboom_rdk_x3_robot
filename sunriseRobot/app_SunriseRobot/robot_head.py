@@ -73,8 +73,10 @@ class RobotHead:
             # for manual control use 0, for arbitrary position specified directly via arm_desired_angles
             # use a slower speed (higher value)
             self.run_time = 0
-            self.button_press_time = 0
-            self.one_time_check = False
+            self.button_press_timestamp = {}
+            self.one_time_check = {}
+            self.memorizable_button_list = []
+            self.button_press_required_time = parameters['button_press_required_time']
 
     def next_mode(self):
         if self.verbose >= 3:
