@@ -23,6 +23,6 @@ turn_only_angle: 50.0
 
 # if True, the robot will ignore all sounds that come from the back of the microphone array
 # this will remove the sounds of the robot, but also the sounds of the target if it is behind the robot
-ignore_self_noise: True
+ignore_self_noise: False
 # angle (in degrees) after which the sound is considered to be coming from the back of the robot
 ignore_angle: 140.0
