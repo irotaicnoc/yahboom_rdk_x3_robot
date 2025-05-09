@@ -15,10 +15,10 @@ class RobotHead:
         self.connected_controllers = 0
 
         # autonomous mode parameters
-        # self.robot_mode_list = ['user_control_wheels', ]
-        self.robot_mode_list = []
-        self.robot_mode_list.append('user_control_wheels')
+        self.robot_mode_list = ['user_controlled']
+        self.robot_sub_mode_dict = {self.robot_mode_list[0]: ['wheels']}
         self.robot_mode = self.robot_mode_list[0]
+        self.robot_sub_mode = self.robot_sub_mode_dict[self.robot_mode][0]
         if self.verbose >= 1:
             print(f'Robot mode: {self.robot_mode}')
         self.tracking_target_list = parameters['tracking_target_list']
@@ -52,8 +52,8 @@ class RobotHead:
         self.gpio_led = parameters['gpio_led']
 
         # arm parameters
-        if parameters['arm_present']:
-            self.robot_mode_list.append('user_control_arm')
+        if parameters['arm_available']:
+            self.robot_sub_mode_dict['user_controlled'].append('arm')
             self.arm_speed_proportion = parameters['arm_speed_proportion']
             self.arm_is_rigid = True
             self.arm_state_not_updated = False
@@ -84,11 +84,28 @@ class RobotHead:
         self.robot_mode = self.robot_mode_list[
             (self.robot_mode_list.index(self.robot_mode) + 1) % len(self.robot_mode_list)
         ]
+        if self.robot_mode in self.robot_sub_mode_dict:
+            self.robot_sub_mode = self.robot_sub_mode_dict[self.robot_mode][0]
+        else:
+            self.robot_sub_mode = None
         self.gpio_led.set_color('off')
         self.internal_light.stop()
 
         if self.verbose >= 1:
             print(f'Switching to {self.robot_mode} mode.')
+
+    def next_sub_mode(self):
+        if self.verbose >= 3:
+            print(f'Switching from {self.robot_sub_mode} sub mode.')
+        current_sub_mode_list = self.robot_sub_mode_dict[self.robot_mode]
+        if current_sub_mode_list is not None:
+            self.robot_sub_mode = current_sub_mode_list[
+                (current_sub_mode_list.index(self.robot_sub_mode) + 1) % len(current_sub_mode_list)
+            ]
+        else:
+            self.robot_sub_mode = None
+        if self.verbose >= 1:
+            print(f'Switching to {self.robot_sub_mode} sub mode.')
 
     def next_target(self):
         self.tracking_target_pos += 1

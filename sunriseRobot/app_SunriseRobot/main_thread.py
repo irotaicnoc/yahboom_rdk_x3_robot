@@ -21,17 +21,17 @@ def main_loop(**kwargs):
     robot_body.create_receive_threading()
 
     # ARM
-    arm_present = False
+    arm_available = False
     arm_initial_angles = robot_body.get_arm_angle_list()
     if arm_initial_angles != [-1, -1, -1, -1, -1, -1]:
-        arm_present = True
+        arm_available = True
 
     # LIGHTS
     internal_light = Light(verbose=parameters['verbose'])
     gpio_led = GpioLed()
 
     robot_head = RobotHead(
-        arm_present=arm_present,
+        arm_available=arm_available,
         arm_initial_angles=arm_initial_angles,
         internal_light=internal_light,
         gpio_led=gpio_led,
@@ -167,7 +167,9 @@ def task_vision_agent(**kwargs):
         if 'autonomous_vision' in robot_head.robot_mode_list:
             robot_head.robot_mode_list.remove('autonomous_vision')
             if robot_head.robot_mode == 'autonomous_vision':
-                robot_head.robot_mode = 'user_control_wheels'
+                robot_head.robot_mode = robot_head.robot_mode_list[0]
+                if robot_head.robot_sub_mode_dict[robot_head.robot_mode] is not None:
+                    robot_head.robot_sub_mode = robot_head.robot_sub_mode_dict[robot_head.robot_mode][0]
 
 
 def task_sound_agent(**kwargs):
@@ -184,7 +186,9 @@ def task_sound_agent(**kwargs):
         if 'autonomous_sound' in robot_head.robot_mode_list:
             robot_head.robot_mode_list.remove('autonomous_sound')
             if robot_head.robot_mode == 'autonomous_sound':
-                robot_head.robot_mode = 'user_control_wheels'
+                robot_head.robot_mode = robot_head.robot_mode_list[0]
+                if robot_head.robot_sub_mode_dict[robot_head.robot_mode] is not None:
+                    robot_head.robot_sub_mode = robot_head.robot_sub_mode_dict[robot_head.robot_mode][0]
 
 
 # oled screen
@@ -196,13 +200,13 @@ def task_screen(**kwargs):
             oled.clear(refresh=True)
             if not state:
                 del oled
-                warnings.warn('Oled error. Oled deactivated')
+                warnings.warn('oled error. oled deactivated')
                 break
-            print('Oled cleared')
+            print('oled cleared')
             time.sleep(2)
     except KeyboardInterrupt as e:
         del oled
-        print('Oled error:')
+        print('oled error:')
         print(e)
         print(e.__traceback__)
 
