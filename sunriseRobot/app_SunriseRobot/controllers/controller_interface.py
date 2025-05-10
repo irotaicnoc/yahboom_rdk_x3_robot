@@ -202,17 +202,14 @@ class ControllerFunctions(object):
             self.robot_head.memorizable_button_list.append(button)
         if value:
             self.gpio_led.set_color('orange')
-            self.robot_head.one_time_check[button] = True
-            self.robot_head.button_press_timestamp[button] = time.time()
+            self.start_counting(button=button)
         else:
-            elapsed_time = time.time() - self.robot_head.button_press_timestamp[button]
-            self.robot_head.button_press_timestamp[button] = 0
-            if elapsed_time >= self.robot_head.button_press_required_time:
+            self.gpio_led.set_color('off')
+            if self.enough_press_time(button=button):
                 self.memorized_arm_position[button] = self.robot_body.get_arm_angle_list()
             else:
                 if button in self.memorized_arm_position:
                     self.robot_head.set_arm_desired_angles(angle_list=self.memorized_arm_position[button])
-            self.gpio_led.set_color('off')
 
     def cooldown_ended(self, button: str) -> bool:
         # add/check cooldown to button press
