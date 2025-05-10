@@ -1,6 +1,5 @@
 camera_topic: camera_stream
 queue_size: 3
-image_orientation: 0
 video_capture_kwargs:
   pipe_id: 1
   video_index: -1

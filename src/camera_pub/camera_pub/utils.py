@@ -12,7 +12,7 @@ def args_from_yaml(config_path: str) -> dict:
     return arg_dict
 
 
-def format_camera_frames(frame, width: int, height: int, image_orientation: int):
+def format_camera_frames(frame, width: int, height: int):
     # if save_img:
     #     with open(f'/root/marco_ros2_ws/src/camera_pub/camera_pub/{counter}_01_frame_raw.raw', 'wb') as f:
     #         f.write(frame)
@@ -31,14 +31,15 @@ def format_camera_frames(frame, width: int, height: int, image_orientation: int)
     # logger().info(f'frame_rgb shape: {frame_rgb.shape}')
     # logger().info(f'image_orientation: {image_orientation}')
     # logger().info(f'image_orientation type: {type(image_orientation)}')
-    # flipped_frame = cv2.flip(src=frame_rgb, flipCode=image_orientation)
+    # flip image vertically (left and right are inverted for some reason)
+    flipped_frame = cv2.flip(src=frame_rgb, flipCode=1)
     # if save_img:
     #     cv2.imwrite(f'/root/marco_ros2_ws/src/camera_pub/camera_pub/{counter}_05_flipped_frame.jpg', flipped_frame)
     # logger().info(f'flipped frame shape: {flipped_frame.shape}')
     # if counter >= 4:
     #     exit()
 
-    return frame_rgb
+    return flipped_frame
 
     # Convert to JPEG
     # encode_param = [cv2.IMWRITE_JPEG_QUALITY, 80]

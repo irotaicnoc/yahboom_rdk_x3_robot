@@ -14,7 +14,6 @@ from camera_pub import utils
 class CameraPublisherNode(Node):
     def __init__(self,
                  camera_topic: str,
-                 image_orientation: int,
                  queue_size: int,
                  video_capture_kwargs: dict,
                  verbose: int = 0,
@@ -36,7 +35,6 @@ class CameraPublisherNode(Node):
             self.get_logger().info(f'camera is_open: FAILED')
         self.image_width = self.video_capture_kwargs['width']
         self.image_height = self.video_capture_kwargs['height']
-        self.image_orientation = image_orientation
         if self.is_open != 0:
             self.destroy_node()
 
@@ -65,7 +63,6 @@ class CameraPublisherNode(Node):
             frame=frame,
             width=self.image_width,
             height=self.image_height,
-            image_orientation=self.image_orientation,
             # logger=self.get_logger,
             # save_img=save_img,
             # counter=self.message_counter//100,
