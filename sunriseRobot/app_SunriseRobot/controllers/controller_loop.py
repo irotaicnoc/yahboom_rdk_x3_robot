@@ -136,13 +136,13 @@ class ControllerLoop(object):
             # arm servos
             elif self.robot_head.robot_sub_mode == 'arm':
                 if self.robot_head.arm_state_not_updated:
-                    # beep to signal the change in arm state
-                    self.robot_body.set_beep(self.beep_time)
                     self.robot_head.arm_state_not_updated = False
                     # manually set configuration is maintained
                     if self.robot_head.arm_is_rigid:
                         self.robot_head.arm_desired_angles = self.robot_body.get_arm_angle_list()
                     self.robot_body.set_arm_torque(enable=self.robot_head.arm_is_rigid)
+                    # beep to signal the change in arm state
+                    # self.robot_body.set_beep(self.beep_time)
 
                 for button in self.robot_head.button_press_timestamp:
                     timestamp = self.robot_head.button_press_timestamp[button]
