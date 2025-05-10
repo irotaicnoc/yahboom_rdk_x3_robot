@@ -158,10 +158,6 @@ class RobotHead:
             else:
                 print(f'Arm can be moved manually, but cannot be controlled by the controller')
 
-    def update_arm_speed(self, servo_id: int, value) -> None:
-        self.run_time = 0
-        self.arm_speed[servo_id] = value * self.speed_coefficient * self.arm_speed_proportion
-
     def update_arm_desired_angles(self) -> None:
         for servo_id in range(len(self.arm_speed)):
             servo_speed = self.arm_speed[servo_id]
