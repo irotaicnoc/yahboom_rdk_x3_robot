@@ -155,7 +155,7 @@ class ControllerLoop(object):
                                     self.robot_body.set_beep(self.beep_time)
 
                 if self.robot_head.arm_is_rigid:
-                    self.robot_head.update_arm_desired_angles()
+                    self.update_arm_desired_angles()
                     self.robot_body.set_arm_angle_list(
                         angle_s=self.robot_head.arm_desired_angles,
                         run_time=self.robot_head.run_time,
@@ -230,3 +230,13 @@ class ControllerLoop(object):
                 print('Lidar listener already stopped')
         self.lidar_is_active = False
         self.robot_head.lidar_listener_status = 'inactive'
+
+    def update_arm_desired_angles(self) -> None:
+        for servo_id in range(len(self.robot_head.arm_speed)):
+            servo_speed = self.robot_head.arm_speed[servo_id]
+            temp_angle = self.robot_head.arm_desired_angles[servo_id] + servo_speed
+            if temp_angle < 0:
+                temp_angle = 0
+            if temp_angle > 180:
+                temp_angle = 180
+            self.robot_head.arm_desired_angles[servo_id] = temp_angle

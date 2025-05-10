@@ -64,15 +64,15 @@ class RobotHead:
             # during each loop iteration, the desired angle is updated by adding the speed
             # and the real angle is moved closer to the desired angle
             self.arm_desired_angles = parameters['arm_initial_angles']
-            if len(self.arm_desired_angles) > 6:
+            if len(self.arm_desired_angles) != 6:
                 if self.verbose >= 1:
-                    print(f'The robot supports at most a 6-servos arm,'
-                          f' but {len(self.arm_desired_angles)} were provided. ')
+                    print(f'The robot supports a 6-servos arm, the current has {len(self.arm_desired_angles)} servos.')
             # speed with which the arm reaches the desired angle [0, 2000]
             # 0 is the fastest speed, 2000 is the slowest speed
             # for manual control use 0, for arbitrary position specified directly via arm_desired_angles
             # use a slower speed (higher value)
-            self.run_time = 0
+            self.arm_automated_speed = parameters['arm_automated_speed']
+            self.run_time = self.arm_automated_speed[0]
             self.button_press_timestamp = {}
             self.one_time_check = {}
             self.memorizable_button_list = []
@@ -158,16 +158,6 @@ class RobotHead:
             else:
                 print(f'Arm can be moved manually, but cannot be controlled by the controller')
 
-    def update_arm_desired_angles(self) -> None:
-        for servo_id in range(len(self.arm_speed)):
-            servo_speed = self.arm_speed[servo_id]
-            temp_angle = self.arm_desired_angles[servo_id] + servo_speed
-            if temp_angle < 0:
-                temp_angle = 0
-            if temp_angle > 180:
-                temp_angle = 180
-            self.arm_desired_angles[servo_id] = temp_angle
-
     def set_arm_desired_angles(self, angle_list: list) -> None:
         assert len(angle_list) == len(self.arm_desired_angles), \
             (f'Length of angle_list {len(angle_list)} is not equal'
@@ -177,8 +167,8 @@ class RobotHead:
             value=self.speed_coefficient,
             original_min=0.1,
             original_max=1,
-            new_min=2000,
-            new_max=500,
+            new_min=self.arm_automated_speed[1],
+            new_max=self.arm_automated_speed[0],
         )
         self.arm_desired_angles = copy.deepcopy(angle_list)
 
