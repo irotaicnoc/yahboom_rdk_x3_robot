@@ -78,7 +78,7 @@ class RobotHead:
             self.memorizable_button_list = []
             self.button_press_required_time = parameters['button_press_required_time']
 
-    def next_mode(self):
+    def next_mode(self) -> None:
         if self.verbose >= 3:
             print(f'Switching from {self.robot_mode} ({self.robot_sub_mode}) mode.')
         self.robot_mode = self.robot_mode_list[
@@ -94,7 +94,7 @@ class RobotHead:
         if self.verbose >= 1:
             print(f'Switching to {self.robot_mode} ({self.robot_sub_mode}) mode.')
 
-    def next_sub_mode(self):
+    def next_sub_mode(self) -> None:
         if self.verbose >= 3:
             print(f'Switching from {self.robot_sub_mode} sub mode.')
         current_sub_mode_list = self.robot_sub_mode_dict[self.robot_mode]
@@ -107,41 +107,41 @@ class RobotHead:
         if self.verbose >= 1:
             print(f'Switching to {self.robot_sub_mode} sub mode.')
 
-    def next_target(self):
+    def next_target(self) -> None:
         self.tracking_target_pos += 1
         self.tracking_target_pos = self.tracking_target_pos % len(self.tracking_target_list)
         if self.verbose >= 1:
             print(f'Switching to target: {self.tracking_target_list[self.tracking_target_pos]}')
 
-    def previous_target(self):
+    def previous_target(self) -> None:
         self.tracking_target_pos -= 1
         self.tracking_target_pos = self.tracking_target_pos % len(self.tracking_target_list)
         if self.verbose >= 1:
             print(f'Switching to target: {self.tracking_target_list[self.tracking_target_pos]}')
 
-    def next_model(self):
+    def next_model(self) -> None:
         self.model_pos += 1
         self.model_pos = self.model_pos % len(self.model_list)
         if self.verbose >= 1:
             print(f'Switching to model: {self.model_list[self.model_pos]}')
 
-    def previous_model(self):
+    def previous_model(self) -> None:
         self.model_pos -= 1
         self.model_pos = self.model_pos % len(self.model_list)
         if self.verbose >= 1:
             print(f'Switching to model: {self.model_list[self.model_pos]}')
 
-    def increase_speed_coefficient(self):
+    def increase_speed_coefficient(self) -> None:
         self.speed_coefficient = min(1.0, self.speed_coefficient + 0.1)
         if self.verbose >= 2:
             print(f'Speed coefficient: {self.speed_coefficient}')
 
-    def decrease_speed_coefficient(self):
+    def decrease_speed_coefficient(self) -> None:
         self.speed_coefficient = max(0.1, self.speed_coefficient - 0.1)
         if self.verbose >= 2:
             print(f'Speed coefficient: {self.speed_coefficient}')
 
-    def toggle_arm_rigid(self):
+    def toggle_arm_rigid(self) -> None:
         self.arm_is_rigid = not self.arm_is_rigid
         self.arm_state_not_updated = True
         if self.verbose >= 2:
@@ -178,7 +178,7 @@ class RobotHead:
         )
         self.arm_desired_angles = copy.deepcopy(angle_list)
 
-    def activate_hotspot(self):
+    def activate_hotspot(self) -> None:
         if self.hotspot_status == 'active':
             if self.verbose >= 2:
                 print('Hotspot is already active.')
@@ -198,7 +198,7 @@ class RobotHead:
         self.hotspot_status = 'active'
         utils.finish_generic_process(robot_head=self)
 
-    def deactivate_hotspot(self):
+    def deactivate_hotspot(self) -> None:
         if self.hotspot_status == 'inactive':
             if self.verbose >= 2:
                 print('Hotspot is already inactive.')
@@ -216,7 +216,7 @@ class RobotHead:
         self.hotspot_status = 'inactive'
         utils.finish_generic_process(robot_head=self)
 
-    def toggle_hotspot(self):
+    def toggle_hotspot(self) -> None:
         if self.hotspot_status == 'inactive':
             self.activate_hotspot()
         elif self.hotspot_status == 'active':
@@ -224,7 +224,7 @@ class RobotHead:
         else:
             print(f'Hotspot is in "{self.hotspot_status}" state. Cannot be changed now.')
 
-    def activate_ros2_vr_connection(self):
+    def activate_ros2_vr_connection(self) -> None:
         if self.ros2_vr_connection_status == 'active':
             if self.verbose >= 2:
                 print('ROS2 VR connection is already active.')
@@ -237,7 +237,7 @@ class RobotHead:
         self.ros2_vr_connection_status = 'active'
         utils.finish_generic_process(robot_head=self)
 
-    def deactivate_ros2(self):
+    def deactivate_ros2(self) -> None:
         # TODO: it does not really kill the process in the separate console
         if self.ros2_vr_connection_status == 'inactive':
             if self.verbose >= 2:
@@ -250,7 +250,7 @@ class RobotHead:
         self.ros2_vr_connection_status = 'inactive'
         utils.finish_generic_process(robot_head=self)
 
-    def toggle_ros2_vr_connection(self):
+    def toggle_ros2_vr_connection(self) -> None:
         if self.ros2_vr_connection_status == 'inactive':
             self.activate_ros2_vr_connection()
         elif self.ros2_vr_connection_status == 'active':
@@ -258,7 +258,7 @@ class RobotHead:
         else:
             print(f'ROS2 is in "{self.ros2_vr_connection_status}" state. Cannot be changed now.')
 
-    def toggle_lidar_listener(self):
+    def toggle_lidar_listener(self) -> None:
         if self.lidar_listener_status == 'inactive':
             self.lidar_listener_status = 'processing'
         elif self.lidar_listener_status == 'active':

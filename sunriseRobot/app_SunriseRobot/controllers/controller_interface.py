@@ -153,8 +153,7 @@ class ControllerFunctions(object):
             self.robot_head.increase_speed_coefficient()
 
     def button_select(self, value: bool) -> None:
-        # switch between robot modes
-        # only allow one press every button_cooldown seconds
+        # cycle between robot modes (long press) or sub-modes (short press)
         if value:
             self.start_counting(button='button_select')
         else:
