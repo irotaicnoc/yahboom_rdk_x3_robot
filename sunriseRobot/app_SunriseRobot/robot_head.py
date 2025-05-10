@@ -56,7 +56,7 @@ class RobotHead:
             self.robot_sub_mode_dict['user_controlled'].append('arm')
             self.arm_speed_proportion = parameters['arm_speed_proportion']
             self.arm_is_rigid = True
-            self.arm_state_not_updated = False
+            self.arm_state_not_updated = True
             # arm servos
             self.arm_speed = [0, 0, 0, 0, 0, 0]
             # servo angles have to be in the range [0, 180], except for servo 4 which has range [0, 270]
