@@ -20,7 +20,7 @@ class RobotHead:
         self.robot_mode = self.robot_mode_list[0]
         self.robot_sub_mode = self.robot_sub_mode_dict[self.robot_mode][0]
         if self.verbose >= 1:
-            print(f'Robot mode: {self.robot_mode}')
+            print(f'Robot mode: {self.robot_mode} ({self.robot_sub_mode})')
         self.tracking_target_list = parameters['tracking_target_list']
         self.tracking_target_pos = 0
         # search for models in the model folder
