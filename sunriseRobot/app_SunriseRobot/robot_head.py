@@ -80,7 +80,7 @@ class RobotHead:
 
     def next_mode(self):
         if self.verbose >= 3:
-            print(f'Switching from {self.robot_mode} mode.')
+            print(f'Switching from {self.robot_mode} ({self.robot_sub_mode}) mode.')
         self.robot_mode = self.robot_mode_list[
             (self.robot_mode_list.index(self.robot_mode) + 1) % len(self.robot_mode_list)
         ]
@@ -92,7 +92,7 @@ class RobotHead:
         self.internal_light.stop()
 
         if self.verbose >= 1:
-            print(f'Switching to {self.robot_mode} mode.')
+            print(f'Switching to {self.robot_mode} ({self.robot_sub_mode}) mode.')
 
     def next_sub_mode(self):
         if self.verbose >= 3:
