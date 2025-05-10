@@ -1,4 +1,5 @@
 import os
+import time
 import threading
 import numpy as np
 
@@ -14,6 +15,7 @@ class LidarListener(Node):
                  response_dist: float,
                  sector_angle: float = None,
                  search_only_arc: list = None,
+                 scan_expiration_time: float = 0.5,
                  ):
         super().__init__('lidar_listener')
         assert sector_angle or search_only_arc is not None, \
@@ -27,8 +29,9 @@ class LidarListener(Node):
             queue_size
         )
         self.lidar_data = None
-        self.raw_scan_is_new = True
+        self.scan_timestamp = None
         self.response_dist = response_dist
+        self.scan_expiration_time = scan_expiration_time
 
         # sector_angle attributes
         self.sector_angle = sector_angle
@@ -36,13 +39,11 @@ class LidarListener(Node):
         self.obstacles_by_sector = np.zeros(shape=self.number_of_sectors, dtype=bool)
         self.hit_counter_by_sector = np.zeros(shape=self.number_of_sectors, dtype=int)
         self.average_distance_by_sector = np.zeros(shape=self.number_of_sectors, dtype=float)
-        self.obstacle_scan_is_new = True
 
         # search_only_arc attributes
         self.search_only_arc = search_only_arc
         self.obstacle_in_arc = False
         self.average_distance_in_arc = 0
-        self.arc_scan_is_new = True
 
         # narrower sectors (smaller angles) means less hits are required to detect an obstacle
         # self.obstacle_found_threshold = 5
@@ -54,13 +55,11 @@ class LidarListener(Node):
     def lidar_scan_callback(self, msg: LaserScan) -> None:
         # self.get_logger().info('Published processed lidar data')
         self.lidar_data = msg
-        self.raw_scan_is_new = True
+        self.scan_timestamp = time.time()
         if self.sector_angle is not None:
             self.search_obstacles(msg)
-            self.obstacle_scan_is_new = True
         elif self.search_only_arc:
             self.scan_arc(msg)
-            self.arc_scan_is_new = True
 
     def search_obstacles(self, scan_data: LaserScan) -> None:
         if not isinstance(scan_data, LaserScan):
@@ -106,20 +105,17 @@ class LidarListener(Node):
             self.average_distance_in_arc = -1
 
     def get_raw_scan(self) -> LaserScan:
-        if self.raw_scan_is_new:
-            self.raw_scan_is_new = False
+        if (time.time() - self.scan_timestamp) < self.scan_expiration_time:
             return self.lidar_data
         return None
 
     def get_obstacles_by_sector(self) -> tuple:
-        if self.obstacle_scan_is_new:
-            self.obstacle_scan_is_new = False
+        if (time.time() - self.scan_timestamp) < self.scan_expiration_time:
             return self.obstacles_by_sector, self.average_distance_by_sector
         return None, None
 
     def get_obstacle_in_arc(self) -> tuple:
-        if self.arc_scan_is_new:
-            self.arc_scan_is_new = False
+        if (time.time() - self.scan_timestamp) < self.scan_expiration_time:
             return self.obstacle_in_arc, self.average_distance_in_arc
         return None, None
 
