@@ -135,6 +135,12 @@ class PS2Controller(object):
         elif name == 'BUTTON_START':
             self.controller_functions.button_start(value)
 
+        elif name == 'BUTTON_ROCKER_LEFT':
+            self.controller_functions.button_rocker_left(value)
+
+        elif name == 'BUTTON_ROCKER_RIGHT':
+            self.controller_functions.button_rocker_right(value)
+
         elif name == 'AXIS_L2' or name == 'AXIS_R2':
             # ignore this command but catch it in this branch, otherwise it will generate an error and cause the
             # controller to be continuously disconnected and reconnected. This is caused by L2 and R2 generating both

@@ -167,6 +167,12 @@ class ControllerFunctions(object):
             if self.cooldown_ended(button='button_start'):
                 self.robot_head.toggle_arm_rigid()
 
+    def button_rocker_left(self, value: bool) -> None:
+        pass
+
+    def button_rocker_right(self, value: bool) -> None:
+        pass
+
     def unknown_input(self, name: str, value) -> None:
         if self.verbose >= 2:
             warnings.warn(f'Unknown button input received (name: {name}, value: {value})')
