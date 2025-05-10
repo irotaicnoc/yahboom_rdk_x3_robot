@@ -93,11 +93,10 @@ class ControllerFunctions(object):
                 self.robot_head.previous_model()
 
     def button_south(self, value: bool) -> None:
-        if self.robot_head.robot_mode == 'user_controlled':
-            if self.robot_head.robot_sub_mode == 'arm':
-                if value:
-                    self.robot_head.set_arm_desired_angles(angle_list=[90, 90, 90, 90, 90, 90])
-            # activate buzzer
+        if self.robot_head.robot_mode == 'user_controlled' and self.robot_head.robot_sub_mode == 'arm':
+            if value:
+                self.robot_head.set_arm_desired_angles(angle_list=[90, 90, 90, 90, 90, 90])
+        # activate buzzer
         else:
             self.robot_head.buzzer_is_active = value
 
@@ -121,11 +120,10 @@ class ControllerFunctions(object):
                 self.memorize_or_reach_arm_position(button='button_west', value=value)
 
     def button_north(self, value: bool) -> None:
-        if self.robot_head.robot_mode == 'user_controlled':
-            # memorize current arm position or reach memorized arm position
-            if self.robot_head.robot_sub_mode == 'arm':
-                self.memorize_or_reach_arm_position(button='button_north', value=value)
-            # change internal light effect
+        # memorize current arm position or reach memorized arm position
+        if self.robot_head.robot_mode == 'user_controlled' and self.robot_head.robot_sub_mode == 'arm':
+            self.memorize_or_reach_arm_position(button='button_north', value=value)
+        # change internal light effect
         else:
             if value:
                 self.internal_light.next_light_effect()
