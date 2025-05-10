@@ -85,7 +85,7 @@ class ControllerFunctions(object):
                 self.robot_head.speed_x = value * self.robot_head.speed_coefficient
             elif self.robot_head.robot_sub_mode == 'arm':
                 # servo 3
-                self.robot_head.update_arm_speed(servo_id=2, value=value)
+                self.robot_head.update_arm_speed(servo_id=2, value=-value)
         elif self.robot_head.robot_mode == 'autonomous_vision':
             if value > 0:
                 self.robot_head.next_model()
