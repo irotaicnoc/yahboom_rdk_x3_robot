@@ -97,13 +97,21 @@ class RobotHead:
     def next_sub_mode(self) -> None:
         if self.verbose >= 3:
             print(f'Switching from {self.robot_sub_mode} sub mode.')
+        if self.robot_mode not in self.robot_sub_mode_dict:
+            assert self.robot_sub_mode is None, f'Robot mode {self.robot_mode} does not have sub modes. ' \
+                f'But current sub mode is {self.robot_sub_mode}.'
+            if self.verbose >= 3:
+                print(f'No sub modes available for {self.robot_mode} mode.')
+            return
+
         current_sub_mode_list = self.robot_sub_mode_dict[self.robot_mode]
-        if current_sub_mode_list is not None:
+        if current_sub_mode_list is not None and len(current_sub_mode_list) > 0:
             self.robot_sub_mode = current_sub_mode_list[
                 (current_sub_mode_list.index(self.robot_sub_mode) + 1) % len(current_sub_mode_list)
             ]
         else:
-            self.robot_sub_mode = None
+            assert self.robot_sub_mode is None, f'Robot mode {self.robot_mode} does not have sub modes. ' \
+                                                f'But current sub mode is {self.robot_sub_mode}.'
         if self.verbose >= 1:
             print(f'Switching to {self.robot_sub_mode} sub mode.')
 
