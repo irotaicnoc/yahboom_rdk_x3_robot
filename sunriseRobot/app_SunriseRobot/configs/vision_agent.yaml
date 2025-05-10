@@ -13,7 +13,7 @@ steer_threshold_2: 0.4
 
 # min and max turning speed of the robot
 angular_speed_range: [1.0, 2.0]
-save_images: True
+save_images: False
 use_gpio_led: True
 #think_steps_if_no_target: 1
 think_steps_if_no_target: 3
