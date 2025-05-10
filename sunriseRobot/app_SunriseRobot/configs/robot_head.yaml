@@ -7,7 +7,7 @@ hotspot_ip: 192.168.8.88
 #   how much a controller input changes the position of the arm
 speed_coefficient: 0.5
 steer_speed_proportion: 5
-arm_speed_proportion: 2.5
+arm_speed_proportion: 2
 tracking_target_list: [person, cat, orange, remote, mouse]
 
 # the user needs to keep a controller button pressed at least this time for certain actions to occur (seconds)
