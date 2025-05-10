@@ -28,13 +28,17 @@ def format_camera_frames(frame,
     # if save_img:
     #     cv2.imwrite(f'{gc.APP_FOLDER_PATH}output/{counter}_04_frame_rgb.jpg', frame_rgb)
     # print(f'frame RGB shape: {frame_rgb.shape}')
+    # flipCode = 0 means horizontal flip,
+    # 1 means vertical flip,
+    # -1 means flip both, which is equivalent to a 180° degree rotation
+    flipped_frame = cv2.flip(src=frame_rgb, flipCode=-1)
     # if counter >= 4:
     #     exit()
     # if new_size is not None:
     #     print(f'{new_size=}')
     #     frame_rgb = cv2.resize(frame_rgb, dsize=new_size)
     #     print(f'frame resized shape: {frame_rgb.shape}')
-    return frame_rgb
+    return flipped_frame
 
     # Convert to JPEG
     # encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 85]
