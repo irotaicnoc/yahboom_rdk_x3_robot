@@ -155,8 +155,11 @@ class ControllerFunctions(object):
     def button_select(self, value: bool) -> None:
         # switch between robot modes
         # only allow one press every button_cooldown seconds
-        if self.cooldown_ended(button='button_select'):
-            if self.enough_press_time(button='button_select', value=value):
+        if value:
+            if self.cooldown_ended(button='button_select'):
+                self.start_counting(button='button_select')
+        else:
+            if self.enough_press_time(button='button_select'):
                 self.robot_head.next_mode()
             else:
                 self.robot_head.next_sub_mode()
@@ -222,16 +225,15 @@ class ControllerFunctions(object):
                 print(f'Button {button.split("_")[1]} on cooldown...')
             return False
 
+    def start_counting(self, button: str) -> None:
+        self.robot_head.one_time_check[button] = True
+        self.robot_head.button_press_timestamp[button] = time.time()
+
     def enough_press_time(self, button: str, value: bool = True) -> bool:
         # check if button is pressed for enough time
-        if value:
-            self.robot_head.one_time_check[button] = True
-            self.robot_head.button_press_timestamp[button] = time.time()
-            return False
+        elapsed_time = time.time() - self.robot_head.button_press_timestamp[button]
+        self.robot_head.button_press_timestamp[button] = 0
+        if elapsed_time >= self.robot_head.button_press_required_time:
+            return True
         else:
-            elapsed_time = time.time() - self.robot_head.button_press_timestamp[button]
-            self.robot_head.button_press_timestamp[button] = 0
-            if elapsed_time >= self.robot_head.button_press_required_time:
-                return True
-            else:
-                return False
+            return False
