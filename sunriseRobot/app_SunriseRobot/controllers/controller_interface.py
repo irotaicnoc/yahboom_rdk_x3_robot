@@ -156,8 +156,7 @@ class ControllerFunctions(object):
         # switch between robot modes
         # only allow one press every button_cooldown seconds
         if value:
-            if self.cooldown_ended(button='button_select'):
-                self.start_counting(button='button_select')
+            self.start_counting(button='button_select')
         else:
             if self.enough_press_time(button='button_select'):
                 self.robot_head.next_mode()
