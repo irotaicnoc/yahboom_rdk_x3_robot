@@ -127,6 +127,7 @@ class ThreadedLidarListener:
                  response_dist: float = 0.6,
                  sector_angle: float = 20,
                  search_only_arc: list = None,
+                 scan_expiration_time: float = 0.5,
                  verbose: int = 0,
                  ):
         self.topic_name = topic_name
@@ -144,6 +145,7 @@ class ThreadedLidarListener:
                 response_dist=response_dist,
                 sector_angle=sector_angle,
                 search_only_arc=search_only_arc,
+                scan_expiration_time=scan_expiration_time,
             )
             # Spin the node in a separate thread
             self.spin_thread = threading.Thread(
