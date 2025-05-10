@@ -228,7 +228,9 @@ class ControllerFunctions(object):
         self.robot_head.one_time_check[button] = True
         self.robot_head.button_press_timestamp[button] = time.time()
 
-    def enough_press_time(self, button: str, value: bool = True) -> bool:
+    def enough_press_time(self, button: str) -> bool:
+        if self.robot_head.button_press_timestamp[button] == 0:
+            return False
         # check if button is pressed for enough time
         elapsed_time = time.time() - self.robot_head.button_press_timestamp[button]
         self.robot_head.button_press_timestamp[button] = 0
