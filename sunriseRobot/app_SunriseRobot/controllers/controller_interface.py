@@ -36,7 +36,7 @@ class ControllerFunctions(object):
                 self.robot_head.speed_y = value * self.robot_head.speed_coefficient
             elif self.robot_head.robot_sub_mode == 'arm':
                 # servo 1
-                self.robot_head.update_arm_speed(servo_id=0, value=value)
+                self.robot_head.update_arm_speed(servo_id=0, value=-value)
 
     def axis_left_y(self, value: float) -> None:
         assert -1 <= value <= 1, f'Value {value} is out of range [-1, 1]'
