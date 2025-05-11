@@ -200,7 +200,7 @@ class ThreadedLidarListener:
             rclpy.shutdown()
             self.spin_thread.join()
             if self.verbose >= 2:
-                print('Lidar listener stopped')
+                print('Lidar listener stopped.')
         else:
             if self.verbose >= 2:
                 print('Lidar listener not stopped, thread is already None')
