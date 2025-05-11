@@ -126,9 +126,13 @@ def task_controller(**kwargs):
 
 def task_controller_loop(**kwargs):
     try:
+        print('test pre-initialize controller loop')
         controller_loop = ControllerLoop(**kwargs)
+        print('test post-initialize controller loop')
         while True:
+            print('test pre-loop')
             controller_loop.update_robot_loop()
+            print('test post-loop')
     except Exception as e:
         print('Controller loop error:')
         print(e)
