@@ -31,28 +31,28 @@ class ControllerLoop(object):
         self.obstacles_by_sector = None
         self.average_distance_by_sector = None
         # print lidar and direction to console
-        self.circle_radius = 15
-        self.circle_diameter = self.circle_radius * 2
-        self.dist_proportion = self.circle_radius / self.lidar_kwargs['response_dist']
-        self.base_canvas = [[' ' for _ in range(self.circle_diameter)] for _ in range(self.circle_diameter)]
-        #   add detection area (circle)
-        for i in range(self.circle_diameter):
-            for j in range(self.circle_diameter):
-                if (i - self.circle_radius) ** 2 + (j - self.circle_radius) ** 2 <= self.circle_radius ** 2:
-                    self.base_canvas[i][j] = '.'
-                    if j == 0:
-                        self.base_canvas[i].append('.')
-        self.base_canvas.append(copy.deepcopy(self.base_canvas[0]))
-        #   add the robot
-        self.base_canvas[self.circle_radius - 1][self.circle_radius - 1] = '/'
-        self.base_canvas[self.circle_radius - 1][self.circle_radius + 1] = '\\'
-        self.base_canvas[self.circle_radius + 1][self.circle_radius - 1] = '\\'
-        self.base_canvas[self.circle_radius + 1][self.circle_radius + 1] = '/'
-        self.base_canvas[self.circle_radius][self.circle_radius - 1] = '|'
-        self.base_canvas[self.circle_radius][self.circle_radius + 1] = '|'
-        self.base_canvas[self.circle_radius][self.circle_radius] = 'R'
-        self.base_canvas[self.circle_radius - 1][self.circle_radius] = '^'
-        self.base_canvas[self.circle_radius + 1][self.circle_radius] = '_'
+        # self.circle_radius = 15
+        # self.circle_diameter = self.circle_radius * 2
+        # self.dist_proportion = self.circle_radius / self.lidar_kwargs['response_dist']
+        # self.base_canvas = [[' ' for _ in range(self.circle_diameter)] for _ in range(self.circle_diameter)]
+        # #   add detection area (circle)
+        # for i in range(self.circle_diameter):
+        #     for j in range(self.circle_diameter):
+        #         if (i - self.circle_radius) ** 2 + (j - self.circle_radius) ** 2 <= self.circle_radius ** 2:
+        #             self.base_canvas[i][j] = '.'
+        #             if j == 0:
+        #                 self.base_canvas[i].append('.')
+        # self.base_canvas.append(copy.deepcopy(self.base_canvas[0]))
+        # #   add the robot
+        # self.base_canvas[self.circle_radius - 1][self.circle_radius - 1] = '/'
+        # self.base_canvas[self.circle_radius - 1][self.circle_radius + 1] = '\\'
+        # self.base_canvas[self.circle_radius + 1][self.circle_radius - 1] = '\\'
+        # self.base_canvas[self.circle_radius + 1][self.circle_radius + 1] = '/'
+        # self.base_canvas[self.circle_radius][self.circle_radius - 1] = '|'
+        # self.base_canvas[self.circle_radius][self.circle_radius + 1] = '|'
+        # self.base_canvas[self.circle_radius][self.circle_radius] = 'R'
+        # self.base_canvas[self.circle_radius - 1][self.circle_radius] = '^'
+        # self.base_canvas[self.circle_radius + 1][self.circle_radius] = '_'
 
     def update_robot_loop(self) -> None:
         assert self.robot_head.connected_controllers >= 0, (f'connected_controllers cannot be negative, but the '
@@ -165,38 +165,38 @@ class ControllerLoop(object):
 
         time.sleep(0.02)
 
-    def print_state_ascii(self,
-                          obstacles_by_sector: list,
-                          average_distance_by_sector: list,
-                          robot_direction: float
-                          ) -> None:
-        os.system('clear')
-        canvas = copy.deepcopy(self.base_canvas)
-
-        # add detected obstacles using their direction and distance
-        if obstacles_by_sector is not None:
-            for sector_number in range(len(obstacles_by_sector)):
-                if obstacles_by_sector[sector_number]:
-                    angle_degrees = utils.circular_sector_to_degree_angle(
-                        sector_number=sector_number,
-                        sector_angle=self.lidar_listener.sector_angle,
-                    )
-                    angle_radian = np.deg2rad(angle_degrees)
-                    distance = average_distance_by_sector[sector_number]
-                    x = int(self.circle_radius + distance * self.dist_proportion * np.cos(angle_radian))
-                    y = int(self.circle_radius - distance * self.dist_proportion * np.sin(angle_radian))
-                    if 0 <= x < self.circle_diameter and 0 <= y < self.circle_diameter:
-                        canvas[y][x] = '#'
-
-        for i in range(2, 6):
-            x = int(self.circle_radius + i * np.cos(np.deg2rad(robot_direction)))
-            y = int(self.circle_radius - i * np.sin(np.deg2rad(robot_direction)))
-            if 0 <= x < self.circle_diameter and 0 <= y < self.circle_diameter:
-                canvas[y][x] = 'o'
-
-        for row in canvas:
-            print(' '.join(row))
-        time.sleep(0.1)
+    # def print_state_ascii(self,
+    #                       obstacles_by_sector: list,
+    #                       average_distance_by_sector: list,
+    #                       robot_direction: float
+    #                       ) -> None:
+    #     os.system('clear')
+    #     canvas = copy.deepcopy(self.base_canvas)
+    #
+    #     # add detected obstacles using their direction and distance
+    #     if obstacles_by_sector is not None:
+    #         for sector_number in range(len(obstacles_by_sector)):
+    #             if obstacles_by_sector[sector_number]:
+    #                 angle_degrees = utils.circular_sector_to_degree_angle(
+    #                     sector_number=sector_number,
+    #                     sector_angle=self.lidar_listener.sector_angle,
+    #                 )
+    #                 angle_radian = np.deg2rad(angle_degrees)
+    #                 distance = average_distance_by_sector[sector_number]
+    #                 x = int(self.circle_radius + distance * self.dist_proportion * np.cos(angle_radian))
+    #                 y = int(self.circle_radius - distance * self.dist_proportion * np.sin(angle_radian))
+    #                 if 0 <= x < self.circle_diameter and 0 <= y < self.circle_diameter:
+    #                     canvas[y][x] = '#'
+    #
+    #     for i in range(2, 6):
+    #         x = int(self.circle_radius + i * np.cos(np.deg2rad(robot_direction)))
+    #         y = int(self.circle_radius - i * np.sin(np.deg2rad(robot_direction)))
+    #         if 0 <= x < self.circle_diameter and 0 <= y < self.circle_diameter:
+    #             canvas[y][x] = 'o'
+    #
+    #     for row in canvas:
+    #         print(' '.join(row))
+    #     time.sleep(0.1)
 
     def start_lidar_listener(self) -> None:
         if self.lidar_listener is None:
