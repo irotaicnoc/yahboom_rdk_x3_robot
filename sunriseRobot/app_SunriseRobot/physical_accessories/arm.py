@@ -29,7 +29,7 @@ class Arm:
         # and the real angle is moved closer to the desired angle
         self.desired_angle_list = arm_initial_angles
         if len(self.desired_angle_list) != 6:
-            raise Exception(f'The robot supports a 6-servos arm, the current has {len(self.desired_angle_list)} servos.')
+            raise Exception(f'The robot supports a 6-servo arm, current arm has {len(self.desired_angle_list)} servos.')
         # speed with which the arm reaches the desired angle [0, 2000]
         # 0 is the fastest speed, 2000 is the slowest speed
         # for manual control use 0, for arbitrary position specified directly via desired_angle_list
