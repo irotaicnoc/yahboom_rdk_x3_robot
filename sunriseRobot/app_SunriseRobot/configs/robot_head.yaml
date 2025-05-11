@@ -7,13 +7,8 @@ hotspot_ip: 192.168.8.88
 #   how much a controller input changes the position of the arm
 speed_coefficient: 0.5
 steer_speed_proportion: 5
-# the speed of the arm is a proportion of the wheel speed. This is used when the user is moving the arm
-arm_speed_proportion: 2
-# This is used when setting an arbitrary position for the arm. Allowed range is [0, 2000], with 0 beeing the maximum
-# speed and 2000 being the minimum speed. This range is used to convert the current robot speed to the arm speed.
-# arm_automated_speed=0 is too fast, so the maximum allowed is higher (which mean a lower speed)
-arm_automated_speed: [600, 2000]
 tracking_target_list: [person, cat, orange, remote, mouse]
+
 
 # the user needs to keep a controller button pressed at least this time for certain actions to occur (seconds)
 button_press_required_time: 1.8

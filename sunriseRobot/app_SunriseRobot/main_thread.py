@@ -20,28 +20,30 @@ def main_loop(**kwargs):
     robot_body = RobotBody(com=parameters['com'], baud_rate=parameters['baud_rate'], verbose=parameters['verbose'])
     robot_body.create_receive_threading()
 
-    # ARM
-    arm_available = False
-    arm_initial_angles = robot_body.get_arm_angle_list()
-    if arm_initial_angles != [-1, -1, -1, -1, -1, -1]:
-        arm_available = True
-
     # LIGHTS
     internal_light = Light(verbose=parameters['verbose'])
     gpio_led = GpioLed()
 
     robot_head = RobotHead(
-        arm_available=arm_available,
-        arm_initial_angles=arm_initial_angles,
         internal_light=internal_light,
         gpio_led=gpio_led,
         verbose=parameters['verbose'],
     )
 
+    # ARM
+    try:
+        arm = Arm(robot_head=robot_head, robot_body=robot_body)
+    except Exception as e:
+        print('Arm error:')
+        print(e)
+        print(e.__traceback__)
+        arm = None
+
     # CONTROLLER
     controller_loop_kwargs = {
         'robot_body': robot_body,
         'robot_head': robot_head,
+        'arm': arm,
         'verbose': parameters['verbose'],
     }
     thread_controller_loop = threading.Thread(
@@ -54,6 +56,7 @@ def main_loop(**kwargs):
         'controller_id': parameters['controller_id'],
         'robot_head': robot_head,
         'robot_body': robot_body,
+        'arm': arm,
         'verbose': parameters['verbose'],
     }
     thread_controller = threading.Thread(target=task_controller, name='task_controller', kwargs=controller_kwargs)
@@ -108,6 +111,7 @@ def task_controller(**kwargs):
         controller_functions = ControllerFunctions(
             robot_head=kwargs['robot_head'],
             robot_body=kwargs['robot_body'],
+            arm=kwargs['arm'],
             verbose=kwargs['verbose'],
         )
         ps2_controller = PS2Controller(controller_functions=controller_functions, controller_id=kwargs['controller_id'])
@@ -194,7 +198,7 @@ def task_vision_agent(**kwargs):
 # oled screen
 def task_screen(**kwargs):
     try:
-        oled = OLED(clear=False, **kwargs)
+        oled = Oled(clear=False, **kwargs)
         while True:
             state = oled.main_program()
             oled.clear(refresh=True)

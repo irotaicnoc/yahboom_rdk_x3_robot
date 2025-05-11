@@ -1,5 +1,4 @@
 import os
-import copy
 from pathlib import Path
 
 import args
@@ -53,30 +52,6 @@ class RobotHead:
         self.buzzer_is_active = False
         self.internal_light = parameters['internal_light']
         self.gpio_led = parameters['gpio_led']
-
-        # arm parameters
-        if parameters['arm_available']:
-            self.robot_sub_mode_dict['user_controlled'].append('arm')
-            self.arm_speed_proportion = parameters['arm_speed_proportion']
-            self.arm_is_rigid = True
-            self.arm_state_not_updated = True
-            # arm servos
-            self.arm_speed = [0, 0, 0, 0, 0, 0]
-            # servo angles have to be in the range [0, 180], except for servo 4 which has range [0, 270]
-            # all servos to 90 degrees means vertical position
-            # during each loop iteration, the desired angle is updated by adding the speed
-            # and the real angle is moved closer to the desired angle
-            self.arm_desired_angles = parameters['arm_initial_angles']
-            if len(self.arm_desired_angles) != 6:
-                if self.verbose >= 1:
-                    print(f'The robot supports a 6-servos arm, the current has {len(self.arm_desired_angles)} servos.')
-            # speed with which the arm reaches the desired angle [0, 2000]
-            # 0 is the fastest speed, 2000 is the slowest speed
-            # for manual control use 0, for arbitrary position specified directly via arm_desired_angles
-            # use a slower speed (higher value)
-            self.arm_automated_speed = parameters['arm_automated_speed']
-            self.run_time = self.arm_automated_speed[0]
-            self.memorizable_button_list = []
 
     def next_mode(self) -> None:
         if self.verbose >= 3:
@@ -148,29 +123,6 @@ class RobotHead:
         self.speed_coefficient = max(0.1, self.speed_coefficient - 0.1)
         if self.verbose >= 2:
             print(f'Speed coefficient: {self.speed_coefficient}')
-
-    def toggle_arm_rigid(self) -> None:
-        self.arm_is_rigid = not self.arm_is_rigid
-        self.arm_state_not_updated = True
-        if self.verbose >= 2:
-            if self.arm_is_rigid:
-                print(f'Arm is rigid')
-            else:
-                print(f'Arm can be moved manually, but cannot be controlled by the controller')
-
-    def set_arm_desired_angles(self, angle_list: list) -> None:
-        assert len(angle_list) == len(self.arm_desired_angles), \
-            (f'Length of angle_list {len(angle_list)} is not equal'
-             f' to arm_servos_desired_angle {len(self.arm_desired_angles)}')
-
-        self.run_time = utils.change_range(
-            value=self.speed_coefficient,
-            original_min=0.1,
-            original_max=1,
-            new_min=self.arm_automated_speed[1],
-            new_max=self.arm_automated_speed[0],
-        )
-        self.arm_desired_angles = copy.deepcopy(angle_list)
 
     def activate_hotspot(self) -> None:
         if self.hotspot_status == 'active':

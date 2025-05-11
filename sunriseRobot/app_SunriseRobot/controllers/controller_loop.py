@@ -12,10 +12,11 @@ from physical_accessories.lidar_listener import ThreadedLidarListener
 
 
 class ControllerLoop(object):
-    def __init__(self, robot_body, robot_head, verbose: int = 0):
+    def __init__(self, robot_body, robot_head, arm, verbose: int = 0):
         parameters = args.import_args(yaml_path=gc.CONFIG_FOLDER_PATH + 'controller_loop.yaml', verbose=verbose)
         self.robot_body = robot_body
         self.robot_head = robot_head
+        self.arm = arm
         self.gpio_led = robot_head.gpio_led
         self.beep_time = parameters['beep_time']
         self.verbose = parameters['verbose']
@@ -135,30 +136,30 @@ class ControllerLoop(object):
 
             # arm servos
             elif self.robot_head.robot_sub_mode == 'arm':
-                if self.robot_head.arm_state_not_updated:
-                    self.robot_head.arm_state_not_updated = False
+                if self.arm.state_not_updated:
+                    self.arm.state_not_updated = False
                     # manually set configuration is maintained
-                    if self.robot_head.arm_is_rigid:
-                        self.robot_head.arm_desired_angles = self.robot_body.get_arm_angle_list()
-                    self.robot_body.set_arm_torque(enable=self.robot_head.arm_is_rigid)
+                    if self.arm.is_rigid:
+                        self.arm.set_desired_angles(angle_list=self.robot_body.get_arm_angle_list())
+                    self.robot_body.set_arm_torque(enable=self.arm.is_rigid)
                     # beep to signal the change in arm state
                     # self.robot_body.set_beep(self.beep_time)
 
                 for button in self.robot_head.button_press_timestamp:
                     timestamp = self.robot_head.button_press_timestamp[button]
                     if timestamp != 0:
-                        if button in self.robot_head.memorizable_button_list:
+                        if button in self.arm.memorizable_button_list:
                             if time.time() - timestamp >= self.robot_head.button_press_required_time:
                                 if self.robot_head.one_time_check[button]:
                                     self.robot_head.gpio_led.set_color('green')
                                     self.robot_head.one_time_check[button] = False
                                     self.robot_body.set_beep(self.beep_time)
 
-                if self.robot_head.arm_is_rigid:
-                    self.update_arm_desired_angles()
+                if self.arm.is_rigid:
+                    self.arm.update_desired_angles()
                     self.robot_body.set_arm_angle_list(
-                        angle_s=self.robot_head.arm_desired_angles,
-                        run_time=self.robot_head.run_time,
+                        angle_s=self.arm.desired_angle_list,
+                        run_time=self.arm.run_time,
                     )
         else:
             time.sleep(2)
@@ -228,13 +229,3 @@ class ControllerLoop(object):
                 print('Lidar listener already stopped')
         self.lidar_is_active = False
         self.robot_head.lidar_listener_status = 'inactive'
-
-    def update_arm_desired_angles(self) -> None:
-        for servo_id in range(len(self.robot_head.arm_speed)):
-            servo_speed = self.robot_head.arm_speed[servo_id]
-            temp_angle = self.robot_head.arm_desired_angles[servo_id] + servo_speed
-            if temp_angle < 0:
-                temp_angle = 0
-            if temp_angle > 180:
-                temp_angle = 180
-            self.robot_head.arm_desired_angles[servo_id] = temp_angle

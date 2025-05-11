@@ -9,10 +9,11 @@ import global_constants as gc
 
 
 class ControllerFunctions(object):
-    def __init__(self, robot_head, robot_body, **kwargs):
+    def __init__(self, robot_head, robot_body, arm, **kwargs):
 
         self.robot_head = robot_head
         self.robot_body = robot_body
+        self.arm = arm
         self.internal_light = robot_head.internal_light
         self.gpio_led = robot_head.gpio_led
         parameters = args.import_args(yaml_path=gc.CONFIG_FOLDER_PATH + 'controller_interface.yaml', **kwargs)
@@ -36,7 +37,7 @@ class ControllerFunctions(object):
                 self.robot_head.speed_y = value * self.robot_head.speed_coefficient
             elif self.robot_head.robot_sub_mode == 'arm':
                 # servo 1
-                self.update_arm_speed(servo_id=0, value=-value)
+                self.arm.update_speed(servo_id=0, value=-value)
 
     def axis_left_y(self, value: float) -> None:
         assert -1 <= value <= 1, f'Value {value} is out of range [-1, 1]'
@@ -45,7 +46,7 @@ class ControllerFunctions(object):
                 self.robot_head.speed_x = value * self.robot_head.speed_coefficient
             elif self.robot_head.robot_sub_mode == 'arm':
                 # servo 2
-                self.update_arm_speed(servo_id=1, value=-value)
+                self.arm.update_speed(servo_id=1, value=-value)
 
     def axis_right_x(self, value: float) -> None:
         assert -1 <= value <= 1, f'Value {value} is out of range [-1, 1]'
@@ -55,14 +56,14 @@ class ControllerFunctions(object):
                                            * self.robot_head.steer_speed_proportion)
             elif self.robot_head.robot_sub_mode == 'arm':
                 # servo 5
-                self.update_arm_speed(servo_id=4, value=value)
+                self.arm.update_speed(servo_id=4, value=value)
 
     def axis_right_y(self, value: float) -> None:
         assert -1 <= value <= 1, f'Value {value} is out of range [-1, 1]'
         if self.robot_head.robot_mode == 'user_controlled':
             if self.robot_head.robot_sub_mode == 'arm':
                 # servo 6
-                self.update_arm_speed(servo_id=5, value=value)
+                self.arm.update_speed(servo_id=5, value=value)
 
     def axis_arrows_x(self, value: float) -> None:
         assert -1 <= value <= 1, f'Value {value} is out of range [-1, 1]'
@@ -71,7 +72,7 @@ class ControllerFunctions(object):
                 self.robot_head.speed_y = value * self.robot_head.speed_coefficient
             elif self.robot_head.robot_sub_mode == 'arm':
                 # servo 4
-                self.update_arm_speed(servo_id=3, value=value)
+                self.arm.update_speed(servo_id=3, value=value)
         elif self.robot_head.robot_mode == 'autonomous_vision':
             if value > 0:
                 self.robot_head.next_target()
@@ -85,7 +86,7 @@ class ControllerFunctions(object):
                 self.robot_head.speed_x = value * self.robot_head.speed_coefficient
             elif self.robot_head.robot_sub_mode == 'arm':
                 # servo 3
-                self.update_arm_speed(servo_id=2, value=-value)
+                self.arm.update_speed(servo_id=2, value=-value)
         elif self.robot_head.robot_mode == 'autonomous_vision':
             if value > 0:
                 self.robot_head.next_model()
@@ -95,7 +96,7 @@ class ControllerFunctions(object):
     def button_south(self, value: bool) -> None:
         if self.robot_head.robot_mode == 'user_controlled' and self.robot_head.robot_sub_mode == 'arm':
             if value:
-                self.robot_head.set_arm_desired_angles(angle_list=[90, 90, 90, 90, 90, 90])
+                self.arm.set_desired_angles(angle_list=[90, 90, 90, 90, 90, 90])
         # activate buzzer
         else:
             self.robot_head.buzzer_is_active = value
@@ -165,7 +166,7 @@ class ControllerFunctions(object):
     def button_start(self, value: bool) -> None:
         if value:
             if self.cooldown_ended(button='button_start'):
-                self.robot_head.toggle_arm_rigid()
+                self.arm.toggle_rigid()
 
     def button_rocker_left(self, value: bool) -> None:
         pass
@@ -198,8 +199,8 @@ class ControllerFunctions(object):
                 print(f'Controller with id {controller_id} tried to disconnect, but this id is not connected')
 
     def memorize_or_reach_arm_position(self, button: str, value: bool) -> None:
-        if button not in self.robot_head.memorizable_button_list:
-            self.robot_head.memorizable_button_list.append(button)
+        if button not in self.arm.memorizable_button_list:
+            self.arm.memorizable_button_list.append(button)
         if value:
             self.gpio_led.set_color('orange')
             self.start_counting(button=button)
@@ -209,7 +210,7 @@ class ControllerFunctions(object):
                 self.memorized_arm_position[button] = self.robot_body.get_arm_angle_list()
             else:
                 if button in self.memorized_arm_position:
-                    self.robot_head.set_arm_desired_angles(angle_list=self.memorized_arm_position[button])
+                    self.arm.set_desired_angles(angle_list=self.memorized_arm_position[button])
 
     def cooldown_ended(self, button: str) -> bool:
         # add/check cooldown to button press
@@ -241,10 +242,3 @@ class ControllerFunctions(object):
         else:
             return False
 
-    def update_arm_speed(self, servo_id: int, value) -> None:
-        # if the arm was currently performing an automated movement, stop it.
-        if self.robot_head.run_time > 0:
-            self.robot_head.arm_desired_angles = self.robot_body.get_arm_angle_list()
-        # then apply speed changes due to user input
-        self.robot_head.run_time = 0
-        self.robot_head.arm_speed[servo_id] = value * self.robot_head.speed_coefficient * self.robot_head.arm_speed_proportion
