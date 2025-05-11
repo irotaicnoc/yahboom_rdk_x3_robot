@@ -29,7 +29,7 @@ class LidarListener(Node):
             queue_size
         )
         self.lidar_data = None
-        self.scan_timestamp = None
+        self.scan_timestamp = 0
         self.response_dist = response_dist
         self.scan_expiration_time = scan_expiration_time
 
