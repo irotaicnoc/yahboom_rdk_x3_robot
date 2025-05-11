@@ -86,17 +86,17 @@ def main_loop(**kwargs):
     thread_vision_agent.start()
 
     # SOUND AGENT
-    sound_agent_kwargs = {
-        'robot_body': robot_body,
-        'robot_head': robot_head,
-        'verbose': parameters['verbose'],
-    }
-    thread_sound_agent = threading.Thread(
-        target=task_sound_agent,
-        name='task_sound_agent',
-        kwargs=sound_agent_kwargs,
-    )
-    thread_sound_agent.start()
+    # sound_agent_kwargs = {
+    #     'robot_body': robot_body,
+    #     'robot_head': robot_head,
+    #     'verbose': parameters['verbose'],
+    # }
+    # thread_sound_agent = threading.Thread(
+    #     target=task_sound_agent,
+    #     name='task_sound_agent',
+    #     kwargs=sound_agent_kwargs,
+    # )
+    # thread_sound_agent.start()
 
     # notify the robot is ready
     robot_body.set_beep(50)
@@ -176,23 +176,23 @@ def task_vision_agent(**kwargs):
                     robot_head.robot_sub_mode = robot_head.robot_sub_mode_dict[robot_head.robot_mode][0]
 
 
-def task_sound_agent(**kwargs):
-    robot_head = kwargs['robot_head']
-    try:
-        robot_head.robot_mode_list.append('autonomous_sound')
-        sound_agent = SoundAgent(**kwargs)
-        while True:
-            sound_agent.autonomous_behavior()
-    except Exception as e:
-        print('Sound agent error:')
-        print(e)
-        print(e.__traceback__)
-        if 'autonomous_sound' in robot_head.robot_mode_list:
-            robot_head.robot_mode_list.remove('autonomous_sound')
-            if robot_head.robot_mode == 'autonomous_sound':
-                robot_head.robot_mode = robot_head.robot_mode_list[0]
-                if robot_head.robot_sub_mode_dict[robot_head.robot_mode] is not None:
-                    robot_head.robot_sub_mode = robot_head.robot_sub_mode_dict[robot_head.robot_mode][0]
+# def task_sound_agent(**kwargs):
+#     robot_head = kwargs['robot_head']
+#     try:
+#         robot_head.robot_mode_list.append('autonomous_sound')
+#         sound_agent = SoundAgent(**kwargs)
+#         while True:
+#             sound_agent.autonomous_behavior()
+#     except Exception as e:
+#         print('Sound agent error:')
+#         print(e)
+#         print(e.__traceback__)
+#         if 'autonomous_sound' in robot_head.robot_mode_list:
+#             robot_head.robot_mode_list.remove('autonomous_sound')
+#             if robot_head.robot_mode == 'autonomous_sound':
+#                 robot_head.robot_mode = robot_head.robot_mode_list[0]
+#                 if robot_head.robot_sub_mode_dict[robot_head.robot_mode] is not None:
+#                     robot_head.robot_sub_mode = robot_head.robot_sub_mode_dict[robot_head.robot_mode][0]
 
 
 # oled screen
