@@ -6,8 +6,8 @@ import args
 import global_constants as gc
 from robot_body import RobotBody
 from robot_head import RobotHead
-from sound.sound_agent import SoundAgent
-from physical_accessories.oled import OLED
+from physical_accessories.arm import Arm
+from physical_accessories.oled import Oled
 from physical_accessories.light import Light
 from controllers.ps2_controller import PS2Controller
 from controllers.controller_loop import ControllerLoop
@@ -62,7 +62,7 @@ def main_loop(**kwargs):
     thread_controller = threading.Thread(target=task_controller, name='task_controller', kwargs=controller_kwargs)
     thread_controller.start()
 
-    # OLED SCREEN
+    # Oled SCREEN
     screen_kwargs = {
         'robot_body': robot_body,
         'robot_head': robot_head,

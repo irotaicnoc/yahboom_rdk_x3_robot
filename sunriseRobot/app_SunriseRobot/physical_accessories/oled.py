@@ -9,7 +9,7 @@ import Adafruit_SSD1306 as SSD
 import utils
 
 
-class OLED:
+class Oled:
     def __init__(self, robot_body, robot_head, i2c_bus=0, clear=False, verbose: int = 0):
         self.verbose = verbose
         self.__i2c_bus = i2c_bus
@@ -35,9 +35,9 @@ class OLED:
     def __del__(self):
         self.clear(True)
         if self.verbose >= 1:
-            print('OLED deactivated')
+            print('Oled deactivated')
 
-    # Initialize OLED, return True on success, False on failure
+    # Initialize Oled, return True on success, False on failure
     def begin(self):
         try:
             self.__oled = SSD.SSD1306_128_32(rst=None, i2c_bus=self.__i2c_bus, gpio=1)
@@ -45,11 +45,11 @@ class OLED:
             self.__oled.clear()
             self.__oled.display()
             if self.verbose >= 1:
-                print('OLED started correctly!')
+                print('Oled started correctly!')
             return True
         except:
             if self.verbose >= 1:
-                print('---OLED not found!---')
+                print('---Oled not found!---')
             return False
 
     # Clear the display. Refresh =True Refresh immediately, refresh=False refresh not
@@ -86,7 +86,7 @@ class OLED:
         y = int(8 * (line - 1))
         self.add_text(0, y, text, refresh)
 
-    # Refresh the OLED to display the content
+    # Refresh the Oled to display the content
     def refresh(self):
         self.__oled.image(self.__image)
         self.__oled.display()
