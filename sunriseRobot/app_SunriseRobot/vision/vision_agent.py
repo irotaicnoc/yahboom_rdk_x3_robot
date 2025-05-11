@@ -76,6 +76,7 @@ class VisionAgent(object):
 
         # destroy lidar listener
         if self.lidar_is_active:
+            print('called from vision_agent.deactivate_agent')
             self.lidar_listener.delete_listener()
         self.lidar_is_active = False
         self.lidar_listener = None
