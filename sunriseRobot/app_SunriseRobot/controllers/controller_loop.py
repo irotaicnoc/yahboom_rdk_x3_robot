@@ -224,7 +224,7 @@ class ControllerLoop(object):
             self.lidar_listener.delete_listener()
             self.lidar_listener = None
         else:
-            if self.verbose >= 2:
+            if self.verbose >= 1:
                 print('Lidar listener already stopped')
         self.lidar_is_active = False
         self.robot_head.lidar_listener_status = 'inactive'
