@@ -11,8 +11,13 @@ class RobotHead:
     def __init__(self, **kwargs):
         parameters = args.import_args(yaml_path=gc.CONFIG_FOLDER_PATH + 'robot_head.yaml', **kwargs)
         self.verbose = parameters['verbose']
+
+        # controller parameters
         self.controller_id_list = []
         self.connected_controllers = 0
+        self.button_press_required_time = parameters['button_press_required_time']
+        self.one_time_check = {}
+        self.button_press_timestamp = {}
 
         # autonomous mode parameters
         self.robot_mode_list = ['user_controlled']
@@ -30,10 +35,11 @@ class RobotHead:
         for model_path in model_folder_path.glob('*.*'):
             self.model_list.append(model_path.name)
 
-        # hotspot and ROS2 parameters
+        # long processes status
         self.ros2_vr_connection_status = 'inactive'
         self.hotspot_status = 'inactive'
         self.hotspot_ip = parameters['hotspot_ip']
+        self.lidar_listener_status = 'inactive'
 
         # motion parameters
         self.steer_speed_proportion = parameters['steer_speed_proportion']
@@ -42,9 +48,6 @@ class RobotHead:
         self.speed_x = 0
         self.speed_y = 0
         self.speed_z = 0
-
-        # lidar parameters
-        self.lidar_listener_status = 'inactive'
 
         # buzzer, leds, and lights
         self.buzzer_is_active = False
@@ -73,10 +76,7 @@ class RobotHead:
             # use a slower speed (higher value)
             self.arm_automated_speed = parameters['arm_automated_speed']
             self.run_time = self.arm_automated_speed[0]
-            self.button_press_timestamp = {}
-            self.one_time_check = {}
             self.memorizable_button_list = []
-            self.button_press_required_time = parameters['button_press_required_time']
 
     def next_mode(self) -> None:
         if self.verbose >= 3:
