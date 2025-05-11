@@ -105,27 +105,18 @@ class LidarListener(Node):
             self.average_distance_in_arc = -1
 
     def get_raw_scan(self) -> LaserScan:
-        print('testing get_raw_scan...')
         if (time.time() - self.scan_timestamp) < self.scan_expiration_time:
-            print('get_raw_scan passed')
             return self.lidar_data
-        print('get_raw_scan passed')
         return None
 
     def get_obstacles_by_sector(self) -> tuple:
-        print('testing get_obstacles_by_sector...')
         if (time.time() - self.scan_timestamp) < self.scan_expiration_time:
-            print('get_obstacles_by_sector passed')
             return self.obstacles_by_sector, self.average_distance_by_sector
-        print('get_obstacles_by_sector passed')
         return None, None
 
     def get_obstacle_in_arc(self) -> tuple:
-        print('testing get_obstacle_in_arc...')
         if (time.time() - self.scan_timestamp) < self.scan_expiration_time:
-            print('get_obstacle_in_arc passed')
             return self.obstacle_in_arc, self.average_distance_in_arc
-        print('get_obstacle_in_arc passed')
         return None, None
 
 
@@ -215,5 +206,4 @@ class ThreadedLidarListener:
                 print('Lidar listener not stopped, thread is already None')
 
     def __del__(self):
-        print(f'called from {self.__class__.__name__} destructor (__del__)')
         self.delete_listener()
