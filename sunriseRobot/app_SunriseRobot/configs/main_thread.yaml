@@ -3,7 +3,7 @@
 # 1: errors and important information
 # 2: more information
 # 3: debug
-verbose: 3
+verbose: 2
 
 # serial parameters
 com: /dev/ttyUSB0
