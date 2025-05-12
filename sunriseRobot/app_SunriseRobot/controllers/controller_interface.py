@@ -109,7 +109,7 @@ class ControllerFunctions(object):
                     self.gpio_led.next_color()
             # memorize current arm position or reach memorized arm position
             if self.robot_head.robot_sub_mode == 'arm':
-                self.memorize_or_reach_arm_position(button='button_east', value=value)
+                self.memorize_or_set_arm_position(button='button_east', value=value)
 
     def button_west(self, value: bool) -> None:
         if self.robot_head.robot_mode == 'user_controlled':
@@ -118,12 +118,12 @@ class ControllerFunctions(object):
                     if self.cooldown_ended(button='button_west'):
                         self.robot_head.toggle_lidar_listener()
             if self.robot_head.robot_sub_mode == 'arm':
-                self.memorize_or_reach_arm_position(button='button_west', value=value)
+                self.memorize_or_set_arm_position(button='button_west', value=value)
 
     def button_north(self, value: bool) -> None:
         # memorize current arm position or reach memorized arm position
         if self.robot_head.robot_mode == 'user_controlled' and self.robot_head.robot_sub_mode == 'arm':
-            self.memorize_or_reach_arm_position(button='button_north', value=value)
+            self.memorize_or_set_arm_position(button='button_north', value=value)
         # change internal light effect
         else:
             if value:
@@ -198,7 +198,7 @@ class ControllerFunctions(object):
             if self.verbose >= 1:
                 print(f'Controller with id {controller_id} tried to disconnect, but this id is not connected')
 
-    def memorize_or_reach_arm_position(self, button: str, value: bool) -> None:
+    def memorize_or_set_arm_position(self, button: str, value: bool) -> None:
         if button not in self.arm.memorizable_button_list:
             self.arm.memorizable_button_list.append(button)
         if value:
