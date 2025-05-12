@@ -263,9 +263,8 @@ class ControllerLoop(object):
         else:
             # update estimated angles
             for angle_id in range(len(self.arm.current_angle_list)):
-                self.arm.current_angle_list[angle_id] += iteration_angle_step_list[angle_id]
                 self.arm.current_angle_list[angle_id] = np.clip(
-                    self.arm.current_angle_list[angle_id],
+                    self.arm.current_angle_list[angle_id] + iteration_angle_step_list[angle_id],
                     a_min=0,
                     a_max=180,
                 )
