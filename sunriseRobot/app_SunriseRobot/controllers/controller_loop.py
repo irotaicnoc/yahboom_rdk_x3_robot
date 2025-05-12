@@ -151,7 +151,7 @@ class ControllerLoop(object):
                                 angle_list=self.robot_body.get_arm_angle_list()
                             )
                         )
-                        print(f'Arm desired angles: {self.arm.desired_angle_list}')
+                        print(f'Arm desired angles (activated torque): {self.arm.desired_angle_list}')
                     self.robot_body.set_arm_torque(enable=self.arm.is_rigid)
                     # beep to signal the change in arm state
                     # self.robot_body.set_beep(self.beep_time)
@@ -168,7 +168,10 @@ class ControllerLoop(object):
                                     self.robot_body.set_beep(self.beep_time)
 
                 if self.arm.is_rigid:
+                    print(f'Arm desired angles (loop step): {self.arm.desired_angle_list}')
+                    print(f'Arm current angles (loop step): {self.arm.current_angle_list}')
                     iteration_angle_step_list = self.arm.small_step_towards_desired_angles(self.max_degree_change)
+                    print(f'iteration_angle_step_list: {iteration_angle_step_list}')
                     self.robot_body.set_arm_angle_list(
                         angle_s=iteration_angle_step_list,
                         run_time=self.arm.run_time,

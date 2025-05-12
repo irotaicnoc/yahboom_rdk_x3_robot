@@ -29,8 +29,8 @@ class Arm:
         # than 180 degrees by hand. Hence, desired angles must be clamped, and the robot will move the arm from any
         # invalid position to a valid position.
         self.desired_angle_list = self.clamp_angle_list(angle_list=arm_initial_angles)
-        print(f'Arm desired angles: {self.desired_angle_list}')
-        print(f'Arm current angles: {self.current_angle_list}')
+        print(f'Arm desired angles (initial): {self.desired_angle_list}')
+        print(f'Arm current angles (initial): {self.current_angle_list}')
 
         if len(self.desired_angle_list) != 6:
             raise Exception(f'The robot supports a 6-servo arm, current arm has {len(self.desired_angle_list)} servos')
