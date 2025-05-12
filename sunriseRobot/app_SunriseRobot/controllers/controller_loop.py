@@ -2,7 +2,7 @@
 # coding=utf-8
 # import os
 import time
-# import copy
+import copy
 import numpy as np
 
 import args
@@ -262,10 +262,6 @@ class ControllerLoop(object):
             print(f'current angle list (update_arm_estimation) REAL: {self.arm.current_angle_list}')
         else:
             # update estimated angles
-            for angle_id in range(len(self.arm.current_angle_list)):
-                self.arm.current_angle_list[angle_id] = np.clip(
-                    self.arm.current_angle_list[angle_id] + iteration_angle_step_list[angle_id],
-                    a_min=0,
-                    a_max=180,
-                )
+            self.arm.current_angle_list = copy.deepcopy(iteration_angle_step_list)
+
             print(f'current angle list (update_arm_estimation) ESTIMATED: {self.arm.current_angle_list}')
