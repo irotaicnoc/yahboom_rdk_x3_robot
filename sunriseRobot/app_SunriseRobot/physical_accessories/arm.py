@@ -24,10 +24,16 @@ class Arm:
         self.state_not_updated = True
         # servo angles have to be in the range [0, 180], except for servo 4 which has range [0, 270]
         # all servos to 90 degrees means vertical position
-        # during each loop iteration, the desired angle is updated by adding the speed
-        # and the real angle is moved closer to the desired angle
-        self.desired_angle_list = arm_initial_angles
         self.current_angle_list = arm_initial_angles
+        self.desired_angle_list = []
+        # initial desired and current angles could be in an invalid state because each servo can be rotated by more
+        # than 180 degrees by hand. Hence, desired angles must be clamped, and the robot will move the arm from any
+        # invalid position to a valid position.
+        for angle_id in range(len(arm_initial_angles)):
+            angle = arm_initial_angles[angle_id]
+            angle = np.clip(angle, a_min=0, a_max=180)
+            self.desired_angle_list.append(angle)
+
         if len(self.desired_angle_list) != 6:
             raise Exception(f'The robot supports a 6-servo arm, current arm has {len(self.desired_angle_list)} servos')
         # speed with which the arm reaches the desired angle [0, 2000]
@@ -65,9 +71,9 @@ class Arm:
         # the step is the difference between the desired angle and the current angle, capped to max_degree_change° for
         # each loop iteration
         iteration_angle_step_list = []
-        for angle_index in range(len(self.desired_angle_list)):
-            iteration_angle_step = self.desired_angle_list[angle_index] - self.current_angle_list[angle_index]
+        for angle_id in range(len(self.desired_angle_list)):
+            iteration_angle_step = self.desired_angle_list[angle_id] - self.current_angle_list[angle_id]
             iteration_angle_step = np.clip(iteration_angle_step, a_min=-max_degree_change, a_max=max_degree_change)
-            iteration_angle_step = self.current_angle_list[angle_index] + iteration_angle_step
+            iteration_angle_step = self.current_angle_list[angle_id] + iteration_angle_step
             iteration_angle_step_list.append(iteration_angle_step)
         return iteration_angle_step_list
