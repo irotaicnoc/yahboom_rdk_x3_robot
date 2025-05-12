@@ -169,8 +169,6 @@ class ControllerLoop(object):
                                     self.robot_body.set_beep(self.beep_time)
 
                 if self.arm.is_rigid:
-                    print(f'Arm desired angles (loop step): {self.arm.desired_angle_list}')
-                    print(f'Arm current angles (loop step): {self.arm.current_angle_list}')
                     iteration_angle_step_list = self.arm.small_step_towards_desired_angles(self.max_degree_change)
                     print(f'iteration_angle_step_list: {iteration_angle_step_list}')
                     iteration_angle_step_list = self.arm.clamp_angle_list(angle_list=iteration_angle_step_list)
@@ -180,6 +178,8 @@ class ControllerLoop(object):
                         run_time=self.arm.run_time,
                     )
                     self.update_arm_estimation(iteration_angle_step_list=iteration_angle_step_list)
+                else:
+                    print(f'current angles: {self.robot_body.get_arm_angle_list()}')
         else:
             time.sleep(2)
 
