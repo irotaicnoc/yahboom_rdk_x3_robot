@@ -68,10 +68,13 @@ class ControllerLoop(object):
             return
 
         # buzzer
-        if self.robot_head.buzzer_is_active:
-            self.robot_body.set_beep(1)
-        else:
-            self.robot_body.set_beep(0)
+        # send command to the buzzer only if the state has changed from the previous loop iteration
+        if self.robot_head.buzzer_state_changed:
+            self.robot_head.buzzer_state_changed = False
+            if self.robot_head.buzzer_is_active:
+                self.robot_body.set_beep(1)
+            else:
+                self.robot_body.set_beep(0)
 
         # activate/deactivate lidar listener
         if self.robot_head.lidar_listener_status == 'processing':

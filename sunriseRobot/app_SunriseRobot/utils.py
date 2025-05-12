@@ -212,13 +212,14 @@ def start_generic_process(robot_head, name: str = None):
 
 def finish_generic_process(robot_head):
     robot_head.gpio_led.set_color('green')
-    buzzer_previous_state = robot_head.buzzer_is_active
     robot_head.buzzer_is_active = True
+    robot_head.buzzer_state_changed = True
     if robot_head.verbose >= 1:
         print('Done.')
     time.sleep(0.5)
     robot_head.gpio_led.set_color('off')
-    robot_head.buzzer_is_active = buzzer_previous_state
+    robot_head.buzzer_is_active = False
+    robot_head.buzzer_state_changed = True
 
 
 def calculate_robot_direction(speed_x: float, speed_y: float, speed_z: float) -> float:

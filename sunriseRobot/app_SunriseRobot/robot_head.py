@@ -50,6 +50,7 @@ class RobotHead:
 
         # buzzer, leds, and lights
         self.buzzer_is_active = False
+        self.buzzer_state_changed = True
         self.internal_light = parameters['internal_light']
         self.gpio_led = parameters['gpio_led']
 
