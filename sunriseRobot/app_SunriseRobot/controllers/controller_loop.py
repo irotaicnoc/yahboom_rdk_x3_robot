@@ -19,6 +19,7 @@ class ControllerLoop(object):
         self.arm = arm
         self.gpio_led = robot_head.gpio_led
         self.beep_time = parameters['beep_time']
+        self.loop_sleep_time = parameters['loop_sleep_time']
         self.verbose = parameters['verbose']
         self.loop_counter = 0
         self.max_degree_change = parameters['max_degree_change']
@@ -181,7 +182,7 @@ class ControllerLoop(object):
             time.sleep(2)
 
         self.loop_counter += 1
-        time.sleep(0.02)
+        time.sleep(self.loop_sleep_time)
 
     # def print_state_ascii(self,
     #                       obstacles_by_sector: list,

@@ -1,3 +1,5 @@
+loop_sleep_time: 0.02  # seconds
+
 # milliseconds
 beep_time: 50
 
