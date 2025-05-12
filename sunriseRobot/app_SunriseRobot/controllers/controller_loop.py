@@ -3,7 +3,7 @@
 # import os
 import time
 # import copy
-# import numpy as np
+import numpy as np
 
 import args
 import utils
@@ -20,6 +20,9 @@ class ControllerLoop(object):
         self.gpio_led = robot_head.gpio_led
         self.beep_time = parameters['beep_time']
         self.verbose = parameters['verbose']
+        self.loop_counter = 0
+        self.max_degree_change = parameters['max_degree_change']
+        self.arm_update_frequency = parameters['arm_update_frequency']
 
         # lidar initialization
         self.lidar_listener = None
@@ -145,6 +148,7 @@ class ControllerLoop(object):
                     # beep to signal the change in arm state
                     # self.robot_body.set_beep(self.beep_time)
 
+                # buttons for memorizing arm positions
                 for button in self.robot_head.button_press_timestamp:
                     timestamp = self.robot_head.button_press_timestamp[button]
                     if timestamp != 0:
@@ -156,14 +160,16 @@ class ControllerLoop(object):
                                     self.robot_body.set_beep(self.beep_time)
 
                 if self.arm.is_rigid:
-                    self.arm.update_desired_angles()
+                    iteration_angle_step_list = self.arm.small_step_towards_desired_angles(self.max_degree_change)
                     self.robot_body.set_arm_angle_list(
-                        angle_s=self.arm.desired_angle_list,
+                        angle_s=iteration_angle_step_list,
                         run_time=self.arm.run_time,
                     )
+                    self.update_arm_estimation(iteration_angle_step_list=iteration_angle_step_list)
         else:
             time.sleep(2)
 
+        self.loop_counter += 1
         time.sleep(0.02)
 
     # def print_state_ascii(self,
@@ -229,3 +235,23 @@ class ControllerLoop(object):
                 print('Lidar listener already stopped')
         self.lidar_is_active = False
         self.robot_head.lidar_listener_status = 'inactive'
+
+    def update_arm_estimation(self, iteration_angle_step_list: list) -> None:
+        # update the current angles
+        # arm.current_angle_list is an internal estimate of the arm angles. Every n loop iterations
+        # the arm angles are updated to the real angles. This is done to avoid too frequent updates of the servos.
+        if self.loop_counter % self.arm_update_frequency == 0:
+            self.arm.current_angle_list = self.robot_body.get_arm_angle_list()
+            # if self.verbose >= 2:
+            #     print(f'Arm angles updated: {self.arm.current_angle_list}')
+
+        else:
+            # update estimated angles
+            for angle_index in range(len(self.arm.current_angle_list)):
+                self.arm.current_angle_list[angle_index] += iteration_angle_step_list[angle_index]
+                np.clip(
+                    self.arm.current_angle_list[angle_index],
+                    a_min=0,
+                    a_max=180,
+                    out=self.arm.current_angle_list[angle_index],
+                )

@@ -37,7 +37,7 @@ class ControllerFunctions(object):
                 self.robot_head.speed_y = value * self.robot_head.speed_coefficient
             elif self.robot_head.robot_sub_mode == 'arm':
                 # servo 1
-                self.arm.update_speed(servo_id=0, value=-value)
+                self.arm.small_angle_increment(servo_id=0, increment=-value * self.robot_head.speed_coefficient)
 
     def axis_left_y(self, value: float) -> None:
         assert -1 <= value <= 1, f'Value {value} is out of range [-1, 1]'
@@ -46,7 +46,7 @@ class ControllerFunctions(object):
                 self.robot_head.speed_x = value * self.robot_head.speed_coefficient
             elif self.robot_head.robot_sub_mode == 'arm':
                 # servo 2
-                self.arm.update_speed(servo_id=1, value=-value)
+                self.arm.small_angle_increment(servo_id=1, increment=-value * self.robot_head.speed_coefficient)
 
     def axis_right_x(self, value: float) -> None:
         assert -1 <= value <= 1, f'Value {value} is out of range [-1, 1]'
@@ -56,14 +56,14 @@ class ControllerFunctions(object):
                                            * self.robot_head.steer_speed_proportion)
             elif self.robot_head.robot_sub_mode == 'arm':
                 # servo 5
-                self.arm.update_speed(servo_id=4, value=value)
+                self.arm.small_angle_increment(servo_id=4, increment=-value * self.robot_head.speed_coefficient)
 
     def axis_right_y(self, value: float) -> None:
         assert -1 <= value <= 1, f'Value {value} is out of range [-1, 1]'
         if self.robot_head.robot_mode == 'user_controlled':
             if self.robot_head.robot_sub_mode == 'arm':
                 # servo 6
-                self.arm.update_speed(servo_id=5, value=value)
+                self.arm.small_angle_increment(servo_id=5, increment=-value * self.robot_head.speed_coefficient)
 
     def axis_arrows_x(self, value: float) -> None:
         assert -1 <= value <= 1, f'Value {value} is out of range [-1, 1]'
@@ -72,7 +72,7 @@ class ControllerFunctions(object):
                 self.robot_head.speed_y = value * self.robot_head.speed_coefficient
             elif self.robot_head.robot_sub_mode == 'arm':
                 # servo 4
-                self.arm.update_speed(servo_id=3, value=value)
+                self.arm.small_angle_increment(servo_id=3, increment=-value * self.robot_head.speed_coefficient)
         elif self.robot_head.robot_mode == 'autonomous_vision':
             if value > 0:
                 self.robot_head.next_target()
@@ -86,7 +86,7 @@ class ControllerFunctions(object):
                 self.robot_head.speed_x = value * self.robot_head.speed_coefficient
             elif self.robot_head.robot_sub_mode == 'arm':
                 # servo 3
-                self.arm.update_speed(servo_id=2, value=-value)
+                self.arm.small_angle_increment(servo_id=2, increment=-value * self.robot_head.speed_coefficient)
         elif self.robot_head.robot_mode == 'autonomous_vision':
             if value > 0:
                 self.robot_head.next_model()
