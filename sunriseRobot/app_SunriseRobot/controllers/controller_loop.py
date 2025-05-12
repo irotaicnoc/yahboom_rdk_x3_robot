@@ -170,9 +170,9 @@ class ControllerLoop(object):
 
                 if self.arm.is_rigid:
                     iteration_angle_step_list = self.arm.small_step_towards_desired_angles(self.max_degree_change)
-                    print(f'iteration_angle_step_list: {iteration_angle_step_list}')
+                    # print(f'iteration_angle_step_list: {iteration_angle_step_list}')
                     iteration_angle_step_list = self.arm.clamp_angle_list(angle_list=iteration_angle_step_list)
-                    print(f'iteration_angle_step_list: {iteration_angle_step_list}')
+                    print(f'iteration_angle_step_list (loop): {iteration_angle_step_list}')
                     self.robot_body.set_arm_angle_list(
                         angle_s=iteration_angle_step_list,
                         run_time=self.arm.run_time,
@@ -251,6 +251,7 @@ class ControllerLoop(object):
         self.robot_head.lidar_listener_status = 'inactive'
 
     def update_arm_estimation(self, iteration_angle_step_list: list) -> None:
+        print(f'current angle list (update_arm_estimation) PRE: {self.arm.current_angle_list}')
         # update the current angles
         # arm.current_angle_list is an internal estimate of the arm angles. Every n loop iterations
         # the arm angles are updated to the real angles. This is done to avoid too frequent updates of the servos.
@@ -258,7 +259,7 @@ class ControllerLoop(object):
             self.arm.current_angle_list = self.robot_body.get_arm_angle_list()
             # if self.verbose >= 2:
             #     print(f'Arm angles updated: {self.arm.current_angle_list}')
-
+            print(f'current angle list (update_arm_estimation) REAL: {self.arm.current_angle_list}')
         else:
             # update estimated angles
             for angle_id in range(len(self.arm.current_angle_list)):
@@ -268,3 +269,4 @@ class ControllerLoop(object):
                     a_min=0,
                     a_max=180,
                 )
+            print(f'current angle list (update_arm_estimation) ESTIMATED: {self.arm.current_angle_list}')
