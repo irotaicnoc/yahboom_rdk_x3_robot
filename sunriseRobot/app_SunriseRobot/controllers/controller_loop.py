@@ -173,6 +173,8 @@ class ControllerLoop(object):
                     print(f'Arm current angles (loop step): {self.arm.current_angle_list}')
                     iteration_angle_step_list = self.arm.small_step_towards_desired_angles(self.max_degree_change)
                     print(f'iteration_angle_step_list: {iteration_angle_step_list}')
+                    iteration_angle_step_list = self.arm.clamp_angle_list(angle_list=iteration_angle_step_list)
+                    print(f'iteration_angle_step_list: {iteration_angle_step_list}')
                     self.robot_body.set_arm_angle_list(
                         angle_s=iteration_angle_step_list,
                         run_time=self.arm.run_time,
