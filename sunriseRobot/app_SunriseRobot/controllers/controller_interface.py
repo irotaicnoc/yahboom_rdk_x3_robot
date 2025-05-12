@@ -208,7 +208,7 @@ class ControllerFunctions(object):
         else:
             self.gpio_led.set_color('off')
             if self.enough_press_time(button=button):
-                self.memorized_arm_position[button] = self.robot_body.get_arm_angle_list()
+                self.memorized_arm_position[button] = self.arm.get_safe_arm_angle_list(clamped=True)
             else:
                 if button in self.memorized_arm_position:
                     self.arm.set_desired_angles(angle_list=self.memorized_arm_position[button])

@@ -13,11 +13,11 @@ class Arm:
         parameters = args.import_args(yaml_path=gc.CONFIG_FOLDER_PATH + 'arm.yaml', **kwargs)
         self.verbose = parameters['verbose']
 
-        arm_initial_angles = robot_body.get_arm_angle_list()
-        if arm_initial_angles != [-1, -1, -1, -1, -1, -1]:
-            robot_head.robot_sub_mode_dict['user_controlled'].append('arm')
-        else:
+        arm_initial_angles = self.get_safe_arm_angle_list(clamped=False)
+        if arm_initial_angles == [-1, -1, -1, -1, -1, -1]:
             raise Exception('The robotic arm is not connected. Mode "user_controlled (arm)" will not be available.')
+
+        robot_head.robot_sub_mode_dict['user_controlled'].append('arm')
 
         # self.arm_speed_proportion = parameters['arm_speed_proportion']
         self.is_rigid = True
@@ -77,10 +77,31 @@ class Arm:
         return iteration_angle_step_list
 
     @staticmethod
-    def clamp_angle_list(angle_list) -> list:
+    def clamp_angle_list(angle_list: list) -> list:
         # clamp angles to [0, 180] for all servos
         clamped_angle_list = []
         for angle in angle_list:
             clamped_angle = np.clip(angle, a_min=0, a_max=180)
             clamped_angle_list.append(clamped_angle)
         return clamped_angle_list
+
+    def get_safe_arm_angle_list(self, clamped: bool = True, retry_limit: int = 5) -> list:
+        angle_list = [-1, -1, -1, -1, -1, -1]
+        counter = 0
+        while -1 in angle_list:
+            if counter > 0:
+                print(f'first reading got an error, try n°: {counter}')
+                print(f'current angles: {angle_list}')
+            temp_angle_list = self.robot_body.get_arm_angle_list()
+            for angle_id in temp_angle_list:
+                angle = temp_angle_list[angle_id]
+                if angle != -1:
+                    if clamped:
+                        # clamp angles to [0, 180] for all servos
+                        angle = np.clip(angle, a_min=0, a_max=180)
+                    angle_list[angle_id] = angle
+            counter += 1
+            if counter > retry_limit:
+                print(f'Arm angles cannot be read')
+                break
+        return angle_list

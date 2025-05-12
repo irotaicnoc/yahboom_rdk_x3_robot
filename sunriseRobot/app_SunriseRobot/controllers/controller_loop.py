@@ -21,7 +21,7 @@ class ControllerLoop(object):
         self.beep_time = parameters['beep_time']
         self.loop_sleep_time = parameters['loop_sleep_time']
         self.verbose = parameters['verbose']
-        self.loop_counter = 0
+        self.arm_loop_counter = 0
         self.max_degree_change = parameters['max_degree_change']
         self.arm_update_frequency = parameters['arm_update_frequency']
 
@@ -147,11 +147,8 @@ class ControllerLoop(object):
                     self.arm.state_not_updated = False
                     # manually set configuration is maintained
                     if self.arm.is_rigid:
-                        self.arm.set_desired_angles(
-                            angle_list=self.arm.clamp_angle_list(
-                                angle_list=self.robot_body.get_arm_angle_list()
-                            )
-                        )
+
+                        self.arm.set_desired_angles(angle_list=self.arm.get_safe_arm_angle_list(clamped=True))
                         print(f'Arm desired angles (activated torque): {self.arm.desired_angle_list}')
                     self.robot_body.set_arm_torque(enable=self.arm.is_rigid)
                     # beep to signal the change in arm state
@@ -180,10 +177,10 @@ class ControllerLoop(object):
                     self.update_arm_estimation(iteration_angle_step_list=iteration_angle_step_list)
                 else:
                     print(f'current angles: {self.robot_body.get_arm_angle_list()}')
+                self.arm_loop_counter += 1
         else:
             time.sleep(2)
 
-        self.loop_counter += 1
         time.sleep(self.loop_sleep_time)
 
     # def print_state_ascii(self,
@@ -255,10 +252,11 @@ class ControllerLoop(object):
         # update the current angles
         # arm.current_angle_list is an internal estimate of the arm angles. Every n loop iterations
         # the arm angles are updated to the real angles. This is done to avoid too frequent updates of the servos.
-        if self.loop_counter % self.arm_update_frequency == 0:
-            self.arm.current_angle_list = self.robot_body.get_arm_angle_list()
-            # if self.verbose >= 2:
-            #     print(f'Arm angles updated: {self.arm.current_angle_list}')
+        if self.arm_loop_counter % self.arm_update_frequency == 0:
+            self.arm.current_angle_list = self.arm.get_safe_arm_angle_list(clamped=False)
+            if self.arm.current_angle_list == [-1, -1, -1, -1, -1, -1]:
+                print('update_arm_estimation Error: cannot get arm angles')
+                raise Exception
             print(f'current angle list (update_arm_estimation) REAL: {self.arm.current_angle_list}')
         else:
             # update estimated angles
