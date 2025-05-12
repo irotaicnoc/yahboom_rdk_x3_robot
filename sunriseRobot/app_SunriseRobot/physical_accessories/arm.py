@@ -25,14 +25,10 @@ class Arm:
         # servo angles have to be in the range [0, 180], except for servo 4 which has range [0, 270]
         # all servos to 90 degrees means vertical position
         self.current_angle_list = arm_initial_angles
-        self.desired_angle_list = self.clamp_angle_list(angle_list=arm_initial_angles)
         # initial desired and current angles could be in an invalid state because each servo can be rotated by more
         # than 180 degrees by hand. Hence, desired angles must be clamped, and the robot will move the arm from any
         # invalid position to a valid position.
-        for angle_id in range(len(arm_initial_angles)):
-            angle = arm_initial_angles[angle_id]
-            angle = np.clip(angle, a_min=0, a_max=180)
-            self.desired_angle_list.append(angle)
+        self.desired_angle_list = self.clamp_angle_list(angle_list=arm_initial_angles)
 
         if len(self.desired_angle_list) != 6:
             raise Exception(f'The robot supports a 6-servo arm, current arm has {len(self.desired_angle_list)} servos')
