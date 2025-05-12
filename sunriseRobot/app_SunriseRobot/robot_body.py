@@ -795,7 +795,7 @@ class RobotBody(object):
                     print('value:', temp_val)
                 time.sleep(self._delay_time)
             else:
-                warnings.warn('angle_s input error')
+                warnings.warn(f'angle_s input error {angle_s}')
         except:
             warnings.warn('set_arm_angle_list error')
 
