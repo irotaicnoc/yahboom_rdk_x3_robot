@@ -146,7 +146,11 @@ class ControllerLoop(object):
                     self.arm.state_not_updated = False
                     # manually set configuration is maintained
                     if self.arm.is_rigid:
-                        self.arm.set_desired_angles(angle_list=self.robot_body.get_arm_angle_list())
+                        self.arm.set_desired_angles(
+                            angle_list=self.arm.clamp_angle_list(
+                                angle_list=self.robot_body.get_arm_angle_list()
+                            )
+                        )
                     self.robot_body.set_arm_torque(enable=self.arm.is_rigid)
                     # beep to signal the change in arm state
                     # self.robot_body.set_beep(self.beep_time)
