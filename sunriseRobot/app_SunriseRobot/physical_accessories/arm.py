@@ -88,6 +88,7 @@ class Arm:
         return clamped_angle_list
 
     def get_safe_arm_angle_list(self, clamped: bool = True, retry_limit: int = 5) -> list:
+        print('in get_safe_arm_angle_list')
         angle_list = [-1, -1, -1, -1, -1, -1]
         counter = 0
         while -1 in angle_list:
@@ -95,6 +96,7 @@ class Arm:
                 print(f'first reading got an error, try n°: {counter}')
                 print(f'current angles: {angle_list}')
             temp_angle_list = self.robot_body.get_arm_angle_list()
+            print(f'\t\tloop read angles: {temp_angle_list}')
             for angle_id in temp_angle_list:
                 angle = temp_angle_list[angle_id]
                 if angle != -1:
@@ -106,4 +108,5 @@ class Arm:
             if counter > retry_limit:
                 print(f'Arm angles cannot be read')
                 break
+        print(f'\tfinal output: {angle_list}')
         return angle_list
