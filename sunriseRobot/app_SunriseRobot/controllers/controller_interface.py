@@ -100,6 +100,7 @@ class ControllerFunctions(object):
         # activate buzzer
         else:
             self.robot_head.buzzer_is_active = value
+            self.robot_head.buzzer_state_changed = True
 
     def button_east(self, value: bool) -> None:
         if self.robot_head.robot_mode == 'user_controlled':
