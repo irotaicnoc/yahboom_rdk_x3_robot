@@ -5,4 +5,4 @@ arm_speed_proportion: 2
 # This is used when setting an arbitrary position for the arm. Allowed range is [0, 2000], with 0 beeing the maximum
 # speed and 2000 being the minimum speed. This range is used to convert the current robot speed to the arm speed.
 # arm_automated_speed=0 is too fast, so the maximum allowed is higher (which mean a lower speed)
-run_time: 400
+run_time: 0
