@@ -19,7 +19,7 @@ class Arm:
 
         robot_head.robot_sub_mode_dict['user_controlled'].append('arm')
 
-        # self.arm_speed_proportion = parameters['arm_speed_proportion']
+        self.arm_speed_proportion = parameters['arm_speed_proportion']
         self.is_rigid = True
         self.state_not_updated = True
         # servo angles have to be in the range [0, 180], except for servo 4 which has range [0, 270]
@@ -59,7 +59,7 @@ class Arm:
 
     def small_angle_increment(self, servo_id: int, increment: float) -> None:
         # apply speed changes due to user input
-        # new_temp_angle = self.current_angle_list[servo_id] + increment * self.arm_speed_proportion
+        new_temp_angle = self.current_angle_list[servo_id] + increment * self.arm_speed_proportion
         new_temp_angle = self.current_angle_list[servo_id] + increment
         new_temp_angle = np.clip(new_temp_angle, a_min=0, a_max=180)
         self.desired_angle_list[servo_id] = new_temp_angle

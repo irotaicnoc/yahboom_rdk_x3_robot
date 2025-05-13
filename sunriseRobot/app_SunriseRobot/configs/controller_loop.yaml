@@ -17,7 +17,7 @@ min_allowed_distance: [0.2, 0.4]
 
 # arm parameters
 # how much the arm servos can rotate in a single loop iteration (in degrees)
-max_degree_change: 0.2
+max_degree_change: 0.5
 # arm.current_angle_list is an estimate of the arm angles. Every n loop iterations
 # the arm angles are updated to the real angles. This is done to avoid too frequent updates of the servos.
 #arm_update_frequency: 5
