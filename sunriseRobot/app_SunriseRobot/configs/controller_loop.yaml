@@ -1,5 +1,7 @@
 # milliseconds
 beep_time: 50
+loop_sleep_time: 0.02  # seconds
+
 
 # lidar parameters
 lidar_kwargs:
