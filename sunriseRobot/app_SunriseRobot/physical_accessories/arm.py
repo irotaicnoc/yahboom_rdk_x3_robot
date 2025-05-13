@@ -96,8 +96,8 @@ class Arm:
                 print(f'first reading got an error, try n°: {counter}')
                 print(f'current angles: {angle_list}')
             temp_angle_list = self.robot_body.get_arm_angle_list()
-            for angle_id in temp_angle_list:
             # print(f'\t\tloop read angles: {temp_angle_list}')
+            for angle_id in range(len(temp_angle_list)):
                 angle = temp_angle_list[angle_id]
                 if angle != -1:
                     if clamped:
