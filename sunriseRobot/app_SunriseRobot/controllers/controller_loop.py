@@ -169,7 +169,7 @@ class ControllerLoop(object):
                     iteration_angle_step_list = self.arm.small_step_towards_desired_angles(self.max_degree_change)
                     # print(f'iteration_angle_step_list: {iteration_angle_step_list}')
                     iteration_angle_step_list = self.arm.clamp_angle_list(angle_list=iteration_angle_step_list)
-                    print(f'iteration_angle_step_list (loop): {iteration_angle_step_list}')
+                    # print(f'iteration_angle_step_list (loop): {iteration_angle_step_list}')
                     self.robot_body.set_arm_angle_list(
                         angle_s=iteration_angle_step_list,
                         run_time=self.arm.run_time,
@@ -248,7 +248,7 @@ class ControllerLoop(object):
         self.robot_head.lidar_listener_status = 'inactive'
 
     def update_arm_estimation(self, iteration_angle_step_list: list) -> None:
-        print(f'current angle list (update_arm_estimation) PRE: {self.arm.current_angle_list}')
+        # print(f'current angle list (update_arm_estimation) PRE: {self.arm.current_angle_list}')
         # update the current angles
         # arm.current_angle_list is an internal estimate of the arm angles. Every n loop iterations
         # the arm angles are updated to the real angles. This is done to avoid too frequent updates of the servos.
@@ -257,9 +257,9 @@ class ControllerLoop(object):
             if self.arm.current_angle_list == [-1, -1, -1, -1, -1, -1]:
                 print('update_arm_estimation Error: cannot get arm angles')
                 raise Exception
-            print(f'current angle list (update_arm_estimation) REAL: {self.arm.current_angle_list}')
+            # print(f'current angle list (update_arm_estimation) REAL: {self.arm.current_angle_list}')
         else:
             # update estimated angles
             self.arm.current_angle_list = copy.deepcopy(iteration_angle_step_list)
 
-            print(f'current angle list (update_arm_estimation) ESTIMATED: {self.arm.current_angle_list}')
+            # print(f'current angle list (update_arm_estimation) ESTIMATED: {self.arm.current_angle_list}')
