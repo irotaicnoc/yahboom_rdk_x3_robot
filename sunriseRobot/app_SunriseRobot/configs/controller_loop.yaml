@@ -1,5 +1,5 @@
-loop_sleep_time: 1  # seconds
-#loop_sleep_time: 0.02  # seconds
+#loop_sleep_time: 1  # seconds
+loop_sleep_time: 0.02  # seconds
 
 # milliseconds
 beep_time: 50
@@ -20,4 +20,5 @@ min_allowed_distance: [0.2, 0.4]
 max_degree_change: 0.1
 # arm.current_angle_list is an estimate of the arm angles. Every n loop iterations
 # the arm angles are updated to the real angles. This is done to avoid too frequent updates of the servos.
-arm_update_frequency: 5
+#arm_update_frequency: 5
+arm_update_frequency: 20
