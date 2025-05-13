@@ -115,7 +115,7 @@ class VisionAgent(object):
             self.lidar_listener = None
 
     def autonomous_behavior(self):
-        if self.robot_head.robot_mode == 'autonomous_vision':
+        if self.robot_head.robot_mode == gc.MODE_AUTONOMOUS_VISION:
             if self.agent_active:
                 self.detect_and_move()
             else:

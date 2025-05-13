@@ -7,6 +7,7 @@ from PIL import ImageFont
 import Adafruit_SSD1306 as SSD
 
 import utils
+import global_constants as gc
 
 
 class Oled:
@@ -121,7 +122,7 @@ class Oled:
         if self.robot_head.robot_sub_mode is not None:
             status[0] += f' ({self.robot_head.robot_sub_mode})'
 
-        elif self.robot_head.robot_mode == 'autonomous_vision':
+        elif self.robot_head.robot_mode == gc.MODE_AUTONOMOUS_VISION:
             # discard file extension
             model_name = self.robot_head.model_list[self.robot_head.model_pos].split('.')[0]
             # remove resolution and replace '_' with ' '

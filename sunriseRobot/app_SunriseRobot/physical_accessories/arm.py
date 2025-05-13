@@ -17,7 +17,7 @@ class Arm:
 
         arm_initial_angles = self.get_safe_arm_angle_list(clamped=False)
         if arm_initial_angles != [-1, -1, -1, -1, -1, -1]:
-            robot_head.robot_sub_mode_dict['user_controlled'].append('arm')
+            robot_head.robot_sub_mode_dict[gc.MODE_USER_CONTROLLED].append(gc.SUB_MODE_ARM_FK)
         else:
             raise Exception('The robotic arm is not connected. Mode "user_controlled (arm)" will not be available.')
 

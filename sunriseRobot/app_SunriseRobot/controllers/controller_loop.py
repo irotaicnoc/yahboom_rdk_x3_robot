@@ -82,8 +82,8 @@ class ControllerLoop(object):
                 self.stop_lidar_listener()
 
         # wheels
-        if self.robot_head.robot_mode == 'user_controlled':
-            if self.robot_head.robot_sub_mode == 'wheels':
+        if self.robot_head.robot_mode == gc.MODE_USER_CONTROLLED:
+            if self.robot_head.robot_sub_mode == gc.SUB_MODE_WHEELS:
                 if self.lidar_is_active:
                     # get the lidar data
                     obstacles_by_sector, average_distance_by_sector = self.lidar_listener.get_obstacles_by_sector()
@@ -139,7 +139,7 @@ class ControllerLoop(object):
                 )
 
             # arm servos
-            elif self.robot_head.robot_sub_mode == 'arm':
+            elif self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_FK:
                 if self.arm.state_not_updated:
                     self.arm.state_not_updated = False
                     # manually set configuration is maintained

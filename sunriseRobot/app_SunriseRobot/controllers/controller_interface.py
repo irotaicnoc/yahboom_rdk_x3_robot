@@ -32,48 +32,48 @@ class ControllerFunctions(object):
     # for arrows 'value' is a float in range [-1, 1], but it can only assume the values -1, 0 or 1
     def axis_left_x(self, value: float) -> None:
         assert -1 <= value <= 1, f'Value {value} is out of range [-1, 1]'
-        if self.robot_head.robot_mode == 'user_controlled':
-            if self.robot_head.robot_sub_mode == 'wheels':
+        if self.robot_head.robot_mode == gc.MODE_USER_CONTROLLED:
+            if self.robot_head.robot_sub_mode == gc.SUB_MODE_WHEELS:
                 self.robot_head.speed_y = value * self.robot_head.speed_coefficient
-            elif self.robot_head.robot_sub_mode == 'arm':
+            elif self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_FK:
                 # servo 1
                 self.arm.update_speed(servo_id=0, value=-value)
 
     def axis_left_y(self, value: float) -> None:
         assert -1 <= value <= 1, f'Value {value} is out of range [-1, 1]'
-        if self.robot_head.robot_mode == 'user_controlled':
-            if self.robot_head.robot_sub_mode == 'wheels':
+        if self.robot_head.robot_mode == gc.MODE_USER_CONTROLLED:
+            if self.robot_head.robot_sub_mode == gc.SUB_MODE_WHEELS:
                 self.robot_head.speed_x = value * self.robot_head.speed_coefficient
-            elif self.robot_head.robot_sub_mode == 'arm':
+            elif self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_FK:
                 # servo 2
                 self.arm.update_speed(servo_id=1, value=-value)
 
     def axis_right_x(self, value: float) -> None:
         assert -1 <= value <= 1, f'Value {value} is out of range [-1, 1]'
-        if self.robot_head.robot_mode == 'user_controlled':
-            if self.robot_head.robot_sub_mode == 'wheels':
+        if self.robot_head.robot_mode == gc.MODE_USER_CONTROLLED:
+            if self.robot_head.robot_sub_mode == gc.SUB_MODE_WHEELS:
                 self.robot_head.speed_z = (value * self.robot_head.speed_coefficient
                                            * self.robot_head.steer_speed_proportion)
-            elif self.robot_head.robot_sub_mode == 'arm':
+            elif self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_FK:
                 # servo 5
                 self.arm.update_speed(servo_id=4, value=value)
 
     def axis_right_y(self, value: float) -> None:
         assert -1 <= value <= 1, f'Value {value} is out of range [-1, 1]'
-        if self.robot_head.robot_mode == 'user_controlled':
-            if self.robot_head.robot_sub_mode == 'arm':
+        if self.robot_head.robot_mode == gc.MODE_USER_CONTROLLED:
+            if self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_FK:
                 # servo 6
                 self.arm.update_speed(servo_id=5, value=value)
 
     def axis_arrows_x(self, value: float) -> None:
         assert -1 <= value <= 1, f'Value {value} is out of range [-1, 1]'
-        if self.robot_head.robot_mode == 'user_controlled':
-            if self.robot_head.robot_sub_mode == 'wheels':
+        if self.robot_head.robot_mode == gc.MODE_USER_CONTROLLED:
+            if self.robot_head.robot_sub_mode == gc.SUB_MODE_WHEELS:
                 self.robot_head.speed_y = value * self.robot_head.speed_coefficient
-            elif self.robot_head.robot_sub_mode == 'arm':
+            elif self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_FK:
                 # servo 4
                 self.arm.update_speed(servo_id=3, value=value)
-        elif self.robot_head.robot_mode == 'autonomous_vision':
+        elif self.robot_head.robot_mode == gc.MODE_AUTONOMOUS_VISION:
             if value > 0:
                 self.robot_head.next_target()
             if value < 0:
@@ -81,66 +81,68 @@ class ControllerFunctions(object):
 
     def axis_arrows_y(self, value: float) -> None:
         assert -1 <= value <= 1, f'Value {value} is out of range [-1, 1]'
-        if self.robot_head.robot_mode == 'user_controlled':
-            if self.robot_head.robot_sub_mode == 'wheels':
+        if self.robot_head.robot_mode == gc.MODE_USER_CONTROLLED:
+            if self.robot_head.robot_sub_mode == gc.SUB_MODE_WHEELS:
                 self.robot_head.speed_x = value * self.robot_head.speed_coefficient
-            elif self.robot_head.robot_sub_mode == 'arm':
+            elif self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_FK:
                 # servo 3
                 self.arm.update_speed(servo_id=2, value=-value)
-        elif self.robot_head.robot_mode == 'autonomous_vision':
+        elif self.robot_head.robot_mode == gc.MODE_AUTONOMOUS_VISION:
             if value > 0:
                 self.robot_head.next_model()
             if value < 0:
                 self.robot_head.previous_model()
 
     def button_south(self, value: bool) -> None:
-        if self.robot_head.robot_mode == 'user_controlled' and self.robot_head.robot_sub_mode == 'arm':
-            if value:
-                self.arm.set_desired_angles(angle_list=[90, 90, 90, 90, 90, 90])
+        if self.robot_head.robot_mode == gc.MODE_USER_CONTROLLED:
+            if self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_FK:
+                if value:
+                    self.arm.set_desired_angles(angle_list=[90, 90, 90, 90, 90, 90])
         # activate buzzer
         else:
             self.robot_head.buzzer_is_active = value
             self.robot_head.buzzer_state_changed = True
 
     def button_east(self, value: bool) -> None:
-        if self.robot_head.robot_mode == 'user_controlled':
+        if self.robot_head.robot_mode == gc.MODE_USER_CONTROLLED:
             # move robot
-            if self.robot_head.robot_sub_mode == 'wheels':
+            if self.robot_head.robot_sub_mode == gc.SUB_MODE_WHEELS:
                 if value:
                     self.gpio_led.next_color()
             # memorize current arm position or reach memorized arm position
-            if self.robot_head.robot_sub_mode == 'arm':
+            if self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_FK:
                 self.memorize_or_set_arm_position(button='button_east', value=value)
 
     def button_west(self, value: bool) -> None:
-        if self.robot_head.robot_mode == 'user_controlled':
-            if self.robot_head.robot_sub_mode == 'wheels':
+        if self.robot_head.robot_mode == gc.MODE_USER_CONTROLLED:
+            if self.robot_head.robot_sub_mode == gc.SUB_MODE_WHEELS:
                 if value:
                     if self.cooldown_ended(button='button_west'):
                         self.robot_head.toggle_lidar_listener()
-            if self.robot_head.robot_sub_mode == 'arm':
+            if self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_FK:
                 self.memorize_or_set_arm_position(button='button_west', value=value)
 
     def button_north(self, value: bool) -> None:
         # memorize current arm position or reach memorized arm position
-        if self.robot_head.robot_mode == 'user_controlled' and self.robot_head.robot_sub_mode == 'arm':
-            self.memorize_or_set_arm_position(button='button_north', value=value)
+        if self.robot_head.robot_mode == gc.MODE_USER_CONTROLLED:
+            if self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_FK:
+                self.memorize_or_set_arm_position(button='button_north', value=value)
         # change internal light effect
         else:
             if value:
                 self.internal_light.next_light_effect()
 
     def button_l1(self, value: bool) -> None:
-        if self.robot_head.robot_mode == 'user_controlled':
+        if self.robot_head.robot_mode == gc.MODE_USER_CONTROLLED:
             # activate/deactivate hotspot
-            if self.robot_head.robot_sub_mode == 'wheels':
+            if self.robot_head.robot_sub_mode == gc.SUB_MODE_WHEELS:
                 if value:
                     self.robot_head.toggle_hotspot()
 
     def button_r1(self, value: bool) -> None:
-        if self.robot_head.robot_mode == 'user_controlled':
+        if self.robot_head.robot_mode == gc.MODE_USER_CONTROLLED:
             # activate/deactivate ROS2
-            if self.robot_head.robot_sub_mode == 'wheels':
+            if self.robot_head.robot_sub_mode == gc.SUB_MODE_WHEELS:
                 if value:
                     self.robot_head.toggle_ros2_vr_connection()
 

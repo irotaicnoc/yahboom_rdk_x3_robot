@@ -142,7 +142,7 @@ def task_controller_loop(**kwargs):
 def task_vision_agent(**kwargs):
     robot_head = kwargs['robot_head']
     try:
-        robot_head.robot_mode_list.append('autonomous_vision')
+        robot_head.robot_mode_list.append(gc.MODE_AUTONOMOUS_VISION)
         if kwargs['camera_type'] == 'internal':
             from vision.vision_agent import VisionAgent
         elif kwargs['camera_type'] == 'usb_v1':
@@ -168,9 +168,9 @@ def task_vision_agent(**kwargs):
         print('Vision agent error:')
         print(e)
         print(e.__traceback__)
-        if 'autonomous_vision' in robot_head.robot_mode_list:
-            robot_head.robot_mode_list.remove('autonomous_vision')
-            if robot_head.robot_mode == 'autonomous_vision':
+        if gc.MODE_AUTONOMOUS_VISION in robot_head.robot_mode_list:
+            robot_head.robot_mode_list.remove(gc.MODE_AUTONOMOUS_VISION)
+            if robot_head.robot_mode == gc.MODE_AUTONOMOUS_VISION:
                 robot_head.robot_mode = robot_head.robot_mode_list[0]
                 if robot_head.robot_sub_mode_dict[robot_head.robot_mode] is not None:
                     robot_head.robot_sub_mode = robot_head.robot_sub_mode_dict[robot_head.robot_mode][0]
@@ -179,7 +179,7 @@ def task_vision_agent(**kwargs):
 # def task_sound_agent(**kwargs):
 #     robot_head = kwargs['robot_head']
 #     try:
-#         robot_head.robot_mode_list.append('autonomous_sound')
+#         robot_head.robot_mode_list.append(gc.MODE_AUTONOMOUS_SOUND)
 #         sound_agent = SoundAgent(**kwargs)
 #         while True:
 #             sound_agent.autonomous_behavior()
@@ -187,9 +187,9 @@ def task_vision_agent(**kwargs):
 #         print('Sound agent error:')
 #         print(e)
 #         print(e.__traceback__)
-#         if 'autonomous_sound' in robot_head.robot_mode_list:
-#             robot_head.robot_mode_list.remove('autonomous_sound')
-#             if robot_head.robot_mode == 'autonomous_sound':
+#         if gc.MODE_AUTONOMOUS_SOUND in robot_head.robot_mode_list:
+#             robot_head.robot_mode_list.remove(gc.MODE_AUTONOMOUS_SOUND)
+#             if robot_head.robot_mode == gc.MODE_AUTONOMOUS_SOUND:
 #                 robot_head.robot_mode = robot_head.robot_mode_list[0]
 #                 if robot_head.robot_sub_mode_dict[robot_head.robot_mode] is not None:
 #                     robot_head.robot_sub_mode = robot_head.robot_sub_mode_dict[robot_head.robot_mode][0]

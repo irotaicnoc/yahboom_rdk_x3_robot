@@ -19,8 +19,8 @@ class RobotHead:
         self.button_press_timestamp = {}
 
         # autonomous mode parameters
-        self.robot_mode_list = ['user_controlled']
-        self.robot_sub_mode_dict = {self.robot_mode_list[0]: ['wheels']}
+        self.robot_mode_list = [gc.MODE_USER_CONTROLLED]
+        self.robot_sub_mode_dict = {self.robot_mode_list[0]: [gc.SUB_MODE_WHEELS]}
         self.robot_mode = self.robot_mode_list[0]
         self.robot_sub_mode = self.robot_sub_mode_dict[self.robot_mode][0]
         if self.verbose >= 1:

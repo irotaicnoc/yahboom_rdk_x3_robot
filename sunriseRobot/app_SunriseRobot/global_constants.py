@@ -9,6 +9,14 @@ LIGHT_STOP_CMD = 0
 LIGHT_EFFECT_CMD_LIST = [0, 1, 2, 3, 4]
 GPIO_LED_COLOR_LIST = ['off', 'red', 'green', 'orange']
 
+# robot modes
+MODE_USER_CONTROLLED = 'user_controlled'
+MODE_AUTONOMOUS_VISION = 'autonomous_vision'
+# MODE_AUTONOMOUS_SOUND = 'autonomous_sound'
+# robot sub modes
+SUB_MODE_WHEELS = 'wheels'
+SUB_MODE_ARM_FK = 'arm'
+
 # OS PATHS
 MAIN_FOLDER_PATH = '/root/GIT/yahboom_rdk_x3_robot/sunriseRobot/'
 APP_FOLDER_PATH = '/root/GIT/yahboom_rdk_x3_robot/sunriseRobot/app_SunriseRobot/'
