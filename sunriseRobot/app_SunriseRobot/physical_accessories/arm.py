@@ -14,6 +14,7 @@ class Arm:
         self.verbose = parameters['verbose']
 
         arm_initial_angles = self.get_safe_arm_angle_list(clamped=False)
+        print(f'arm_initial_angles: {self.arm_initial_angles}')
         if arm_initial_angles == [-1, -1, -1, -1, -1, -1]:
             raise Exception('The robotic arm is not connected. Mode "user_controlled (arm)" will not be available.')
 
@@ -25,12 +26,12 @@ class Arm:
         # servo angles have to be in the range [0, 180], except for servo 4 which has range [0, 270]
         # all servos to 90 degrees means vertical position
         self.current_angle_list = arm_initial_angles
+        print(f'Arm current angles (initial): {self.current_angle_list}')
         # initial desired and current angles could be in an invalid state because each servo can be rotated by more
         # than 180 degrees by hand. Hence, desired angles must be clamped, and the robot will move the arm from any
         # invalid position to a valid position.
         self.desired_angle_list = self.clamp_angle_list(angle_list=arm_initial_angles)
         print(f'Arm desired angles (initial): {self.desired_angle_list}')
-        print(f'Arm current angles (initial): {self.current_angle_list}')
 
         if len(self.desired_angle_list) != 6:
             raise Exception(f'The robot supports a 6-servo arm, current arm has {len(self.desired_angle_list)} servos')
