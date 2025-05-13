@@ -89,8 +89,8 @@ class Arm:
         angle_list = [-1, -1, -1, -1, -1, -1]
         counter = 0
         while -1 in angle_list:
-            if counter > 0:
-                print(f'first reading got an error, try n°: {counter}')
+            if counter > 1:
+                print(f'first two readings got an error, try n°: {counter}')
                 print(f'current angles: {angle_list}')
             temp_angle_list = self.robot_body.get_arm_angle_list()
             for angle_id in range(len(temp_angle_list)):
