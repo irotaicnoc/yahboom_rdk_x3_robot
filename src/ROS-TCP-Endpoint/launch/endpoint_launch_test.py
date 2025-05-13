@@ -34,7 +34,7 @@ def generate_launch_description():
         emulate_tty=True,
         parameters=[{'ROS_IP': ip_address}, {'ROS_TCP_PORT': 10000}],
     )
-    print('Done.')
+    print('Done')
 
     # When the server_node reaches the 'active' state, log a message and start the
     # controller_subscriber_node and camera_publisher_node.
@@ -42,7 +42,7 @@ def generate_launch_description():
         launch_ros.event_handlers.OnStateTransition(
             target_lifecycle_node=server_node, goal_state='active',
             entities=[
-                launch.actions.LogInfo(msg="'server_node' reached the 'active' state. Launching other nodes."),
+                launch.actions.LogInfo(msg="'server_node' reached the 'active' state. Launching other nodes"),
                 launch_ros.actions.LifecycleNode(
                     name='controller_subscriber_node',
                     namespace='',

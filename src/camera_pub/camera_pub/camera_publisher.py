@@ -54,7 +54,7 @@ class CameraPublisherNode(Node):
     def timer_callback_function(self):
         frame = self.camera.get_img(2)
         if frame is None:
-            self.get_logger().info('frame is None.')
+            self.get_logger().info('Frame is None')
             return
         # save_img = False
         # if self.message_counter % 100 == 0:

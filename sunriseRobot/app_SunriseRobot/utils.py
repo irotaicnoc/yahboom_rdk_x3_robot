@@ -215,7 +215,7 @@ def finish_generic_process(robot_head):
     robot_head.buzzer_is_active = True
     robot_head.buzzer_state_changed = True
     if robot_head.verbose >= 1:
-        print('Done.')
+        print('Done')
     time.sleep(0.5)
     robot_head.gpio_led.set_color('off')
     robot_head.buzzer_is_active = False

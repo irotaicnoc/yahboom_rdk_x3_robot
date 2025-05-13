@@ -51,9 +51,8 @@ class Arm:
                 print(f'Arm can be moved manually, but cannot be controlled by the controller')
 
     def set_desired_angles(self, angle_list: list) -> None:
-        assert len(angle_list) == len(self.desired_angle_list), \
-            (f'Length of angle_list {len(angle_list)} is not equal'
-             f' to arm_servos_desired_angle {len(self.desired_angle_list)}')
+        assert len(angle_list) == len(self.desired_angle_list), (f'Length of angle_list {len(angle_list)} is not '
+            f'equal to arm_servos_desired_angle {len(self.desired_angle_list)}')
 
         self.run_time = utils.change_range(
             value=self.robot_head.speed_coefficient,

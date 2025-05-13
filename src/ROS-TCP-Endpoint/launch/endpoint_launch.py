@@ -32,7 +32,7 @@ def generate_launch_description():
         emulate_tty=True,
         parameters=[{"ROS_IP": ip_address}, {"ROS_TCP_PORT": 10000}],
     )
-    print('Done.')
+    print('Done')
 
     print('Starting controller_subscriber_node...', end='')
     time.sleep(1)
@@ -40,7 +40,7 @@ def generate_launch_description():
         package='controller_sub',
         executable='controller_subscriber_node',
     )
-    print('Done.')
+    print('Done')
     print('Starting camera_publisher_node...', end='')
     time.sleep(1)
     camera_publisher_node = Node(

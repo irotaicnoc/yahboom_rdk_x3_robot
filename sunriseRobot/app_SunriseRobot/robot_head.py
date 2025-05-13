@@ -56,7 +56,7 @@ class RobotHead:
 
     def next_mode(self) -> None:
         if self.verbose >= 3:
-            print(f'Switching from {self.robot_mode} ({self.robot_sub_mode}) mode.')
+            print(f'Switching from {self.robot_mode} ({self.robot_sub_mode}) mode')
         self.robot_mode = self.robot_mode_list[
             (self.robot_mode_list.index(self.robot_mode) + 1) % len(self.robot_mode_list)
         ]
@@ -68,16 +68,16 @@ class RobotHead:
         self.internal_light.stop()
 
         if self.verbose >= 1:
-            print(f'Switching to {self.robot_mode} ({self.robot_sub_mode}) mode.')
+            print(f'Switching to {self.robot_mode} ({self.robot_sub_mode}) mode')
 
     def next_sub_mode(self) -> None:
         if self.verbose >= 3:
             print(f'Switching from {self.robot_sub_mode} sub mode')
         if self.robot_mode not in self.robot_sub_mode_dict:
             assert self.robot_sub_mode is None, f'Robot mode {self.robot_mode} does not have sub modes, ' \
-                f'but current sub mode is {self.robot_sub_mode}.'
+                f'but current sub mode is {self.robot_sub_mode}'
             if self.verbose >= 3:
-                print(f'No sub modes available for {self.robot_mode} mode.')
+                print(f'No sub modes available for {self.robot_mode} mode')
             return
 
         current_sub_mode_list = self.robot_sub_mode_dict[self.robot_mode]
@@ -87,9 +87,9 @@ class RobotHead:
             ]
         else:
             assert self.robot_sub_mode is None, f'Robot mode {self.robot_mode} does not have sub modes, ' \
-                                                f'but current sub mode is {self.robot_sub_mode}.'
+                                                f'but current sub mode is {self.robot_sub_mode}'
         if self.verbose >= 1:
-            print(f'Switching to {self.robot_sub_mode} sub mode.')
+            print(f'Switching to {self.robot_sub_mode} sub mode')
 
     def next_target(self) -> None:
         self.tracking_target_pos += 1
@@ -128,7 +128,7 @@ class RobotHead:
     def activate_hotspot(self) -> None:
         if self.hotspot_status == 'active':
             if self.verbose >= 2:
-                print('Hotspot is already active.')
+                print('Hotspot is already active')
             return
         self.hotspot_status = 'processing'
         utils.start_generic_process(robot_head=self, name='Starting hotspot')
@@ -148,7 +148,7 @@ class RobotHead:
     def deactivate_hotspot(self) -> None:
         if self.hotspot_status == 'inactive':
             if self.verbose >= 2:
-                print('Hotspot is already inactive.')
+                print('Hotspot is already inactive')
             return
         self.hotspot_status = 'processing'
         utils.start_generic_process(robot_head=self, name='Stopping hotspot')
@@ -169,12 +169,12 @@ class RobotHead:
         elif self.hotspot_status == 'active':
             self.deactivate_hotspot()
         else:
-            print(f'Hotspot is in "{self.hotspot_status}" state. Cannot be changed now.')
+            print(f'Hotspot is in "{self.hotspot_status}" state. Cannot be changed now')
 
     def activate_ros2_vr_connection(self) -> None:
         if self.ros2_vr_connection_status == 'active':
             if self.verbose >= 2:
-                print('ROS2 VR connection is already active.')
+                print('ROS2 VR connection is already active')
             return
         self.ros2_vr_connection_status = 'processing'
         utils.start_generic_process(robot_head=self, name='Starting ROS2')
@@ -188,7 +188,7 @@ class RobotHead:
         # TODO: it does not really kill the process in the separate console
         if self.ros2_vr_connection_status == 'inactive':
             if self.verbose >= 2:
-                print('ROS2 is already inactive.')
+                print('ROS2 is already inactive')
             return
         self.ros2_vr_connection_status = 'processing'
         utils.start_generic_process(robot_head=self, name='Stopping ROS2')
@@ -203,7 +203,7 @@ class RobotHead:
         elif self.ros2_vr_connection_status == 'active':
             self.deactivate_ros2()
         else:
-            print(f'ROS2 is in "{self.ros2_vr_connection_status}" state. Cannot be changed now.')
+            print(f'ROS2 is in "{self.ros2_vr_connection_status}" state. Cannot be changed now')
 
     def toggle_lidar_listener(self) -> None:
         if self.lidar_listener_status == 'inactive':
@@ -211,4 +211,4 @@ class RobotHead:
         elif self.lidar_listener_status == 'active':
             self.lidar_listener_status = 'processing'
         else:
-            print(f'Lidar listener is in "{self.lidar_listener_status}" state. Cannot be changed now.')
+            print(f'Lidar listener is in "{self.lidar_listener_status}" state. Cannot be changed now')

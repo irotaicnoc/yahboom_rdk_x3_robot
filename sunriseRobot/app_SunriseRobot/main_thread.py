@@ -204,13 +204,13 @@ def task_screen(**kwargs):
             oled.clear(refresh=True)
             if not state:
                 del oled
-                warnings.warn('oled error. oled deactivated')
+                warnings.warn('Oled error. Oled deactivated')
                 break
-            print('oled cleared')
+            print('Oled cleared')
             time.sleep(2)
     except KeyboardInterrupt as e:
         del oled
-        print('oled error:')
+        print('Oled error:')
         print(e)
         print(e.__traceback__)
 
