@@ -13,8 +13,9 @@ class Arm:
         parameters = args.import_args(yaml_path=gc.CONFIG_FOLDER_PATH + 'arm.yaml', **kwargs)
         self.verbose = parameters['verbose']
 
+        print('starting arm...')
         arm_initial_angles = self.get_safe_arm_angle_list(clamped=False)
-        print(f'arm_initial_angles: {self.arm_initial_angles}')
+        print(f'arm_initial_angles: {arm_initial_angles}')
         if arm_initial_angles == [-1, -1, -1, -1, -1, -1]:
             raise Exception('The robotic arm is not connected. Mode "user_controlled (arm)" will not be available.')
 

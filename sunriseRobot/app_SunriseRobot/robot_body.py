@@ -115,11 +115,12 @@ class RobotBody(object):
 
         self._read_car_type = 0
 
-        if self.verbose >= 2:
+        if self.verbose >= 3:
             print(f'cmd_delay = {self._delay_time} s')
 
         if self.ser.isOpen():
-            print(f'Sunrise robot serial opened! Baudrate = {baud_rate}')
+            if self.verbose >= 2:
+                print(f'Sunrise robot serial opened, baud rate = {baud_rate}')
         else:
             warnings.warn('Serial open failed')
         # Turn on the torque of the robot arm to avoid the situation where the angle of the No. 6 servo cannot be
@@ -329,7 +330,8 @@ class RobotBody(object):
                 task_receive = threading.Thread(target=self._receive_data, name='task_serial_receive')
                 task_receive.setDaemon(True)
                 task_receive.start()
-                print('-----create receive threading-----')
+                if self.verbose >= 2:
+                    print('-----create receive threading-----')
                 self._uart_state = 1
         except:
             warnings.warn('create_receive_threading error')
