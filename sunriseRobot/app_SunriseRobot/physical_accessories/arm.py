@@ -13,7 +13,7 @@ class Arm:
         parameters = args.import_args(yaml_path=gc.CONFIG_FOLDER_PATH + 'arm.yaml', **kwargs)
         self.verbose = parameters['verbose']
 
-        arm_initial_angles = robot_body.get_arm_angle_list()
+        arm_initial_angles = self.get_safe_arm_angle_list(clamped=False)
         if arm_initial_angles != [-1, -1, -1, -1, -1, -1]:
             robot_head.robot_sub_mode_dict['user_controlled'].append('arm')
         else:
@@ -28,7 +28,7 @@ class Arm:
         # all servos to 90 degrees means vertical position
         # during each loop iteration, the desired angle is updated by adding the speed
         # and the real angle is moved closer to the desired angle
-        self.desired_angle_list = arm_initial_angles
+        self.desired_angle_list = self.clamp_angle_list(arm_initial_angles)
         if len(self.desired_angle_list) != 6:
             raise Exception(f'The robot supports a 6-servo arm, current arm has {len(self.desired_angle_list)} servos.')
         # speed with which the arm reaches the desired angle [0, 2000]
@@ -65,7 +65,7 @@ class Arm:
     def update_speed(self, servo_id: int, value) -> None:
         # if the arm was currently performing an automated movement, stop it.
         if self.run_time > 0:
-            self.desired_angle_list = self.robot_body.get_arm_angle_list()
+            self.desired_angle_list = self.get_safe_arm_angle_list(clamped=True)
         # then apply speed changes due to user input
         self.run_time = 0
         self.servo_speed_list[servo_id] = (value * self.robot_head.speed_coefficient * self.arm_speed_proportion)
@@ -76,3 +76,33 @@ class Arm:
             temp_angle = self.desired_angle_list[servo_id] + servo_speed
             temp_angle = np.clip(temp_angle, a_min=0, a_max=180)
             self.desired_angle_list[servo_id] = temp_angle
+
+    @staticmethod
+    def clamp_angle_list(angle_list: list) -> list:
+        # clamp angles to [0, 180] for all servos
+        clamped_angle_list = []
+        for angle in angle_list:
+            clamped_angle = np.clip(angle, a_min=0, a_max=180)
+            clamped_angle_list.append(clamped_angle)
+        return clamped_angle_list
+
+    def get_safe_arm_angle_list(self, clamped: bool = True, retry_limit: int = 5) -> list:
+        angle_list = [-1, -1, -1, -1, -1, -1]
+        counter = 0
+        while -1 in angle_list:
+            if counter > 1:
+                print(f'first two readings got an error, try n°: {counter}')
+                print(f'current angles: {angle_list}')
+            temp_angle_list = self.robot_body.get_arm_angle_list()
+            for angle_id in range(len(temp_angle_list)):
+                angle = temp_angle_list[angle_id]
+                if angle != -1:
+                    if clamped:
+                        # clamp angles to [0, 180] for all servos
+                        angle = np.clip(angle, a_min=0, a_max=180)
+                    angle_list[angle_id] = angle
+            counter += 1
+            if counter > retry_limit:
+                print(f'Arm angles cannot be read')
+                break
+        return angle_list
