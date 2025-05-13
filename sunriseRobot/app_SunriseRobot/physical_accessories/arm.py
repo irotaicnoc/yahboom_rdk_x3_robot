@@ -1,4 +1,5 @@
 import copy
+import numpy as np
 
 import args
 import utils
@@ -73,8 +74,5 @@ class Arm:
         for servo_id in range(len(self.servo_speed_list)):
             servo_speed = self.servo_speed_list[servo_id]
             temp_angle = self.desired_angle_list[servo_id] + servo_speed
-            if temp_angle < 0:
-                temp_angle = 0
-            if temp_angle > 180:
-                temp_angle = 180
+            temp_angle = np.clip(temp_angle, a_min=0, a_max=180)
             self.desired_angle_list[servo_id] = temp_angle
