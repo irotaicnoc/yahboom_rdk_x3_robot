@@ -1,4 +1,6 @@
 import copy
+import warnings
+
 import numpy as np
 
 import args
@@ -65,7 +67,7 @@ class Arm:
     def update_speed(self, servo_id: int, value) -> None:
         # if the arm was currently performing an automated movement, stop it.
         if self.run_time > 0:
-            self.desired_angle_list = self.get_safe_arm_angle_list(clamped=True)
+            self.desired_angle_list = self.get_safe_arm_angle_list(clamped=True, default_value=90)
         # then apply speed changes due to user input
         self.run_time = 0
         self.servo_speed_list[servo_id] = (value * self.robot_head.speed_coefficient * self.arm_speed_proportion)
@@ -86,7 +88,7 @@ class Arm:
             clamped_angle_list.append(clamped_angle)
         return clamped_angle_list
 
-    def get_safe_arm_angle_list(self, clamped: bool = True, retry_limit: int = 5) -> list:
+    def get_safe_arm_angle_list(self, clamped: bool = True, retry_limit: int = 10, default_value: int = -1) -> list:
         angle_list = [-1, -1, -1, -1, -1, -1]
         counter = 0
         while -1 in angle_list:
@@ -103,6 +105,13 @@ class Arm:
                     angle_list[angle_id] = angle
             counter += 1
             if counter > retry_limit:
-                print(f'Arm angles cannot be read')
+                if self.verbose >= 1:
+                    warnings.warn(f'Arm angles cannot be read, angles: {angle_list}')
+                if default_value != -1:
+                    for angle_id in range(len(angle_list)):
+                        if angle_list[angle_id] == -1:
+                            angle_list[angle_id] = default_value
+                    if self.verbose >= 2:
+                        print(f'Substituting missing angles with default value ({default_value}), angles: {angle_list}')
                 break
         return angle_list
