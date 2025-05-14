@@ -43,30 +43,25 @@ class Arm:
 
         try:
             from ikpy.chain import Chain
-
-            robot_head.robot_sub_mode_dict[gc.MODE_USER_CONTROLLED].append(gc.SUB_MODE_ARM_IK)
-            self.servo_chain = Chain.from_urdf_file(gc.URDF_FOLDER_PATH + 'arm.urdf')
-
-            self.arm_speed_proportion_ik = parameters['arm_speed_proportion_ik']
-
-            # intermediate value to calculate initial gripper coordinates
-            print(f'desired_angle_list: {self.desired_angle_list}')
-            ikpy_angle_list = np.deg2rad(self.desired_angle_list)
-            print(f'ikpy_angle_list: {ikpy_angle_list}')
-            transform_matrix = self.servo_chain.forward_kinematics(joints=ikpy_angle_list)
-            print(f'transform_matrix:\n{transform_matrix}')
-            print(f'pos vector: {transform_matrix[:3, 3]}')
-
-            # these are the coordinates of the gripper in the robot's coordinate system. In inverse kinematics mode
-            # they are used in place of the desired angles for motors 0, 1, 2, 3. only motors 4 (gripper rotation)
-            # and 5 (gripper opening) are controlled in the same way in both sub modes.
-            self.gripper_pos = self.servo_chain.forward_kinematics(joints=ikpy_angle_list)[:3, 3]
-            print(f'gripper_pos: {self.gripper_pos}')
-            # speed of the gripper in the x, y, z directions
-            self.gripper_speed = [0, 0, 0]
         except ImportError:
             raise ImportError('The ikpy library for inverse kinematics is not installed.'
                               ' Mode "user_controlled (arm_ik)" will not be available')
+
+        self.arm_speed_proportion_ik = parameters['arm_speed_proportion_ik']
+        self.servo_chain = Chain.from_urdf_file(gc.URDF_FOLDER_PATH + 'arm.urdf')
+        robot_head.robot_sub_mode_dict[gc.MODE_USER_CONTROLLED].append(gc.SUB_MODE_ARM_IK)
+
+        # intermediate value to calculate initial gripper coordinates
+        print(f'desired_angle_list: {self.desired_angle_list}')
+        ikpy_angle_list = np.deg2rad(self.desired_angle_list)
+
+        # these are the coordinates of the gripper in the robot's coordinate system. In inverse kinematics mode
+        # they are used in place of the desired angles for motors 0, 1, 2, 3. only motors 4 (gripper rotation)
+        # and 5 (gripper opening) are controlled in the same way in both sub modes.
+        self.gripper_pos = self.servo_chain.forward_kinematics(joints=ikpy_angle_list)[:3, 3]
+        print(f'gripper_pos: {self.gripper_pos}')
+        # speed of the gripper in the x, y, z directions
+        self.gripper_speed = [0, 0, 0]
 
     def toggle_rigid(self) -> None:
         self.is_rigid = not self.is_rigid
