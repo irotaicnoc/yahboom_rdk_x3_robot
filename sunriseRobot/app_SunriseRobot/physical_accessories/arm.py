@@ -54,7 +54,7 @@ class Arm:
             ikpy_angle_list = np.deg2rad(self.desired_angle_list)
             print(f'ikpy_angle_list: {ikpy_angle_list}')
             transform_matrix = self.servo_chain.forward_kinematics(joints=ikpy_angle_list)
-            print(f'transform_matrix: {transform_matrix}')
+            print(f'transform_matrix:\n{transform_matrix}')
             print(f'pos vector: {transform_matrix[:3, 3]}')
 
             # these are the coordinates of the gripper in the robot's coordinate system. In inverse kinematics mode
