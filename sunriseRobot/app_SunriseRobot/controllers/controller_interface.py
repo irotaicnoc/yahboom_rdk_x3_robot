@@ -38,7 +38,7 @@ class ControllerFunctions(object):
             elif self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_FK:
                 # servo 1 (rotate base)
                 self.arm.update_speed_fk(servo_id=0, value=-value)
-            elif self.robot_head.robot_mode == gc.SUB_MODE_ARM_IK:
+            elif self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_IK:
                 # move gripper left/right
                 self.arm.update_speed_ik(value_x=value)
 
@@ -50,7 +50,7 @@ class ControllerFunctions(object):
             elif self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_FK:
                 # servo 2
                 self.arm.update_speed_fk(servo_id=1, value=-value)
-            elif self.robot_head.robot_mode == gc.SUB_MODE_ARM_IK:
+            elif self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_IK:
                 # move gripper forward/backward
                 self.arm.update_speed_ik(value_y=value)
 
