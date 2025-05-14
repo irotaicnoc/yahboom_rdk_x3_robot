@@ -120,7 +120,7 @@ class RobotBody(object):
 
         if self.ser.isOpen():
             if self.verbose >= 2:
-                print(f'Sunrise robot serial opened. Baudrate = {baud_rate}')
+                print(f'Sunrise robot serial opened. Baudrate = {baud_rate}, port = {com}')
         else:
             warnings.warn('Serial open failed')
         # Turn on the torque of the robot arm to avoid the situation where the angle of the No. 6 servo cannot be
