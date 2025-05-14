@@ -1,37 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <robot name="arm">
     <link name="base_link">
-        <visual>
-            <origin xyz="0 0 0" rpy="0 0 0" />
-            <geometry>
-                <mesh filename="package://arm_info/meshes/base_link.STL" />
-            </geometry>
-            <material name="">
-                <color rgba="0.592156862745098 0.666666666666667 0.682352941176471 1" />
-            </material>
-        </visual>
         <collision>
             <origin xyz="0 0 0" rpy="0 0 0" />
-            <geometry>
-                <mesh filename="package://arm_info/meshes/base_link.STL" />
-            </geometry>
         </collision>
     </link>
     <link name="link1">
-        <visual>
-            <origin xyz="0 0 0" rpy="0 0 0" />
-            <geometry>
-                <mesh filename="package://arm_info/meshes/link1.STL" />
-            </geometry>
-            <material name="">
-                <color rgba="0 0.627450980392157 0.235294117647059 1" />
-            </material>
-        </visual>
         <collision>
             <origin xyz="0 0 0" rpy="0 0 0" />
-            <geometry>
-                <mesh filename="package://arm_info/meshes/link1.STL" />
-            </geometry>
         </collision>
     </link>
     <joint name="joint1" type="revolute">
@@ -42,20 +18,8 @@
         <limit effort="30" velocity="1.0" lower="-1.5708" upper="1.5708"/>
     </joint>
     <link name="link2">
-        <visual>
-            <origin xyz="0 0 0" rpy="0 0 0" />
-            <geometry>
-                <mesh filename="package://arm_info/meshes/link2.STL" />
-            </geometry>
-            <material name="">
-                <color rgba="0.592156862745098 0.666666666666667 0.682352941176471 1" />
-            </material>
-        </visual>
         <collision>
             <origin xyz="0 0 0" rpy="0 0 0" />
-            <geometry>
-                <mesh filename="package://arm_info/meshes/link2.STL" />
-            </geometry>
         </collision>
     </link>
     <joint name="joint2" type="revolute">
@@ -66,20 +30,8 @@
         <limit effort="30" velocity="1.0" lower="-1.5708" upper="1.5708"/>
     </joint>
     <link name="link3">
-        <visual>
-            <origin xyz="0 0 0" rpy="0 0 0" />
-            <geometry>
-                <mesh filename="package://arm_info/meshes/link3.STL" />
-            </geometry>
-            <material name="">
-                <color rgba="0 0.627450980392157 0.235294117647059 1" />
-            </material>
-        </visual>
         <collision>
             <origin xyz="0 0 0" rpy="0 0 0" />
-            <geometry>
-                <mesh filename="package://arm_info/meshes/link3.STL" />
-            </geometry>
         </collision>
     </link>
     <joint name="joint3" type="revolute">
@@ -90,20 +42,8 @@
         <limit effort="30" velocity="1.0" lower="-1.5708" upper="1.5708"/>
     </joint>
     <link name="link4">
-        <visual>
-            <origin xyz="0 0 0" rpy="0 0 0" />
-            <geometry>
-                <mesh filename="package://arm_info/meshes/link4.STL" />
-            </geometry>
-            <material name="">
-                <color rgba="0.592156862745098 0.666666666666667 0.682352941176471 1" />
-            </material>
-        </visual>
         <collision>
             <origin xyz="0 0 0" rpy="0 0 0" />
-            <geometry>
-                <mesh filename="package://arm_info/meshes/link4.STL" />
-            </geometry>
         </collision>
     </link>
     <joint name="joint4" type="revolute">
@@ -115,20 +55,8 @@
     </joint>
     <!-- link5 -->
     <link name="link5">
-        <visual>
-            <origin xyz="0 0 0" rpy="0 0 0"/>
-            <geometry>
-                <mesh filename="package://arm_info/meshes/link5.STL"/>
-            </geometry>
-            <material name="">
-                <color rgba="1 1 1 1" />
-            </material>
-        </visual>
         <collision>
             <origin xyz="0 0 0" rpy="0 0 0" />
-            <geometry>
-                <mesh filename="package://arm_info/meshes/link5.STL" />
-            </geometry>
         </collision>
     </link>
     <!-- joint5 -->
