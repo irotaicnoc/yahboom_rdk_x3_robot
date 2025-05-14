@@ -57,6 +57,8 @@ class RobotHead:
     def next_mode(self) -> None:
         if self.verbose >= 3:
             print(f'Switching from {self.robot_mode} ({self.robot_sub_mode}) mode')
+        self.gpio_led.set_color('off')
+        self.internal_light.stop()
         self.robot_mode = self.robot_mode_list[
             (self.robot_mode_list.index(self.robot_mode) + 1) % len(self.robot_mode_list)
         ]
@@ -64,8 +66,6 @@ class RobotHead:
             self.robot_sub_mode = self.robot_sub_mode_dict[self.robot_mode][0]
         else:
             self.robot_sub_mode = None
-        self.gpio_led.set_color('off')
-        self.internal_light.stop()
 
         if self.verbose >= 1:
             print(f'Switching to {self.robot_mode} ({self.robot_sub_mode}) mode')
