@@ -139,7 +139,10 @@ class ControllerLoop(object):
                 )
 
             # arm servos
-            elif self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_FK:
+            elif (self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_FK
+                    or self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_IK):
+
+                # check if the arm rigid/not-rigid state has changed from the last iteration
                 if self.arm.state_not_updated:
                     self.arm.state_not_updated = False
                     # manually set configuration is maintained
