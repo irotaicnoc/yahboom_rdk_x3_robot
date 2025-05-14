@@ -4,8 +4,10 @@ from ikpy.chain import Chain
 import ikpy.urdf.utils as urdf_utils
 
 
-my_chain = Chain.from_urdf_file('arm.urdf')
-target_position = np.array([0.05, 0.15, 0.1])
+my_chain = Chain.from_urdf_file(urdf_file='urdf/arm.urdf', base_elements=['base_link'], name='arm')
+my_chain.to_json_file(force=True)
+# x y z coordinates of the end effector
+target_position = np.array([0.1, 0.1, 0.1])
 joint_pos = my_chain.inverse_kinematics(target_position=target_position)
 print(f'joint_pos: {joint_pos}')
 transformation_matrix = my_chain.forward_kinematics(joints=joint_pos)

@@ -115,11 +115,11 @@ class RobotBody(object):
 
         self._read_car_type = 0
 
-        if self.verbose >= 2:
+        if self.verbose >= 3:
             print(f'cmd_delay = {self._delay_time} s')
 
         if self.ser.isOpen():
-            print(f'Sunrise robot serial opened! Baudrate = {baud_rate}')
+            print(f'Sunrise robot serial opened. Baudrate = {baud_rate}')
         else:
             warnings.warn('Serial open failed')
         # Turn on the torque of the robot arm to avoid the situation where the angle of the No. 6 servo cannot be
@@ -277,36 +277,32 @@ class RobotBody(object):
     @staticmethod
     def _arm_convert_value(s_id: int, s_angle) -> int:
         value = -1
-        if s_id == 1:
-            value = int((3100 - 900) * (s_angle - 180) / (0 - 180) + 900)
-        elif s_id == 2:
-            value = int((3100 - 900) * (s_angle - 180) / (0 - 180) + 900)
-        elif s_id == 3:
-            value = int((3100 - 900) * (s_angle - 180) / (0 - 180) + 900)
-        elif s_id == 4:
-            value = int((3100 - 900) * (s_angle - 180) / (0 - 180) + 900)
+        # expanded conceptual formula commented in favor of faster calculation
+        if s_id == 1 or s_id == 2 or s_id == 3 or s_id == 4:
+            # value = int((3100 - 900) * (s_angle - 180) / (0 - 180) + 900)
+            value = int(110 * (180 - s_angle) / 9 + 900)
         elif s_id == 5:
-            value = int((3700 - 380) * (s_angle - 0) / (270 - 0) + 380)
+            # value = int((3700 - 380) * (s_angle - 0) / (270 - 0) + 380)
+            value = int(332 * s_angle / 27 + 380)
         elif s_id == 6:
-            value = int((3100 - 900) * (s_angle - 0) / (180 - 0) + 900)
+            # value = int((3100 - 900) * (s_angle - 0) / (180 - 0) + 900)
+            value = int(110 * s_angle / 9 + 900)
         return value
 
     # Arm converts position pulses into angles
     @staticmethod
     def _arm_convert_angle(s_id: int, s_value) -> int:
         s_angle = -1
-        if s_id == 1:
-            s_angle = int((s_value - 900) * (0 - 180) / (3100 - 900) + 180 + 0.5)
-        elif s_id == 2:
-            s_angle = int((s_value - 900) * (0 - 180) / (3100 - 900) + 180 + 0.5)
-        elif s_id == 3:
-            s_angle = int((s_value - 900) * (0 - 180) / (3100 - 900) + 180 + 0.5)
-        elif s_id == 4:
-            s_angle = int((s_value - 900) * (0 - 180) / (3100 - 900) + 180 + 0.5)
+        # expanded conceptual formula commented in favor of faster calculation
+        if s_id == 1 or s_id == 2 or s_id == 3 or s_id == 4:
+            # s_angle = int((s_value - 900) * (0 - 180) / (3100 - 900) + 180 + 0.5)
+            s_angle = int((900 - s_value) * 9 / 110 + 180.5)
         elif s_id == 5:
-            s_angle = int((270 - 0) * (s_value - 380) / (3700 - 380) + 0 + 0.5)
+            # s_angle = int((270 - 0) * (s_value - 380) / (3700 - 380) + 0 + 0.5)
+            s_angle = int(27 * (s_value - 380) / 332 + 0.5)
         elif s_id == 6:
-            s_angle = int((180 - 0) * (s_value - 900) / (3100 - 900) + 0 + 0.5)
+            # s_angle = int((180 - 0) * (s_value - 900) / 2200 + 0 + 0.5)
+            s_angle = int(9 * (s_value - 900) / 110 + 0.5)
         return s_angle
 
     # Limit the PWM duty ratio value of motor input, value=127, keep the original data, do not modify
@@ -327,7 +323,7 @@ class RobotBody(object):
         try:
             if self._uart_state == 0:
                 task_receive = threading.Thread(target=self._receive_data, name='task_serial_receive')
-                task_receive.setDaemon(True)
+                task_receive.daemon = True
                 task_receive.start()
                 print('-----create receive threading-----')
                 self._uart_state = 1
