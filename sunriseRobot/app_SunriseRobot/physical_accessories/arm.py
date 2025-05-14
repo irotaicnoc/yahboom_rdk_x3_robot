@@ -90,8 +90,8 @@ class Arm:
         # if the arm was currently performing an automated movement, stop it.
         if self.run_time > 0:
             self.desired_angle_list = self.get_safe_arm_angle_list(clamped=True, default_value=90)
+            self.run_time = 0
         # then apply speed changes due to user input
-        self.run_time = 0
         self.servo_speed_list[servo_id] = (value * self.robot_head.speed_coefficient * self.arm_speed_proportion_fk)
 
     def update_speed_ik(self, value_x: float = None, value_y: float = None, value_z: float = None) -> None:
@@ -99,8 +99,8 @@ class Arm:
         # if the arm was currently performing an automated movement, stop it.
         if self.run_time > 0:
             self.desired_angle_list = self.get_safe_arm_angle_list(clamped=True, default_value=90)
+            self.run_time = 0
         # then apply speed changes due to user input
-        self.run_time = 0
         if value_x is not None:
             self.gripper_speed[0] = value_x * self.robot_head.speed_coefficient * self.arm_speed_proportion_ik
             print(f'gripper_speed x: {self.gripper_speed[0]}')
