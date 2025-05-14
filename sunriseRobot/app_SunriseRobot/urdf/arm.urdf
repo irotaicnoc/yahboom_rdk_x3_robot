@@ -1,15 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <robot name="arm">
-    <link name="base_link">
-        <collision>
-            <origin xyz="0 0 0" rpy="0 0 0" />
-        </collision>
-    </link>
-    <link name="link1">
-        <collision>
-            <origin xyz="0 0 0" rpy="0 0 0" />
-        </collision>
-    </link>
+    <link name="base_link"></link>
+    <link name="link1"></link>
     <joint name="joint1" type="revolute">
         <origin xyz="0 0 0.06605" rpy="-0.010805 0 0" />
         <parent link="base_link" />
@@ -17,11 +9,7 @@
         <axis xyz="0 0 1" />
         <limit effort="30" velocity="1.0" lower="-1.5708" upper="1.5708"/>
     </joint>
-    <link name="link2">
-        <collision>
-            <origin xyz="0 0 0" rpy="0 0 0" />
-        </collision>
-    </link>
+    <link name="link2"></link>
     <joint name="joint2" type="revolute">
         <origin xyz="0 -0.00031873 0.04145" rpy="0 1.5708 0" />
         <parent link="link1" />
@@ -29,11 +17,7 @@
         <axis xyz="0 0 1" />
         <limit effort="30" velocity="1.0" lower="-1.5708" upper="1.5708"/>
     </joint>
-    <link name="link3">
-        <collision>
-            <origin xyz="0 0 0" rpy="0 0 0" />
-        </collision>
-    </link>
+    <link name="link3"></link>
     <joint name="joint3" type="revolute">
         <origin xyz="-0.08285 0 0" rpy="0 0 0" />
         <parent link="link2" />
@@ -41,11 +25,7 @@
         <axis xyz="0 0 1" />
         <limit effort="30" velocity="1.0" lower="-1.5708" upper="1.5708"/>
     </joint>
-    <link name="link4">
-        <collision>
-            <origin xyz="0 0 0" rpy="0 0 0" />
-        </collision>
-    </link>
+    <link name="link4"></link>
     <joint name="joint4" type="revolute">
         <origin xyz="-0.08285 0 0" rpy="0 0 0.0083081" />
         <parent link="link3" />
@@ -54,11 +34,7 @@
         <limit effort="30" velocity="1.0" lower="-1.5708" upper="1.5708"/>
     </joint>
     <!-- link5 -->
-    <link name="link5">
-        <collision>
-            <origin xyz="0 0 0" rpy="0 0 0" />
-        </collision>
-    </link>
+    <link name="link5"></link>
     <!-- joint5 -->
     <joint name="joint5" type="revolute">
         <origin xyz="-0.07385 -0.001 0" rpy="0 -1.57 0"/>
