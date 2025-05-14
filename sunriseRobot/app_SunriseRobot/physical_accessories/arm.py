@@ -136,6 +136,9 @@ class Arm:
             print(f'desired_angle_list before: {self.desired_angle_list}')
             self.desired_angle_list[:4] = self.ikpy_to_degree_conversion(ikpy_angle_list)
             print(f'desired_angle_list after: {self.desired_angle_list}')
+            # the last two angles are updated normally
+            self.desired_angle_list[4] += self.servo_speed_list[4]
+            self.desired_angle_list[5] += self.servo_speed_list[5]
 
     @staticmethod
     def clamp_angle_list(angle_list: list) -> list:
