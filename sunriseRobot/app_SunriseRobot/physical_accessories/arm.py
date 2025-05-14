@@ -126,9 +126,11 @@ class Arm:
         elif self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_IK:
             # update the gripper position in the robot's coordinate system
             # the gripper position is used in place of the desired angles for motors 0, 1, 2, 3
+            print(f'gripper_pos before: {self.gripper_pos}')
             self.gripper_pos[0] += self.gripper_speed[0]
             self.gripper_pos[1] += self.gripper_speed[1]
             self.gripper_pos[2] += self.gripper_speed[2]
+            print(f'gripper_pos after: {self.gripper_pos}')
             # the function returns 6 angle_list, but we don't need the first and last ones, they should be the
             # gripper rotation and opening. But the 2 excluded angles are the last 2 angles in the list
             ikpy_angle_list = self.servo_chain.inverse_kinematics(target_position=self.gripper_pos)
