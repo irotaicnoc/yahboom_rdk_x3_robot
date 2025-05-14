@@ -99,7 +99,7 @@ class ControllerFunctions(object):
                 self.arm.update_speed_fk(servo_id=2, value=-value)
             elif self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_IK:
                 # servo 6 (open/close gripper)
-                self.arm.update_speed_fk(value_z=value)
+                self.arm.update_speed_fk(servo_id=5, value=value)
         elif self.robot_head.robot_mode == gc.MODE_AUTONOMOUS_VISION:
             if value > 0:
                 self.robot_head.next_model()
