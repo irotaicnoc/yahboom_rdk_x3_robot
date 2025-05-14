@@ -71,7 +71,7 @@ class ControllerFunctions(object):
             if self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_FK:
                 # servo 6 (open/close gripper)
                 self.arm.update_speed_fk(servo_id=5, value=value)
-            elif self.robot_head.robot_mode == gc.SUB_MODE_ARM_IK:
+            elif self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_IK:
                 # move gripper up/down
                 self.arm.update_speed_ik(value_z=value)
 
