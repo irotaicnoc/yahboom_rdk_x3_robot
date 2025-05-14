@@ -34,6 +34,7 @@ class ControllerFunctions(object):
         assert -1 <= value <= 1, f'Value {value} is out of range [-1, 1]'
         if self.robot_head.robot_mode == gc.MODE_USER_CONTROLLED:
             print(f'sub_mode: {self.robot_head.robot_sub_mode}')
+            print(f'SUB_MODE_ARM_IK: {gc.SUB_MODE_ARM_IK}')
             if self.robot_head.robot_sub_mode == gc.SUB_MODE_WHEELS:
                 self.robot_head.speed_y = value * self.robot_head.speed_coefficient
             elif self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_FK:
