@@ -5,10 +5,14 @@ import ikpy.urdf.utils as urdf_utils
 
 
 my_chain = Chain.from_urdf_file(urdf_file='urdf/arm.urdf', base_elements=['base_link'], name='arm')
-my_chain.to_json_file(force=True)
+# my_chain.to_json_file(force=True)
 # x y z coordinates of the end effector
-target_position = np.array([0.1, 0.1, 0.1])
-joint_pos = my_chain.inverse_kinematics(target_position=target_position)
+# target_position = np.array([0.1, 0.1, 0.1])
+# joint_pos = my_chain.inverse_kinematics(target_position=target_position)
+# pos 0: ???
+# pos 1: servo 1 (rotate base)
+# pos 2: servo 2 (tilt whole arm)
+joint_pos = [0.0, 0.0, np.deg2rad(90), 0.0, 0.0, 0.0]
 print(f'joint_pos: {joint_pos}')
 transformation_matrix = my_chain.forward_kinematics(joints=joint_pos)
 print(f'transformation_matrix:\n{transformation_matrix}')

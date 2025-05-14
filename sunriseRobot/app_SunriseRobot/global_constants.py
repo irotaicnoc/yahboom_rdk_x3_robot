@@ -15,7 +15,8 @@ MODE_AUTONOMOUS_VISION = 'autonomous_vision'
 # MODE_AUTONOMOUS_SOUND = 'autonomous_sound'
 # robot sub modes
 SUB_MODE_WHEELS = 'wheels'
-SUB_MODE_ARM_FK = 'arm'
+SUB_MODE_ARM_FK = 'arm_fk'
+SUB_MODE_ARM_IK = 'arm_ik'
 
 # OS PATHS
 MAIN_FOLDER_PATH = '/root/GIT/yahboom_rdk_x3_robot/sunriseRobot/'
@@ -27,6 +28,7 @@ OUTPUT_FOLDER_PATH = APP_FOLDER_PATH + 'output/'
 GENERIC_MODEL_FOLDER_PATH = APP_FOLDER_PATH + 'models/generic_detector/'
 MAGIC_MODEL_FOLDER_PATH = APP_FOLDER_PATH + 'models/magic_detector/'
 SCRIPT_FOLDER_PATH = MAIN_FOLDER_PATH + 'script_launchers/'
+URDF_FOLDER_PATH = APP_FOLDER_PATH + 'urdf/'
 
 # 40 PIN INTERFACE
 # with GPIO mode = BOARD
