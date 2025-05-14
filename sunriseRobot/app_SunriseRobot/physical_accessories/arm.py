@@ -95,6 +95,7 @@ class Arm:
         self.servo_speed_list[servo_id] = (value * self.robot_head.speed_coefficient * self.arm_speed_proportion_fk)
 
     def update_speed_ik(self, value_x: float = None, value_y: float = None, value_z: float = None) -> None:
+        print(f'In function update_speed_ik. value_x: {value_x}, value_y: {value_y}, value_z: {value_z}')
         # This function modifies the speed of the gripper in the x, y, z directions
         # if the arm was currently performing an automated movement, stop it.
         if self.run_time > 0:
@@ -125,7 +126,7 @@ class Arm:
             self.gripper_pos[0] += self.gripper_speed[0]
             self.gripper_pos[1] += self.gripper_speed[1]
             self.gripper_pos[2] += self.gripper_speed[2]
-            print(f'gripper_pos after: {self.gripper_pos}')
+            print(f'gripper_pos after:  {self.gripper_pos}')
             # the function returns 6 angle_list, but we don't need the first and last ones, they should be the
             # gripper rotation and opening. But the 2 excluded angles are the last 2 angles in the list
             ikpy_angle_list = self.servo_chain.inverse_kinematics(target_position=self.gripper_pos)
