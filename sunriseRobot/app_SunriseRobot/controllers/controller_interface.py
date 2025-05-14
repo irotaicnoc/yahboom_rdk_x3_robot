@@ -33,12 +33,15 @@ class ControllerFunctions(object):
     def axis_left_x(self, value: float) -> None:
         assert -1 <= value <= 1, f'Value {value} is out of range [-1, 1]'
         if self.robot_head.robot_mode == gc.MODE_USER_CONTROLLED:
+            print(f'sub_mode: {self.robot_head.robot_sub_mode}')
             if self.robot_head.robot_sub_mode == gc.SUB_MODE_WHEELS:
                 self.robot_head.speed_y = value * self.robot_head.speed_coefficient
             elif self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_FK:
                 # servo 1 (rotate base)
+                print('servo 1 FK')
                 self.arm.update_speed_fk(servo_id=0, value=-value)
             elif self.robot_head.robot_mode == gc.SUB_MODE_ARM_IK:
+                print('test servo 1 IK')
                 # move gripper left/right
                 self.arm.update_speed_ik(value_x=value)
 
@@ -51,6 +54,7 @@ class ControllerFunctions(object):
                 # servo 2
                 self.arm.update_speed_fk(servo_id=1, value=-value)
             elif self.robot_head.robot_mode == gc.SUB_MODE_ARM_IK:
+                print('test')
                 # move gripper forward/backward
                 self.arm.update_speed_ik(value_y=value)
 
@@ -73,6 +77,7 @@ class ControllerFunctions(object):
                 self.arm.update_speed_fk(servo_id=5, value=value)
             elif self.robot_head.robot_mode == gc.SUB_MODE_ARM_IK:
                 # move gripper up/down
+                print('test')
                 self.arm.update_speed_ik(value_z=value)
 
     def axis_arrows_x(self, value: float) -> None:
@@ -99,6 +104,7 @@ class ControllerFunctions(object):
                 self.arm.update_speed_fk(servo_id=2, value=-value)
             elif self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_IK:
                 # servo 6 (open/close gripper)
+                print('test')
                 self.arm.update_speed_fk(servo_id=5, value=value)
         elif self.robot_head.robot_mode == gc.MODE_AUTONOMOUS_VISION:
             if value > 0:
