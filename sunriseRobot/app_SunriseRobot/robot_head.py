@@ -23,6 +23,8 @@ class RobotHead:
         self.robot_sub_mode_dict = {self.robot_mode_list[0]: [gc.SUB_MODE_WHEELS]}
         self.robot_mode = self.robot_mode_list[0]
         self.robot_sub_mode = self.robot_sub_mode_dict[self.robot_mode][0]
+        self.mode_change_callbacks = {}
+        self.sub_mode_change_callbacks = {}
         if self.verbose >= 1:
             print(f'Robot mode: {self.robot_mode} ({self.robot_sub_mode})')
         self.tracking_target_list = parameters['tracking_target_list']
@@ -59,6 +61,7 @@ class RobotHead:
             print(f'Switching from {self.robot_mode} ({self.robot_sub_mode}) mode')
         self.gpio_led.set_color('off')
         self.internal_light.stop()
+        previous_mode = self.robot_mode
         self.robot_mode = self.robot_mode_list[
             (self.robot_mode_list.index(self.robot_mode) + 1) % len(self.robot_mode_list)
         ]
@@ -66,6 +69,14 @@ class RobotHead:
             self.robot_sub_mode = self.robot_sub_mode_dict[self.robot_mode][0]
         else:
             self.robot_sub_mode = None
+
+        # if the new mode has a callback to call at the start, call it
+        # but only if the mode has actually changed. For example if the list has only 1 element, the callback should
+        # not be called, because the robot was already in the same mode. Or if the new mode fails to be set and the
+        # previous mode is set again.
+        if previous_mode != self.robot_mode:
+            if self.robot_mode in self.mode_change_callbacks:
+                self.mode_change_callbacks[self.robot_mode]()
 
         if self.verbose >= 1:
             print(f'Switching to {self.robot_mode} ({self.robot_sub_mode}) mode')
@@ -84,9 +95,17 @@ class RobotHead:
 
         current_sub_mode_list = self.robot_sub_mode_dict[self.robot_mode]
         if current_sub_mode_list is not None and len(current_sub_mode_list) > 0:
+            previous_sub_mode = self.robot_sub_mode
             self.robot_sub_mode = current_sub_mode_list[
                 (current_sub_mode_list.index(self.robot_sub_mode) + 1) % len(current_sub_mode_list)
             ]
+            # if the new mode has a callback to call at the start, call it
+            # but only if the mode has actually changed. For example if the list has only 1 element, the callback should
+            # not be called, because the robot was already in the same mode. Or if the new mode fails to be set and the
+            # previous mode is set again.
+            if previous_sub_mode != self.robot_sub_mode:
+                if self.robot_sub_mode in self.sub_mode_change_callbacks:
+                    self.sub_mode_change_callbacks[self.robot_sub_mode]()
         else:
             assert self.robot_sub_mode is None, f'Robot mode {self.robot_mode} does not have sub modes, ' \
                                                 f'but current sub mode is {self.robot_sub_mode}'
