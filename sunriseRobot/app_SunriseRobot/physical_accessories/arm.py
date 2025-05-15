@@ -94,7 +94,7 @@ class Arm:
         self.servo_speed_list[servo_id] = (value * self.robot_head.speed_coefficient * self.arm_speed_proportion_fk)
 
     # TODO: checka quando ci sono cambi di modalità/sotto modalità e fai cose, tipo aggiorna
-    #  gli angoli desiderati ecc...
+    #  gli angoli desiderati ecc... usa una callback
     def update_speed_ik(self, value_x: float = None, value_y: float = None, value_z: float = None) -> None:
         # This function modifies the speed of the gripper in the x, y, z directions
         # if the arm was currently performing an automated movement, stop it.
