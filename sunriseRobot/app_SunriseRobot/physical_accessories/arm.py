@@ -52,7 +52,7 @@ class Arm:
 
         # intermediate value to calculate initial gripper coordinates
         print(f'desired_angle_list: {self.desired_angle_list}')
-        ikpy_angle_list = np.deg2rad(self.desired_angle_list)
+        ikpy_angle_list = np.deg2rad(self.desired_angle_list) - np.pi / 2
 
         # these are the coordinates of the gripper in the robot's coordinate system. In inverse kinematics mode
         # they are used in place of the desired angles for motors 0, 1, 2, 3. only motors 4 (gripper rotation)
@@ -179,5 +179,5 @@ class Arm:
     def ikpy_to_degree_conversion(angle_list: list) -> list:
         new_angle_list = []
         for value in angle_list[1:5]:
-            new_angle_list.append(np.rad2deg(value))
+            new_angle_list.append(np.rad2deg(value) + 90)
         return new_angle_list
