@@ -17,6 +17,7 @@ class Arm:
         arm_initial_angles = self.get_safe_arm_angle_list(clamped=False)
         if arm_initial_angles != [-1, -1, -1, -1, -1, -1]:
             robot_head.robot_sub_mode_dict[gc.MODE_USER_CONTROLLED].append(gc.SUB_MODE_ARM_FK)
+            robot_head.sub_mode_change_callbacks[gc.SUB_MODE_ARM_FK] = self.sub_mode_fk_start_callback
         else:
             raise Exception('The robotic arm is not connected. Mode "user_controlled (arm_fk)" will not be available')
 
@@ -49,18 +50,15 @@ class Arm:
         self.arm_speed_proportion_ik = parameters['arm_speed_proportion_ik']
         self.servo_chain = Chain.from_urdf_file(gc.URDF_FOLDER_PATH + 'arm.urdf')
         robot_head.robot_sub_mode_dict[gc.MODE_USER_CONTROLLED].append(gc.SUB_MODE_ARM_IK)
-
-        # intermediate value to calculate initial gripper coordinates
-        print(f'desired_angle_list: {self.desired_angle_list}')
-        ikpy_angle_list = np.deg2rad(self.desired_angle_list) - np.pi / 2
-
+        robot_head.sub_mode_change_callbacks[gc.SUB_MODE_ARM_IK] = self.sub_mode_ik_start_callback
         # these are the coordinates of the gripper in the robot's coordinate system. In inverse kinematics mode
-        # they are used in place of the desired angles for motors 0, 1, 2, 3. only motors 4 (gripper rotation)
+        # they are used in place of the desired angles for motors 0, 1, 2, 3. Only motors 4 (gripper rotation)
         # and 5 (gripper opening) are controlled in the same way in both sub modes.
-        self.gripper_pos = self.servo_chain.forward_kinematics(joints=ikpy_angle_list)[:3, 3]
-        print(f'gripper_pos: {self.gripper_pos}')
-        # speed of the gripper in the x, y, z directions
+        self.gripper_pos = [0, 0, 0]
+        # # speed of the gripper in the x, y, z directions
         self.gripper_speed = [0, 0, 0]
+        # initializes gripper position and speed, and desired angles
+        self.sub_mode_ik_start_callback()
 
     def toggle_rigid(self) -> None:
         self.is_rigid = not self.is_rigid
@@ -93,8 +91,6 @@ class Arm:
         # then apply speed changes due to user input
         self.servo_speed_list[servo_id] = (value * self.robot_head.speed_coefficient * self.arm_speed_proportion_fk)
 
-    # TODO: checka quando ci sono cambi di modalità/sotto modalità e fai cose, tipo aggiorna
-    #  gli angoli desiderati ecc... usa una callback
     def update_speed_ik(self, value_x: float = None, value_y: float = None, value_z: float = None) -> None:
         # This function modifies the speed of the gripper in the x, y, z directions
         # if the arm was currently performing an automated movement, stop it.
@@ -154,9 +150,6 @@ class Arm:
         angle_list = [-1, -1, -1, -1, -1, -1]
         counter = 0
         while -1 in angle_list:
-            # if counter > 1:
-            #     print(f'first two readings got an error, try n°: {counter + 1}')
-            #     print(f'current angles: {angle_list}')
             temp_angle_list = self.robot_body.get_arm_angle_list()
             for angle_id in range(len(temp_angle_list)):
                 angle = temp_angle_list[angle_id]
@@ -184,3 +177,20 @@ class Arm:
         for value in angle_list[1:5]:
             new_angle_list.append(np.rad2deg(value) + 90)
         return new_angle_list
+
+    def sub_mode_ik_start_callback(self) -> None:
+        # this function is called when the arm is switched to inverse kinematics sub mode
+
+        self.desired_angle_list = self.get_safe_arm_angle_list(clamped=True, default_value=90)
+        print(f'desired_angle_list: {self.desired_angle_list}')
+
+        self.gripper_speed = [0, 0, 0]
+        # intermediate value to calculate initial gripper coordinates
+        ikpy_angle_list = np.deg2rad(self.desired_angle_list) - np.pi / 2
+        self.gripper_pos = self.servo_chain.forward_kinematics(joints=ikpy_angle_list)[:3, 3]
+        print(f'gripper_pos: {self.gripper_pos}')
+
+    def sub_mode_fk_start_callback(self) -> None:
+        # this function is called when the arm is switched to forward kinematics sub mode
+        self.servo_speed_list = [0, 0, 0, 0, 0, 0]
+        self.desired_angle_list = self.get_safe_arm_angle_list(clamped=True, default_value=90)
