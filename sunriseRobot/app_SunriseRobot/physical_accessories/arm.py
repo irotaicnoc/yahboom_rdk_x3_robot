@@ -29,7 +29,7 @@ class Arm:
         # all servos to 90 degrees means vertical position
         # during each loop iteration, the desired angle is updated by adding the speed
         # and the real angle is moved closer to the desired angle
-        self.desired_angle_list = self.clamp_angle_list(arm_initial_angles)
+        self.desired_angle_list = self.clamp_angle_list(arm_initial_angles, default_value=90)
         if len(self.desired_angle_list) != 6:
             raise Exception(f'The robot supports a 6-servo arm, current arm has {len(self.desired_angle_list)} servos.')
         # speed with which the arm reaches the desired angle [0, 2000]
@@ -139,11 +139,14 @@ class Arm:
             self.desired_angle_list[5] += self.servo_speed_list[5]
 
     @staticmethod
-    def clamp_angle_list(angle_list: list) -> list:
+    def clamp_angle_list(angle_list: list, default_value: int = -1) -> list:
         # clamp angles to [0, 180] for all servos
         clamped_angle_list = []
         for angle in angle_list:
-            clamped_angle = np.clip(angle, a_min=0, a_max=180)
+            if default_value != -1 and angle == -1:
+                clamped_angle = default_value
+            else:
+                clamped_angle = np.clip(angle, a_min=0, a_max=180)
             clamped_angle_list.append(clamped_angle)
         return clamped_angle_list
 
