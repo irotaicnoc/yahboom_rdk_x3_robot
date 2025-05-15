@@ -96,7 +96,6 @@ class Arm:
     # TODO: checka quando ci sono cambi di modalità/sotto modalità e fai cose, tipo aggiorna
     #  gli angoli desiderati ecc...
     def update_speed_ik(self, value_x: float = None, value_y: float = None, value_z: float = None) -> None:
-        print(f'In function update_speed_ik. value_x: {value_x}, value_y: {value_y}, value_z: {value_z}')
         # This function modifies the speed of the gripper in the x, y, z directions
         # if the arm was currently performing an automated movement, stop it.
         if self.run_time > 0:
