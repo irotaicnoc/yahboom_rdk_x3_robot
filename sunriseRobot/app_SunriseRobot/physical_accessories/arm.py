@@ -23,8 +23,6 @@ class Arm:
             raise Exception('The robotic arm is not connected. Mode "user_controlled (arm_fk)" will not be available')
 
         self.arm_speed_proportion_fk = parameters['arm_speed_proportion_fk']
-        self.is_rigid = True
-        self.state_not_updated = True
         # arm servos
         self.servo_speed_list = [0, 0, 0, 0, 0, 0]
         # servo angles have to be in the range [0, 180], except for servo 4 which has range [0, 270]
@@ -45,6 +43,10 @@ class Arm:
         # if the arm is present, it will also add a callback to the sub mode wheels, so that the arm will fold when not
         # in use
         robot_head.sub_mode_change_callbacks[gc.SUB_MODE_WHEELS] = self.sub_mode_wheel_start_callback
+
+        # set the arm to rigid state and perform all necessary operations
+        self.is_rigid = False
+        self.toggle_rigid()
 
         try:
             from ikpy.inverse_kinematics import inverse_kinematic_optimization
@@ -75,7 +77,12 @@ class Arm:
 
     def toggle_rigid(self) -> None:
         self.is_rigid = not self.is_rigid
-        self.state_not_updated = True
+        # block arm at its current position
+        if self.is_rigid:
+            self.set_desired_angles(angle_list=self.get_safe_arm_angle_list(clamped=True, default_value=90))
+        self.robot_body.set_arm_torque(enable=self.is_rigid)
+        # beep to signal the change in arm state
+        # self.robot_body.set_beep(self.beep_time)
         if self.verbose >= 2:
             if self.is_rigid:
                 print(f'Arm is rigid')
