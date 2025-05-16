@@ -43,6 +43,7 @@ class Arm:
         self.memorizable_button_list = []
 
         try:
+            import ikpy
             from ikpy.chain import Chain
         except ImportError:
             raise ImportError('The ikpy library for inverse kinematics is not installed.'
@@ -136,7 +137,21 @@ class Arm:
                 # gripper rotation and opening. But the 2 excluded angles are the last 2 angles in the list
                 start_time = time.time()
                 ikpy_angle_list = self.servo_chain.inverse_kinematics(target_position=self.gripper_pos)
-                print(f'IK computation time: {round(time.time() - start_time, 2)} seconds')
+                print(f'chain IK computation time: {round(time.time() - start_time, 2)} seconds')
+                print(f'ikpy_angle_list: {ikpy_angle_list}')
+                start_time = time.time()
+                # the function for IK requires in input a 3X3 transformation matrix, but in this case will only use the
+                # last column of the matrix, which is the position of the gripper
+                target_frame = np.zeros(shape=(3, 3))
+                target_frame[:3, -1] = self.gripper_pos
+                ikpy_angle_list_2 = ikpy.inverse_kinematics.inverse_kinematic_optimization(
+                    chain=self.servo_chain,
+                    target_frame=target_frame,
+                    starting_nodes_angles=self.desired_angle_list,
+                    # max_iter=None,
+                )
+                print(f'standalone IK computation time: {round(time.time() - start_time, 2)} seconds')
+                print(f'ikpy_angle_list_2: {ikpy_angle_list_2}')
                 self.desired_angle_list[:4] = self.ikpy_to_degree_conversion(ikpy_angle_list)
 
             # the last two angles (4 and 5) are updated normally
