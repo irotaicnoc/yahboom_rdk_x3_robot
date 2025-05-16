@@ -49,7 +49,12 @@ class Arm:
                               ' Mode "user_controlled (arm_ik)" will not be available')
 
         self.arm_speed_proportion_ik = parameters['arm_speed_proportion_ik']
-        self.servo_chain = Chain.from_urdf_file(gc.URDF_FOLDER_PATH + 'arm.urdf')
+        self.servo_chain = Chain.from_urdf_file(
+            urdf_file=gc.URDF_FOLDER_PATH + 'arm.urdf',
+            base_elements=['base_link'],
+            name='arm',
+            active_links_mask=[False, True, True, True, True, False],
+        )
         robot_head.robot_sub_mode_dict[gc.MODE_USER_CONTROLLED].append(gc.SUB_MODE_ARM_IK)
         robot_head.sub_mode_change_callbacks[gc.SUB_MODE_ARM_IK] = self.sub_mode_ik_start_callback
         # these are the coordinates of the gripper in the robot's coordinate system. In inverse kinematics mode
