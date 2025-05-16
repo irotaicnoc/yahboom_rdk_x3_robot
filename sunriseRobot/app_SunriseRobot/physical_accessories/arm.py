@@ -128,7 +128,7 @@ class Arm:
             # gripper rotation and opening. But the 2 excluded angles are the last 2 angles in the list
             start_time = time.time()
             ikpy_angle_list = self.servo_chain.inverse_kinematics(target_position=self.gripper_pos)
-            print(f'IK computation time: {round(time.time() - start_time), 2} seconds')
+            print(f'IK computation time: {round(time.time() - start_time, 2)} seconds')
             # print(f'ikpy_angle_list: {ikpy_angle_list}')
             # print(f'desired_angle_list before: {self.desired_angle_list}')
             self.desired_angle_list[:4] = self.ikpy_to_degree_conversion(ikpy_angle_list)
