@@ -148,7 +148,7 @@ class Arm:
                 ikpy_angle_list_2 = self.inverse_kinematics(
                     chain=self.servo_chain,
                     target_frame=target_frame,
-                    starting_nodes_angles=self.desired_angle_list,
+                    starting_nodes_angles=self.degree_to_ikpy_conversion(self.desired_angle_list),
                     # max_iter=None,
                 )
                 print(f'standalone IK computation time: {round(time.time() - start_time, 2)} seconds')
@@ -203,6 +203,13 @@ class Arm:
         new_angle_list = []
         for value in angle_list[1:5]:
             new_angle_list.append(np.rad2deg(value) + 90)
+        return new_angle_list
+
+    @staticmethod
+    def degree_to_ikpy_conversion(angle_list: list) -> list:
+        new_angle_list = []
+        for value in angle_list:
+            new_angle_list.append(np.deg2rad(value - 90))
         return new_angle_list
 
     def sub_mode_ik_start_callback(self) -> None:
