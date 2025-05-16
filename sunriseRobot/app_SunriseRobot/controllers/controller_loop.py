@@ -166,10 +166,7 @@ class ControllerLoop(object):
 
                 if self.arm.is_rigid:
                     self.arm.update_desired_angles()
-                    self.robot_body.set_arm_angle_list(
-                        angle_s=self.arm.desired_angle_list,
-                        run_time=self.arm.run_time,
-                    )
+                    self.robot_body.set_arm_angle_list(angle_s=self.arm.desired_angle_list, run_time=self.arm.run_time)
 
         else:
             time.sleep(2)
