@@ -71,10 +71,9 @@ class RobotHead:
         else:
             self.robot_sub_mode = None
 
-        # if the new mode has a callback to call at the start, call it
-        # but only if the mode has actually changed. For example if the list has only 1 element, the callback should
-        # not be called, because the robot was already in the same mode. Or if the new mode fails to be set and the
-        # previous mode is set again.
+        # if the new mode has a callback to call at the start, call it. But only if the mode has actually changed. For
+        # example if the list has only 1 element, the callback should not be called, because the robot was already in
+        # the same mode. Or if the new mode fails to be set and the previous mode is set again.
         if previous_mode != self.robot_mode:
             if self.robot_mode in self.mode_change_callbacks:
                 self.mode_change_callbacks[self.robot_mode]()
