@@ -67,6 +67,7 @@ class Arm:
         self.gripper_speed = [0, 0, 0]
         # initializes gripper position and speed, and desired angles
         self.sub_mode_ik_start_callback()
+        self.target_frame = np.zeros(shape=(3, 3))
 
     def toggle_rigid(self) -> None:
         self.is_rigid = not self.is_rigid
@@ -143,11 +144,10 @@ class Arm:
                 # start_time = time.time()
                 # the function for IK requires in input a 3X3 transformation matrix, but in this case will only use the
                 # last column of the matrix, which is the position of the gripper
-                target_frame = np.zeros(shape=(3, 3))
-                target_frame[:3, -1] = self.gripper_pos
+                self.target_frame[:3, -1] = self.gripper_pos
                 ikpy_angle_list = self.inverse_kinematics(
                     chain=self.servo_chain,
-                    target_frame=target_frame,
+                    target_frame=self.target_frame,
                     starting_nodes_angles=self.degree_to_ikpy_conversion(self.desired_angle_list),
                     # max_iter=None,
                 )
