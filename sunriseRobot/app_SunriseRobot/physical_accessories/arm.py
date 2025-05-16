@@ -43,7 +43,7 @@ class Arm:
         self.memorizable_button_list = []
 
         try:
-            import ikpy
+            from ikpy.inverse_kinematics import inverse_kinematic_optimization
             from ikpy.chain import Chain
         except ImportError:
             raise ImportError('The ikpy library for inverse kinematics is not installed.'
@@ -56,6 +56,7 @@ class Arm:
             name='arm',
             active_links_mask=[False, True, True, True, True, False],
         )
+        self.inverse_kinematics = inverse_kinematic_optimization
         robot_head.robot_sub_mode_dict[gc.MODE_USER_CONTROLLED].append(gc.SUB_MODE_ARM_IK)
         robot_head.sub_mode_change_callbacks[gc.SUB_MODE_ARM_IK] = self.sub_mode_ik_start_callback
         # these are the coordinates of the gripper in the robot's coordinate system. In inverse kinematics mode
@@ -144,7 +145,7 @@ class Arm:
                 # last column of the matrix, which is the position of the gripper
                 target_frame = np.zeros(shape=(3, 3))
                 target_frame[:3, -1] = self.gripper_pos
-                ikpy_angle_list_2 = ikpy.inverse_kinematics.inverse_kinematic_optimization(
+                ikpy_angle_list_2 = self.inverse_kinematics(
                     chain=self.servo_chain,
                     target_frame=target_frame,
                     starting_nodes_angles=self.desired_angle_list,
