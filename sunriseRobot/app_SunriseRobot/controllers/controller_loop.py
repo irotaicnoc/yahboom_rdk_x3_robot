@@ -170,8 +170,7 @@ class ControllerLoop(object):
                         angle_s=self.arm.desired_angle_list,
                         run_time=self.arm.run_time,
                     )
-                else:
-                    print(self.arm.get_safe_arm_angle_list())
+
         else:
             time.sleep(2)
 
