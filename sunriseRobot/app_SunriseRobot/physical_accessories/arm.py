@@ -118,20 +118,22 @@ class Arm:
         elif self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_IK:
             # update the gripper position in the robot's coordinate system
             # the gripper position is used in place of the desired angles for motors 0, 1, 2, 3
-            # print(f'gripper_pos before: {self.gripper_pos}')
-            self.gripper_pos[0] += self.gripper_speed[0]
-            self.gripper_pos[1] += self.gripper_speed[1]
-            self.gripper_pos[2] += self.gripper_speed[2]
-            # print(f'gripper_pos after:  {self.gripper_pos}')
-            # the function returns 6 angle_list, but we don't need the first and last ones, they should be the
-            # gripper rotation and opening. But the 2 excluded angles are the last 2 angles in the list
-            start_time = time.time()
-            ikpy_angle_list = self.servo_chain.inverse_kinematics(target_position=self.gripper_pos)
-            print(f'IK computation time: {round(time.time() - start_time, 2)} seconds')
-            # print(f'ikpy_angle_list: {ikpy_angle_list}')
-            # print(f'desired_angle_list before: {self.desired_angle_list}')
-            self.desired_angle_list[:4] = self.ikpy_to_degree_conversion(ikpy_angle_list)
-            # print(f'desired_angle_list after: {self.desired_angle_list}')
+
+            # calling the inverse kinematics function is very slow, so we call it only when the gripper position
+            # changes
+            if self.gripper_speed[0] != 0 or self.gripper_speed[1] != 0 or self.gripper_speed[2] != 0:
+                self.gripper_pos[0] += self.gripper_speed[0]
+                self.gripper_pos[1] += self.gripper_speed[1]
+                self.gripper_pos[2] += self.gripper_speed[2]
+
+                # update the desired angles
+                # the function returns 6 angle_list, but we don't need the first and last ones, they should be the
+                # gripper rotation and opening. But the 2 excluded angles are the last 2 angles in the list
+                start_time = time.time()
+                ikpy_angle_list = self.servo_chain.inverse_kinematics(target_position=self.gripper_pos)
+                print(f'IK computation time: {round(time.time() - start_time, 2)} seconds')
+                self.desired_angle_list[:4] = self.ikpy_to_degree_conversion(ikpy_angle_list)
+
             # the last two angles (4 and 5) are updated normally
             temp_angle_4 = self.desired_angle_list[4] + self.servo_speed_list[4]
             temp_angle_5 = self.desired_angle_list[5] + self.servo_speed_list[5]
