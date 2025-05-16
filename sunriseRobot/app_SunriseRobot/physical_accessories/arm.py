@@ -133,9 +133,11 @@ class Arm:
             # print(f'desired_angle_list before: {self.desired_angle_list}')
             self.desired_angle_list[:4] = self.ikpy_to_degree_conversion(ikpy_angle_list)
             # print(f'desired_angle_list after: {self.desired_angle_list}')
-            # the last two angles are updated normally
-            self.desired_angle_list[4] += self.servo_speed_list[4]
-            self.desired_angle_list[5] += self.servo_speed_list[5]
+            # the last two angles (4 and 5) are updated normally
+            temp_angle_4 = self.desired_angle_list[4] + self.servo_speed_list[4]
+            temp_angle_5 = self.desired_angle_list[5] + self.servo_speed_list[5]
+            self.desired_angle_list[4] = np.clip(temp_angle_4, a_min=0, a_max=180)
+            self.desired_angle_list[5] = np.clip(temp_angle_5, a_min=0, a_max=180)
 
     @staticmethod
     def clamp_angle_list(angle_list: list, default_value: int = -1) -> list:
