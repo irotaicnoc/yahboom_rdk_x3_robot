@@ -114,8 +114,7 @@ class Arm:
             for servo_id in range(len(self.servo_speed_list)):
                 servo_speed = self.servo_speed_list[servo_id]
                 temp_angle = self.desired_angle_list[servo_id] + servo_speed
-                temp_angle = np.clip(temp_angle, a_min=0, a_max=180)
-                self.desired_angle_list[servo_id] = temp_angle
+                self.desired_angle_list[servo_id] = np.clip(temp_angle, a_min=0, a_max=180)
         elif self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_IK:
             # update the gripper position in the robot's coordinate system
             # the gripper position is used in place of the desired angles for motors 0, 1, 2, 3
