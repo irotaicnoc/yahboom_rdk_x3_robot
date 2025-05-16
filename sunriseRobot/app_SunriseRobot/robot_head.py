@@ -62,6 +62,7 @@ class RobotHead:
         self.gpio_led.set_color('off')
         self.internal_light.stop()
         previous_mode = self.robot_mode
+        previous_sub_mode = self.robot_sub_mode
         self.robot_mode = self.robot_mode_list[
             (self.robot_mode_list.index(self.robot_mode) + 1) % len(self.robot_mode_list)
         ]
@@ -77,6 +78,11 @@ class RobotHead:
         if previous_mode != self.robot_mode:
             if self.robot_mode in self.mode_change_callbacks:
                 self.mode_change_callbacks[self.robot_mode]()
+        # if the sub mode also has a callback to call at the start, call it. But only if the mode current mode has a
+        # sub mode, and the sub mode actually changed
+        if self.robot_sub_mode is not None and self.robot_sub_mode != previous_sub_mode:
+            if self.robot_sub_mode in self.sub_mode_change_callbacks:
+                self.sub_mode_change_callbacks[self.robot_sub_mode]()
 
         if self.verbose >= 1:
             print(f'Switching to {self.robot_mode} ({self.robot_sub_mode}) mode')
