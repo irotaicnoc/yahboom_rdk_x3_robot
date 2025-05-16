@@ -181,7 +181,9 @@ class Arm:
     def sub_mode_ik_start_callback(self) -> None:
         # this function is called when the arm is switched to inverse kinematics sub mode
 
-        self.desired_angle_list = self.get_safe_arm_angle_list(clamped=True, default_value=90)
+        # self.desired_angle_list = self.get_safe_arm_angle_list(clamped=True, default_value=90)
+        # convenient starting position for the gripper
+        self.desired_angle_list = [90, 45, 35, 35, 90, 90]
         print(f'desired_angle_list: {self.desired_angle_list}')
 
         self.gripper_speed = [0, 0, 0]
