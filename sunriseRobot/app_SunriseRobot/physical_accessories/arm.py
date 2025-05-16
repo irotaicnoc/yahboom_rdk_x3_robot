@@ -100,13 +100,13 @@ class Arm:
         # then apply speed changes due to user input
         if value_x is not None:
             self.gripper_speed[0] = value_x * self.robot_head.speed_coefficient * self.arm_speed_proportion_ik
-            print(f'gripper_speed x: {self.gripper_speed[0]}')
+            # print(f'gripper_speed x: {self.gripper_speed[0]}')
         if value_y is not None:
             self.gripper_speed[1] = value_y * self.robot_head.speed_coefficient * self.arm_speed_proportion_ik
-            print(f'gripper_speed y: {self.gripper_speed[1]}')
+            # print(f'gripper_speed y: {self.gripper_speed[1]}')
         if value_z is not None:
             self.gripper_speed[2] = value_z * self.robot_head.speed_coefficient * self.arm_speed_proportion_ik
-            print(f'gripper_speed z: {self.gripper_speed[2]}')
+            # print(f'gripper_speed z: {self.gripper_speed[2]}')
 
     def update_desired_angles(self) -> None:
         if self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_FK:
@@ -118,18 +118,18 @@ class Arm:
         elif self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_IK:
             # update the gripper position in the robot's coordinate system
             # the gripper position is used in place of the desired angles for motors 0, 1, 2, 3
-            print(f'gripper_pos before: {self.gripper_pos}')
+            # print(f'gripper_pos before: {self.gripper_pos}')
             self.gripper_pos[0] += self.gripper_speed[0]
             self.gripper_pos[1] += self.gripper_speed[1]
             self.gripper_pos[2] += self.gripper_speed[2]
-            print(f'gripper_pos after:  {self.gripper_pos}')
+            # print(f'gripper_pos after:  {self.gripper_pos}')
             # the function returns 6 angle_list, but we don't need the first and last ones, they should be the
             # gripper rotation and opening. But the 2 excluded angles are the last 2 angles in the list
             ikpy_angle_list = self.servo_chain.inverse_kinematics(target_position=self.gripper_pos)
-            print(f'ikpy_angle_list: {ikpy_angle_list}')
-            print(f'desired_angle_list before: {self.desired_angle_list}')
+            # print(f'ikpy_angle_list: {ikpy_angle_list}')
+            # print(f'desired_angle_list before: {self.desired_angle_list}')
             self.desired_angle_list[:4] = self.ikpy_to_degree_conversion(ikpy_angle_list)
-            print(f'desired_angle_list after: {self.desired_angle_list}')
+            # print(f'desired_angle_list after: {self.desired_angle_list}')
             # the last two angles are updated normally
             self.desired_angle_list[4] += self.servo_speed_list[4]
             self.desired_angle_list[5] += self.servo_speed_list[5]
