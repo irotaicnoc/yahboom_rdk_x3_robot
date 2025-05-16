@@ -153,7 +153,10 @@ class Arm:
                 )
                 # print(f'standalone IK computation time: {round(time.time() - start_time, 2)} seconds')
                 # print(f'ikpy_angle_list_2: {self.ikpy_to_degree_conversion(ikpy_angle_list_2)}')
-                self.desired_angle_list[:4] = self.ikpy_to_degree_conversion(ikpy_angle_list)
+                self.desired_angle_list[:4] = self.clamp_angle_list(
+                    angle_list=self.ikpy_to_degree_conversion(ikpy_angle_list),
+                    default_value=90,
+                )
 
             # the last two angles (4 and 5) are updated normally
             temp_angle_4 = self.desired_angle_list[4] + self.servo_speed_list[4]
