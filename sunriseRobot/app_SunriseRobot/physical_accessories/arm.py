@@ -217,6 +217,8 @@ class Arm:
 
     def sub_mode_ik_start_callback(self) -> None:
         # this function is called when the arm is switched to inverse kinematics sub mode
+        if not self.is_rigid:
+            self.toggle_rigid()
 
         # self.set_desired_angles(self.get_safe_arm_angle_list(clamped=True, default_value=90))
         # convenient starting position for the gripper
@@ -230,6 +232,8 @@ class Arm:
         print(f'gripper_pos: {self.gripper_pos}')
 
     def sub_mode_fk_start_callback(self) -> None:
+        if not self.is_rigid:
+            self.toggle_rigid()
         # this function is called when the arm is switched to forward kinematics sub mode
         self.servo_speed_list = [0, 0, 0, 0, 0, 0]
         self.set_desired_angles(self.get_safe_arm_angle_list(clamped=True, default_value=90))
