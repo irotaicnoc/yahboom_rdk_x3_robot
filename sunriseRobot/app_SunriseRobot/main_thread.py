@@ -32,7 +32,7 @@ def main_loop(**kwargs):
 
     # ARM
     try:
-        arm = Arm(robot_head=robot_head, robot_body=robot_body)
+        arm = Arm(robot_head=robot_head, robot_body=robot_body, verbose=parameters['verbose'])
     except Exception as e:
         print('Arm error:')
         print(e)
