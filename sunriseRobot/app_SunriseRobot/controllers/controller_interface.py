@@ -201,14 +201,14 @@ class ControllerFunctions(object):
         pass
 
     def unknown_input(self, name: str, value) -> None:
-        if self.verbose >= 2:
+        if self.verbose >= 1:
             warnings.warn(f'Unknown button input received (name: {name}, value: {value})')
 
     def connected(self, controller_id: int) -> None:
         if controller_id not in self.robot_head.controller_id_list:
             self.robot_head.connected_controllers += 1
             self.robot_head.controller_id_list.append(controller_id)
-            if self.verbose >= 3:
+            if self.verbose >= 2:
                 print(f'Controller {controller_id} connected')
         else:
             if self.verbose >= 1:
@@ -218,7 +218,7 @@ class ControllerFunctions(object):
         if controller_id in self.robot_head.controller_id_list:
             self.robot_head.connected_controllers -= 1
             self.robot_head.controller_id_list.remove(controller_id)
-            if self.verbose >= 3:
+            if self.verbose >= 2:
                 print(f'Controller {controller_id} disconnected')
         else:
             if self.verbose >= 1:

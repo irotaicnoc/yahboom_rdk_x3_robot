@@ -179,8 +179,9 @@ class PS2Controller(object):
             return self.STATE_KEY_BREAK
         except Exception as e:
             self._is_connected = False
-            print('Controller disconnected')
+            print('Controller disconnected due to error:')
             print(e)
+            print(e.__traceback__)
             self.controller_functions.disconnected(controller_id=self.controller_id)
             return self.STATE_DISCONNECT
 
