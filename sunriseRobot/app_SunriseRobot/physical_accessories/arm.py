@@ -252,7 +252,7 @@ class Arm:
         self.toggle_rigid(rigid=True)
         # this function is called when the arm is switched to forward kinematics sub mode
         self.servo_speed_list = [0, 0, 0, 0, 0, 0]
-        self.set_desired_angles(self.FOLDED_POSITION)
+        self.set_desired_angles(self.FORWARD_POSITION)
         self.robot_body.set_arm_angle_list(angle_s=self.desired_angle_list, run_time=self.run_time)
 
     def sub_mode_wheel_start_callback(self) -> None:
