@@ -240,13 +240,11 @@ class Arm:
         # self.set_desired_angles(self.get_safe_arm_angle_list(clamped=True, default_value=90))
         # convenient starting position for the gripper
         self.set_desired_angles(self.FORWARD_POSITION)
-        print(f'desired_angle_list: {self.desired_angle_list}')
 
         self.gripper_speed = [0, 0, 0]
         # intermediate value to calculate initial gripper coordinates
         ikpy_angle_list = np.deg2rad(self.desired_angle_list) - np.pi / 2
         self.gripper_pos = self.servo_chain.forward_kinematics(joints=ikpy_angle_list)[:3, 3]
-        print(f'gripper_pos: {self.gripper_pos}')
 
     def sub_mode_fk_start_callback(self) -> None:
         self.toggle_rigid(rigid=True)
