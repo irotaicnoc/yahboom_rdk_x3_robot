@@ -20,15 +20,12 @@ class Arm:
         self.FORWARD_POSITION = [90, 45, 35, 35, 90, 90]
 
         arm_initial_angles = self.get_safe_arm_angle_list(clamped=False)
-        if arm_initial_angles != [-1, -1, -1, -1, -1, -1]:
-            robot_head.robot_sub_mode_dict[gc.MODE_USER_CONTROLLED].append(gc.SUB_MODE_ARM_FK)
-        else:
+        if arm_initial_angles == [-1, -1, -1, -1, -1, -1]:
             raise Exception('The robotic arm is not connected. Mode "user_controlled (arm_fk)" and'
                             ' "user_controlled (arm_ik)" will not be available')
 
         robot_head.robot_sub_mode_dict[gc.MODE_USER_CONTROLLED].append(gc.SUB_MODE_ARM_FK)
         self.is_rigid = False
-
         self.arm_speed_proportion_fk = parameters['arm_speed_proportion_fk']
         # arm servos
         self.servo_speed_list = [0, 0, 0, 0, 0, 0]
@@ -176,7 +173,7 @@ class Arm:
                 # gripper rotation and opening. But the 2 excluded angles are the last 2 angles in the list
                 # ikpy_angle_list = self.servo_chain.inverse_kinematics(target_position=self.gripper_pos)
                 # last column of the matrix, which is the position of the gripper
-                self.target_frame[:3, -1] = self.gripper_pos
+                self.target_frame[:, -1] = self.gripper_pos
                 ikpy_angle_list = self.inverse_kinematics(
                     chain=self.servo_chain,
                     target_frame=self.target_frame,
