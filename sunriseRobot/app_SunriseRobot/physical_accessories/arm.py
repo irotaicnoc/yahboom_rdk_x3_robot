@@ -15,8 +15,14 @@ class Arm:
         parameters = args.import_args(yaml_path=gc.CONFIG_FOLDER_PATH + 'arm.yaml', **kwargs)
         self.verbose = parameters['verbose']
 
+        # arm useful positions
+        self.VERTICAL_POSITION = [90, 90, 90, 90, 90, 90]
+        self.FOLDED_POSITION = [90, 180, 0, 0, 90, 90]
+        self.FORWARD_POSITION = [90, 45, 35, 35, 90, 90]
+        self.READING_ERROR = [-1, -1, -1, -1, -1, -1]
+
         arm_initial_angles = self.get_safe_arm_angle_list(clamped=False)
-        if arm_initial_angles != [-1, -1, -1, -1, -1, -1]:
+        if arm_initial_angles != self.READING_ERROR:
             robot_head.robot_sub_mode_dict[gc.MODE_USER_CONTROLLED].append(gc.SUB_MODE_ARM_FK)
             robot_head.sub_mode_change_callbacks[gc.SUB_MODE_ARM_FK] = self.sub_mode_fk_start_callback
         else:
@@ -188,7 +194,7 @@ class Arm:
         return clamped_angle_list
 
     def get_safe_arm_angle_list(self, clamped: bool = True, retry_limit: int = 10, default_value: int = -1) -> list:
-        angle_list = [-1, -1, -1, -1, -1, -1]
+        angle_list = self.READING_ERROR
         counter = 0
         while -1 in angle_list:
             temp_angle_list = self.robot_body.get_arm_angle_list()
@@ -233,7 +239,7 @@ class Arm:
 
         # self.set_desired_angles(self.get_safe_arm_angle_list(clamped=True, default_value=90))
         # convenient starting position for the gripper
-        self.set_desired_angles([90, 45, 35, 35, 90, 90])
+        self.set_desired_angles(self.FORWARD_POSITION)
         print(f'desired_angle_list: {self.desired_angle_list}')
 
         self.gripper_speed = [0, 0, 0]
@@ -254,6 +260,5 @@ class Arm:
             self.toggle_rigid()
         # this function is called when the robot is switched to wheels sub mode
         # it will fold the arm to a safe position
-        # TODO: change with correct angles
-        self.set_desired_angles([90, 180, 30, 0, 90, 90])
+        self.set_desired_angles(self.FOLDED_POSITION)
         self.robot_body.set_arm_angle_list(angle_s=self.desired_angle_list, run_time=self.run_time)

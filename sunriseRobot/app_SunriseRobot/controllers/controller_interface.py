@@ -111,7 +111,7 @@ class ControllerFunctions(object):
             if (self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_FK
                     or self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_IK):
                 if value:
-                    self.arm.set_desired_angles(angle_list=[90, 90, 90, 90, 90, 90])
+                    self.arm.set_desired_angles(angle_list=self.arm.VERTICAL_POSITION)
         # activate buzzer
             elif self.robot_head.robot_sub_mode == gc.SUB_MODE_WHEELS:
                 self.robot_head.buzzer_is_active = value
