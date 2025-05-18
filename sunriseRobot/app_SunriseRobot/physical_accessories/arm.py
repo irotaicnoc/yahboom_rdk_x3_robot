@@ -18,14 +18,14 @@ class Arm:
         self.VERTICAL_POSITION = [90, 90, 90, 90, 90, 90]
         self.FOLDED_POSITION = [90, 180, 0, 0, 90, 90]
         self.FORWARD_POSITION = [90, 45, 35, 35, 90, 90]
-        self.READING_ERROR = [-1, -1, -1, -1, -1, -1]
 
         arm_initial_angles = self.get_safe_arm_angle_list(clamped=False)
-        if arm_initial_angles != self.READING_ERROR:
+        if arm_initial_angles != [-1, -1, -1, -1, -1, -1]:
             robot_head.robot_sub_mode_dict[gc.MODE_USER_CONTROLLED].append(gc.SUB_MODE_ARM_FK)
             robot_head.sub_mode_change_callbacks[gc.SUB_MODE_ARM_FK] = self.sub_mode_fk_start_callback
         else:
             raise Exception('The robotic arm is not connected. Mode "user_controlled (arm_fk)" will not be available')
+        self.is_rigid = False
 
         self.arm_speed_proportion_fk = parameters['arm_speed_proportion_fk']
         # arm servos
@@ -53,7 +53,6 @@ class Arm:
         robot_head.mode_change_callbacks[gc.MODE_AUTONOMOUS_VISION] = self.mode_autonomous_vision_start_callback
 
         # set the arm to rigid state and perform all necessary operations
-        self.is_rigid = False
         self.toggle_rigid()
 
         try:
@@ -83,7 +82,11 @@ class Arm:
         self.sub_mode_ik_start_callback()
         self.target_frame = np.zeros(shape=(3, 3))
 
-    def toggle_rigid(self) -> None:
+    def toggle_rigid(self, rigid: bool = None) -> None:
+        if rigid is not None:
+            if self.is_rigid == rigid:
+                return
+
         self.is_rigid = not self.is_rigid
         # block arm at its current position
         if self.is_rigid:
@@ -191,7 +194,7 @@ class Arm:
         return clamped_angle_list
 
     def get_safe_arm_angle_list(self, clamped: bool = True, retry_limit: int = 10, default_value: int = -1) -> list:
-        angle_list = self.READING_ERROR
+        angle_list = [-1, -1, -1, -1, -1, -1]
         counter = 0
         while -1 in angle_list:
             temp_angle_list = self.robot_body.get_arm_angle_list()
@@ -231,8 +234,7 @@ class Arm:
 
     def sub_mode_ik_start_callback(self) -> None:
         # this function is called when the arm is switched to inverse kinematics sub mode
-        if not self.is_rigid:
-            self.toggle_rigid()
+        self.toggle_rigid(rigid=True)
 
         # self.set_desired_angles(self.get_safe_arm_angle_list(clamped=True, default_value=90))
         # convenient starting position for the gripper
@@ -246,16 +248,14 @@ class Arm:
         print(f'gripper_pos: {self.gripper_pos}')
 
     def sub_mode_fk_start_callback(self) -> None:
-        if not self.is_rigid:
-            self.toggle_rigid()
+        self.toggle_rigid(rigid=True)
         # this function is called when the arm is switched to forward kinematics sub mode
         self.servo_speed_list = [0, 0, 0, 0, 0, 0]
         self.set_desired_angles(self.FOLDED_POSITION)
         self.robot_body.set_arm_angle_list(angle_s=self.desired_angle_list, run_time=self.run_time)
 
     def sub_mode_wheel_start_callback(self) -> None:
-        if not self.is_rigid:
-            self.toggle_rigid()
+        self.toggle_rigid(rigid=True)
         # this function is called when the robot is switched to wheels sub mode
         # it will fold the arm to a safe position
         self.set_desired_angles(self.FOLDED_POSITION)
