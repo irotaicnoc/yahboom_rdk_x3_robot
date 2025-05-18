@@ -23,8 +23,10 @@ class RobotHead:
         self.robot_sub_mode_dict = {self.robot_mode_list[0]: [gc.SUB_MODE_WHEELS]}
         self.robot_mode = self.robot_mode_list[0]
         self.robot_sub_mode = self.robot_sub_mode_dict[self.robot_mode][0]
-        self.mode_change_callbacks = {}
-        self.sub_mode_change_callbacks = {}
+        self.mode_start_callbacks = {}
+        self.mode_end_callbacks = {}
+        self.sub_mode_start_callbacks = {}
+        self.sub_mode_end_callbacks = {}
         if self.verbose >= 1:
             print(f'Robot mode: {self.robot_mode} ({self.robot_sub_mode})')
         self.tracking_target_list = parameters['tracking_target_list']
@@ -71,17 +73,32 @@ class RobotHead:
         else:
             self.robot_sub_mode = None
 
-        # if the new mode has a callback to call at the start, call it. But only if the mode has actually changed. For
-        # example if the list has only 1 element, the callback should not be called, because the robot was already in
-        # the same mode. Or if the new mode fails to be set and the previous mode is set again.
+        # mode callbacks
+        # if the previous mode has callbacks to call at the end, call them. But only if the mode has actually changed.
+        # For example if the list has only 1 element, the callback should not be called, because the robot was already
+        # in the same mode. Or if the new mode fails to be set and the previous mode is set again
         if previous_mode != self.robot_mode:
-            if self.robot_mode in self.mode_change_callbacks:
-                self.mode_change_callbacks[self.robot_mode]()
-        # if the sub mode also has a callback to call at the start, call it. But only if the mode current mode has a
-        # sub mode, and the sub mode actually changed
+            if previous_mode in self.mode_end_callbacks:
+                for callback in self.mode_end_callbacks[previous_mode]:
+                    callback()
+            # if the new mode has callbacks to call at the start, call them. But only if the mode has actually changed
+            if self.robot_mode in self.mode_start_callbacks:
+                for callback in self.mode_start_callbacks[self.robot_mode]:
+                    callback()
+
+        # sub mode callbacks
+        # if the sub mode also have callbacks to call at the start and end, call them. But only if the mode current
+        # mode has a sub mode, and the sub mode actually changed
+        # end callbacks
+        if previous_sub_mode is not None and self.robot_sub_mode != previous_sub_mode:
+            if previous_sub_mode in self.sub_mode_end_callbacks:
+                for callback in self.sub_mode_end_callbacks[previous_sub_mode]:
+                    callback()
+        # start callbacks
         if self.robot_sub_mode is not None and self.robot_sub_mode != previous_sub_mode:
-            if self.robot_sub_mode in self.sub_mode_change_callbacks:
-                self.sub_mode_change_callbacks[self.robot_sub_mode]()
+            if self.robot_sub_mode in self.sub_mode_start_callbacks:
+                for callback in self.sub_mode_start_callbacks[self.robot_sub_mode]:
+                    callback()
 
         if self.verbose >= 1:
             print(f'Switching to {self.robot_mode} ({self.robot_sub_mode}) mode')
@@ -104,13 +121,18 @@ class RobotHead:
             self.robot_sub_mode = current_sub_mode_list[
                 (current_sub_mode_list.index(self.robot_sub_mode) + 1) % len(current_sub_mode_list)
             ]
-            # if the new mode has a callback to call at the start, call it
-            # but only if the mode has actually changed. For example if the list has only 1 element, the callback should
-            # not be called, because the robot was already in the same mode. Or if the new mode fails to be set and the
-            # previous mode is set again.
+            # if the sub mode also have callbacks to call at the start and end, call them. But only if the sub mode has
+            # actually changed. For example if the list has only 1 element, the callbacks should not be called, because
+            # the robot was already in the same sub mode. Or if the new sub mode fails to be set and the previous sub
+            # mode is set again.
             if previous_sub_mode != self.robot_sub_mode:
-                if self.robot_sub_mode in self.sub_mode_change_callbacks:
-                    self.sub_mode_change_callbacks[self.robot_sub_mode]()
+                # end callbacks
+                if previous_sub_mode in self.sub_mode_end_callbacks:
+                    for callback in self.sub_mode_end_callbacks[previous_sub_mode]:
+                        callback()
+                if self.robot_sub_mode in self.sub_mode_start_callbacks:
+                    for callback in self.sub_mode_start_callbacks[self.robot_sub_mode]:
+                        callback()
         else:
             assert self.robot_sub_mode is None, f'Robot mode {self.robot_mode} does not have sub modes, ' \
                                                 f'but current sub mode is {self.robot_sub_mode}'
@@ -238,3 +260,31 @@ class RobotHead:
             self.lidar_listener_status = 'processing'
         else:
             print(f'Lidar listener is in "{self.lidar_listener_status}" state. Cannot be changed now')
+
+    def add_mode_callback(self, mode: str, callback: callable, start: bool) -> None:
+        assert mode in self.robot_mode_list, (f'Mode "{mode}" is not in the list of available'
+                                              f' modes {self.robot_mode_list}')
+        if start:
+            if mode not in self.mode_start_callbacks:
+                self.mode_start_callbacks[mode] = []
+            self.mode_start_callbacks[mode].append(callback)
+        else:
+            if mode not in self.mode_end_callbacks:
+                self.mode_end_callbacks[mode] = []
+            self.mode_end_callbacks[mode].append(callback)
+        if self.verbose >= 2:
+            print(f'Added callback {callback} to {mode} mode {"start" if start else "end"} callbacks')
+
+    def add_sub_mode_callback(self, sub_mode: str, callback: callable, start: bool) -> None:
+        assert sub_mode in self.robot_sub_mode_dict, (f'Sub mode "{sub_mode}" is not in the list of available'
+                                                      f' sub modes {self.robot_sub_mode_dict}')
+        if start:
+            if sub_mode not in self.sub_mode_start_callbacks:
+                self.sub_mode_start_callbacks[sub_mode] = []
+            self.sub_mode_start_callbacks[sub_mode].append(callback)
+        else:
+            if sub_mode not in self.sub_mode_end_callbacks:
+                self.sub_mode_end_callbacks[sub_mode] = []
+            self.sub_mode_end_callbacks[sub_mode].append(callback)
+        if self.verbose >= 2:
+            print(f'Added callback {callback} to {sub_mode} sub mode {"start" if start else "end"} callbacks')

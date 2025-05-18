@@ -22,10 +22,11 @@ class Arm:
         arm_initial_angles = self.get_safe_arm_angle_list(clamped=False)
         if arm_initial_angles != [-1, -1, -1, -1, -1, -1]:
             robot_head.robot_sub_mode_dict[gc.MODE_USER_CONTROLLED].append(gc.SUB_MODE_ARM_FK)
-            robot_head.sub_mode_change_callbacks[gc.SUB_MODE_ARM_FK] = self.sub_mode_fk_start_callback
         else:
             raise Exception('The robotic arm is not connected. Mode "user_controlled (arm_fk)" and'
                             ' "user_controlled (arm_ik)" will not be available')
+
+        robot_head.robot_sub_mode_dict[gc.MODE_USER_CONTROLLED].append(gc.SUB_MODE_ARM_FK)
         self.is_rigid = False
 
         self.arm_speed_proportion_fk = parameters['arm_speed_proportion_fk']
@@ -46,15 +47,19 @@ class Arm:
         self.run_time = self.arm_automated_speed[0]
         self.memorizable_button_list = []
 
-        # if the arm is present, it will also add a callback to the sub mode wheels, so that the arm will fold when not
-        # in use. Same for the autonomous vision mode
-        # TODO: add callbacks for when a mode is stopped and use that here, it is more general for when we exit arm sub
-        #   modes
-        robot_head.sub_mode_change_callbacks[gc.SUB_MODE_WHEELS] = self.sub_mode_wheel_start_callback
-        robot_head.mode_change_callbacks[gc.MODE_AUTONOMOUS_VISION] = self.mode_autonomous_vision_start_callback
-
         # set the arm to rigid state and perform all necessary operations
         self.toggle_rigid()
+
+        robot_head.add_sub_mode_callback(
+            sub_mode=gc.SUB_MODE_ARM_FK,
+            callback=self.sub_mode_fk_start_callback,
+            start=True,
+        )
+        robot_head.add_sub_mode_callback(
+            sub_mode=gc.SUB_MODE_ARM_FK,
+            callback=self.sub_mode_arm_end_callback,
+            start=False,
+        )
 
         try:
             from ikpy.inverse_kinematics import inverse_kinematic_optimization
@@ -72,7 +77,16 @@ class Arm:
         )
         self.inverse_kinematics = inverse_kinematic_optimization
         robot_head.robot_sub_mode_dict[gc.MODE_USER_CONTROLLED].append(gc.SUB_MODE_ARM_IK)
-        robot_head.sub_mode_change_callbacks[gc.SUB_MODE_ARM_IK] = self.sub_mode_ik_start_callback
+        robot_head.add_sub_mode_callback(
+            sub_mode=gc.SUB_MODE_ARM_IK,
+            callback=self.sub_mode_ik_start_callback,
+            start=True,
+        )
+        robot_head.add_sub_mode_callback(
+            sub_mode=gc.SUB_MODE_ARM_IK,
+            callback=self.sub_mode_arm_end_callback,
+            start=False,
+        )
         # these are the coordinates of the gripper in the robot's coordinate system. In inverse kinematics mode
         # they are used in place of the desired angles for motors 0, 1, 2, 3. Only motors 4 (gripper rotation)
         # and 5 (gripper opening) are controlled in the same way in both sub modes.
@@ -253,17 +267,14 @@ class Arm:
         self.set_desired_angles(self.FORWARD_POSITION)
         self.robot_body.set_arm_angle_list(angle_s=self.desired_angle_list, run_time=self.run_time)
 
-    def sub_mode_wheel_start_callback(self) -> None:
+    def sub_mode_arm_end_callback(self) -> None:
+        # this function is called when any arm sub mode is switched to another sub mode
+        # for safety, block the arm, so it doesn't move
         self.toggle_rigid(rigid=True)
-        # this function is called when the robot is switched to wheels sub mode
-        # it will fold the arm to a safe position
+        # fold the arm to a safe position, so it doesn't hit against anything
         self.set_desired_angles(self.FOLDED_POSITION)
         self.robot_body.set_arm_angle_list(angle_s=self.desired_angle_list, run_time=self.run_time)
+        self.servo_speed_list = [0, 0, 0, 0, 0, 0]
+        self.gripper_speed = [0, 0, 0]
 
-    def mode_autonomous_vision_start_callback(self) -> None:
-        self.toggle_rigid(rigid=True)
-        # this function is called when the robot is switched to autonomous vision mode
-        # it will fold the arm to a safe position
-        self.set_desired_angles(self.FOLDED_POSITION)
-        self.robot_body.set_arm_angle_list(angle_s=self.desired_angle_list, run_time=self.run_time)
 
