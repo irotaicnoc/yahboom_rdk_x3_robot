@@ -24,7 +24,8 @@ class Arm:
             robot_head.robot_sub_mode_dict[gc.MODE_USER_CONTROLLED].append(gc.SUB_MODE_ARM_FK)
             robot_head.sub_mode_change_callbacks[gc.SUB_MODE_ARM_FK] = self.sub_mode_fk_start_callback
         else:
-            raise Exception('The robotic arm is not connected. Mode "user_controlled (arm_fk)" will not be available')
+            raise Exception('The robotic arm is not connected. Mode "user_controlled (arm_fk)" and'
+                            ' "user_controlled (arm_ik)" will not be available')
         self.is_rigid = False
 
         self.arm_speed_proportion_fk = parameters['arm_speed_proportion_fk']
