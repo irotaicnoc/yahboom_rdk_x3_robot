@@ -46,8 +46,11 @@ class Arm:
         self.memorizable_button_list = []
 
         # if the arm is present, it will also add a callback to the sub mode wheels, so that the arm will fold when not
-        # in use
+        # in use. Same for the autonomous vision mode
+        # TODO: add callbacks for when a mode is stopped and use that here, it is more general for when we exit arm sub
+        #   modes
         robot_head.sub_mode_change_callbacks[gc.SUB_MODE_WHEELS] = self.sub_mode_wheel_start_callback
+        robot_head.mode_change_callbacks[gc.MODE_AUTONOMOUS_VISION] = self.mode_autonomous_vision_start_callback
 
         # set the arm to rigid state and perform all necessary operations
         self.is_rigid = False
@@ -256,3 +259,11 @@ class Arm:
         # it will fold the arm to a safe position
         self.set_desired_angles(self.FOLDED_POSITION)
         self.robot_body.set_arm_angle_list(angle_s=self.desired_angle_list, run_time=self.run_time)
+
+    def mode_autonomous_vision_start_callback(self) -> None:
+        self.toggle_rigid(rigid=True)
+        # this function is called when the robot is switched to autonomous vision mode
+        # it will fold the arm to a safe position
+        self.set_desired_angles(self.FOLDED_POSITION)
+        self.robot_body.set_arm_angle_list(angle_s=self.desired_angle_list, run_time=self.run_time)
+
