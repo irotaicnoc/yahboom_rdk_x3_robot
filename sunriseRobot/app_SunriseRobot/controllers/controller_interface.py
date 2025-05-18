@@ -148,6 +148,9 @@ class ControllerFunctions(object):
                     or self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_IK):
                 self.memorize_or_set_arm_position(button='button_north', value=value)
         # change internal light effect
+            else:
+                if value:
+                    self.internal_light.next_light_effect()
         else:
             if value:
                 self.internal_light.next_light_effect()
