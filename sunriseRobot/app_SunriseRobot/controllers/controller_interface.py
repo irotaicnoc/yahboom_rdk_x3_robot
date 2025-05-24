@@ -224,7 +224,9 @@ class ControllerFunctions(object):
             if self.verbose >= 1:
                 print(f'Controller with id {controller_id} tried to disconnect, but this id is not connected')
 
-    def memorize_or_set_arm_position(self, button: str, value: bool) -> None:
+    def memorize_or_set_arm_position(self, button: str, value: bool, exclude_gripper_opening: bool = True) -> None:
+        # memorize every servo angle of the arm except the gripper opening, because when setting a remembered position
+        # the gripper should remain in the current position
         if button not in self.arm.memorizable_button_list:
             self.arm.memorizable_button_list.append(button)
         if value:
@@ -233,7 +235,11 @@ class ControllerFunctions(object):
         else:
             self.gpio_led.set_color('off')
             if self.enough_press_time(button=button):
-                self.memorized_arm_position[button] = self.arm.get_safe_arm_angle_list(clamped=True, default_value=90)
+                self.memorized_arm_position[button] = self.arm.get_safe_arm_angle_list(
+                    clamped=True,
+                    default_value=90,
+                    exclude_gripper_opening=exclude_gripper_opening,
+                )
             else:
                 if button in self.memorized_arm_position:
                     self.arm.set_desired_angles(angle_list=self.memorized_arm_position[button])

@@ -15,8 +15,11 @@ class Arm:
         self.verbose = parameters['verbose']
 
         # arm useful positions
-        self.VERTICAL_POSITION = [90, 90, 90, 90, 90, 90]
-        self.FOLDED_POSITION = [90, 180, 0, 0, 90, 90]
+        # VERTICAL_POSITION does not change the current gripper opening
+        self.VERTICAL_POSITION = [90, 90, 90, 90, 90]
+        # FOLDED_POSITION does not change the current gripper opening
+        self.FOLDED_POSITION = [90, 180, 0, 0, 90]
+        # FORWARD_POSITION also opens the gripper
         self.FORWARD_POSITION = [90, 45, 35, 35, 90, 90]
 
         arm_initial_angles = self.get_safe_arm_angle_list(clamped=False)
@@ -113,9 +116,6 @@ class Arm:
                 print(f'Arm can be moved manually, but cannot be controlled by the controller')
 
     def set_desired_angles(self, angle_list: list) -> None:
-        assert len(angle_list) == len(self.desired_angle_list), (f'Length of angle_list {len(angle_list)} is not '
-            f'equal to arm_servos_desired_angle {len(self.desired_angle_list)}')
-
         self.run_time = utils.change_range(
             value=self.robot_head.speed_coefficient,
             original_min=0.1,
@@ -123,7 +123,11 @@ class Arm:
             new_min=self.arm_automated_speed[1],
             new_max=self.arm_automated_speed[0],
         )
-        self.desired_angle_list = copy.deepcopy(angle_list)
+        # in can accept angle lists shorter than 6, and only move the first len(angle_list) servos.
+        # In particular, in is useful with lists of length 4 and 5, to ignore the gripper rotation and opening, or just
+        # the gripper opening
+        for angle_id in range(len(angle_list)):
+            self.desired_angle_list[angle_id] = angle_list[angle_id]
 
     def update_speed_fk(self, servo_id: int, value) -> None:
         # This function directly modifies the speed of the servo with id servo_id
@@ -205,11 +209,24 @@ class Arm:
             clamped_angle_list.append(clamped_angle)
         return clamped_angle_list
 
-    def get_safe_arm_angle_list(self, clamped: bool = True, retry_limit: int = 10, default_value: int = -1) -> list:
-        angle_list = [-1, -1, -1, -1, -1, -1]
+    def get_safe_arm_angle_list(self,
+                                clamped: bool = True,
+                                retry_limit: int = 10,
+                                default_value: int = -1,
+                                exclude_gripper_opening: bool = False,
+                                ) -> list:
+        # if exclude_gripper_opening is True, the gripper opening angle is not included in the returned list (len = 5
+        # instead of 6)
+        if exclude_gripper_opening:
+            angle_list = [-1, -1, -1, -1, -1]
+        else:
+            angle_list = [-1, -1, -1, -1, -1, -1]
+
         counter = 0
         while -1 in angle_list:
             temp_angle_list = self.robot_body.get_arm_angle_list()
+            if exclude_gripper_opening:
+                temp_angle_list = temp_angle_list[:5]  # exclude gripper opening angle
             for angle_id in range(len(temp_angle_list)):
                 angle = temp_angle_list[angle_id]
                 if angle != -1:
