@@ -25,7 +25,12 @@ class ControllerFunctions(object):
         self.last_button_activation = {}
 
         # memorize and go-to arm positions
-        self.memorized_arm_position = {}
+        # start with some predefined positions that can be overwritten
+        self.memorized_arm_position = {
+            'button_south': self.arm.VERTICAL_POSITION,
+            'button_east': self.arm.FOLDED_POSITION,
+            'button_west': self.arm.FORWARD_POSITION,
+        }
 
     # value is True or False for buttons
     # value is a float in range [-1, 1] for axes
@@ -107,11 +112,11 @@ class ControllerFunctions(object):
                 self.robot_head.previous_model()
 
     def button_south(self, value: bool) -> None:
+        # memorize current arm position or reach memorized arm position
         if self.robot_head.robot_mode == gc.MODE_USER_CONTROLLED:
             if (self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_FK
                     or self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_IK):
-                if value:
-                    self.arm.set_desired_angles(angle_list=self.arm.VERTICAL_POSITION)
+                self.memorize_or_set_arm_position(button='button_east', value=value)
         # activate buzzer
             elif self.robot_head.robot_sub_mode == gc.SUB_MODE_WHEELS:
                 self.robot_head.buzzer_is_active = value
@@ -143,6 +148,7 @@ class ControllerFunctions(object):
 
     def button_north(self, value: bool) -> None:
         # memorize current arm position or reach memorized arm position
+        # this is the only button without a predefined position already memorized
         if self.robot_head.robot_mode == gc.MODE_USER_CONTROLLED:
             if (self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_FK
                     or self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_IK):
