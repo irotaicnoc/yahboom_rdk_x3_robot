@@ -244,7 +244,7 @@ class ControllerFunctions(object):
             self.gpio_led.set_color('off')
             if self.enough_press_time(button=button):
                 print(f'Memorizing arm position for button {button}')
-                print(f'Current arm angles: {self.arm.get_safe_arm_angle_list(clamped=True, default_value=90)}')
+                print(f'\tCurrent arm angles: {self.arm.get_safe_arm_angle_list(clamped=True, default_value=90)}')
                 self.memorized_arm_position[button] = self.arm.get_safe_arm_angle_list(
                     clamped=True,
                     default_value=90,
@@ -252,7 +252,9 @@ class ControllerFunctions(object):
                 )
             else:
                 if button in self.memorized_arm_position:
-                    print(f'Go to: {self.memorized_arm_position[button]}')
+                    print(f'pressed button {button}')
+                    print(f'\tGo to: {self.memorized_arm_position[button]}')
+                    print(f'\tvertical position: {self.arm.VERTICAL_POSITION}')
                     self.arm.set_desired_angles(angle_list=self.memorized_arm_position[button])
 
     def cooldown_ended(self, button: str) -> bool:
