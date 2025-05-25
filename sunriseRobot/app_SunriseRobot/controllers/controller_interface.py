@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # coding=utf-8
 import time
+import copy
 import warnings
 
 import args
@@ -27,9 +28,9 @@ class ControllerFunctions(object):
         # memorize and go-to arm positions
         # start with some predefined positions that can be overwritten
         self.memorized_arm_position = {
-            'button_south': self.arm.VERTICAL_POSITION,
-            'button_east': self.arm.FOLDED_POSITION,
-            'button_west': self.arm.FORWARD_POSITION,
+            'button_south': copy.deepcopy(self.arm.VERTICAL_POSITION),
+            'button_east': copy.deepcopy(self.arm.FOLDED_POSITION),
+            'button_west': copy.deepcopy(self.arm.FORWARD_POSITION),
         }
 
     # value is True or False for buttons
