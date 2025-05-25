@@ -118,7 +118,7 @@ class ControllerFunctions(object):
         if self.robot_head.robot_mode == gc.MODE_USER_CONTROLLED:
             if (self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_FK
                     or self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_IK):
-                self.memorize_or_set_arm_position(button='button_east', value=value)
+                self.memorize_or_set_arm_position(button='button_south', value=value)
         # activate buzzer
             elif self.robot_head.robot_sub_mode == gc.SUB_MODE_WHEELS:
                 self.robot_head.buzzer_is_active = value
