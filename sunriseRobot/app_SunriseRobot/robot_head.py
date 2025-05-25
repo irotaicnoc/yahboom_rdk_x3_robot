@@ -276,8 +276,8 @@ class RobotHead:
             print(f'Added callback {callback} to {mode} mode {"start" if start else "end"} callbacks')
 
     def add_sub_mode_callback(self, sub_mode: str, callback: callable, start: bool) -> None:
-        assert sub_mode in self.robot_sub_mode_dict, (f'Sub mode "{sub_mode}" is not in the list of available'
-                                                      f' sub modes {self.robot_sub_mode_dict}')
+        assert sub_mode in self.all_sub_modes(), (f'Sub mode "{sub_mode}" is not in the list of available'
+                                                      f' sub modes {self.all_sub_modes()}')
         if start:
             if sub_mode not in self.sub_mode_start_callbacks:
                 self.sub_mode_start_callbacks[sub_mode] = []
@@ -288,3 +288,10 @@ class RobotHead:
             self.sub_mode_end_callbacks[sub_mode].append(callback)
         if self.verbose >= 2:
             print(f'Added callback {callback} to {sub_mode} sub mode {"start" if start else "end"} callbacks')
+
+    def all_sub_modes(self) -> list:
+        """Returns a list of all sub modes available across all modes."""
+        all_sub_modes = []
+        for sub_modes in self.robot_sub_mode_dict.values():
+            all_sub_modes.extend(sub_modes)
+        return all_sub_modes
