@@ -32,7 +32,6 @@ class ControllerFunctions(object):
             'button_east': copy.deepcopy(self.arm.FOLDED_POSITION),
             'button_west': copy.deepcopy(self.arm.FORWARD_POSITION),
         }
-        print(f'Predefined arm positions: {self.memorized_arm_position}')
 
     # value is True or False for buttons
     # value is a float in range [-1, 1] for axes
@@ -243,8 +242,6 @@ class ControllerFunctions(object):
         else:
             self.gpio_led.set_color('off')
             if self.enough_press_time(button=button):
-                print(f'Memorizing arm position for button {button}')
-                print(f'\tCurrent arm angles: {self.arm.get_safe_arm_angle_list(clamped=True, default_value=90)}')
                 self.memorized_arm_position[button] = self.arm.get_safe_arm_angle_list(
                     clamped=True,
                     default_value=90,
@@ -252,9 +249,6 @@ class ControllerFunctions(object):
                 )
             else:
                 if button in self.memorized_arm_position:
-                    print(f'pressed button {button}')
-                    print(f'\tGo to: {self.memorized_arm_position[button]}')
-                    print(f'\tvertical position: {self.arm.VERTICAL_POSITION}')
                     self.arm.set_desired_angles(angle_list=self.memorized_arm_position[button])
 
     def cooldown_ended(self, button: str) -> bool:
