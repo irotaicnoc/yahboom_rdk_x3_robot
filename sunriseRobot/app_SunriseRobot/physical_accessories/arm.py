@@ -255,8 +255,11 @@ class Arm:
 
     @staticmethod
     def degree_to_ikpy_conversion(angle_list: list) -> list:
-        new_angle_list = []
-        for value in angle_list:
+        # converts from degrees to radians, and subtracts 90 degrees
+        # also, all the elements are shifted by one position, because the first element is ignored, and the last
+        # element is excluded (it would have been ignored anyway) to keep the same length as the input list
+        new_angle_list = [0]
+        for value in angle_list[:-1]:
             new_angle_list.append(np.deg2rad(value - 90))
         return new_angle_list
 
@@ -270,7 +273,7 @@ class Arm:
 
         self.gripper_speed = [0, 0, 0]
         # intermediate value to calculate initial gripper coordinates
-        ikpy_angle_list = np.deg2rad(self.desired_angle_list) - np.pi / 2
+        ikpy_angle_list = self.degree_to_ikpy_conversion(self.desired_angle_list)
         self.gripper_pos = self.servo_chain.forward_kinematics(joints=ikpy_angle_list)[:3, 3]
 
     def sub_mode_fk_start_callback(self) -> None:
