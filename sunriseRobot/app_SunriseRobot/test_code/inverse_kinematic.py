@@ -31,7 +31,7 @@ def main():
     # print(f'chain IK time: {round(time.time() - start_time, 3)} seconds')
     # print(f'joint_pos: {ikpy_to_degree_conversion(joint_pos)}')
     # for target_position [0.1, 0.15, 0.1]
-    joint_initial_pos = [90, 45, 35, 35, 90, 90]
+    joint_initial_pos = np.array([0, 90, 45, 35, 35, 90])
     print(f'joint_initial_pos: {joint_initial_pos}')
     joint_initial_pos = degree_to_ikpy_conversion(joint_initial_pos)
     print(f'joint_initial_pos: {joint_initial_pos}')
