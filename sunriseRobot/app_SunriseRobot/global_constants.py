@@ -18,6 +18,11 @@ SUB_MODE_WHEELS = 'wheels'
 SUB_MODE_ARM_FK = 'arm_fk'
 SUB_MODE_ARM_IK = 'arm_ik'
 
+# beep durations
+SHORT_BEEP = 50  # milliseconds
+MEDIUM_BEEP = 300  # milliseconds
+LONG_BEEP = 1000  # milliseconds
+
 # OS PATHS
 MAIN_FOLDER_PATH = '/root/GIT/yahboom_rdk_x3_robot/sunriseRobot/'
 APP_FOLDER_PATH = '/root/GIT/yahboom_rdk_x3_robot/sunriseRobot/app_SunriseRobot/'

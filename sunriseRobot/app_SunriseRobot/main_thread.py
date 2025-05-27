@@ -102,7 +102,7 @@ def main_loop(**kwargs):
     # thread_sound_agent.start()
 
     # notify the robot is ready
-    robot_body.set_beep(50)
+    robot_body.set_beep(gc.SHORT_BEEP)
 
 
 # USB wireless gamepad

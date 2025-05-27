@@ -213,7 +213,7 @@ class VisionAgent(object):
                                 print('Target reached!')
                             if self.use_gpio_led:
                                 self.gpio_led.set_color('green')
-                            self.robot_body.set_beep(1000)
+                            self.robot_body.set_beep(gc.LONG_BEEP)
                     if self.target_distance == self.lidar_kwargs['response_dist']:
                         print(f'Target farther than {self.target_distance} m')
                     else:

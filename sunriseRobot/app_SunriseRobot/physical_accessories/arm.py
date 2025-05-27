@@ -107,7 +107,7 @@ class Arm:
             self.set_desired_angles(angle_list=self.get_safe_arm_angle_list(clamped=True, default_value=90))
         self.robot_body.set_arm_torque(enable=self.is_rigid)
         # beep to signal the change in arm state
-        # self.robot_body.set_beep(self.beep_time)
+        self.robot_body.set_beep(gc.SHORT_BEEP)
         if self.verbose >= 2:
             if self.is_rigid:
                 print(f'Arm is rigid')

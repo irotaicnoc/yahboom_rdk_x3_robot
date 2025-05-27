@@ -19,7 +19,6 @@ class ControllerLoop(object):
         self.arm = arm
         self.gpio_led = robot_head.gpio_led
         self.loop_sleep_time = parameters['loop_sleep_time']
-        self.beep_time = parameters['beep_time']
         self.verbose = parameters['verbose']
 
         # lidar initialization
@@ -125,7 +124,7 @@ class ControllerLoop(object):
                                     self.average_distance_by_sector[following_sector_num] < min_allowed_distance):
                                 obstacle = True
                             if obstacle:
-                                self.robot_body.set_beep(self.beep_time)
+                                self.robot_body.set_beep(gc.SHORT_BEEP)
                                 # allow only rotation
                                 self.robot_body.set_car_motion(v_x=0, v_y=0, v_z=self.robot_head.speed_z)
                                 if self.verbose >= 2:
@@ -149,7 +148,7 @@ class ControllerLoop(object):
                                 if self.robot_head.one_time_check[button]:
                                     self.robot_head.gpio_led.set_color('green')
                                     self.robot_head.one_time_check[button] = False
-                                    self.robot_body.set_beep(self.beep_time)
+                                    self.robot_body.set_beep(gc.SHORT_BEEP)
 
                 if self.arm.is_rigid:
                     self.arm.update_desired_angles()
