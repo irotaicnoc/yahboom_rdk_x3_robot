@@ -103,6 +103,16 @@ def main_loop(**kwargs):
     # )
     # thread_sound_agent.start()
 
+    # execute the start callbacks for the initial robot mode
+    if robot_head.robot_mode in robot_head.mode_start_callbacks:
+        for callback in robot_head.mode_start_callbacks[robot_head.robot_mode]:
+            callback()
+    # execute the start callbacks for the initial robot sub mode
+    if robot_head.robot_sub_mode is not None:
+        if robot_head.robot_sub_mode in robot_head.sub_mode_start_callbacks:
+            for callback in robot_head.sub_mode_start_callbacks[robot_head.robot_sub_mode]:
+                callback()
+
     # notify the robot is ready
     robot_body.set_beep(gc.SHORT_BEEP)
 
