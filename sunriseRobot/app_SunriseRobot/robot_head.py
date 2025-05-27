@@ -104,7 +104,6 @@ class RobotHead:
 
         # notify the user about the mode change
         self.robot_body.set_beep(gc.MEDIUM_BEEP)
-        time.sleep(gc.MEDIUM_BEEP/1000)
         if self.verbose >= 1:
             print(f'Switching to {self.robot_mode} ({self.robot_sub_mode}) mode')
 
@@ -144,9 +143,7 @@ class RobotHead:
                                                 f'but current sub mode is {self.robot_sub_mode}'
 
         # notify the user about the sub mode change
-        print(f'do beep for {gc.SHORT_BEEP} milliseconds')
         self.robot_body.set_beep(gc.SHORT_BEEP)
-        time.sleep(gc.SHORT_BEEP/1000)
         if self.verbose >= 1:
             print(f'Switching to {self.robot_sub_mode} sub mode')
 
