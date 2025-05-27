@@ -142,6 +142,7 @@ class RobotHead:
                                                 f'but current sub mode is {self.robot_sub_mode}'
 
         # notify the user about the sub mode change
+        print(f'do beep for {gc.LONG_BEEP} milliseconds')
         self.robot_body.set_beep(gc.LONG_BEEP)
         if self.verbose >= 1:
             print(f'Switching to {self.robot_sub_mode} sub mode')
