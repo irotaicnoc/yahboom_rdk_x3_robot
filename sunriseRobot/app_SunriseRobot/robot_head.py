@@ -8,8 +8,8 @@ import global_constants as gc
 
 class RobotHead:
     def __init__(self, **kwargs):
+        self.robot_body = kwargs['robot_body']
         parameters = args.import_args(yaml_path=gc.CONFIG_FOLDER_PATH + 'robot_head.yaml', **kwargs)
-        self.robot_body = parameters['robot_body']
         self.verbose = parameters['verbose']
 
         # controller parameters
@@ -142,8 +142,8 @@ class RobotHead:
                                                 f'but current sub mode is {self.robot_sub_mode}'
 
         # notify the user about the sub mode change
-        print(f'do beep for {gc.LONG_BEEP} milliseconds')
-        self.robot_body.set_beep(gc.LONG_BEEP)
+        print(f'do beep for {gc.SHORT_BEEP} milliseconds')
+        self.robot_body.set_beep(gc.SHORT_BEEP)
         if self.verbose >= 1:
             print(f'Switching to {self.robot_sub_mode} sub mode')
 
