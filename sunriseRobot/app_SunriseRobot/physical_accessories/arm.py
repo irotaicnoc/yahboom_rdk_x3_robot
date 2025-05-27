@@ -59,6 +59,11 @@ class Arm:
             callback=self.sub_mode_arm_end_callback,
             start=False,
         )
+        robot_head.add_sub_mode_callback(
+            sub_mode=gc.SUB_MODE_WHEELS,
+            callback=self.sub_mode_wheel_start_callback,
+            start=True,
+        )
 
         try:
             from ikpy.inverse_kinematics import inverse_kinematic_optimization
@@ -293,4 +298,12 @@ class Arm:
         self.servo_speed_list = [0, 0, 0, 0, 0, 0]
         self.gripper_speed = [0, 0, 0]
 
-
+    def sub_mode_wheel_start_callback(self) -> None:
+        # this function is called when wheel sub mode is switched activated, but only if the arm is present
+        # for safety, block the arm, so it doesn't move
+        self.toggle_rigid(rigid=True)
+        # fold the arm to a safe position, so it doesn't hit against anything
+        self.set_desired_angles(self.FOLDED_POSITION)
+        self.robot_body.set_arm_angle_list(angle_s=self.desired_angle_list, run_time=self.run_time)
+        self.servo_speed_list = [0, 0, 0, 0, 0, 0]
+        self.gripper_speed = [0, 0, 0]
