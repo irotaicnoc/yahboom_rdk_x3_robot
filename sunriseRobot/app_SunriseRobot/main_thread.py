@@ -25,6 +25,7 @@ def main_loop(**kwargs):
     gpio_led = GpioLed()
 
     robot_head = RobotHead(
+        robot_body=robot_body,
         internal_light=internal_light,
         gpio_led=gpio_led,
         verbose=parameters['verbose'],

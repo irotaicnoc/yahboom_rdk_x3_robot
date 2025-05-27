@@ -9,6 +9,7 @@ import global_constants as gc
 class RobotHead:
     def __init__(self, **kwargs):
         parameters = args.import_args(yaml_path=gc.CONFIG_FOLDER_PATH + 'robot_head.yaml', **kwargs)
+        self.robot_body = parameters['robot_body']
         self.verbose = parameters['verbose']
 
         # controller parameters
@@ -100,6 +101,8 @@ class RobotHead:
                 for callback in self.sub_mode_start_callbacks[self.robot_sub_mode]:
                     callback()
 
+        # notify the user about the mode change
+        self.robot_body.set_beep(gc.MEDIUM_BEEP)
         if self.verbose >= 1:
             print(f'Switching to {self.robot_mode} ({self.robot_sub_mode}) mode')
 
@@ -136,6 +139,9 @@ class RobotHead:
         else:
             assert self.robot_sub_mode is None, f'Robot mode {self.robot_mode} does not have sub modes, ' \
                                                 f'but current sub mode is {self.robot_sub_mode}'
+
+        # notify the user about the sub mode change
+        self.robot_body.set_beep(gc.SHORT_BEEP)
         if self.verbose >= 1:
             print(f'Switching to {self.robot_sub_mode} sub mode')
 
