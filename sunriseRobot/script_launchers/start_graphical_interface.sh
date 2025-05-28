@@ -1,2 +1,2 @@
-systemctl isolate multi-user.target;
+systemctl isolate graphical.target;
 exit 0
