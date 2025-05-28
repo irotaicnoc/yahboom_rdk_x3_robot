@@ -167,7 +167,7 @@ class ControllerFunctions(object):
             elif (self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_FK or
                   self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_IK):
                 # servo 6 open gripper
-                self.arm.update_speed_fk(servo_id=5, value=value)
+                self.arm.update_speed_fk(servo_id=5, value=-value)
 
     def button_r1(self, value: bool) -> None:
         if self.robot_head.robot_mode == gc.MODE_USER_CONTROLLED:
@@ -178,7 +178,7 @@ class ControllerFunctions(object):
             elif (self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_FK or
                   self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_IK):
                 # servo 6 close gripper
-                self.arm.update_speed_fk(servo_id=5, value=-value)
+                self.arm.update_speed_fk(servo_id=5, value=value)
 
     def button_l2(self, value: bool) -> None:
         # decrease speed sensibility
