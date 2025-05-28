@@ -76,7 +76,9 @@ class ControllerFunctions(object):
         if self.robot_head.robot_mode == gc.MODE_USER_CONTROLLED:
             if self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_IK:
                 # move gripper up/down
-                self.arm.update_speed_ik(value_z=value)
+                # change sign so that pushing the joystick up moves the gripper down and vice versa, which is
+                # more intuitive
+                self.arm.update_speed_ik(value_z=-value)
 
     def axis_arrows_x(self, value: float) -> None:
         assert -1 <= value <= 1, f'Value {value} is out of range [-1, 1]'
