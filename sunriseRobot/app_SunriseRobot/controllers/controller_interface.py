@@ -16,7 +16,7 @@ class ControllerFunctions(object):
         self.robot_body = robot_body
         self.arm = arm
         self.internal_light = robot_head.internal_light
-        self.gpio_led = robot_head.gpio_led
+        self.tri_cable_led = robot_head.tri_cable_led
         parameters = args.import_args(yaml_path=gc.CONFIG_FOLDER_PATH + 'controller_interface.yaml', **kwargs)
         self.verbose = parameters['verbose']
 
@@ -127,7 +127,7 @@ class ControllerFunctions(object):
             # move robot
             if self.robot_head.robot_sub_mode == gc.SUB_MODE_WHEELS:
                 if value:
-                    self.gpio_led.next_color()
+                    self.tri_cable_led.next_color()
             # memorize current arm position or reach memorized arm position
             if (self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_FK
                     or self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_IK):
@@ -241,10 +241,10 @@ class ControllerFunctions(object):
         if button not in self.arm.memorizable_button_list:
             self.arm.memorizable_button_list.append(button)
         if value:
-            self.gpio_led.set_color('orange')
+            self.tri_cable_led.set_color(gc.ORANGE)
             self.start_counting(button=button)
         else:
-            self.gpio_led.set_color('off')
+            self.tri_cable_led.set_color(gc.POWER_OFF)
             if self.enough_press_time(button=button):
                 self.memorized_arm_position[button] = self.arm.get_safe_arm_angle_list(
                     clamped=True,

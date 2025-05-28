@@ -205,19 +205,19 @@ def kill_process_(process_name: str, verbose: int = 0):
 
 
 def start_generic_process(robot_head, name: str = None):
-    robot_head.gpio_led.set_color('orange')
+    robot_head.tri_cable_led.set_color(gc.ORANGE)
     if name is not None and robot_head.verbose >= 1:
         print(f'{name}...', end='')
 
 
 def finish_generic_process(robot_head):
-    robot_head.gpio_led.set_color('green')
+    robot_head.tri_cable_led.set_color(gc.GREEN)
     robot_head.buzzer_is_active = True
     robot_head.buzzer_state_changed = True
     if robot_head.verbose >= 1:
         print('Done')
     time.sleep(0.5)
-    robot_head.gpio_led.set_color('off')
+    robot_head.tri_cable_led.set_color(gc.POWER_OFF)
     robot_head.buzzer_is_active = False
     robot_head.buzzer_state_changed = True
 

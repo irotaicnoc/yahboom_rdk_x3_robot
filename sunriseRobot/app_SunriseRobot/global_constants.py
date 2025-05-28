@@ -7,7 +7,6 @@ BUS_ARG_2_LIGHT_MODE = 0x04
 #   bus arg 3
 LIGHT_STOP_CMD = 0
 LIGHT_EFFECT_CMD_LIST = [0, 1, 2, 3, 4]
-GPIO_LED_COLOR_LIST = ['off', 'red', 'green', 'orange']
 
 # robot modes
 MODE_USER_CONTROLLED = 'user_controlled'
@@ -22,6 +21,13 @@ SUB_MODE_ARM_IK = 'arm_ik'
 SHORT_BEEP = 50  # milliseconds
 MEDIUM_BEEP = 300  # milliseconds
 LONG_BEEP = 1000  # milliseconds
+
+# led colors
+POWER_OFF = 'off'
+GREEN = 'green'
+RED = 'red'
+ORANGE = 'orange'
+WHITE = 'white'
 
 # OS PATHS
 MAIN_FOLDER_PATH = '/root/GIT/yahboom_rdk_x3_robot/sunriseRobot/'

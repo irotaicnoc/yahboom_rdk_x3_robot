@@ -42,9 +42,9 @@ class VisionAgent(object):
         self.speed_x = 0
         self.speed_z = 0
 
-        # gpio led
-        self.gpio_led = robot_head.gpio_led
-        self.use_gpio_led = parameters['use_gpio_led']
+        # tri cable led
+        self.tri_cable_led = robot_head.tri_cable_led
+        self.use_tri_cable_led = parameters['use_tri_cable_led']
 
     def set_zero_speed(self):
         self.speed_x = 0
@@ -62,9 +62,9 @@ class VisionAgent(object):
             if self.verbose >= 2:
                 print('Camera closed.')
 
-        # turn off gpio led
-        if self.use_gpio_led:
-            self.gpio_led.set_color('off')
+        # turn off tri cable led
+        if self.use_tri_cable_led:
+            self.tri_cable_led.set_color(gc.POWER_OFF)
 
     def activate_agent(self):
         if self.verbose >= 1:
@@ -80,7 +80,7 @@ class VisionAgent(object):
             self.camera.set(propId=cv2.CAP_PROP_FPS, value=self.frame_per_second)
             self.camera.set(propId=cv2.CAP_PROP_BUFFERSIZE, value=self.buffer_size)
             self.agent_active = True
-            self.gpio_led.set_color('off')
+            self.tri_cable_led.set_color(gc.POWER_OFF)
             if self.verbose >= 2:
                 print('Camera opened correctly.')
                 frame_width = int(self.camera.get(propId=cv2.CAP_PROP_FRAME_WIDTH))
@@ -111,8 +111,8 @@ class VisionAgent(object):
     # stop -> observe -> think -> move for n seconds -> repeat until interrupted
     def detect_and_move(self) -> None:
         # show thinking light (red)
-        if self.use_gpio_led:
-            self.gpio_led.set_color('red')
+        if self.use_tri_cable_led:
+            self.tri_cable_led.set_color(gc.RED)
         if self.verbose >= 2:
             start_thinking = time.time()
         self.set_zero_speed()
@@ -144,8 +144,8 @@ class VisionAgent(object):
             print(f'num_targets: {target_info["num_targets"]}')
         if target_info['num_targets'] > 0:
             # show target-found light (green)
-            if self.use_gpio_led:
-                self.gpio_led.set_color('green')
+            if self.use_tri_cable_led:
+                self.tri_cable_led.set_color(gc.GREEN)
             self.no_target_counter = 0
             distance_from_center_x = target_info['distance_from_center_x']
             # print(f'target x: {distance_from_center_x}')
@@ -171,8 +171,8 @@ class VisionAgent(object):
                 # move_duration = 0.6
         else:
             # show target-not-found/searching light (orange)
-            if self.use_gpio_led:
-                self.gpio_led.set_color('orange')
+            if self.use_tri_cable_led:
+                self.tri_cable_led.set_color(gc.ORANGE)
 
             self.speed_x = 0
             if self.no_target_counter < self.think_steps_if_no_target:

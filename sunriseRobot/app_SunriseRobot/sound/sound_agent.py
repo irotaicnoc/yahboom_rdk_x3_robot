@@ -33,9 +33,9 @@ class SoundAgent(object):
         self.speed_z = 0
         self.move_duration = parameters['move_duration']
 
-        # gpio led
-        self.gpio_led = robot_head.gpio_led
-        self.use_gpio_led = parameters['use_gpio_led']
+        # tri cable led
+        self.tri_cable_led = robot_head.tri_cable_led
+        self.use_tri_cable_led = parameters['use_tri_cable_led']
 
     def set_zero_speed(self):
         self.speed_x = 0
@@ -49,9 +49,9 @@ class SoundAgent(object):
         self.agent_active = False
         self.microphone.close()
 
-        # turn off gpio led
-        if self.use_gpio_led:
-            self.gpio_led.set_color('off')
+        # turn off tri cable led
+        if self.use_tri_cable_led:
+            self.tri_cable_led.set_color(gc.POWER_OFF)
 
     def activate_agent(self):
         if self.verbose >= 1:
@@ -64,7 +64,7 @@ class SoundAgent(object):
 
         if self.microphone:
             self.agent_active = True
-            self.gpio_led.set_color('off')
+            self.tri_cable_led.set_color(gc.POWER_OFF)
             if self.verbose >= 1:
                 print('Microphone opened correctly.')
         else:
@@ -89,8 +89,8 @@ class SoundAgent(object):
 
     def no_sound_detected(self):
         # show target-not-found/searching light (orange)
-        if self.use_gpio_led:
-            self.gpio_led.set_color('orange')
+        if self.use_tri_cable_led:
+            self.tri_cable_led.set_color(gc.ORANGE)
 
         self.speed_x = 0
         self.speed_z = 0
@@ -104,8 +104,8 @@ class SoundAgent(object):
     # stop -> listen -> think -> move for n seconds -> repeat until interrupted
     def detect_and_move(self) -> None:
         # show thinking light (red)
-        if self.use_gpio_led:
-            self.gpio_led.set_color('red')
+        if self.use_tri_cable_led:
+            self.tri_cable_led.set_color(gc.RED)
         if self.verbose >= 2:
             start_thinking = time.time()
         self.set_zero_speed()
@@ -117,8 +117,8 @@ class SoundAgent(object):
         #     print(f'target_angle_microphone: {target_angle_microphone}')
         if target_angle_microphone:
             # show target-found light (green)
-            if self.use_gpio_led:
-                self.gpio_led.set_color('green')
+            if self.use_tri_cable_led:
+                self.tri_cable_led.set_color(gc.GREEN)
 
             # convert the sound direction angle from the microphone to the robot
             # 0 is in front of the robot

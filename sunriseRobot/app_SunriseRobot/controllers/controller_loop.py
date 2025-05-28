@@ -17,7 +17,7 @@ class ControllerLoop(object):
         self.robot_body = robot_body
         self.robot_head = robot_head
         self.arm = arm
-        self.gpio_led = robot_head.gpio_led
+        self.tri_cable_led = robot_head.tri_cable_led
         self.loop_sleep_time = parameters['loop_sleep_time']
         self.verbose = parameters['verbose']
 
@@ -146,7 +146,7 @@ class ControllerLoop(object):
                         if button in self.arm.memorizable_button_list:
                             if time.time() - timestamp >= self.robot_head.button_press_required_time:
                                 if self.robot_head.one_time_check[button]:
-                                    self.robot_head.gpio_led.set_color('green')
+                                    self.robot_head.tri_cable_led.set_color(gc.GREEN)
                                     self.robot_head.one_time_check[button] = False
                                     self.robot_body.set_beep(gc.SHORT_BEEP)
 
