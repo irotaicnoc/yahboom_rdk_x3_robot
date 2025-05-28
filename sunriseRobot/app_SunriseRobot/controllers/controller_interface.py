@@ -74,10 +74,7 @@ class ControllerFunctions(object):
     def axis_right_y(self, value: float) -> None:
         assert -1 <= value <= 1, f'Value {value} is out of range [-1, 1]'
         if self.robot_head.robot_mode == gc.MODE_USER_CONTROLLED:
-            if self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_FK:
-                # servo 6 (open/close gripper)
-                self.arm.update_speed_fk(servo_id=5, value=value)
-            elif self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_IK:
+            if self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_IK:
                 # move gripper up/down
                 self.arm.update_speed_ik(value_z=value)
 
@@ -103,9 +100,6 @@ class ControllerFunctions(object):
             elif self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_FK:
                 # servo 3
                 self.arm.update_speed_fk(servo_id=2, value=-value)
-            elif self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_IK:
-                # servo 6 (open/close gripper)
-                self.arm.update_speed_fk(servo_id=5, value=value)
         elif self.robot_head.robot_mode == gc.MODE_AUTONOMOUS_VISION:
             if value > 0:
                 self.robot_head.next_model()
@@ -168,6 +162,10 @@ class ControllerFunctions(object):
             if self.robot_head.robot_sub_mode == gc.SUB_MODE_WHEELS:
                 if value:
                     self.robot_head.toggle_hotspot()
+            elif (self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_FK or
+                  self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_IK):
+                # servo 6 open gripper
+                self.arm.update_speed_fk(servo_id=5, value=value)
 
     def button_r1(self, value: bool) -> None:
         if self.robot_head.robot_mode == gc.MODE_USER_CONTROLLED:
@@ -175,6 +173,10 @@ class ControllerFunctions(object):
             if self.robot_head.robot_sub_mode == gc.SUB_MODE_WHEELS:
                 if value:
                     self.robot_head.toggle_ros2_vr_connection()
+            elif (self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_FK or
+                  self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_IK):
+                # servo 6 close gripper
+                self.arm.update_speed_fk(servo_id=5, value=-value)
 
     def button_l2(self, value: bool) -> None:
         # decrease speed sensibility
