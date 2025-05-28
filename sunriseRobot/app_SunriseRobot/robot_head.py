@@ -58,12 +58,12 @@ class RobotHead:
         self.buzzer_is_active = False
         self.buzzer_state_changed = True
         self.internal_light = parameters['internal_light']
-        self.tri_cable_led = parameters['tri_cable_led']
+        self.led_3_pin = parameters['led_3_pin']
 
     def next_mode(self) -> None:
         if self.verbose >= 3:
             print(f'Switching from {self.robot_mode} ({self.robot_sub_mode}) mode')
-        self.tri_cable_led.set_color(gc.POWER_OFF)
+        self.led_3_pin.set_color(gc.POWER_OFF)
         self.internal_light.stop()
         previous_mode = self.robot_mode
         previous_sub_mode = self.robot_sub_mode
@@ -117,7 +117,7 @@ class RobotHead:
                 print(f'No sub modes available for {self.robot_mode} mode')
             return
 
-        self.tri_cable_led.set_color(gc.POWER_OFF)
+        self.led_3_pin.set_color(gc.POWER_OFF)
         self.internal_light.stop()
 
         current_sub_mode_list = self.robot_sub_mode_dict[self.robot_mode]
@@ -249,7 +249,7 @@ class RobotHead:
         self.ros2_vr_connection_status = 'processing'
         utils.start_generic_process(robot_head=self, name='Stopping ROS2')
         utils.kill_process_(process_name='ros2', verbose=self.verbose)
-        self.tri_cable_led.set_color(gc.GREEN)
+        self.led_3_pin.set_color(gc.GREEN)
         self.ros2_vr_connection_status = 'inactive'
         utils.finish_generic_process(robot_head=self)
 

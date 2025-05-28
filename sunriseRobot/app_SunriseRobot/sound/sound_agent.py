@@ -34,8 +34,8 @@ class SoundAgent(object):
         self.move_duration = parameters['move_duration']
 
         # tri cable led
-        self.tri_cable_led = robot_head.tri_cable_led
-        self.use_tri_cable_led = parameters['use_tri_cable_led']
+        self.led_3_pin = robot_head.led_3_pin
+        self.use_led_3_pin = parameters['use_led_3_pin']
 
     def set_zero_speed(self):
         self.speed_x = 0
@@ -50,8 +50,8 @@ class SoundAgent(object):
         self.microphone.close()
 
         # turn off tri cable led
-        if self.use_tri_cable_led:
-            self.tri_cable_led.set_color(gc.POWER_OFF)
+        if self.use_led_3_pin:
+            self.led_3_pin.set_color(gc.POWER_OFF)
 
     def activate_agent(self):
         if self.verbose >= 1:
@@ -64,7 +64,7 @@ class SoundAgent(object):
 
         if self.microphone:
             self.agent_active = True
-            self.tri_cable_led.set_color(gc.POWER_OFF)
+            self.led_3_pin.set_color(gc.POWER_OFF)
             if self.verbose >= 1:
                 print('Microphone opened correctly.')
         else:
@@ -89,8 +89,8 @@ class SoundAgent(object):
 
     def no_sound_detected(self):
         # show target-not-found/searching light (orange)
-        if self.use_tri_cable_led:
-            self.tri_cable_led.set_color(gc.ORANGE)
+        if self.use_led_3_pin:
+            self.led_3_pin.set_color(gc.ORANGE)
 
         self.speed_x = 0
         self.speed_z = 0
@@ -104,8 +104,8 @@ class SoundAgent(object):
     # stop -> listen -> think -> move for n seconds -> repeat until interrupted
     def detect_and_move(self) -> None:
         # show thinking light (red)
-        if self.use_tri_cable_led:
-            self.tri_cable_led.set_color(gc.RED)
+        if self.use_led_3_pin:
+            self.led_3_pin.set_color(gc.RED)
         if self.verbose >= 2:
             start_thinking = time.time()
         self.set_zero_speed()
@@ -117,8 +117,8 @@ class SoundAgent(object):
         #     print(f'target_angle_microphone: {target_angle_microphone}')
         if target_angle_microphone:
             # show target-found light (green)
-            if self.use_tri_cable_led:
-                self.tri_cable_led.set_color(gc.GREEN)
+            if self.use_led_3_pin:
+                self.led_3_pin.set_color(gc.GREEN)
 
             # convert the sound direction angle from the microphone to the robot
             # 0 is in front of the robot

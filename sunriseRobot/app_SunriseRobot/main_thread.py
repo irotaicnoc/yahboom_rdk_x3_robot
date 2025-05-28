@@ -11,7 +11,7 @@ from physical_accessories.oled import Oled
 from physical_accessories.light import Light
 from controllers.ps2_controller import PS2Controller
 from controllers.controller_loop import ControllerLoop
-from gpio.tri_cable_led import TriCableLed
+from gpio.led_3_pin import Led3Pin
 from controllers.controller_interface import ControllerFunctions
 
 
@@ -23,12 +23,12 @@ def main_loop(**kwargs):
 
     # LIGHTS
     internal_light = Light(verbose=parameters['verbose'])
-    tri_cable_led = TriCableLed(red_light=gc.VIOLET_CABLE_01, green_light=gc.GREEN_CABLE_01)
+    led_3_pin = Led3Pin(red_light=gc.VIOLET_CABLE_01, green_light=gc.GREEN_CABLE_01)
 
     robot_head = RobotHead(
         robot_body=robot_body,
         internal_light=internal_light,
-        tri_cable_led=tri_cable_led,
+        led_3_pin=led_3_pin,
         verbose=parameters['verbose'],
     )
 

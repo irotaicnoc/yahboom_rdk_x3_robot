@@ -1,5 +1,5 @@
 verbose: 0
-use_tri_cable_led: True
+use_led_3_pin: True
 
 #ReSpeaker 4-Mic Array v2.0 identification numbers
 vendor_id: 0x2886

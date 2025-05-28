@@ -3,10 +3,10 @@ import Hobot.GPIO as GPIO
 import global_constants as gc
 
 
-class TriCableLed:
+class Led3Pin:
     def __init__(self, red_light: int, green_light: int, mode: str = GPIO.BOARD):
         """
-        Initialize the TriCableLed with specified GPIO pins for red and green lights.
+        Initialize the Led3Pin with specified GPIO pins for red and green lights.
         """
         # Set the pin numbering mode to BOARD (1-40)
         GPIO.setmode(mode)
