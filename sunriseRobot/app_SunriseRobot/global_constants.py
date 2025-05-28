@@ -22,13 +22,6 @@ SHORT_BEEP = 50  # milliseconds
 MEDIUM_BEEP = 300  # milliseconds
 LONG_BEEP = 1000  # milliseconds
 
-# led colors
-POWER_OFF = 'off'
-GREEN = 'green'
-RED = 'red'
-ORANGE = 'orange'
-WHITE = 'white'
-
 # OS PATHS
 MAIN_FOLDER_PATH = '/root/GIT/yahboom_rdk_x3_robot/sunriseRobot/'
 APP_FOLDER_PATH = '/root/GIT/yahboom_rdk_x3_robot/sunriseRobot/app_SunriseRobot/'
@@ -46,6 +39,13 @@ URDF_FOLDER_PATH = APP_FOLDER_PATH + 'urdf/'
 VIOLET_CABLE = 13
 BLUE_CABLE = 15
 GREEN_CABLE = 16
+
+# led colors
+POWER_OFF = 'off'
+RED = 'red'
+ORANGE = 'orange'
+GREEN = 'green'
+WHITE = 'white'
 
 # BATTERY VOLTAGE
 MAX_VOLTAGE = 8.4  # 100% battery
