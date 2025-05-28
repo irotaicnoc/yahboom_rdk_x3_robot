@@ -23,7 +23,7 @@ def main_loop(**kwargs):
 
     # LIGHTS
     internal_light = Light(verbose=parameters['verbose'])
-    tri_cable_led = TriCableLed(red_light=gc.VIOLET_CABLE_01, green_light=gc.GREEN_CABLE_01, shared_cable=gc.BLUE_CABLE)
+    tri_cable_led = TriCableLed(red_light=gc.VIOLET_CABLE_01, green_light=gc.GREEN_CABLE_01)
 
     robot_head = RobotHead(
         robot_body=robot_body,

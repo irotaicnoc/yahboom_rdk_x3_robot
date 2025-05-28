@@ -4,7 +4,7 @@ import global_constants as gc
 
 
 class TriCableLed:
-    def __init__(self, red_light: int, green_light: int, shared_cable: int, mode: str = GPIO.BOARD):
+    def __init__(self, red_light: int, green_light: int, mode: str = GPIO.BOARD):
         """
         Initialize the TriCableLed with specified GPIO pins for red and green lights.
         """
@@ -16,10 +16,8 @@ class TriCableLed:
         # define more useful alias
         self.red_light = red_light
         self.green_light = green_light
-        self.shared_cable = shared_cable
 
         # start turned-off
-        GPIO.setup(gc.BLUE_CABLE, GPIO.OUT, initial=GPIO.LOW)
         GPIO.setup(self.red_light, GPIO.OUT, initial=GPIO.LOW)
         GPIO.setup(self.green_light, GPIO.OUT, initial=GPIO.LOW)
         self.current_color_index = 0
