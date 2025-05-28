@@ -36,9 +36,9 @@ URDF_FOLDER_PATH = APP_FOLDER_PATH + 'urdf/'
 
 # 40 PIN INTERFACE
 # with GPIO mode = BOARD
-VIOLET_CABLE = 13
 BLUE_CABLE = 15
-GREEN_CABLE = 16
+# tri cable led
+GREEN_CABLE_01 = 15  # GPIO CABLE
 
 # led colors
 POWER_OFF = 'off'
