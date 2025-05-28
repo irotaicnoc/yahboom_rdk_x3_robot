@@ -280,7 +280,7 @@ class RobotHead:
             if mode not in self.mode_end_callbacks:
                 self.mode_end_callbacks[mode] = []
             self.mode_end_callbacks[mode].append(callback)
-        if self.verbose >= 2:
+        if self.verbose >= 3:
             print(f'Added callback {callback} to {mode} mode {"start" if start else "end"} callbacks')
 
     def add_sub_mode_callback(self, sub_mode: str, callback: callable, start: bool) -> None:
@@ -294,7 +294,7 @@ class RobotHead:
             if sub_mode not in self.sub_mode_end_callbacks:
                 self.sub_mode_end_callbacks[sub_mode] = []
             self.sub_mode_end_callbacks[sub_mode].append(callback)
-        if self.verbose >= 2:
+        if self.verbose >= 3:
             print(f'Added callback {callback} to {sub_mode} sub mode {"start" if start else "end"} callbacks')
 
     def all_sub_modes(self) -> list:
