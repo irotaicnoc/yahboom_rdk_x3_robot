@@ -57,7 +57,6 @@ POWER_OFF = 'off'
 RED = 'red'
 ORANGE = 'orange'
 GREEN = 'green'
-WHITE = 'white'
 
 # BATTERY VOLTAGE
 MAX_VOLTAGE = 8.4  # 100% battery
