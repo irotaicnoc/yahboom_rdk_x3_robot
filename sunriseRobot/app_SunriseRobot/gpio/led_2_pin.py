@@ -1,0 +1,36 @@
+import Hobot.GPIO as GPIO
+
+import global_constants as gc
+
+
+class Led2Pin:
+    def __init__(self, power_cable: int, mode: str = GPIO.BOARD):
+        """
+        Initialize the Led2Pin with a GPIO pins for activating the light.
+        """
+        # Set the pin numbering mode to BOARD (1-40)
+        GPIO.setmode(mode)
+        self.power_cable = power_cable
+
+        # start with led turned off
+        self.turned_on = False
+        GPIO.setup(self.power_cable, GPIO.OUT, initial=GPIO.LOW)
+
+    def toggle_state(self):
+        """
+        Change the state of the LED.
+        """
+        self.turned_on = not self.turned_on
+        GPIO.output(self.power_cable, GPIO.HIGH if self.turned_on else GPIO.LOW)
+
+    def set_state(self, on: bool):
+        """
+        Set the state of the LED.
+        :param on: True to turn on, False to turn off.
+        """
+        if self.turned_on != on:
+            self.toggle_state()
+
+    def __del__(self):
+        self.set_state(on=False)
+        GPIO.cleanup()
