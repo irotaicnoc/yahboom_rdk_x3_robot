@@ -14,7 +14,10 @@ class Led3Pin:
         self.red_power_cable = red_power_cable
         self.green_power_cable = green_power_cable
         self.channels = [self.red_power_cable, self.green_power_cable]
-        GPIO.cleanup(self.channels)
+        try:
+            GPIO.cleanup(self.channels)
+        except Exception:
+            pass
 
         # start turned-off
         GPIO.setup(self.channels, GPIO.OUT, initial=GPIO.LOW)
