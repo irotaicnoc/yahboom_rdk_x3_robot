@@ -9,7 +9,7 @@ class Button2Pin:
         GPIO.setmode(mode)
         self.control_cable = control_cable
         self.pressed = False
-        GPIO.setup(self.control_cable, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        GPIO.setup(self.control_cable, GPIO.IN)
 
     def pressed_callback(self, callback: callable):
         GPIO.add_event_detect(self.control_cable, GPIO.RAISING, callback=callback, bouncetime=200)
