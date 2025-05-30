@@ -13,6 +13,7 @@ class Led3Pin:
         self.COLOR_LIST = [gc.POWER_OFF, gc.RED, gc.GREEN, gc.ORANGE]
         self.red_power_cable = red_power_cable
         self.green_power_cable = green_power_cable
+        self.channels = [self.red_power_cable, self.green_power_cable]
 
         # start turned-off
         GPIO.setup(self.red_power_cable, GPIO.OUT, initial=GPIO.LOW)
@@ -50,5 +51,5 @@ class Led3Pin:
 
     def __del__(self):
         self.set_color(gc.POWER_OFF)
-        GPIO.cleanup()
+        GPIO.cleanup(self.channels)
         

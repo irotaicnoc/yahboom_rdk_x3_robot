@@ -20,5 +20,5 @@ class Button2Pin:
         return self.pressed
 
     def __del__(self):
-        GPIO.cleanup()
+        GPIO.cleanup(self.control_cable)
         

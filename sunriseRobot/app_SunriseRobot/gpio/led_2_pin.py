@@ -33,4 +33,4 @@ class Led2Pin:
 
     def __del__(self):
         self.set_state(on=False)
-        GPIO.cleanup()
+        GPIO.cleanup(self.power_cable)
