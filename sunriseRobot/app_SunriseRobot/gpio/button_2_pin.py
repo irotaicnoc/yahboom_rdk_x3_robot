@@ -8,6 +8,7 @@ class Button2Pin:
         # Set the pin numbering mode to BOARD (1-40)
         GPIO.setmode(mode)
         self.control_cable = control_cable
+        GPIO.cleanup(self.control_cable)
         GPIO.setup(self.control_cable, GPIO.IN)
 
         # GPIO.add_event_detect(self.control_cable, GPIO.RISING, callback=rising_detected)

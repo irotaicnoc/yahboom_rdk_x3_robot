@@ -11,6 +11,7 @@ class Led2Pin:
         # Set the pin numbering mode to BOARD (1-40)
         GPIO.setmode(mode)
         self.power_cable = power_cable
+        GPIO.cleanup(self.power_cable)
 
         # start with led turned off
         self.turned_on = False
