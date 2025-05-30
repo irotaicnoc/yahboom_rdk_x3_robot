@@ -28,6 +28,11 @@ def main_loop(**kwargs):
     led_3_pin = Led3Pin(red_power_cable=gc.VIOLET_CABLE_01, green_power_cable=gc.GREEN_CABLE_01)
     led_2_pin = Led2Pin(power_cable=gc.GREEN_CABLE_02)
     button_2_pin = Button2Pin(control_cable=gc.BROWN_CABLE_01, callback=led_2_pin.toggle_state)
+    print('finished initializing GPIO pins')
+    led_2_pin.set_state(on=True)
+    time.sleep(3)
+    led_2_pin.set_state(on=False)
+    print('led tested')
     # thread_button_2_pin = threading.Thread(
     #     target=button_2_pin.pressed_callback,
     #     name='task_button_listener',
