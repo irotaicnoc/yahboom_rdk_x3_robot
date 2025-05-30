@@ -34,6 +34,7 @@ def main_loop(**kwargs):
         name='task_button_press_listener',
         kwargs={'callback': led_2_pin.toggle_state},
     )
+    thread_button_2_pin.start()
 
     robot_head = RobotHead(
         robot_body=robot_body,
