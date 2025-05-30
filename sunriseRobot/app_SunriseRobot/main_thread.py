@@ -220,7 +220,8 @@ def task_button_press_listener():
     try:
         button_2_pin = Button2Pin(control_cable=gc.BROWN_CABLE_01)
         print('finished initializing GPIO pins')
-        button_2_pin.press_listener()
+        while True:
+            button_2_pin.press_listener()
     except Exception as e:
         print('Button press listener error:')
         print(e)
