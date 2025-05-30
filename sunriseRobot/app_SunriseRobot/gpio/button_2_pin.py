@@ -11,13 +11,8 @@ class Button2Pin:
         self.pressed = False
         GPIO.setup(self.control_cable, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
-    def is_pressed(self):
-        """
-        Check if the button is pressed.
-        :return: True if pressed, False otherwise.
-        """
-        self.pressed = GPIO.input(self.control_cable) == GPIO.LOW
-        return self.pressed
+    def pressed_callback(self, callback: callable):
+        GPIO.add_event_detect(self.control_cable, GPIO.RAISING, callback=callback, bouncetime=200)
 
     def __del__(self):
         GPIO.cleanup(self.control_cable)
