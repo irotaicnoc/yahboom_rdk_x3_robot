@@ -17,12 +17,13 @@ class Button2Pin:
         # # GPIO.add_event_callback(self.control_cable, self.falling_detected)
         # # print()
 
-    def press_listener(self, callback: callable):
+    # def press_listener(self, callback: callable):
+    def press_listener(self):
         print('started listening for button presses')
         GPIO.wait_for_edge(self.control_cable, GPIO.FALLING)
         print('falling detected')
-        callback()
-        print('callback executed after falling edge detected')
+        # callback()
+        # print('callback executed after falling edge detected')
 
     def __del__(self):
         GPIO.cleanup(self.control_cable)

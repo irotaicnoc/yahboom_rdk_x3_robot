@@ -32,7 +32,7 @@ def main_loop(**kwargs):
     thread_button_2_pin = threading.Thread(
         target=button_2_pin.press_listener,
         name='task_button_press_listener',
-        kwargs={'callback': led_2_pin.toggle_state},
+        # kwargs={'callback': led_2_pin.toggle_state},
     )
     thread_button_2_pin.start()
 
