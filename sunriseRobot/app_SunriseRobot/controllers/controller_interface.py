@@ -201,9 +201,12 @@ class ControllerFunctions(object):
                 self.robot_head.next_sub_mode()
 
     def button_start(self, value: bool) -> None:
-        if value:
-            if self.cooldown_ended(button='button_start'):
-                self.arm.toggle_rigid()
+        if self.robot_head.robot_mode == gc.MODE_USER_CONTROLLED:
+            if (self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_FK or
+                    self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_IK):
+                if value:
+                    if self.cooldown_ended(button='button_start'):
+                        self.arm.toggle_rigid()
 
     def button_rocker_left(self, value: bool) -> None:
         pass
