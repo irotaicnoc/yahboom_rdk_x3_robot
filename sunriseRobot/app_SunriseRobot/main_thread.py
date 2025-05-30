@@ -35,6 +35,18 @@ def main_loop(**kwargs):
         kwargs={'callback': led_2_pin.toggle_state},
     )
     thread_button_2_pin.start()
+    thread_button_2_pin_falling = threading.Thread(
+        target=button_2_pin.press_listener_falling,
+        name='task_button_press_listener_falling',
+        kwargs={'callback': led_2_pin.toggle_state},
+    )
+    thread_button_2_pin_falling.start()
+    thread_button_2_pin_rising = threading.Thread(
+        target=button_2_pin.press_listener_rising,
+        name='task_button_press_listener_rising',
+        kwargs={'callback': led_2_pin.toggle_state},
+    )
+    thread_button_2_pin_rising.start()
 
     robot_head = RobotHead(
         robot_body=robot_body,
