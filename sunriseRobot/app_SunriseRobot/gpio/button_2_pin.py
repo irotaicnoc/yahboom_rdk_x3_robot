@@ -10,21 +10,20 @@ class Button2Pin:
         self.control_cable = control_cable
         GPIO.setup(self.control_cable, GPIO.IN)
 
-        GPIO.add_event_detect(self.control_cable, GPIO.RISING, callback=self.rising_detected)
+        GPIO.add_event_detect(self.control_cable, GPIO.RISING, callback=rising_detected)
         # GPIO.add_event_callback(self.control_cable, self.rising_detected)
 
-        GPIO.add_event_detect(self.control_cable, GPIO.FALLING, callback=self.falling_detected)
+        GPIO.add_event_detect(self.control_cable, GPIO.FALLING, callback=falling_detected)
         # GPIO.add_event_callback(self.control_cable, self.falling_detected)
         # print()
 
-    @staticmethod
-    def rising_detected():
-        print('rising detected')
-
-    @staticmethod
-    def falling_detected():
-        print('falling detected')
-
     def __del__(self):
         GPIO.cleanup(self.control_cable)
-        
+
+
+def rising_detected():
+    print('rising detected')
+
+
+def falling_detected():
+    print('falling detected')
