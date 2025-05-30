@@ -13,7 +13,7 @@ class Button2Pin:
 
     # def pressed_callback(self, callback: callable):
         print('Button2Pin: waiting for button press...')
-        GPIO.add_event_detect(self.control_cable, GPIO.RAISING, callback=callback, bouncetime=200)
+        GPIO.add_event_detect(self.control_cable, GPIO.RISING, callback=callback, bouncetime=200)
         # print()
 
     def __del__(self):
