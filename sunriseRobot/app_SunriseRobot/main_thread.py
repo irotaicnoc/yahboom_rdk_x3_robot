@@ -6,12 +6,12 @@ import args
 import global_constants as gc
 from robot_body import RobotBody
 from robot_head import RobotHead
+from gpio.led_3_pin import Led3Pin
 from physical_accessories.arm import Arm
 from physical_accessories.oled import Oled
 from physical_accessories.light import Light
 from controllers.ps2_controller import PS2Controller
 from controllers.controller_loop import ControllerLoop
-from gpio.led_3_pin import Led3Pin
 from controllers.controller_interface import ControllerFunctions
 
 
