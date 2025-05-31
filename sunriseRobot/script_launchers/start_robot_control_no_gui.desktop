@@ -1,6 +1,6 @@
 [Desktop Entry]
 Type=Application
-Exec=source /opt/ros/foxy/setup.bash;source /root/marco_ros2_ws/install/local_setup.bash;source /root/software/library_ws/install/local_setup.bash;python3 /root/GIT/yahboom_rdk_x3_robot/sunriseRobot/app_SunriseRobot/main_thread.py
+Exec=source /opt/ros/foxy/setup.bash;source /root/marco_ros2_ws/install/local_setup.bash;source /root/software/library_ws/install/local_setup.bash;python3 /root/GIT/yahboom_rdk_x3_robot/sunriseRobot/app_SunriseRobot/main_thread.py --gui_mode=False
 Hidden=false
 NoDisplay=true
 X-GNOME-Autostart-enabled=true
