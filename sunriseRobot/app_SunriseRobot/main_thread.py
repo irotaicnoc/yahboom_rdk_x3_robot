@@ -38,10 +38,15 @@ def main_loop(**kwargs):
         gui_mode=parameters['gui_mode'],
         verbose=parameters['verbose'],
     )
-    button_2_pin = Button2Pin(control_cable=gc.BLUE_CABLE_01, callback=robot_head.toggle_gui_mode)
+
+    # 2-PIN BUTTON
+    button_press_listener_kwargs = {
+        'robot_head': robot_head,
+    }
     thread_button_2_pin = threading.Thread(
         target=task_button_press_listener,
         name='task_button_press_listener',
+        kwargs=button_press_listener_kwargs,
     )
     thread_button_2_pin.start()
 
@@ -220,8 +225,9 @@ def task_vision_agent(**kwargs):
 #                     robot_head.robot_sub_mode = robot_head.robot_sub_mode_dict[robot_head.robot_mode][0]
 
 
-def task_button_press_listener():
+def task_button_press_listener(**kwargs):
     try:
+        button_2_pin = Button2Pin(control_cable=gc.BLUE_CABLE_01, callback=kwargs['robot_head'].toggle_gui_mode)
         while True:
             button_2_pin.press_listener()
     except Exception as e:
