@@ -1,6 +1,11 @@
-# This command stops the graphical user interface and switches to a multi-user target.
-systemctl isolate multi-user.target
-# This will also kill the main robot control thread, so it needs to be run after the GUI is stopped.
+#! /bin/bash
+
+###############################################################################
+# ubuntu 20.04 
+# add additional startup programs
+# main thread
+###############################################################################
+
 source /opt/ros/foxy/setup.bash
 source /root/marco_ros2_ws/install/local_setup.bash
 source /root/software/library_ws/install/local_setup.bash
