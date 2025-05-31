@@ -235,6 +235,7 @@ def task_button_press_listener(**kwargs):
         button_2_pin = Button2Pin(
             control_cable=gc.BLUE_CABLE_01,
             callback_short_click=robot_head.toggle_hotspot,
+            callback_long_click=robot_head.toggle_gui_mode,
             button_press_required_time=robot_head.button_press_required_time,
         )
         while True:
