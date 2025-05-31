@@ -22,6 +22,7 @@ class Button2Pin:
                 GPIO.setmode(mode)
         except Exception:
             GPIO.setmode(mode)
+
         self.callback_short_click = callback_short_click
         self.callback_long_click = callback_long_click
         self.control_cable = control_cable
@@ -34,16 +35,8 @@ class Button2Pin:
             pass
         GPIO.setup(self.control_cable, GPIO.IN, pull_up_down='Pull-up')
 
-        # GPIO.add_event_detect(self.control_cable, GPIO.RISING, callback=rising_detected)
-        # # GPIO.add_event_callback(self.control_cable, self.rising_detected)
-        #
-        # GPIO.add_event_detect(self.control_cable, GPIO.FALLING, callback=falling_detected)
-        # # GPIO.add_event_callback(self.control_cable, self.falling_detected)
-        # # print()
-
     def press_listener(self):
         GPIO.wait_for_edge(self.control_cable, GPIO.FALLING)
-        # GPIO.wait_for_edge(self.control_cable, GPIO.BOTH)
         if not self.is_pressed:
             self.pressed_time = time.time()
         else:
