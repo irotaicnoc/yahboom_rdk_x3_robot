@@ -12,7 +12,7 @@ class Button2Pin:
             GPIO.cleanup(self.control_cable)
         except Exception:
             pass
-        GPIO.setup(self.control_cable, GPIO.IN)
+        GPIO.setup(self.control_cable, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
         # GPIO.add_event_detect(self.control_cable, GPIO.RISING, callback=rising_detected)
         # # GPIO.add_event_callback(self.control_cable, self.rising_detected)
@@ -26,7 +26,7 @@ class Button2Pin:
         print(f'listening for button presses on pin {self.control_cable}')
         print(f'GPIO function: {GPIO.gpio_function(self.control_cable)}')
         print('started listening for button presses')
-        GPIO.wait_for_edge(self.control_cable, GPIO.RISING)
+        GPIO.wait_for_edge(self.control_cable, GPIO.FALLING)
         print('rising detected')
         # callback()
         # print('callback executed after falling edge detected')
