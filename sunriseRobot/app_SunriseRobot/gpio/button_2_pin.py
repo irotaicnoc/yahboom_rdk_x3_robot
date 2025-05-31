@@ -4,11 +4,9 @@ import global_constants as gc
 
 
 class Button2Pin:
-    def __init__(self, control_cable: int, mode: str = GPIO.BOARD):
-        # Set the pin numbering mode to BOARD (1-40)
-        # GPIO.setmode(mode)
-        print(f'GPIO VERSION: {GPIO.VERSION}')
-        print(f'GPIO model: {GPIO.model}')
+    def __init__(self, control_cable: int, callback: callable = None, mode: str = GPIO.BOARD):
+        GPIO.setmode(mode)
+        self.callback = callback
         self.control_cable = control_cable
         try:
             GPIO.cleanup(self.control_cable)
@@ -25,12 +23,9 @@ class Button2Pin:
 
     # def press_listener(self, callback: callable):
     def press_listener(self):
-        print(f'listening for button presses on pin {self.control_cable}')
-        print(f'GPIO function: {GPIO.gpio_function(self.control_cable)}')
-        print('started listening for button presses')
         GPIO.wait_for_edge(self.control_cable, GPIO.FALLING)
-        print('falling detected')
-        # callback()
+        print('Button press detected!')
+        self.callback()
         # print('callback executed after falling edge detected')
 
     def __del__(self):
