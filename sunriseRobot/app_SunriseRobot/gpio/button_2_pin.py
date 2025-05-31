@@ -6,7 +6,7 @@ import global_constants as gc
 class Button2Pin:
     def __init__(self, control_cable: int, mode: str = GPIO.BOARD):
         # Set the pin numbering mode to BOARD (1-40)
-        GPIO.setmode(mode)
+        # GPIO.setmode(mode)
         self.control_cable = control_cable
         try:
             GPIO.cleanup(self.control_cable)

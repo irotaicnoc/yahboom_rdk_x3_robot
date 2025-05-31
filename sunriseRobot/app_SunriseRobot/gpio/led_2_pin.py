@@ -9,7 +9,7 @@ class Led2Pin:
         Initialize the Led2Pin with a GPIO pins for activating the light.
         """
         # Set the pin numbering mode to BOARD (1-40)
-        GPIO.setmode(mode)
+        # GPIO.setmode(mode)
         self.power_cable = power_cable
         try:
             GPIO.cleanup(self.power_cable)
