@@ -39,18 +39,14 @@ URDF_FOLDER_PATH = APP_FOLDER_PATH + 'urdf/'
 # commented cables are connected to pins with fixed outputs (like power or ground), so it is not necessary to
 # initialize and manage them in the code
 
-# tri pin led
-VIOLET_CABLE_01 = 13  # GPIO CABLE
-# BLUE_CABLE_01 = 14 GROUND CABLE !!!IMPORTANT!!!
-GREEN_CABLE_01 = 15  # GPIO CABLE
-
 # two pin button
-BROWN_CABLE_01 = 16  # GPIO CABLE
-# ORANGE_CABLE_01 = 6 GROUND CABLE !!!IMPORTANT!!!
-# two pin led
-GREEN_CABLE_02 = 18  # GPIO CABLE
-# BLUE_CABLE_02 = 20 GROUND CABLE !!!IMPORTANT!!!
+BLUE_CABLE_01 = 16  # GPIO CABLE
+# BLACK_CABLE_01 = 6 GROUND CABLE !!!IMPORTANT!!!
 
+# tri pin led
+GREEN_CABLE_01 = 13  # GPIO CABLE
+# BLACK_CABLE_02 = 14 GROUND CABLE !!!IMPORTANT!!!
+RED_CABLE_01 = 15  # GPIO CABLE
 
 # led colors
 POWER_OFF = 'off'

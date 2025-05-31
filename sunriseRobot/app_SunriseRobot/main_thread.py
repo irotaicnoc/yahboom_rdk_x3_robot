@@ -1,3 +1,4 @@
+import os
 import time
 import warnings
 import threading
@@ -7,7 +8,6 @@ import global_constants as gc
 from robot_body import RobotBody
 from robot_head import RobotHead
 from gpio.led_3_pin import Led3Pin
-from gpio.led_2_pin import Led2Pin
 from gpio.button_2_pin import Button2Pin
 from physical_accessories.arm import Arm
 from physical_accessories.oled import Oled
@@ -19,26 +19,31 @@ from controllers.controller_interface import ControllerFunctions
 
 def main_loop(**kwargs):
     parameters = args.import_args(yaml_path=gc.CONFIG_FOLDER_PATH + 'main_thread.yaml', **kwargs)
+    if parameters['gui_mode']:
+        print('Running in GUI mode')
+    # else:
+    #     parameters['verbose'] = 0  # disable verbose output in non-GUI mode
     robot_body = RobotBody(com=parameters['com'], baud_rate=parameters['baud_rate'], verbose=parameters['verbose'])
     robot_body.create_receive_threading()
     time.sleep(0.2)  # wait for the robot body to initialize
 
     # LIGHTS
     internal_light = Light(verbose=parameters['verbose'])
-    led_3_pin = Led3Pin(red_power_cable=gc.VIOLET_CABLE_01, green_power_cable=gc.GREEN_CABLE_01)
-    thread_button_2_pin = threading.Thread(
-        target=task_button_press_listener,
-        name='task_button_press_listener',
-        # kwargs={'callback': led_2_pin.toggle_state},
-    )
-    thread_button_2_pin.start()
+    led_3_pin = Led3Pin(red_power_cable=gc.RED_CABLE_01, green_power_cable=gc.GREEN_CABLE_01)
 
     robot_head = RobotHead(
         robot_body=robot_body,
         internal_light=internal_light,
         led_3_pin=led_3_pin,
+        gui_mode=parameters['gui_mode'],
         verbose=parameters['verbose'],
     )
+    button_2_pin = Button2Pin(control_cable=gc.BLUE_CABLE_01, callback=robot_head.toggle_gui_mode)
+    thread_button_2_pin = threading.Thread(
+        target=task_button_press_listener,
+        name='task_button_press_listener',
+    )
+    thread_button_2_pin.start()
 
     # ARM
     try:
@@ -217,9 +222,6 @@ def task_vision_agent(**kwargs):
 
 def task_button_press_listener():
     try:
-        led_2_pin = Led2Pin(power_cable=gc.GREEN_CABLE_02)
-        button_2_pin = Button2Pin(control_cable=gc.BROWN_CABLE_01, callback=led_2_pin.toggle_state)
-        print('finished initializing GPIO pins')
         while True:
             button_2_pin.press_listener()
     except Exception as e:

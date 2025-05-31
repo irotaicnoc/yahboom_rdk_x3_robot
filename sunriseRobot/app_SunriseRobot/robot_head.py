@@ -11,6 +11,7 @@ class RobotHead:
     def __init__(self, **kwargs):
         self.robot_body = kwargs['robot_body']
         parameters = args.import_args(yaml_path=gc.CONFIG_FOLDER_PATH + 'robot_head.yaml', **kwargs)
+        self.gui_mode = parameters['gui_mode']
         self.verbose = parameters['verbose']
 
         # controller parameters
@@ -234,9 +235,11 @@ class RobotHead:
             return
         self.ros2_vr_connection_status = 'processing'
         utils.start_generic_process(robot_head=self, name='Starting ROS2')
-        # os.system(f'{gc.SCRIPT_FOLDER_PATH}start_ros2.sh')
-        os.system('gnome-terminal -- bash -c "source /opt/ros/foxy/setup.bash;cd /root/marco_ros2_ws/;'
-                  'source install/local_setup.bash;ros2 launch ros_tcp_endpoint endpoint_launch.py;exec bash"')
+        if self.gui_mode:
+            os.system('gnome-terminal -- bash -c "source /opt/ros/foxy/setup.bash;cd /root/marco_ros2_ws/;'
+                      'source install/local_setup.bash;ros2 launch ros_tcp_endpoint endpoint_launch.py;exec bash"')
+        else:
+            os.system(f'{gc.SCRIPT_FOLDER_PATH}start_ros2_no_gui.sh')
         self.ros2_vr_connection_status = 'active'
         utils.finish_generic_process(robot_head=self)
 
@@ -285,7 +288,7 @@ class RobotHead:
 
     def add_sub_mode_callback(self, sub_mode: str, callback: callable, start: bool) -> None:
         assert sub_mode in self.all_sub_modes(), (f'Sub mode "{sub_mode}" is not in the list of available'
-                                                      f' sub modes {self.all_sub_modes()}')
+                                                  f' sub modes {self.all_sub_modes()}')
         if start:
             if sub_mode not in self.sub_mode_start_callbacks:
                 self.sub_mode_start_callbacks[sub_mode] = []
@@ -303,3 +306,15 @@ class RobotHead:
         for sub_modes in self.robot_sub_mode_dict.values():
             all_sub_modes.extend(sub_modes)
         return all_sub_modes
+
+    def toggle_gui_mode(self) -> None:
+        """
+        Change between Graphical User Interface (GUI) mode and console mode.
+        Note that Gnome terminal requires the GUI to work, so it can't be used in console mode.
+        """
+        self.gui_mode = not self.gui_mode
+        if self.gui_mode:
+            os.system(f'{gc.SCRIPT_FOLDER_PATH}start_gui.sh')
+        else:
+            print('stopping GUI mode')
+            os.system(f'{gc.SCRIPT_FOLDER_PATH}stop_gui.sh')

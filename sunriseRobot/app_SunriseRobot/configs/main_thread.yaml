@@ -4,6 +4,7 @@
 # 2: more information
 # 3: debug
 verbose: 2
+gui_mode: True
 
 # serial parameters
 com: /dev/ttyUSB0
