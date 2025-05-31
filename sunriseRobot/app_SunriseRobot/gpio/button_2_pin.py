@@ -30,11 +30,3 @@ class Button2Pin:
 
     def __del__(self):
         GPIO.cleanup(self.control_cable)
-
-
-def rising_detected():
-    print('rising detected')
-
-
-def falling_detected():
-    print('falling detected')
