@@ -27,7 +27,7 @@ class Button2Pin:
         print(f'GPIO function: {GPIO.gpio_function(self.control_cable)}')
         print('started listening for button presses')
         GPIO.wait_for_edge(self.control_cable, GPIO.FALLING)
-        print('rising detected')
+        print('falling detected')
         # callback()
         # print('callback executed after falling edge detected')
 
