@@ -17,7 +17,6 @@ class Led3Pin:
                               f' Setting GPIO mode to {mode}.')
                 GPIO.setmode(mode)
         except Exception:
-            warnings.warn(f'GPIO mode was not set. Setting GPIO mode to {mode}.')
             GPIO.setmode(mode)
 
         self.COLOR_LIST = [gc.POWER_OFF, gc.RED, gc.GREEN, gc.ORANGE]

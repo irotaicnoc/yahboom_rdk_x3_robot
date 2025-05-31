@@ -21,7 +21,6 @@ class Button2Pin:
                               f' Setting GPIO mode to {mode}.')
                 GPIO.setmode(mode)
         except Exception:
-            warnings.warn(f'GPIO mode was not set. Setting GPIO mode to {mode}.')
             GPIO.setmode(mode)
         self.callback_short_click = callback_short_click
         self.callback_long_click = callback_long_click
@@ -47,16 +46,13 @@ class Button2Pin:
         # GPIO.wait_for_edge(self.control_cable, GPIO.BOTH)
         if not self.is_pressed:
             self.pressed_time = time.time()
-            print('start counting')
         else:
             executed_long_callback = False
             if self.callback_long_click is not None:
                 if time.time() - self.pressed_time > self.button_press_required_time:
-                    print(f'executing long click callback (time: {time.time() - self.pressed_time:.2f}s)')
                     self.callback_long_click()
                     executed_long_callback = True
             if not executed_long_callback:
-                print(f'executing short click callback (time: {time.time() - self.pressed_time:.2f}s)')
                 self.callback_short_click()
 
         self.is_pressed = not self.is_pressed

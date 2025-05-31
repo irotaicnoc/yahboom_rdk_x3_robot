@@ -17,7 +17,6 @@ class Led2Pin:
                               f' Setting GPIO mode to {mode}.')
                 GPIO.setmode(mode)
         except Exception:
-            warnings.warn(f'GPIO mode was not set. Setting GPIO mode to {mode}.')
             GPIO.setmode(mode)
         self.power_cable = power_cable
         try:
