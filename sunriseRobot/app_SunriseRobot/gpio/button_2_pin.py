@@ -1,12 +1,19 @@
+import time
 import warnings
+
 import Hobot.GPIO as GPIO
 
 import global_constants as gc
 
 
 class Button2Pin:
-    def __init__(self, control_cable: int, callback: callable = None, mode: str = GPIO.BOARD):
-        self.callback = callback
+    def __init__(self,
+                 control_cable: int,
+                 callback_short_click: callable,
+                 callback_long_click: callable = None,
+                 button_press_required_time: float = 2,
+                 mode: str = GPIO.BOARD,
+                 ):
         try:
             GPIO.getmode()
             if GPIO.getmode() != mode:
@@ -15,7 +22,13 @@ class Button2Pin:
                 GPIO.setmode(mode)
         except Exception:
             warnings.warn(f'GPIO mode was not set. Setting GPIO mode to {mode}.')
+            GPIO.setmode(mode)
+        self.callback_short_click = callback_short_click
+        self.callback_long_click = callback_long_click
         self.control_cable = control_cable
+        self.button_press_required_time = button_press_required_time
+        self.is_pressed = False
+        self.pressed_time = 0
         try:
             GPIO.cleanup(self.control_cable)
         except Exception:
@@ -29,12 +42,22 @@ class Button2Pin:
         # # GPIO.add_event_callback(self.control_cable, self.falling_detected)
         # # print()
 
-    # def press_listener(self, callback: callable):
     def press_listener(self):
         GPIO.wait_for_edge(self.control_cable, GPIO.FALLING)
-        print('Button press detected!')
-        self.callback()
-        # print('callback executed after falling edge detected')
+        # GPIO.wait_for_edge(self.control_cable, GPIO.BOTH)
+        if not self.is_pressed:
+            self.pressed_time = time.time()
+        else:
+            executed_long_callback = False
+            if self.callback_long_click is not None:
+                if time.time() - self.pressed_time > self.button_press_required_time:
+                    print('Long button press detected!')
+                    self.callback_long_click()
+                    executed_long_callback = True
+            if not executed_long_callback:
+                self.callback_short_click()
+
+        self.is_pressed = not self.is_pressed
 
     def __del__(self):
         GPIO.cleanup(self.control_cable)

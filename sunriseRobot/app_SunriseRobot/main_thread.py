@@ -231,7 +231,12 @@ def task_vision_agent(**kwargs):
 
 def task_button_press_listener(**kwargs):
     try:
-        button_2_pin = Button2Pin(control_cable=gc.BLUE_CABLE_01, callback=kwargs['robot_head'].toggle_gui_mode)
+        robot_head = kwargs['robot_head']
+        button_2_pin = Button2Pin(
+            control_cable=gc.BLUE_CABLE_01,
+            callback_short_click=robot_head.toggle_hotspot,
+            button_press_required_time=robot_head.button_press_required_time,
+        )
         while True:
             button_2_pin.press_listener()
     except Exception as e:
