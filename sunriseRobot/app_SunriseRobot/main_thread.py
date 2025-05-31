@@ -44,13 +44,13 @@ def main_loop(**kwargs):
     )
 
     # 2-PIN BUTTON
-    button_press_listener_kwargs = {
+    button_listener_kwargs = {
         'robot_head': robot_head,
     }
     thread_button_2_pin = threading.Thread(
-        target=task_button_press_listener,
-        name='task_button_press_listener',
-        kwargs=button_press_listener_kwargs,
+        target=task_button_listener,
+        name='task_button_listener',
+        kwargs=button_listener_kwargs,
     )
     thread_button_2_pin.start()
 
@@ -229,7 +229,7 @@ def task_vision_agent(**kwargs):
 #                     robot_head.robot_sub_mode = robot_head.robot_sub_mode_dict[robot_head.robot_mode][0]
 
 
-def task_button_press_listener(**kwargs):
+def task_button_listener(**kwargs):
     try:
         robot_head = kwargs['robot_head']
         button_2_pin = Button2Pin(
@@ -241,7 +241,7 @@ def task_button_press_listener(**kwargs):
         while True:
             button_2_pin.press_listener()
     except Exception as e:
-        print('Button press listener error:')
+        print('Button listener error:')
         print(e)
         print(e.__traceback__)
 
