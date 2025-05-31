@@ -1,3 +1,5 @@
+import warnings
+
 import Hobot.GPIO as GPIO
 
 import global_constants as gc
@@ -8,8 +10,15 @@ class Led2Pin:
         """
         Initialize the Led2Pin with a GPIO pins for activating the light.
         """
-        # Set the pin numbering mode to BOARD (1-40)
-        # GPIO.setmode(mode)
+        try:
+            GPIO.getmode()
+            if GPIO.getmode() != mode:
+                warnings.warn(f'GPIO was in mode {GPIO.getmode()}, but it should be in mode {mode}.'
+                              f' Setting GPIO mode to {mode}.')
+                GPIO.setmode(mode)
+        except Exception:
+            warnings.warn(f'GPIO mode was not set. Setting GPIO mode to {mode}.')
+            GPIO.setmode(mode)
         self.power_cable = power_cable
         try:
             GPIO.cleanup(self.power_cable)

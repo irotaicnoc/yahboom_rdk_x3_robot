@@ -1,3 +1,5 @@
+import warnings
+
 import Hobot.GPIO as GPIO
 
 import global_constants as gc
@@ -8,8 +10,16 @@ class Led3Pin:
         """
         Initialize the Led3Pin with specified GPIO pins for red and green lights.
         """
-        # Set the pin numbering mode to BOARD (1-40)
-        GPIO.setmode(mode)
+        try:
+            GPIO.getmode()
+            if GPIO.getmode() != mode:
+                warnings.warn(f'GPIO was in mode {GPIO.getmode()}, but it should be in mode {mode}.'
+                              f' Setting GPIO mode to {mode}.')
+                GPIO.setmode(mode)
+        except Exception:
+            warnings.warn(f'GPIO mode was not set. Setting GPIO mode to {mode}.')
+            GPIO.setmode(mode)
+
         self.COLOR_LIST = [gc.POWER_OFF, gc.RED, gc.GREEN, gc.ORANGE]
         self.red_power_cable = red_power_cable
         self.green_power_cable = green_power_cable

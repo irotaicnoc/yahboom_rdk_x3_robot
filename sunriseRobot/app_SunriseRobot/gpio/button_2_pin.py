@@ -1,3 +1,4 @@
+import warnings
 import Hobot.GPIO as GPIO
 
 import global_constants as gc
@@ -5,8 +6,15 @@ import global_constants as gc
 
 class Button2Pin:
     def __init__(self, control_cable: int, callback: callable = None, mode: str = GPIO.BOARD):
-        GPIO.setmode(mode)
         self.callback = callback
+        try:
+            GPIO.getmode()
+            if GPIO.getmode() != mode:
+                warnings.warn(f'GPIO was in mode {GPIO.getmode()}, but it should be in mode {mode}.'
+                              f' Setting GPIO mode to {mode}.')
+                GPIO.setmode(mode)
+        except Exception:
+            warnings.warn(f'GPIO mode was not set. Setting GPIO mode to {mode}.')
         self.control_cable = control_cable
         try:
             GPIO.cleanup(self.control_cable)
