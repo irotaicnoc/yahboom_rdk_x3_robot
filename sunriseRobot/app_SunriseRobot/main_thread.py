@@ -18,7 +18,11 @@ from controllers.controller_interface import ControllerFunctions
 
 
 def main_loop(**kwargs):
-    parameters = args.import_args(yaml_path=gc.CONFIG_FOLDER_PATH + 'main_thread.yaml', **kwargs)
+    parameters = args.import_args(
+        yaml_path=gc.CONFIG_FOLDER_PATH + 'main_thread.yaml',
+        read_from_command_line=True,
+        **kwargs,
+    )
     if parameters['gui_mode']:
         print('Running in GUI mode')
     # else:
@@ -257,10 +261,4 @@ def task_screen(**kwargs):
 
 
 if __name__ == '__main__':
-    cla_list = sys.argv
-    if len(cla_list) > 1:
-        for cla in cla_list[1:]:
-            if cla == '--gui_mode=False':
-                main_loop(gui_mode=False)
-            else:
-                main_loop(gui_mode=True)
+    main_loop()
