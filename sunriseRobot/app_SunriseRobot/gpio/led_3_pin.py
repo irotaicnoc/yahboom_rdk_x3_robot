@@ -12,6 +12,7 @@ class Led3Pin:
         """
         try:
             gpio_mode = GPIO.getmode()
+            print(f'GPIO mode: {gpio_mode}')
             if gpio_mode is not None and gpio_mode != mode:
                 warnings.warn(f'GPIO was in mode {gpio_mode}, but it should be in mode {mode}.'
                               f' Setting GPIO mode to {mode}.')
