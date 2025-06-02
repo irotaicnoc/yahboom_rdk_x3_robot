@@ -32,6 +32,11 @@ ros2
 	launch lidar publisher
 	    ros2 launch oradar_lidar ms200_scan.launch.py
 
+ssh
+    username: root
+    password: yahboom
+    cd GIT/yahboom_rdk_x3_robot/sunriseRobot/script_launchers
+    /root/GIT/yahboom_rdk_x3_robot/sunriseRobot/script_launchers/start_robot_control_no_gui.sh
 
 get video sources
 	ls /dev/ | grep video
