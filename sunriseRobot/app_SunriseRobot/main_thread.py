@@ -43,16 +43,37 @@ def main_loop(**kwargs):
         verbose=parameters['verbose'],
     )
 
-    # 2-PIN BUTTON
-    button_listener_kwargs = {
-        'robot_head': robot_head,
+    # PHYSICAL GPIO BUTTONS ON THE ROBOT
+    # 2-PIN BUTTON (blue-black cables)
+    #    with short click: toggle hotspot
+    #    with long click: toggle ros2 vr connection
+    button_2_pin_bb_listener_kwargs = {
+            'control_cable': gc.BLUE_CABLE_01,
+            'callback_short_click': robot_head.toggle_hotspot,
+            'callback_long_click': robot_head.toggle_ros2_vr_connection,
+            'button_press_required_time': robot_head.button_press_required_time,
     }
-    thread_button_2_pin = threading.Thread(
-        target=task_button_listener,
-        name='task_button_listener',
-        kwargs=button_listener_kwargs,
+    thread_button_2_pin_bb = threading.Thread(
+        target=task_button_2_pin_listener,
+        name='task_button_2_pin_bb_listener',
+        kwargs=button_2_pin_bb_listener_kwargs,
     )
-    thread_button_2_pin.start()
+    thread_button_2_pin_bb.start()
+    # 2-PIN BUTTON (red-black cables)
+    #    with short click: next mode
+    #    with long click: toggle GUI mode
+    button_2_pin_rb_listener_kwargs = {
+            'control_cable': gc.RED_CABLE_02,
+            'callback_short_click': robot_head.next_mode(),
+            'callback_long_click': robot_head.toggle_gui_mode(),
+            'button_press_required_time': robot_head.button_press_required_time,
+    }
+    thread_button_2_pin_rb = threading.Thread(
+        target=task_button_2_pin_listener,
+        name='task_button_2_pin_rb_listener',
+        kwargs=button_2_pin_rb_listener_kwargs,
+    )
+    thread_button_2_pin_rb.start()
 
     # ARM
     try:
@@ -229,15 +250,9 @@ def task_vision_agent(**kwargs):
 #                     robot_head.robot_sub_mode = robot_head.robot_sub_mode_dict[robot_head.robot_mode][0]
 
 
-def task_button_listener(**kwargs):
+def task_button_2_pin_listener(**kwargs):
     try:
-        robot_head = kwargs['robot_head']
-        button_2_pin = Button2Pin(
-            control_cable=gc.BLUE_CABLE_01,
-            callback_short_click=robot_head.toggle_hotspot,
-            callback_long_click=robot_head.toggle_ros2_vr_connection,
-            button_press_required_time=robot_head.button_press_required_time,
-        )
+        button_2_pin = Button2Pin(**kwargs)
         while True:
             button_2_pin.press_listener()
     except Exception as e:
