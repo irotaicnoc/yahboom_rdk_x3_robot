@@ -45,8 +45,6 @@ class Button2Pin:
             executed_long_callback = False
             if self.callback_long_click is not None:
                 if time.time() - self.pressed_time > self.button_press_required_time:
-                    print('executing long click callback')
-                    print(f'callback_long_click: {self.callback_long_click}')
                     self.callback_long_click()
                     executed_long_callback = True
             if not executed_long_callback:
