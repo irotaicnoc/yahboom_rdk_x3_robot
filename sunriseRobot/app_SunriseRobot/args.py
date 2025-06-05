@@ -1,7 +1,8 @@
 import yaml
 import copy
-import utils
 import argparse
+
+import utils
 
 
 def import_args(yaml_path: str, read_from_command_line: bool = False, **kwargs) -> dict:

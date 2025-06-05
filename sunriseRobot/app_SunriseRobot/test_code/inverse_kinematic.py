@@ -1,6 +1,7 @@
 import time
 import numpy as np
 import matplotlib.pyplot as plt
+
 from ikpy.chain import Chain
 # import ikpy.urdf.utils as urdf_utils
 from ikpy.inverse_kinematics import inverse_kinematic_optimization

@@ -1,6 +1,6 @@
+import random  # For simulating battery level and function calls
 import tkinter as tk
 from tkinter import ttk
-import random  # For simulating battery level and function calls
 
 
 # Mock robot functions (replace with actual robot control code)
