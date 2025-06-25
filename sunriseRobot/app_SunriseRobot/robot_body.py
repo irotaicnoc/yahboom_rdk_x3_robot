@@ -521,7 +521,7 @@ class RobotBody(object):
             warnings.warn('set_car_run error')
 
     # Car movement control
-    def set_car_motion(self, v_x, v_y, v_z) -> None:
+    def set_car_motion(self, v_x=0, v_y=0, v_z=0) -> None:
         """
         input range:
         X3: v_x=[-1.0, 1.0], v_y=[-1.0, 1.0], v_z=[-5, 5]
