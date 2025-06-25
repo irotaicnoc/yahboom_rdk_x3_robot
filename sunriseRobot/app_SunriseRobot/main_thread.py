@@ -14,7 +14,7 @@ from physical_accessories.light import Light
 from controllers.ps2_controller import PS2Controller
 from controllers.controller_loop import ControllerLoop
 from controllers.controller_interface import ControllerFunctions
-from second_computer_connection.ethernet_server import EthernetServer
+from ethernet_connection.ethernet_server import EthernetServer
 
 
 def main_loop(**kwargs):
@@ -156,7 +156,13 @@ def main_loop(**kwargs):
             for callback in robot_head.sub_mode_start_callbacks[robot_head.robot_sub_mode]:
                 callback()
 
-    ethernet_server = EthernetServer(verbose=parameters['verbose'])
+    ethernet_server = EthernetServer(
+        robot_head=robot_head,
+        robot_body=robot_body,
+        arm=arm,
+        light=internal_light,
+        verbose=parameters['verbose'],
+    )
     ethernet_server.start()
 
     # notify the robot is ready

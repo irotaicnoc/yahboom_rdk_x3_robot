@@ -4,13 +4,21 @@ import threading
 
 import args
 import global_constants as gc
+from function_calls.function_caller import FunctionCaller
 
 
 class ConnectionHandler:
-    def __init__(self, connection, address, number: int = None):
+    def __init__(self, robot_head, robot_body, arm, light, connection, address, number: int = None, verbose: int = 0):
         self.connection = connection
         self.address = address
         self.number = number
+        self.function_caller = FunctionCaller(
+            robot_head=robot_head,
+            robot_body=robot_body,
+            arm=arm,
+            light=light,
+            verbose=verbose,
+        )
 
     def send_data(self, data) -> None:
         try:
@@ -34,8 +42,11 @@ class ConnectionHandler:
         while self.connection:
             decoded_data = self.receive_data()
             if decoded_data is not None:
-                pass
-                # TODO: call function
+                try:
+                    print(f'Executing function "{decoded_data.name}" with parameters {decoded_data.args}')
+                    self.function_caller.call_function(function_name=decoded_data.name, kwargs=decoded_data.args)
+                except Exception as e:
+                    print(f'Error when executing received function:\n\t{e}\n\t{e.__traceback__}')
             else:
                 time.sleep(0.3)
 
@@ -79,12 +90,16 @@ class ConnectionHandler:
 
 
 class EthernetServer:
-    def __init__(self, **kwargs):
+    def __init__(self, robot_head, robot_body, arm, light, **kwargs):
         """
         Initializes the Ethernet server with the specified host and port.
         :param host: The hostname or IP address of the server.
         :param port: The port number on which the server is listening.
         """
+        self.robot_head = robot_head
+        self.robot_body = robot_body
+        self.arm = arm
+        self.light = light
         parameters = args.import_args(yaml_path=gc.CONFIG_FOLDER_PATH + 'ethernet_server.yaml', **kwargs)
         self.host = parameters['host']
         self.port = parameters['port']
@@ -122,7 +137,16 @@ class EthernetServer:
         while self.is_active:
             connection, address = self.socket.accept()
             self.connection_counter += 1
-            new_connection = ConnectionHandler(connection=connection, address=address, number=self.connection_counter)
+            new_connection = ConnectionHandler(
+                robot_head=self.robot_head,
+                robot_body=self.robot_body,
+                arm=self.arm,
+                light=self.light,
+                connection=connection,
+                address=address,
+                number=self.connection_counter,
+                verbose=self.verbose
+            )
             self.active_connections.append(new_connection)
             new_connection.start()
 
