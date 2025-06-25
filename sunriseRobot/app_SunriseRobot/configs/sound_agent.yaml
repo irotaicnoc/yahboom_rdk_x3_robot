@@ -1,7 +1,7 @@
 verbose: 0
 use_led_3_pin: True
 
-#ReSpeaker 4-Mic Array v2.0 identification numbers
+# ReSpeaker 4-Mic Array v2.0 identification numbers
 vendor_id: 0x2886
 product_id: 0x0018
 
