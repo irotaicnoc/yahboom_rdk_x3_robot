@@ -45,21 +45,18 @@ class ConnectionHandler:
             if decoded_data is not None:
                 try:
                     print(f'Executing function "{decoded_data.name}" with parameters {decoded_data.args}')
-                    # self.function_caller.call_function(function_name=decoded_data.name, kwargs=decoded_data.args)
+                    self.function_caller.call_function(function_name=decoded_data.name, kwargs=decoded_data.args)
                 except Exception as e:
                     utils.print_exception(exception=e, message='Error when executing received function')
             else:
                 time.sleep(0.3)
 
     def sender(self):
-        counter = 0
         while self.connection:
             # TODO: send messages
-            time.sleep(5)
-            message_to_send = f'Message {counter} from server'
-            counter += 1
+            message_to_send = None
             if message_to_send is None:
-                time.sleep(1)
+                time.sleep(0.3)
                 continue
             else:
                 self.send_data(message_to_send)
@@ -70,19 +67,19 @@ class ConnectionHandler:
         print('Starting Client handler...')
         if self.number is not None:
             receiver_thread = threading.Thread(target=self.receiver, name=f'ethernet_client_receiver_{self.number}')
-            sender_thread = threading.Thread(target=self.sender, name=f'ethernet_client_sender_{self.number}')
+            # sender_thread = threading.Thread(target=self.sender, name=f'ethernet_client_sender_{self.number}')
         else:
             receiver_thread = threading.Thread(target=self.receiver)
-            sender_thread = threading.Thread(target=self.sender)
+            # sender_thread = threading.Thread(target=self.sender)
 
         receiver_thread.start()
         print(f'Receiver thread started: "{receiver_thread.name}"')
-        sender_thread.start()
-        print(f'Sender thread started: "{sender_thread.name}"')
+        # sender_thread.start()
+        # print(f'Sender thread started: "{sender_thread.name}"')
 
         # Keep the main thread alive or join the other threads
         receiver_thread.join()
-        sender_thread.join()
+        # sender_thread.join()
 
         self.close()
 
