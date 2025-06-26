@@ -65,14 +65,16 @@ class ConnectionHandler:
             print(f"Server received: {received_data}")
 
             # Now you have the function call data as a dictionary:
-            function_name = received_data.get("name")
-            function_args = received_data.get("args")
-
-            print(f'\tFunction Name: {function_name}')
-            print(f'\tFunction Args: {function_args}')
+            function_call = {
+                "name": received_data.get("name"),
+                "args": received_data.get("args"),
+            }
+            utils.pretty_print(function_call)
 
             # Send an acknowledgment back to the client if needed
             # self.connection.sendall(b'ACK received function call')
+            return function_call
+
         except Exception as e:
             utils.print_exception(exception=e, message='Ethernet server "receive_data" error')
 
