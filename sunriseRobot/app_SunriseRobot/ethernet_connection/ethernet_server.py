@@ -45,16 +45,19 @@ class ConnectionHandler:
             if decoded_data is not None:
                 try:
                     print(f'Executing function "{decoded_data.name}" with parameters {decoded_data.args}')
-                    self.function_caller.call_function(function_name=decoded_data.name, kwargs=decoded_data.args)
+                    # self.function_caller.call_function(function_name=decoded_data.name, kwargs=decoded_data.args)
                 except Exception as e:
                     utils.print_exception(exception=e, message='Error when executing received function')
             else:
                 time.sleep(0.3)
 
     def sender(self):
+        counter = 0
         while self.connection:
             # TODO: send messages
-            message_to_send = None
+            time.sleep(5)
+            message_to_send = f'Message {counter} from server'
+            counter += 1
             if message_to_send is None:
                 time.sleep(1)
                 continue
@@ -107,7 +110,7 @@ class EthernetServer:
         self.socket = None
         self.active_connections = []
         self.connection_counter = 0
-        self.is_active = True
+        self.is_active = False
         self.verbose = parameters['verbose']
 
     def stop(self) -> None:
@@ -126,6 +129,7 @@ class EthernetServer:
         Starts the Ethernet server, listening for incoming connections.
         Accepts new connections and starts a handler for each connection.
         """
+        self.is_active = True
         server_thread = threading.Thread(target=self.wait_connections, name='ethernet_server')
         server_thread.start()
 
