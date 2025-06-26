@@ -201,9 +201,10 @@ class ControllerLoop(object):
                 if self.verbose >= 2:
                     print('Lidar listener started')
             except Exception as e:
-                print('Failed to start lidar listener for user motion safeguard with error')
-                print(e)
-                print(e.__traceback__)
+                utils.print_exception(
+                    exception=e,
+                    message='Failed to start lidar listener for user motion safeguard with error',
+                )
                 self.lidar_is_active = False
                 self.lidar_listener = None
                 self.robot_head.lidar_listener_status = 'inactive'

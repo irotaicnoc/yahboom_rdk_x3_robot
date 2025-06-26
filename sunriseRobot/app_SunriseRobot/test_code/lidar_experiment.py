@@ -75,9 +75,7 @@ def obstacle_sensor():
         print('Experiment stopped by user.')
         lidar_listener_node.delete_listener()
     except Exception as e:
-        print('Obstacle sensor error:')
-        print(e)
-        print(e.__traceback__)
+        utils.print_exception(exception=e, message='Obstacle sensor error')
         lidar_listener_node.delete_listener()
 
 
@@ -87,6 +85,4 @@ if __name__ == '__main__':
     except KeyboardInterrupt:
         print('Obstacle sensor stopped by user.')
     except Exception as e:
-        print('Vision agent error:')
-        print(e)
-        print(e.__traceback__)
+        utils.print_exception(exception=e, message='Vision agent error')

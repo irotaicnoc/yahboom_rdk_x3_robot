@@ -3,6 +3,7 @@ import warnings
 import threading
 
 import args
+import utils
 import global_constants as gc
 from robot_body import RobotBody
 from robot_head import RobotHead
@@ -79,9 +80,7 @@ def main_loop(**kwargs):
     try:
         arm = Arm(robot_head=robot_head, robot_body=robot_body, verbose=parameters['verbose'])
     except Exception as e:
-        print('Arm error:')
-        print(e)
-        print(e.__traceback__)
+        utils.print_exception(exception=e, message='Arm error')
         arm = None
 
     # CONTROLLER
@@ -156,14 +155,17 @@ def main_loop(**kwargs):
             for callback in robot_head.sub_mode_start_callbacks[robot_head.robot_sub_mode]:
                 callback()
 
-    ethernet_server = EthernetServer(
-        robot_head=robot_head,
-        robot_body=robot_body,
-        arm=arm,
-        light=internal_light,
-        verbose=parameters['verbose'],
-    )
-    ethernet_server.start()
+    try:
+        ethernet_server = EthernetServer(
+            robot_head=robot_head,
+            robot_body=robot_body,
+            arm=arm,
+            light=internal_light,
+            verbose=parameters['verbose'],
+        )
+        ethernet_server.start()
+    except Exception as e:
+        utils.print_exception(exception=e, message='Ethernet server error')
 
     # notify the robot is ready
     robot_body.set_beep(gc.SHORT_BEEP)
@@ -187,9 +189,7 @@ def task_controller(**kwargs):
                 time.sleep(1)
                 ps2_controller.reconnect()
     except Exception as e:
-        print('Controller error:')
-        print(e)
-        print(e.__traceback__)
+        utils.print_exception(exception=e, message='Controller error')
 
 
 def task_controller_loop(**kwargs):
@@ -198,9 +198,7 @@ def task_controller_loop(**kwargs):
         while True:
             controller_loop.update_robot_loop()
     except Exception as e:
-        print('Controller loop error:')
-        print(e)
-        print(e.__traceback__)
+        utils.print_exception(exception=e, message='Controller loop error')
 
 
 def task_vision_agent(**kwargs):
@@ -229,9 +227,7 @@ def task_vision_agent(**kwargs):
         while True:
             vision_agent.autonomous_behavior()
     except Exception as e:
-        print('Vision agent error:')
-        print(e)
-        print(e.__traceback__)
+        utils.print_exception(exception=e, message='Vision agent error')
         if gc.MODE_AUTONOMOUS_VISION in robot_head.robot_mode_list:
             robot_head.robot_mode_list.remove(gc.MODE_AUTONOMOUS_VISION)
             if robot_head.robot_mode == gc.MODE_AUTONOMOUS_VISION:
@@ -248,9 +244,7 @@ def task_vision_agent(**kwargs):
 #         while True:
 #             sound_agent.autonomous_behavior()
 #     except Exception as e:
-#         print('Sound agent error:')
-#         print(e)
-#         print(e.__traceback__)
+#         utils.print_exception(exception=e, message='Sound agent error')
 #         if gc.MODE_AUTONOMOUS_SOUND in robot_head.robot_mode_list:
 #             robot_head.robot_mode_list.remove(gc.MODE_AUTONOMOUS_SOUND)
 #             if robot_head.robot_mode == gc.MODE_AUTONOMOUS_SOUND:
@@ -265,9 +259,7 @@ def task_button_2_pin_listener(**kwargs):
         while True:
             button_2_pin.press_listener()
     except Exception as e:
-        print('Button listener error:')
-        print(e)
-        print(e.__traceback__)
+        utils.print_exception(exception=e, message='Button listener error')
 
 
 # oled screen
@@ -283,11 +275,9 @@ def task_screen(**kwargs):
                 break
             print('Oled cleared')
             time.sleep(2)
-    except KeyboardInterrupt as e:
+    except Exception as e:
+        utils.print_exception(exception=e, message='Oled error')
         del oled
-        print('Oled error:')
-        print(e)
-        print(e.__traceback__)
 
 
 if __name__ == '__main__':

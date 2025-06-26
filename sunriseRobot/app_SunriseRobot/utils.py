@@ -89,6 +89,13 @@ def pretty_print_dict(data, _level: int = 0) -> None:
         print(data)
 
 
+def print_exception(exception: Exception, message: str = None) -> None:
+    if message is None:
+        print(f'{message}:\n\t{exception}\n\t{exception.__traceback__}')
+    else:
+        print(f'Error:\n\t{exception}\n\t{exception.__traceback__}')
+
+
 def change_range(value, original_min, original_max, new_min, new_max):
     return (value - original_min) * (new_max - new_min) / (original_max - original_min) + new_min
 

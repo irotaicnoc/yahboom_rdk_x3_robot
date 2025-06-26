@@ -108,9 +108,7 @@ class VisionAgent(object):
             self.lidar_is_active = True
         # if there is an error, run vision agent without lidar
         except Exception as e:
-            print('Failed to start lidar listener for Vision agent with error')
-            print(e)
-            print(e.__traceback__)
+            utils.print_exception(exception=e, message='Failed to start lidar listener for Vision agent with error')
             self.lidar_is_active = False
             self.lidar_listener = None
 

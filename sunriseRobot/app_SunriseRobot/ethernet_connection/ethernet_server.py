@@ -3,6 +3,7 @@ import socket
 import threading
 
 import args
+import utils
 import global_constants as gc
 from function_calls.function_caller import FunctionCaller
 
@@ -25,7 +26,7 @@ class ConnectionHandler:
             self.connection.sendall(data.encode())
             print(f"server sent: {data}")
         except Exception as e:
-            print(f'Error in ethernet server send_data:\n\t{e}\n\t{e.__traceback__}')
+            utils.print_exception(exception=e, message='Ethernet server "send_data" error')
 
     def receive_data(self):
         try:
@@ -36,7 +37,7 @@ class ConnectionHandler:
             print(f"server received: {data.decode()}")
             return data.decode()
         except Exception as e:
-            print(f'Error in ethernet server receive_data:\n\t{e}\n\t{e.__traceback__}')
+            utils.print_exception(exception=e, message='Ethernet server "receive_data" error')
 
     def receiver(self) :
         while self.connection:
@@ -46,7 +47,7 @@ class ConnectionHandler:
                     print(f'Executing function "{decoded_data.name}" with parameters {decoded_data.args}')
                     self.function_caller.call_function(function_name=decoded_data.name, kwargs=decoded_data.args)
                 except Exception as e:
-                    print(f'Error when executing received function:\n\t{e}\n\t{e.__traceback__}')
+                    utils.print_exception(exception=e, message='Error when executing received function')
             else:
                 time.sleep(0.3)
 

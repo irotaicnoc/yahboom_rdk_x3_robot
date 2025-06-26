@@ -7,6 +7,8 @@ import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import LaserScan
 
+import utils
+
 
 class LidarListener(Node):
     def __init__(self,
@@ -161,9 +163,7 @@ class ThreadedLidarListener:
                       'source install/local_setup.bash;ros2 launch oradar_lidar ms200_scan.launch.py;exec bash"')
 
         except Exception as e:
-            print('Lidar listener creation error:')
-            print(e)
-            print(e.__traceback__)
+            utils.print_exception(exception=e, message='Lidar listener creation error')
             try:
                 self.lidar_listener_node.destroy_node()
                 rclpy.shutdown()

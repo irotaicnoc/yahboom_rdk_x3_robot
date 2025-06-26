@@ -3,6 +3,8 @@
 import os
 import struct
 
+import utils
+
 
 class PS2Controller(object):
     def __init__(self, controller_functions, controller_id: int = 0, verbose: int = 0):
@@ -179,9 +181,7 @@ class PS2Controller(object):
             return self.STATE_KEY_BREAK
         except Exception as e:
             self._is_connected = False
-            print('Controller disconnected due to error:')
-            print(e)
-            print(e.__traceback__)
+            utils.print_exception(exception=e, message='Controller disconnected due to error')
             self.controller_functions.disconnected(controller_id=self.controller_id)
             return self.STATE_DISCONNECT
 
