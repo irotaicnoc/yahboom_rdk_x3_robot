@@ -22,7 +22,7 @@ class ConnectionHandler:
             verbose=verbose,
         )
 
-    def receive_data(self) -> str | None:
+    def receive_data(self):
         try:
             data = self.connection.recv(1024)
             if not data:
@@ -33,7 +33,7 @@ class ConnectionHandler:
         except Exception as e:
             utils.print_exception(exception=e, message='Ethernet server "receive_data" error')
 
-    def receive_function_call(self) -> dict | None:
+    def receive_function_call(self):
         try:
             # First, receive the 4-byte length prefix
             length_prefix = self.connection.recv(4)
