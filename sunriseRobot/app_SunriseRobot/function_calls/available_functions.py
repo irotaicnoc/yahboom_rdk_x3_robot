@@ -2,7 +2,6 @@ function_list = [
     {
         'name': 'set_beep',
         'containing_object': 'robot_body',
-        'parameters': {'on_time': 'no_default'},
     },
     {
         'name': 'set_car_motion',
