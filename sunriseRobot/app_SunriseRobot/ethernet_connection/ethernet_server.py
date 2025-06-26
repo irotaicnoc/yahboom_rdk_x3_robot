@@ -1,3 +1,4 @@
+import json
 import time
 import socket
 import threading
@@ -21,7 +22,7 @@ class ConnectionHandler:
             verbose=verbose,
         )
 
-    def receive_data(self):
+    def receive_data(self) -> str | None:
         try:
             data = self.connection.recv(1024)
             if not data:
@@ -29,6 +30,49 @@ class ConnectionHandler:
                 return None
             print(f"server received: {data.decode()}")
             return data.decode()
+        except Exception as e:
+            utils.print_exception(exception=e, message='Ethernet server "receive_data" error')
+
+    def receive_function_call(self) -> dict | None:
+        try:
+            # First, receive the 4-byte length prefix
+            length_prefix = self.connection.recv(4)
+            if not length_prefix:
+                print("Client disconnected unexpectedly during length prefix reception.")
+                return None
+
+            message_length = int.from_bytes(bytes=length_prefix, byteorder='big')
+
+            # Receive the actual JSON data based on the length
+            received_bytes = b''
+            while len(received_bytes) < message_length:
+                packet = self.connection.recv(message_length - len(received_bytes))
+                if not packet:
+                    print("Client disconnected unexpectedly during data reception.")
+                    return None
+                received_bytes += packet
+
+            if not received_bytes:  # Handle cases where packet was empty
+                print("No data received after length prefix.")
+                return None
+
+            # Decode the bytes back to a JSON string
+            json_string = received_bytes.decode('utf-8')
+
+            # Deserialize the JSON string back into a Python dictionary
+            received_data = json.loads(json_string)
+
+            print(f"Server received: {received_data}")
+
+            # Now you have the function call data as a dictionary:
+            function_name = received_data.get("name")
+            function_args = received_data.get("args")
+
+            print(f'\tFunction Name: {function_name}')
+            print(f'\tFunction Args: {function_args}')
+
+            # Send an acknowledgment back to the client if needed
+            # self.connection.sendall(b'ACK received function call')
         except Exception as e:
             utils.print_exception(exception=e, message='Ethernet server "receive_data" error')
 
@@ -41,7 +85,7 @@ class ConnectionHandler:
 
     def receiver(self) :
         while self.connection:
-            decoded_data = self.receive_data()
+            decoded_data = self.receive_function_call()
             if decoded_data is not None:
                 try:
                     print(f'Executing function "{decoded_data.name}" with parameters {decoded_data.args}')
