@@ -21,13 +21,6 @@ class ConnectionHandler:
             verbose=verbose,
         )
 
-    def send_data(self, data) -> None:
-        try:
-            self.connection.sendall(data.encode())
-            print(f"server sent: {data}")
-        except Exception as e:
-            utils.print_exception(exception=e, message='Ethernet server "send_data" error')
-
     def receive_data(self):
         try:
             data = self.connection.recv(1024)
@@ -38,6 +31,13 @@ class ConnectionHandler:
             return data.decode()
         except Exception as e:
             utils.print_exception(exception=e, message='Ethernet server "receive_data" error')
+
+    def send_data(self, data) -> None:
+        try:
+            self.connection.sendall(data.encode())
+            print(f"server sent: {data}")
+        except Exception as e:
+            utils.print_exception(exception=e, message='Ethernet server "send_data" error')
 
     def receiver(self) :
         while self.connection:
