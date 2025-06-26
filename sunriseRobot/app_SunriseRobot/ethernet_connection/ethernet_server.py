@@ -176,6 +176,8 @@ class EthernetServer:
 
     def wait_connections(self):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        # prevent "Address already in use" error
+        self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         print(f'Starting server on {self.host}:{self.port}')
         self.socket.bind((self.host, self.port))
         self.socket.listen()
