@@ -88,8 +88,8 @@ class ConnectionHandler:
             decoded_data = self.receive_function_call()
             if decoded_data is not None:
                 try:
-                    print(f'Executing function "{decoded_data.name}" with parameters {decoded_data.args}')
-                    self.function_caller.call_function(function_name=decoded_data.name, kwargs=decoded_data.args)
+                    print('Executing function ' + decoded_data['name'] + ' with parameters ' + decoded_data['args'])
+                    self.function_caller.call_function(function_name=decoded_data['name'], kwargs=decoded_data['args'])
                 except Exception as e:
                     utils.print_exception(exception=e, message='Error when executing received function')
             else:
