@@ -8,13 +8,14 @@ class FunctionCaller:
     A class to handle function calls with a specific function name.
     """
 
-    def __init__(self, robot_head, robot_body, arm=None, light=None):
+    def __init__(self, robot_head, robot_body, arm=None, light=None, verbose: int = 0):
         self.function_list = available_functions.function_list
         self.available_objects = available_functions.object_list
         self.robot_head = robot_head
         self.robot_body = robot_body
         self.arm = arm
         self.light = light
+        self.verbose = verbose
 
     def find_function(self, function_name: str):
         """
