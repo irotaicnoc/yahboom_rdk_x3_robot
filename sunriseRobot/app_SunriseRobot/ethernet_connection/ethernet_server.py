@@ -135,6 +135,7 @@ class EthernetServer:
 
     def wait_connections(self):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        print(f'Starting server on {self.host}:{self.port}')
         self.socket.bind((self.host, self.port))
         self.socket.listen()
         print(f"Server listening on {self.host}:{self.port}")
