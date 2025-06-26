@@ -1,6 +1,6 @@
 import warnings
 
-import available_functions
+from function_calls import available_functions
 
 
 class FunctionCaller:
