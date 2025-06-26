@@ -10,17 +10,12 @@ from function_calls.function_caller import FunctionCaller
 
 
 class ConnectionHandler:
-    def __init__(self, robot_head, robot_body, arm, light, connection, address, number: int = None, verbose: int = 0):
+    def __init__(self, function_caller: FunctionCaller, connection, address, number: int = None, verbose: int = 0):
+        self.function_caller = function_caller
         self.connection = connection
         self.address = address
         self.number = number
-        self.function_caller = FunctionCaller(
-            robot_head=robot_head,
-            robot_body=robot_body,
-            arm=arm,
-            light=light,
-            verbose=verbose,
-        )
+        self.verbose = verbose
 
     def receive_data(self):
         try:
@@ -120,12 +115,6 @@ class ConnectionHandler:
         # sender_thread.start()
         # print(f'Sender thread started: "{sender_thread.name}"')
 
-        # Keep the main thread alive or join the other threads
-        # receiver_thread.join()
-        # sender_thread.join()
-
-        # self.close()
-
     def close(self) -> None:
         if self.connection:
             self.connection.close()
@@ -152,6 +141,13 @@ class EthernetServer:
         self.connection_counter = 0
         self.is_active = False
         self.verbose = parameters['verbose']
+        self.function_caller = FunctionCaller(
+            robot_head=robot_head,
+            robot_body=robot_body,
+            arm=arm,
+            light=light,
+            verbose=self.verbose,
+        )
 
     def stop(self) -> None:
         """
@@ -186,10 +182,7 @@ class EthernetServer:
             connection, address = self.socket.accept()
             self.connection_counter += 1
             new_connection = ConnectionHandler(
-                robot_head=self.robot_head,
-                robot_body=self.robot_body,
-                arm=self.arm,
-                light=self.light,
+                function_caller=self.function_caller,
                 connection=connection,
                 address=address,
                 number=self.connection_counter,
