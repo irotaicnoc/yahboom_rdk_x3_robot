@@ -62,14 +62,12 @@ class ConnectionHandler:
             # Deserialize the JSON string back into a Python dictionary
             received_data = json.loads(json_string)
 
-            print(f"Server received: {received_data}")
-
             # Now you have the function call data as a dictionary:
             function_call = {
                 "name": received_data.get("name"),
                 "args": received_data.get("args"),
             }
-            utils.pretty_print(function_call)
+            utils.pretty_print_dict(function_call)
 
             # Send an acknowledgment back to the client if needed
             # self.connection.sendall(b'ACK received function call')
