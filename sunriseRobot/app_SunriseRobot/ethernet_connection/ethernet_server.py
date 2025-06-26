@@ -201,8 +201,3 @@ class EthernetServer:
         if self.socket:
             self.socket.close()
             print("Connection closed.")
-
-
-if __name__ == "__main__":
-    ethernet_server = EthernetServer()
-    ethernet_server.start()
