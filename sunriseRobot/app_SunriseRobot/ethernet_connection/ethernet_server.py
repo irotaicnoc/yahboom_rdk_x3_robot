@@ -78,10 +78,10 @@ class ConnectionHandler:
         # print(f'Sender thread started: "{sender_thread.name}"')
 
         # Keep the main thread alive or join the other threads
-        receiver_thread.join()
+        # receiver_thread.join()
         # sender_thread.join()
 
-        self.close()
+        # self.close()
 
     def close(self) -> None:
         if self.connection:
