@@ -27,18 +27,12 @@ class FunctionCaller:
         """
         print(f'Finding function: {function_name}')
         for function in self.function_list:
-            print(f'\tChecking function: {function["name"]}')
             if function['name'] == function_name:
-                print('\t\tFunction found!')
-                print(f'\t\t{function}')
                 return function
         for obj in self.available_objects:
-            print(f'\tChecking object: {obj["name"]}')
             if function_name in obj['excluded_functions']:
-                print(f'\t\tSkipping excluded function: {function_name} in object: {obj["name"]}')
                 continue
             if hasattr(obj, function_name):
-                print('\t\tFunction found!')
                 return {
                     'name': function_name,
                     'containing_object': obj['name'],
@@ -50,7 +44,6 @@ class FunctionCaller:
         Calls the function with the given arguments and keyword arguments.
         """
         function = self.find_function(function_name=function_name)
-        print(f'Result of function search:\n\t{function}')
         if function is None:
             warnings.warn(f'Function "{function_name}" not found in available functions.')
             return
@@ -61,14 +54,16 @@ class FunctionCaller:
         obj = getattr(self, containing_object, None)
         if obj is None:
             warnings.warn(f'Object "{containing_object}" for function calling not found.')
+        print(f'Calling function "{function_name}" on object "{containing_object}".')
 
         method = getattr(obj, function_name, None)
         if method is None:
             warnings.warn(f'Method "{function_name}" not found in object "{containing_object}".')
+        print(f'Calling method: {method.__name__}')
 
         if kwargs is None:
+            print('\twithout arguments.')
             method()
         else:
+            print(f'\twith arguments {kwargs}.')
             method(**kwargs)
-
-        warnings.warn(f'Function "{function_name}" not found in available functions.')
