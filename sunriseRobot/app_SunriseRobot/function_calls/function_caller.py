@@ -25,13 +25,19 @@ class FunctionCaller:
         :param function_name: The name of the function to find.
         :return: The function details if found, otherwise None.
         """
+        print(f'Finding function: {function_name}')
         for function in self.function_list:
+            print(f'\tChecking function: {function["name"]}')
             if function['name'] == function_name:
+                print('\t\tFunction found!')
                 return function
         for obj in self.available_objects:
+            print(f'\tChecking object: {obj["name"]}')
             if function_name in obj['excluded_functions']:
+                print(f'\t\tSkipping excluded function: {function_name} in object: {obj["name"]}')
                 continue
             if hasattr(obj, function_name):
+                print('\t\tFunction found!')
                 return {
                     'name': function_name,
                     'containing_object': obj['name'],
