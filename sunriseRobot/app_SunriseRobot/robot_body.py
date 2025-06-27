@@ -529,6 +529,7 @@ class RobotBody(object):
         R2/R2L: v_x=[-1.8, 1.8], v_y=[-0.045, 0.045], v_z=[-3, 3]
         """
         try:
+            print(f'set_car_motion: v_x={v_x}, v_y={v_y}, v_z={v_z}')
             vx_param = bytearray(struct.pack('h', int(v_x * 1000)))
             vy_param = bytearray(struct.pack('h', int(v_y * 1000)))
             vz_param = bytearray(struct.pack('h', int(v_z * 1000)))
