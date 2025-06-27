@@ -1,3 +1,4 @@
+import time
 import warnings
 
 from function_calls import available_functions
@@ -65,3 +66,4 @@ class FunctionCaller:
         else:
             print(f'\twith arguments {kwargs}.')
             method(**kwargs)
+        time.sleep(1)
