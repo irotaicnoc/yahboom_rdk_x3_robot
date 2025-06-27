@@ -30,6 +30,7 @@ class FunctionCaller:
             print(f'\tChecking function: {function["name"]}')
             if function['name'] == function_name:
                 print('\t\tFunction found!')
+                print(f'\t\t{function}')
                 return function
         for obj in self.available_objects:
             print(f'\tChecking object: {obj["name"]}')
