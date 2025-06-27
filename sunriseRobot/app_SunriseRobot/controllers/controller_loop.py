@@ -131,11 +131,11 @@ class ControllerLoop(object):
                                     print('obstacle detected, stopping the robot')
                                 time.sleep(0.1)
                                 return
-                self.robot_body.set_car_motion(
-                    v_x=self.robot_head.speed_x,
-                    v_y=self.robot_head.speed_y,
-                    v_z=self.robot_head.speed_z,
-                )
+                # self.robot_body.set_car_motion(
+                #     v_x=self.robot_head.speed_x,
+                #     v_y=self.robot_head.speed_y,
+                #     v_z=self.robot_head.speed_z,
+                # )
 
             # arm servos
             elif (self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_FK
