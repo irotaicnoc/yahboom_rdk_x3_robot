@@ -16,8 +16,6 @@ class FunctionCaller:
         self.arm = arm
         self.light = light
         self.verbose = verbose
-        print(f'function list: {self.function_list}')
-        print(f'available objects: {self.available_objects}')
 
     def find_function(self, function_name: str):
         """
