@@ -50,6 +50,7 @@ class FunctionCaller:
         Calls the function with the given arguments and keyword arguments.
         """
         function = self.find_function(function_name=function_name)
+        print(f'Result of function search:\n\t{function}')
         if function is None:
             warnings.warn(f'Function "{function_name}" not found in available functions.')
             return
