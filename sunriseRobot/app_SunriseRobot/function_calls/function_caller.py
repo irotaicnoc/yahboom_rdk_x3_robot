@@ -25,14 +25,17 @@ class FunctionCaller:
             print('available_functions contains "change_light_effect" method.')
         else:
             print('available_functions does not contain "change_light_effect" method.')
-        if hasattr(self.available_functions, 'set_speed'):
-            print('available_functions contains "set_speed" method.')
-        else:
-            print('available_functions does not contain "set_speed" method.')
         if hasattr(self.available_functions, 'next_target'):
             print('available_functions contains "next_target" method.')
         else:
             print('available_functions does not contain "next_target" method.')
+        if hasattr(self.available_functions, 'set_speed'):
+            print('available_functions contains "set_speed" method.')
+            set_speed = getattr(self.available_functions, 'set_speed')
+            set_speed(speed_x=-0.1)
+        else:
+            print('available_functions does not contain "set_speed" method.')
+
 
 
     def call_function(self, function_name: str, kwargs) -> None:
