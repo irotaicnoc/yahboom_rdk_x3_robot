@@ -10,15 +10,18 @@ class AvailableFunctions:
         Initializes the AvailableFunctions class with the modules from which the functions come.
         """
         self.robot_body = robot_body
+        self.robot_head = robot_head
         if arm is not None:
             self.arm = arm
         if light is not None:
             self.light = light
 
-        for attr in dir(robot_head):
-            if not attr.startswith('_') and callable(getattr(robot_head, attr)):
-                if attr not in ['add_mode_callback', 'add_sub_mode_callback', 'all_sub_modes']:
-                    locals()[attr] = getattr(robot_head, attr)
+    def __getattr__(self, item):
+        """
+        This method is called when an attribute is not found in the instance.
+        It allows access to methods of the robot_head that are not explicitly defined in this class.
+        """
+        return getattr(self.robot_head, item)
 
     def beep(self, seconds: float):
         seconds = round(seconds, 2)
