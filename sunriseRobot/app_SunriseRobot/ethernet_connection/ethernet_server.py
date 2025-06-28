@@ -28,13 +28,13 @@ class ConnectionHandler:
         except Exception as e:
             utils.print_exception(exception=e, message='Ethernet server "receive_data" error')
 
-    def receive_function_call(self):
+    def receive_function_call(self) -> dict:
         try:
             # First, receive the 4-byte length prefix
             length_prefix = self.connection.recv(4)
             if not length_prefix:
                 print("Client disconnected unexpectedly during length prefix reception.")
-                return None
+                self.close()
 
             message_length = int.from_bytes(bytes=length_prefix, byteorder='big')
 
@@ -44,12 +44,12 @@ class ConnectionHandler:
                 packet = self.connection.recv(message_length - len(received_bytes))
                 if not packet:
                     print("Client disconnected unexpectedly during data reception.")
-                    return None
+                    self.close()
                 received_bytes += packet
 
             if not received_bytes:  # Handle cases where packet was empty
                 print("No data received after length prefix.")
-                return None
+                self.close()
 
             # Decode the bytes back to a JSON string
             json_string = received_bytes.decode('utf-8')
@@ -70,13 +70,7 @@ class ConnectionHandler:
 
         except Exception as e:
             utils.print_exception(exception=e, message='Ethernet server "receive_data" error')
-
-    def send_data(self, data) -> None:
-        try:
-            self.connection.sendall(data.encode())
-            print(f"server sent: {data}")
-        except Exception as e:
-            utils.print_exception(exception=e, message='Ethernet server "send_data" error')
+            self.close()
 
     def receiver(self) :
         while self.connection:
@@ -86,6 +80,7 @@ class ConnectionHandler:
                     self.function_caller.call_function(function_name=decoded_data['name'], kwargs=decoded_data['args'])
                 except Exception as e:
                     utils.print_exception(exception=e, message='Error when executing received function')
+                    self.close()
             else:
                 time.sleep(0.3)
 
@@ -97,7 +92,7 @@ class ConnectionHandler:
                 time.sleep(0.3)
                 continue
             else:
-                self.send_data(message_to_send)
+                self.connection.sendall(message_to_send.encode())
                 time.sleep(0.01)
 
     def start(self):
