@@ -40,7 +40,7 @@ class ControllerFunctions(object):
         assert -1 <= value <= 1, f'Value {value} is out of range [-1, 1]'
         if self.robot_head.robot_mode == gc.MODE_USER_CONTROLLED:
             if self.robot_head.robot_sub_mode == gc.SUB_MODE_WHEELS:
-                self.robot_head.speed_y = value * self.robot_head.speed_coefficient
+                self.robot_head.set_speed(speed_y=value)
             elif self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_FK:
                 # servo 1 (rotate base)
                 self.arm.update_speed_fk(servo_id=0, value=-value)
@@ -52,7 +52,7 @@ class ControllerFunctions(object):
         assert -1 <= value <= 1, f'Value {value} is out of range [-1, 1]'
         if self.robot_head.robot_mode == gc.MODE_USER_CONTROLLED:
             if self.robot_head.robot_sub_mode == gc.SUB_MODE_WHEELS:
-                self.robot_head.speed_x = value * self.robot_head.speed_coefficient
+                self.robot_head.set_speed(speed_x=value)
             elif self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_FK:
                 # servo 2
                 self.arm.update_speed_fk(servo_id=1, value=-value)
@@ -64,8 +64,7 @@ class ControllerFunctions(object):
         assert -1 <= value <= 1, f'Value {value} is out of range [-1, 1]'
         if self.robot_head.robot_mode == gc.MODE_USER_CONTROLLED:
             if self.robot_head.robot_sub_mode == gc.SUB_MODE_WHEELS:
-                self.robot_head.speed_z = (value * self.robot_head.speed_coefficient
-                                           * self.robot_head.steer_speed_proportion)
+                self.robot_head.set_speed(speed_z=value)
             elif (self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_FK
                   or self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_IK):
                 # servo 5 (rotate gripper)
@@ -84,7 +83,7 @@ class ControllerFunctions(object):
         assert -1 <= value <= 1, f'Value {value} is out of range [-1, 1]'
         if self.robot_head.robot_mode == gc.MODE_USER_CONTROLLED:
             if self.robot_head.robot_sub_mode == gc.SUB_MODE_WHEELS:
-                self.robot_head.speed_y = value * self.robot_head.speed_coefficient
+                self.robot_head.set_speed(speed_y=value)
             elif self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_FK:
                 # servo 4
                 self.arm.update_speed_fk(servo_id=3, value=value)
@@ -98,7 +97,7 @@ class ControllerFunctions(object):
         assert -1 <= value <= 1, f'Value {value} is out of range [-1, 1]'
         if self.robot_head.robot_mode == gc.MODE_USER_CONTROLLED:
             if self.robot_head.robot_sub_mode == gc.SUB_MODE_WHEELS:
-                self.robot_head.speed_x = value * self.robot_head.speed_coefficient
+                self.robot_head.set_speed(speed_x=value)
             elif self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_FK:
                 # servo 3
                 self.arm.update_speed_fk(servo_id=2, value=-value)

@@ -317,3 +317,20 @@ class RobotHead:
         else:
             print('stopping GUI mode')
             os.system(f'{gc.SCRIPT_FOLDER_PATH}stop_gui.sh')
+
+    def set_speed(self, speed_x: float = None, speed_y: float = None, speed_z: float = None) -> None:
+        """
+        Set the wheel speeds of the robot. Leaves the speed unchanged if the parameter is None.
+        :param speed_x: Speed in the X direction (forward/backward).
+        :param speed_y: Speed in the Y direction (translate left/right).
+        :param speed_z: Speed in the Z direction (rotate left/right).
+        """
+        # the speed values cannot all be None, at least one of them must be set
+        assert speed_x is not None or speed_y is not None or speed_z is not None, \
+            'At least one of the speed parameters must be set.'
+        if speed_x is not None:
+            self.speed_x = speed_x * self.speed_coefficient
+        if speed_y is not None:
+            self.speed_y = speed_y * self.speed_coefficient
+        if speed_z is not None:
+            self.speed_z = speed_z * self.speed_coefficient * self.steer_speed_proportion
