@@ -136,6 +136,7 @@ class EthernetServer:
         parameters = args.import_args(yaml_path=gc.CONFIG_FOLDER_PATH + 'ethernet_server.yaml', **kwargs)
         self.host = parameters['host']
         self.port = parameters['port']
+        self.retry_interval = parameters['retry_interval']
         self.socket = None
         self.active_connections = []
         self.connection_counter = 0
