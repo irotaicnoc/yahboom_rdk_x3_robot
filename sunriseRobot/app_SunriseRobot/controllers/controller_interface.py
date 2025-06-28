@@ -103,9 +103,9 @@ class ControllerFunctions(object):
                 self.arm.update_speed_fk(servo_id=2, value=-value)
         elif self.robot_head.robot_mode == gc.MODE_AUTONOMOUS_VISION:
             if value > 0:
-                self.robot_head.next_model()
+                self.robot_head.next_vision_model()
             if value < 0:
-                self.robot_head.previous_model()
+                self.robot_head.previous_vision_model()
 
     def button_south(self, value: bool) -> None:
         # memorize current arm position or reach memorized arm position

@@ -15,6 +15,11 @@ class AvailableFunctions:
             self.arm = arm
         if light is not None:
             self.light = light
+        self.EXCLUDED_METHODS = [
+            'add_mode_callback',
+            'add_sub_mode_callback',
+            'all_sub_modes',
+        ]
 
     def __getattr__(self, item):
         """
@@ -23,7 +28,7 @@ class AvailableFunctions:
         """
         if hasattr(self.robot_head, item):
             if not item.startswith('_') and callable(getattr(self.robot_head, item)):
-                if item not in ['add_mode_callback', 'add_sub_mode_callback', 'all_sub_modes']:
+                if item not in self.EXCLUDED_METHODS:
                     return getattr(self.robot_head, item)
         raise AttributeError(f'"{self.__class__.__name__}" object has no attribute "{item}"')
 
@@ -32,19 +37,19 @@ class AvailableFunctions:
         seconds = min(max(seconds, 0), 5)
         self.robot_body.set_beep(on_time=seconds * 1000)
 
-    def set_arm_state(self, rigid: bool) -> None:
+    def set_arm_motors_state(self, rigid: bool) -> None:
         if self.arm is None:
             raise ValueError('Arm module is not initialized.')
         self.arm.toggle_rigid(rigid=rigid)
 
-    def set_arm_angles(self,
-                       base_rotation: int = None,
-                       base_inclination: int = None,
-                       elbow_1_inclination: int = None,
-                       elbow_2_inclination: int = None,
-                       gripper_rotation: int = None,
-                       gripper_opening: int = None,
-                       ) -> None:
+    def set_arm_joint_angles(self,
+                             base_rotation: int = None,
+                             base_inclination: int = None,
+                             elbow_1_inclination: int = None,
+                             elbow_2_inclination: int = None,
+                             gripper_rotation: int = None,
+                             gripper_opening: int = None,
+                             ) -> None:
         if self.arm is None:
             raise ValueError('Arm module is not initialized.')
         self.arm.set_desired_angles(angles=[base_rotation,

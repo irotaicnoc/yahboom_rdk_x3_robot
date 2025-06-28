@@ -33,12 +33,12 @@ class RobotHead:
             print(f'Robot mode: {self.robot_mode} ({self.robot_sub_mode})')
         self.tracking_target_list = parameters['tracking_target_list']
         self.tracking_target_pos = 0
-        # search for models in the model folder
-        self.model_list = []
-        self.model_pos = 0
-        model_folder_path = Path(gc.GENERIC_MODEL_FOLDER_PATH)
-        for model_path in model_folder_path.glob('*.*'):
-            self.model_list.append(model_path.name)
+        # search for vision models in the vision model folder
+        self.vision_model_list = []
+        self.vision_model_pos = 0
+        vision_model_folder_path = Path(gc.GENERIC_MODEL_FOLDER_PATH)
+        for vision_model_path in vision_model_folder_path.glob('*.*'):
+            self.vision_model_list.append(vision_model_path.name)
 
         # long processes status
         self.ros2_vr_connection_status = 'inactive'
@@ -159,17 +159,17 @@ class RobotHead:
         if self.verbose >= 1:
             print(f'Switching to target: {self.tracking_target_list[self.tracking_target_pos]}')
 
-    def next_model(self) -> None:
-        self.model_pos += 1
-        self.model_pos = self.model_pos % len(self.model_list)
+    def next_vision_model(self) -> None:
+        self.vision_model_pos += 1
+        self.vision_model_pos = self.vision_model_pos % len(self.vision_model_list)
         if self.verbose >= 1:
-            print(f'Switching to model: {self.model_list[self.model_pos]}')
+            print(f'Switching to vision model: {self.vision_model_list[self.vision_model_pos]}')
 
-    def previous_model(self) -> None:
-        self.model_pos -= 1
-        self.model_pos = self.model_pos % len(self.model_list)
+    def previous_vision_model(self) -> None:
+        self.vision_model_pos -= 1
+        self.vision_model_pos = self.vision_model_pos % len(self.vision_model_list)
         if self.verbose >= 1:
-            print(f'Switching to model: {self.model_list[self.model_pos]}')
+            print(f'Switching to vision model: {self.vision_model_list[self.vision_model_pos]}')
 
     def increase_speed_coefficient(self) -> None:
         self.speed_coefficient = min(1.0, self.speed_coefficient + 0.1)
@@ -227,7 +227,7 @@ class RobotHead:
         else:
             print(f'Hotspot is in "{self.hotspot_status}" state. Cannot be changed now')
 
-    def activate_ros2_vr_connection(self) -> None:
+    def activate_ros2(self) -> None:
         if self.ros2_vr_connection_status == 'active':
             if self.verbose >= 2:
                 print('ROS2 VR connection is already active')
@@ -257,7 +257,7 @@ class RobotHead:
 
     def toggle_ros2_vr_connection(self) -> None:
         if self.ros2_vr_connection_status == 'inactive':
-            self.activate_ros2_vr_connection()
+            self.activate_ros2()
         elif self.ros2_vr_connection_status == 'active':
             self.deactivate_ros2()
         else:

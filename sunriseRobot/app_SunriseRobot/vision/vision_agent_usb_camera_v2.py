@@ -90,7 +90,7 @@ class VisionAgent(object):
         move_duration = 0.5
 
         target_info = self.detector.find_target(
-            model_name=self.robot_head.model_list[self.robot_head.model_pos],
+            model_name=self.robot_head.vision_model_list[self.robot_head.vision_model_pos],
             target_name=self.robot_head.tracking_target_list[self.robot_head.tracking_target_pos],
             save=self.save_images,
         )

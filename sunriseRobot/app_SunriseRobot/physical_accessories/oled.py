@@ -125,7 +125,7 @@ class Oled:
 
         elif self.robot_head.robot_mode == gc.MODE_AUTONOMOUS_VISION:
             # discard file extension
-            model_name = self.robot_head.model_list[self.robot_head.model_pos].split('.')[0]
+            model_name = self.robot_head.vision_model_list[self.robot_head.vision_model_pos].split('.')[0]
             # remove resolution and replace '_' with ' '
             model_name = model_name.replace("_640_480", "").replace("_", " ")
             # capitalize the first letter of each word
