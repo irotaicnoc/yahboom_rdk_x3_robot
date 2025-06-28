@@ -159,6 +159,17 @@ class RobotHead:
         if self.verbose >= 1:
             print(f'Switching to target: {self.tracking_target_list[self.tracking_target_pos]}')
 
+    def set_target(self, target: str) -> None:
+        """
+        Set the current target to a specific one from the tracking target list.
+        :param target: The target to set, must be in the tracking_target_list.
+        """
+        if target not in self.tracking_target_list:
+            raise ValueError(f'Target "{target}" is not in the tracking target list: {self.tracking_target_list}')
+        self.tracking_target_pos = self.tracking_target_list.index(target)
+        if self.verbose >= 1:
+            print(f'Switching to target: {target}')
+
     def next_vision_model(self) -> None:
         self.vision_model_pos += 1
         self.vision_model_pos = self.vision_model_pos % len(self.vision_model_list)
