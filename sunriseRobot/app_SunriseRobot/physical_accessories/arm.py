@@ -130,8 +130,11 @@ class Arm:
         # in can accept angle lists shorter than 6, and only move the first len(angle_list) servos.
         # In particular, in is useful with lists of length 4 and 5, to ignore the gripper rotation and opening, or just
         # the gripper opening
+        # if an angle has value None, it is ignored and the current angle is kept
         for angle_id in range(len(angle_list)):
-            self.desired_angle_list[angle_id] = angle_list[angle_id]
+            angle = angle_list[angle_id]
+            if angle is not None:
+                self.desired_angle_list[angle_id] = angle_list[angle_id]
 
     def update_speed_fk(self, servo_id: int, value) -> None:
         # This function directly modifies the speed of the servo with id servo_id

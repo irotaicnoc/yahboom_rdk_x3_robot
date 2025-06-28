@@ -29,6 +29,7 @@ class AvailableFunctions:
 
     def beep(self, seconds: float):
         seconds = round(seconds, 2)
+        seconds = min(max(seconds, 0), 5)
         self.robot_body.set_beep(on_time=seconds * 1000)
 
     def set_arm_state(self, rigid: bool):
@@ -36,10 +37,22 @@ class AvailableFunctions:
             raise ValueError('Arm module is not initialized.')
         self.arm.toggle_rigid(rigid=rigid)
 
-    def set_arm_angles(self, angles: list):
+    def set_arm_angles(self,
+                       base_rotation: int = None,
+                       base_inclination: int = None,
+                       elbow_1_inclination: int = None,
+                       elbow_2_inclination: int = None,
+                       gripper_rotation: int = None,
+                       gripper_opening: int = None,
+                       ) -> None:
         if self.arm is None:
             raise ValueError('Arm module is not initialized.')
-        self.arm.set_desired_angles(angles=angles)
+        self.arm.set_desired_angles(angles=[base_rotation,
+                                            base_inclination,
+                                            elbow_1_inclination,
+                                            elbow_2_inclination,
+                                            gripper_rotation,
+                                            gripper_opening])
 
     def change_light_effect(self):
         if self.light is None:
