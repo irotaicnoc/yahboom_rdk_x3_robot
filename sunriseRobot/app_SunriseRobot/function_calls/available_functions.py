@@ -1,5 +1,3 @@
-
-
 class AvailableFunctions:
     """
     This class contains the robot functions available for function calls with voice interaction.
@@ -19,6 +17,21 @@ class AvailableFunctions:
             'add_mode_callback',
             'add_sub_mode_callback',
             'all_sub_modes',
+            'toggle_gui_mode',
+            'toggle_ros2_vr_connection',
+            'deactivate_ros2',
+            'activate_ros2',
+            'toggle_hotspot',
+            'deactivate_hotspot',
+            'activate_hotspot',
+            'next_vision_model',
+            'previous_vision_model',
+            'next_target',
+            'previous_target',
+            # below are methods that are not callable for now, but could be added in the future
+            'next_sub_mode',
+            'turn_off_lights',
+            'set_arm_motors_state',
         ]
 
     def __getattr__(self, item):
