@@ -1,9 +1,12 @@
+import warnings
+
+
 class AvailableFunctions:
     """
     This class contains the robot functions available for function calls with voice interaction.
     """
 
-    def __init__(self, robot_body, robot_head, arm=None, light=None):
+    def __init__(self, robot_body, robot_head, arm=None, light=None, verbose: int = 0):
         """
         Initializes the AvailableFunctions class with the modules from which the functions come.
         """
@@ -13,6 +16,7 @@ class AvailableFunctions:
             self.arm = arm
         if light is not None:
             self.light = light
+        self.verbose = verbose
         self.EXCLUDED_METHODS = [
             'add_mode_callback',
             'add_sub_mode_callback',
@@ -43,6 +47,9 @@ class AvailableFunctions:
             if not item.startswith('_') and callable(getattr(self.robot_head, item)):
                 if item not in self.EXCLUDED_METHODS:
                     return getattr(self.robot_head, item)
+                else:
+                    if self.verbose >= 1:
+                        warnings.warn(f'Trying to access excluded method "{item}".')
         raise AttributeError(f'"{self.__class__.__name__}" object has no attribute "{item}"')
 
     def beep(self, seconds: float) -> None:
