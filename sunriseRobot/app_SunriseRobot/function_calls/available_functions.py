@@ -27,12 +27,12 @@ class AvailableFunctions:
                     return getattr(self.robot_head, item)
         raise AttributeError(f'"{self.__class__.__name__}" object has no attribute "{item}"')
 
-    def beep(self, seconds: float):
+    def beep(self, seconds: float) -> None:
         seconds = round(seconds, 2)
         seconds = min(max(seconds, 0), 5)
         self.robot_body.set_beep(on_time=seconds * 1000)
 
-    def set_arm_state(self, rigid: bool):
+    def set_arm_state(self, rigid: bool) -> None:
         if self.arm is None:
             raise ValueError('Arm module is not initialized.')
         self.arm.toggle_rigid(rigid=rigid)
@@ -54,12 +54,12 @@ class AvailableFunctions:
                                             gripper_rotation,
                                             gripper_opening])
 
-    def change_light_effect(self):
+    def change_light_effect(self) -> None:
         if self.light is None:
             raise ValueError('Internal light module is not initialized.')
         self.light.next_light_effect()
 
-    def turn_off_lights(self):
+    def turn_off_lights(self) -> None:
         if self.light is None:
             raise ValueError('Internal light module is not initialized.')
         self.light.stop()

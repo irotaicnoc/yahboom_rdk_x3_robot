@@ -127,7 +127,7 @@ class Arm:
             new_min=self.arm_automated_speed[1],
             new_max=self.arm_automated_speed[0],
         )
-        # in can accept angle lists shorter than 6, and only move the first len(angle_list) servos.
+        # it can accept angle lists shorter than 6, and only move the first len(angle_list) servos.
         # In particular, in is useful with lists of length 4 and 5, to ignore the gripper rotation and opening, or just
         # the gripper opening
         # if an angle has value None, it is ignored and the current angle is kept
