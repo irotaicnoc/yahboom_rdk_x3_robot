@@ -2,3 +2,6 @@ verbose: 0
 
 host: '192.168.10.11'
 port: 65432
+
+# If the server fails starting, it will retry to connect after this interval
+retry_interval: 20 # seconds

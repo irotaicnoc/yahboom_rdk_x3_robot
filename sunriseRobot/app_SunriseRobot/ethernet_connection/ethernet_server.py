@@ -165,18 +165,30 @@ class EthernetServer:
         Starts the Ethernet server, listening for incoming connections.
         Accepts new connections and starts a handler for each connection.
         """
-        self.is_active = True
         server_thread = threading.Thread(target=self.wait_connections, name='ethernet_server')
         server_thread.start()
 
-    def wait_connections(self):
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        # prevent "Address already in use" error
-        self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    def listen(self) -> None:
+        listening = False
         print(f'Starting server on {self.host}:{self.port}')
-        self.socket.bind((self.host, self.port))
-        self.socket.listen()
-        print(f"Server listening on {self.host}:{self.port}")
+        while not listening:
+            try:
+                self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                # prevent "Address already in use" error
+                self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+                self.socket.bind((self.host, self.port))
+                self.socket.listen()
+                print(f"\tServer listening on {self.host}:{self.port}")
+                self.is_active = True
+            except socket.error as e:
+                utils.print_exception(exception=e, message='Error starting server')
+                print(f'\tServer failed starting. Retrying in {self.retry_interval} seconds...')
+                listening = False
+            time.sleep(self.retry_interval)
+            # TODO: this could be blocking the main thread?
+
+    def wait_connections(self):
+        self.listen()
 
         while self.is_active:
             connection, address = self.socket.accept()
