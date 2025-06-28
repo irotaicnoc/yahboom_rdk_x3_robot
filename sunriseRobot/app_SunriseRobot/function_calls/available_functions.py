@@ -16,12 +16,19 @@ class AvailableFunctions:
         if light is not None:
             self.light = light
 
+        for attr in dir(robot_head):
+                    locals()[attr] = getattr(robot_head, attr)
+
     def __getattr__(self, item):
         """
         This method is called when an attribute is not found in the instance.
         It allows access to methods of the robot_head that are not explicitly defined in this class.
         """
-        return getattr(self.robot_head, item)
+        if hasattr(self.robot_head, item):
+            if not item.startswith('_') and callable(getattr(self.robot_head, item)):
+                if item not in ['add_mode_callback', 'add_sub_mode_callback', 'all_sub_modes']:
+                    return getattr(self.robot_head, item)
+        raise AttributeError(f'"{self.__class__.__name__}" object has no attribute "{item}"')
 
     def beep(self, seconds: float):
         seconds = round(seconds, 2)
@@ -29,20 +36,20 @@ class AvailableFunctions:
 
     def set_arm_state(self, rigid: bool):
         if self.arm is None:
-            raise ValueError("Arm module is not initialized.")
+            raise ValueError('Arm module is not initialized.')
         self.arm.toggle_rigid(rigid=rigid)
 
     def set_arm_angles(self, angles: list):
         if self.arm is None:
-            raise ValueError("Arm module is not initialized.")
+            raise ValueError('Arm module is not initialized.')
         self.arm.set_desired_angles(angles=angles)
 
     def change_light_effect(self):
         if self.light is None:
-            raise ValueError("Internal light module is not initialized.")
+            raise ValueError('Internal light module is not initialized.')
         self.light.next_light_effect()
 
     def turn_off_lights(self):
         if self.light is None:
-            raise ValueError("Internal light module is not initialized.")
+            raise ValueError('Internal light module is not initialized.')
         self.light.stop()
