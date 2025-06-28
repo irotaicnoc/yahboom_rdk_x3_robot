@@ -181,6 +181,7 @@ class EthernetServer:
                 self.socket.listen()
                 print(f"\tServer listening on {self.host}:{self.port}")
                 self.is_active = True
+                listening = True
             except socket.error as e:
                 utils.print_exception(exception=e, message='Error starting server')
                 print(f'\tServer failed starting. Retrying in {self.retry_interval} seconds...')
