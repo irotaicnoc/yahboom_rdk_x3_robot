@@ -16,9 +16,6 @@ class AvailableFunctions:
         if light is not None:
             self.light = light
 
-        for attr in dir(robot_head):
-                    locals()[attr] = getattr(robot_head, attr)
-
     def __getattr__(self, item):
         """
         This method is called when an attribute is not found in the instance.
