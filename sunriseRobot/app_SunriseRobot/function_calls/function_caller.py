@@ -36,8 +36,6 @@ class FunctionCaller:
         else:
             print('available_functions does not contain "set_speed" method.')
 
-
-
     def call_function(self, function_name: str, kwargs) -> None:
         """
         Calls the function with the given arguments and keyword arguments.
