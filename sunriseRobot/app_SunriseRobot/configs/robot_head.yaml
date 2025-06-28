@@ -5,10 +5,10 @@ hotspot_ip: 192.168.8.88
 #   all controller inputs are scaled according to this value
 # 2) arm control sensibility [0.1, 1]
 #   how much a controller input changes the position of the arm
-speed_coefficient: 0.5
+speed_coefficient: 0.8
 steer_speed_proportion: 5
 
-tracking_target_list: [person, cat, orange, remote]
+tracking_target_list: [person, cat, orange]
 
 # the user needs to keep a controller button pressed at least this time for certain actions to occur (seconds)
 button_press_required_time: 1.8
