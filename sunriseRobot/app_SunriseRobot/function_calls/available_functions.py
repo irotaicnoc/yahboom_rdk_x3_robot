@@ -72,12 +72,12 @@ class AvailableFunctions:
                              ) -> None:
         if self.arm is None:
             raise ValueError('Arm module is not initialized.')
-        self.arm.set_desired_angles(angles=[base_rotation,
-                                            base_inclination,
-                                            elbow_1_inclination,
-                                            elbow_2_inclination,
-                                            gripper_rotation,
-                                            gripper_opening])
+        self.arm.set_desired_angles(angle_list=[base_rotation,
+                                                base_inclination,
+                                                elbow_1_inclination,
+                                                elbow_2_inclination,
+                                                gripper_rotation,
+                                                gripper_opening])
 
     # def change_light_effect(self) -> None:
     #     if self.light is None:
