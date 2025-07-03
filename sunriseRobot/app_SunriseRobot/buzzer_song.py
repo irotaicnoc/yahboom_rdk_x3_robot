@@ -26,7 +26,8 @@ def dotted(note_duration):
 
 # Function to play a single "note" (a buzz followed by an optional rest)
 def play_buzz_note(buzz_duration, rest_duration=0):
-    robot_body.set_beep(buzz_duration)
+    robot_body.set_beep(buzz_duration * 2)
+    time.sleep(buzz_duration)
     if rest_duration > 0:
         time.sleep(rest_duration)
 
