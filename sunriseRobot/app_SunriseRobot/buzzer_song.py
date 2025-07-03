@@ -3,6 +3,7 @@ import time
 from robot_body import RobotBody
 
 robot_body = RobotBody(com='/dev/ttyUSB0', baud_rate=115200, verbose=2)
+robot_body.create_receive_threading()
 
 # --- Define the "Notes" (Durations) for Super Mario Theme ---
 # These are relative durations. You can adjust the 'tempo' by changing the base_duration.
