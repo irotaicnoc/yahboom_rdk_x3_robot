@@ -92,3 +92,38 @@ class AvailableFunctions:
     #     if self.light is None:
     #         raise ValueError('Internal light module is not initialized.')
     #     self.light.stop()
+
+    def move_arm(self, x_axis: float = None, y_axis: float = None, z_axis: float = None) -> None:
+        """
+        Moves the point (gripper) of the arm along the specified axes.
+        :param x_axis: Movement along the X-axis (left/right).
+        :param y_axis: Movement along the Y-axis (forward/backward).
+        :param z_axis: Movement along the Z-axis (up/down).
+        """
+        if self.arm is None:
+            raise ValueError('Arm module is not initialized.')
+        current_gripper_pos = self.arm.get_gripper_position()
+        if x_axis is not None:
+            current_gripper_pos[0] += x_axis
+        if y_axis is not None:
+            current_gripper_pos[1] += y_axis
+        if z_axis is not None:
+            current_gripper_pos[2] += z_axis
+        self.arm.set_gripper_position(current_gripper_pos)
+
+    def control_gripper(self, rotation: float = None, opening: bool = None) -> None:
+        """
+        Moves the gripper to the specified opening.
+        :param rotation: The rotation of the gripper, between 0 and 180 degrees.
+        :param opening: The opening of the gripper. If True, the gripper is fully open, if False, it is fully closed.
+        """
+        if self.arm is None:
+            raise ValueError('Arm module is not initialized.')
+        # Convert opening to degrees (0-180)
+        opening_degrees = None
+        if opening is not None:
+            if opening:
+                opening_degrees = 0
+            else:
+                opening_degrees = 180
+        self.arm.set_gripper_state(gripper_rotation=rotation, gripper_opening=opening_degrees)
