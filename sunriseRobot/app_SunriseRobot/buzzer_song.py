@@ -10,7 +10,7 @@ robot_body.create_receive_threading()
 # A quarter note might be 0.2 seconds, an eighth note 0.1, etc.
 # These values are approximate and will need fine-tuning!
 
-base_duration = 0.1  # This is your "tempo" - feel free to adjust!
+base_duration = 0.2  # This is your "tempo" - feel free to adjust!
 
 # Durations for common note types relative to base_duration
 WHOLE_NOTE = base_duration * 4
