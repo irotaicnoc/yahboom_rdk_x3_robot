@@ -171,7 +171,7 @@ class RobotHead:
             raise ValueError(f'Target "{target}" is not in the tracking target list: {self.tracking_target_list}')
         self.tracking_target_pos = self.tracking_target_list.index(target)
         if self.verbose >= 1:
-            print(f'Switching to target: {target}')
+            print(f'Switching to target: {self.tracking_target_list[self.tracking_target_pos]}')
 
     def next_vision_model(self) -> None:
         self.vision_model_pos += 1

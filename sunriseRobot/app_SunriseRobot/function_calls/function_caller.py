@@ -26,7 +26,7 @@ class FunctionCaller:
             warnings.warn(f'Method "{function_name}" not found in available functions.')
         print(f'Calling method: {method.__name__}')
 
-        if kwargs is None:
+        if kwargs is None or len(kwargs) == 0:
             print('\twithout arguments.')
             method()
         else:

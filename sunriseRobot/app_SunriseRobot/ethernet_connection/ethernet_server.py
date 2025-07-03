@@ -62,7 +62,7 @@ class ConnectionHandler:
                 "name": received_data.get("name"),
                 "args": received_data.get("args"),
             }
-            utils.pretty_print_dict(function_call)
+            # utils.pretty_print_dict(function_call)
 
             # Send an acknowledgment back to the client if needed
             # self.connection.sendall(b'ACK received function call')
