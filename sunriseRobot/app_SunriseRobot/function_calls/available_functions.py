@@ -35,6 +35,7 @@ class AvailableFunctions:
             # below are methods that are not callable for now, but could be added in the future
             'next_sub_mode',
             'toggle_lidar_listener',
+            'set_movement',
         ]
 
     def __getattr__(self, item):

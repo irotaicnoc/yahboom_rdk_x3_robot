@@ -1,4 +1,6 @@
 import os
+import time
+import warnings
 from pathlib import Path
 
 import args
@@ -49,10 +51,11 @@ class RobotHead:
         # motion parameters
         self.steer_speed_proportion = parameters['steer_speed_proportion']
         self.speed_coefficient = parameters['speed_coefficient']
-        # wheel speed
         self.speed_x = 0
         self.speed_y = 0
         self.speed_z = 0
+        # used by set_movement_with_duration to stop the robot after a certain time
+        self.stop_timestamp = None
 
         # buzzer, leds, and lights
         self.buzzer_is_active = False
@@ -339,9 +342,43 @@ class RobotHead:
         # the speed values cannot all be None, at least one of them must be set
         assert speed_x is not None or speed_y is not None or speed_z is not None, \
             'At least one of the speed parameters must be set.'
+        # if the speed is changed by any other method that set_movement_with_duration, remove the programmed stop
+        self.stop_timestamp = None
         if speed_x is not None:
             self.speed_x = speed_x * self.speed_coefficient
         if speed_y is not None:
             self.speed_y = speed_y * self.speed_coefficient
         if speed_z is not None:
             self.speed_z = speed_z * self.speed_coefficient * self.steer_speed_proportion
+
+    def set_movement_with_duration(self,
+                                   duration: float,
+                                   speed_x: float = None,
+                                   speed_y: float = None,
+                                   speed_z: float = None,
+                                   ) -> None:
+        """
+        Set the wheel speeds of the robot and optionally set a duration for which the speed should be maintained.
+        After the duration, the speed will be set to 0.
+        :param speed_x: Speed in the X direction (forward/backward).
+        :param speed_y: Speed in the Y direction (translate left/right).
+        :param speed_z: Speed in the Z direction (rotate left/right).
+        :param duration: Duration in seconds for which the speed should be maintained. duration must be between 0.1 and
+         5 seconds.
+        """
+        if duration < 0.1 or duration > 5:
+            warnings.warn(f'Duration must be between 0.1 and 5 seconds. Given: {duration} seconds.')
+            duration = min(max(duration, 0.1), 5)
+        self.set_movement(speed_x=speed_x, speed_y=speed_y, speed_z=speed_z)
+        self.stop_timestamp = time.time() + duration
+
+    def check_programmed_stop(self) -> None:
+        """
+        Check if the programmed stop time has been reached. If so, set the speed to 0.
+        This method should be called periodically to ensure the robot stops after the specified duration.
+        """
+        if self.stop_timestamp is not None and time.time() >= self.stop_timestamp:
+            self.set_movement(speed_x=0, speed_y=0, speed_z=0)
+            self.stop_timestamp = None
+            if self.verbose >= 2:
+                print('Programmed stop reached, stopping the robot')

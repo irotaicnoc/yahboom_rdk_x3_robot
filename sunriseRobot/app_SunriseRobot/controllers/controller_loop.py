@@ -131,6 +131,8 @@ class ControllerLoop(object):
                                     print('obstacle detected, stopping the robot')
                                 time.sleep(0.1)
                                 return
+
+                self.robot_head.check_programmed_stop()
                 self.robot_body.set_car_motion(
                     v_x=self.robot_head.speed_x,
                     v_y=self.robot_head.speed_y,
