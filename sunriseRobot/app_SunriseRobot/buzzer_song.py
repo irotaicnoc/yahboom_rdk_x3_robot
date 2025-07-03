@@ -27,8 +27,9 @@ def dotted(note_duration):
 
 # Function to play a single "note" (a buzz followed by an optional rest)
 def play_buzz_note(buzz_duration, rest_duration=0):
-    robot_body.set_beep(buzz_duration * 2)
-    # time.sleep(buzz_duration)
+    robot_body.set_beep(1)
+    time.sleep(buzz_duration)
+    robot_body.set_beep(0)
     if rest_duration > 0:
         time.sleep(rest_duration)
 
@@ -85,6 +86,7 @@ mario_theme_rhythm = [
 def play_rhythm(rhythm_sequence):
     for buzz_d, rest_d in rhythm_sequence:
         play_buzz_note(buzz_d, rest_d)
+
 
 # --- Main Program ---
 if __name__ == "__main__":
