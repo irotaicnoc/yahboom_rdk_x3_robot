@@ -329,7 +329,7 @@ class RobotHead:
             print('stopping GUI mode')
             os.system(f'{gc.SCRIPT_FOLDER_PATH}stop_gui.sh')
 
-    def set_speed(self, speed_x: float = None, speed_y: float = None, speed_z: float = None) -> None:
+    def set_movement(self, speed_x: float = None, speed_y: float = None, speed_z: float = None) -> None:
         """
         Set the wheel speeds of the robot. Leaves the speed unchanged if the parameter is None.
         :param speed_x: Speed in the X direction (forward/backward).
