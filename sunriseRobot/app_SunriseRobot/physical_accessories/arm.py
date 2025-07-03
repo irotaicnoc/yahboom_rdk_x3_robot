@@ -94,6 +94,9 @@ class Arm:
         # these are the coordinates of the gripper in the robot's coordinate system. In inverse kinematics mode
         # they are used in place of the desired angles for motors 0, 1, 2, 3. Only motors 4 (gripper rotation)
         # and 5 (gripper opening) are controlled in the same way in both sub modes.
+        # the first value (x) controls the left-right position of the gripper,
+        # the second value (y) controls the forward-backward position of the gripper,
+        # the third value (z) controls the up-down position of the gripper
         self.gripper_pos = [0, 0, 0]
         # # speed of the gripper in the x, y, z directions
         self.gripper_speed = [0, 0, 0]
@@ -118,6 +121,54 @@ class Arm:
                 print(f'Arm is rigid')
             else:
                 print(f'Arm can be moved manually, but cannot be controlled by the controller')
+
+    def get_gripper_position(self) -> list:
+        # returns the current position of the gripper in the robot's coordinate system
+        # the first value (x) controls the left-right position of the gripper,
+        # the second value (y) controls the forward-backward position of the gripper,
+        # the third value (z) controls the up-down position of the gripper
+
+        # intermediate value to calculate initial gripper coordinates
+        ikpy_angle_list = self.degree_to_ikpy_conversion(self.desired_angle_list)
+        return self.servo_chain.forward_kinematics(joints=ikpy_angle_list)[:3, 3]
+
+    def set_gripper_position(self, gripper_pos: list) -> None:
+        self.run_time = utils.change_range(
+            value=self.robot_head.speed_coefficient,
+            original_min=0.1,
+            original_max=1,
+            new_min=self.arm_automated_speed[1],
+            new_max=self.arm_automated_speed[0],
+        )
+        self.gripper_pos = gripper_pos
+        self.target_frame[:, -1] = self.gripper_pos
+        ikpy_angle_list = self.inverse_kinematics(
+            chain=self.servo_chain,
+            target_frame=self.target_frame,
+            starting_nodes_angles=self.degree_to_ikpy_conversion(self.desired_angle_list),
+            # max_iter=None,
+        )
+        self.desired_angle_list[:4] = self.clamp_angle_list(
+            angle_list=self.ikpy_to_degree_conversion(ikpy_angle_list),
+            default_value=90,
+        )
+
+    def set_gripper_state(self, gripper_rotation: int = None, gripper_opening: int = None) -> None:
+        self.run_time = utils.change_range(
+            value=self.robot_head.speed_coefficient,
+            original_min=0.1,
+            original_max=1,
+            new_min=self.arm_automated_speed[1],
+            new_max=self.arm_automated_speed[0],
+        )
+        # gripper_rotation is the angle of the gripper rotation servo (motor id=4, physical_label=5)
+        # gripper_opening is the angle of the gripper opening servo (motor id=5, physical_label=6)
+        if gripper_rotation is not None:
+            self.desired_angle_list[4] = np.clip(gripper_rotation, a_min=0, a_max=180)
+        if gripper_opening is not None:
+            # for the robot, gripper_opening=0 means fully open, gripper_opening=180 means fully closed.
+            # however, gemini expects the opposite, so we need to invert the value.
+            self.desired_angle_list[5] = np.clip(180 - gripper_opening, a_min=0, a_max=180)
 
     def set_desired_angles(self, angle_list: list) -> None:
         self.run_time = utils.change_range(
@@ -281,9 +332,7 @@ class Arm:
 
         self.servo_speed_list = [0, 0, 0, 0, 0, 0]
         self.gripper_speed = [0, 0, 0]
-        # intermediate value to calculate initial gripper coordinates
-        ikpy_angle_list = self.degree_to_ikpy_conversion(self.desired_angle_list)
-        self.gripper_pos = self.servo_chain.forward_kinematics(joints=ikpy_angle_list)[:3, 3]
+        self.gripper_pos = self.get_gripper_position()
 
     def sub_mode_fk_start_callback(self) -> None:
         self.toggle_rigid(rigid=True)
