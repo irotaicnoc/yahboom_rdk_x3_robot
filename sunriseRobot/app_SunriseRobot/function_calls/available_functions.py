@@ -34,8 +34,7 @@ class AvailableFunctions:
             'previous_target',
             # below are methods that are not callable for now, but could be added in the future
             'next_sub_mode',
-            'turn_off_lights',
-            'set_arm_motors_state',
+            'toggle_lidar_listener',
         ]
 
     def __getattr__(self, item):
@@ -57,10 +56,10 @@ class AvailableFunctions:
         seconds = min(max(seconds, 0), 5)
         self.robot_body.set_beep(on_time=seconds * 1000)
 
-    def set_arm_motors_state(self, rigid: bool) -> None:
-        if self.arm is None:
-            raise ValueError('Arm module is not initialized.')
-        self.arm.toggle_rigid(rigid=rigid)
+    # def set_arm_motors_state(self, rigid: bool) -> None:
+    #     if self.arm is None:
+    #         raise ValueError('Arm module is not initialized.')
+    #     self.arm.toggle_rigid(rigid=rigid)
 
     def set_arm_joint_angles(self,
                              base_rotation: int = None,
@@ -79,12 +78,12 @@ class AvailableFunctions:
                                             gripper_rotation,
                                             gripper_opening])
 
-    def change_light_effect(self) -> None:
-        if self.light is None:
-            raise ValueError('Internal light module is not initialized.')
-        self.light.next_light_effect()
-
-    def turn_off_lights(self) -> None:
-        if self.light is None:
-            raise ValueError('Internal light module is not initialized.')
-        self.light.stop()
+    # def change_light_effect(self) -> None:
+    #     if self.light is None:
+    #         raise ValueError('Internal light module is not initialized.')
+    #     self.light.next_light_effect()
+    #
+    # def turn_off_lights(self) -> None:
+    #     if self.light is None:
+    #         raise ValueError('Internal light module is not initialized.')
+    #     self.light.stop()
