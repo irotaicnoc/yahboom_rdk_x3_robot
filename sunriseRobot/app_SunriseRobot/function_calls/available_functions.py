@@ -72,12 +72,14 @@ class AvailableFunctions:
                              ) -> None:
         if self.arm is None:
             raise ValueError('Arm module is not initialized.')
+        # for the robot, gripper_opening=0 means fully open, gripper_opening=180 means fully closed.
+        # however, gemini expects the opposite, so we need to invert the value.
         self.arm.set_desired_angles(angle_list=[base_rotation,
                                                 base_inclination,
                                                 elbow_1_inclination,
                                                 elbow_2_inclination,
                                                 gripper_rotation,
-                                                gripper_opening])
+                                                180 - gripper_opening])
 
     # def change_light_effect(self) -> None:
     #     if self.light is None:
