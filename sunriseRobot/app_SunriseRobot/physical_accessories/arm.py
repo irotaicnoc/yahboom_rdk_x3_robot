@@ -183,6 +183,8 @@ class Arm:
                 # the function returns 6 angle_list, but we don't need the first and last ones, they should be the
                 # gripper rotation and opening. But the 2 excluded angles are the last 2 angles in the list
                 # ikpy_angle_list = self.servo_chain.inverse_kinematics(target_position=self.gripper_pos)
+                # alternative implementation of the inverse kinematics function, with a different run time
+                # the function for IK requires in input a 3X3 transformation matrix, but in this case will only use the
                 # last column of the matrix, which is the position of the gripper
                 self.target_frame[:, -1] = self.gripper_pos
                 ikpy_angle_list = self.inverse_kinematics(
@@ -191,8 +193,6 @@ class Arm:
                     starting_nodes_angles=self.degree_to_ikpy_conversion(self.desired_angle_list),
                     # max_iter=None,
                 )
-                # alternative implementation of the inverse kinematics function, with a different run time
-                # the function for IK requires in input a 3X3 transformation matrix, but in this case will only use the
                 self.desired_angle_list[:4] = self.clamp_angle_list(
                     angle_list=self.ikpy_to_degree_conversion(ikpy_angle_list),
                     default_value=90,
