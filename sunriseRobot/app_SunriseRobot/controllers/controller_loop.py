@@ -82,65 +82,8 @@ class ControllerLoop(object):
 
         # wheels
         if self.robot_head.robot_mode == gc.MODE_USER_CONTROLLED:
-            if self.robot_head.robot_sub_mode == gc.SUB_MODE_WHEELS:
-                if self.lidar_is_active:
-                    # get the lidar data
-                    obstacles_by_sector, average_distance_by_sector = self.lidar_listener.get_obstacles_by_sector()
-                    if obstacles_by_sector is not None:
-                        self.obstacles_by_sector = obstacles_by_sector
-                        self.average_distance_by_sector = average_distance_by_sector
-                    if self.obstacles_by_sector is not None:
-                        robot_direction = utils.calculate_robot_direction(
-                            speed_x=self.robot_head.speed_x,
-                            speed_y=self.robot_head.speed_y,
-                            speed_z=self.robot_head.speed_z / self.robot_head.speed_coefficient,
-                        )
-                        if robot_direction is not None:
-                            # self.print_state_ascii(
-                            #     obstacles_by_sector=self.obstacles_by_sector,
-                            #     average_distance_by_sector=self.average_distance_by_sector,
-                            #     robot_direction=robot_direction,
-                            # )
-                            # calculate the direction of the robot given speed_x, speed_y, speed_z
-                            # robot_direction is an angle in degrees in range [0, 360)
-                            sector_num = int(((robot_direction - 90) % 360) / self.lidar_listener.sector_angle)
-                            preceding_sector_num = (sector_num - 1) % len(self.obstacles_by_sector)
-                            following_sector_num = (sector_num + 1) % len(self.obstacles_by_sector)
-                            obstacle = False
-                            min_allowed_distance = utils.change_range(
-                                value=self.robot_head.speed_coefficient,
-                                original_min=0.1,
-                                original_max=1.0,
-                                new_min=self.min_allowed_distance[0],
-                                new_max=self.min_allowed_distance[1],
-                            )
-                            if (self.obstacles_by_sector[sector_num] and
-                                    self.average_distance_by_sector[sector_num] < min_allowed_distance):
-                                obstacle = True
-                            if (self.obstacles_by_sector[preceding_sector_num] and
-                                    self.average_distance_by_sector[preceding_sector_num] < min_allowed_distance):
-                                obstacle = True
-                            if (self.obstacles_by_sector[following_sector_num] and
-                                    self.average_distance_by_sector[following_sector_num] < min_allowed_distance):
-                                obstacle = True
-                            if obstacle:
-                                self.robot_body.set_beep(gc.SHORT_BEEP)
-                                # allow only rotation
-                                self.robot_body.set_car_motion(v_x=0, v_y=0, v_z=self.robot_head.speed_z)
-                                if self.verbose >= 2:
-                                    print('obstacle detected, stopping the robot')
-                                time.sleep(0.1)
-                                return
-
-                self.robot_head.check_programmed_stop()
-                self.robot_body.set_car_motion(
-                    v_x=self.robot_head.speed_x,
-                    v_y=self.robot_head.speed_y,
-                    v_z=self.robot_head.speed_z,
-                )
-
-            # arm servos
-            elif (self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_FK
+            # arm buttons
+            if (self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_FK
                     or self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_IK):
                 for button in self.robot_head.button_press_timestamp:
                     timestamp = self.robot_head.button_press_timestamp[button]
@@ -152,9 +95,65 @@ class ControllerLoop(object):
                                     self.robot_head.one_time_check[button] = False
                                     self.robot_body.set_beep(gc.SHORT_BEEP)
 
-                if self.arm.is_rigid:
-                    self.arm.update_desired_angles()
-                    self.robot_body.set_arm_angle_list(angle_s=self.arm.desired_angle_list, run_time=self.arm.run_time)
+            if self.lidar_is_active:
+                # get the lidar data
+                obstacles_by_sector, average_distance_by_sector = self.lidar_listener.get_obstacles_by_sector()
+                if obstacles_by_sector is not None:
+                    self.obstacles_by_sector = obstacles_by_sector
+                    self.average_distance_by_sector = average_distance_by_sector
+                if self.obstacles_by_sector is not None:
+                    robot_direction = utils.calculate_robot_direction(
+                        speed_x=self.robot_head.speed_x,
+                        speed_y=self.robot_head.speed_y,
+                        speed_z=self.robot_head.speed_z / self.robot_head.speed_coefficient,
+                    )
+                    if robot_direction is not None:
+                        # self.print_state_ascii(
+                        #     obstacles_by_sector=self.obstacles_by_sector,
+                        #     average_distance_by_sector=self.average_distance_by_sector,
+                        #     robot_direction=robot_direction,
+                        # )
+                        # calculate the direction of the robot given speed_x, speed_y, speed_z
+                        # robot_direction is an angle in degrees in range [0, 360)
+                        sector_num = int(((robot_direction - 90) % 360) / self.lidar_listener.sector_angle)
+                        preceding_sector_num = (sector_num - 1) % len(self.obstacles_by_sector)
+                        following_sector_num = (sector_num + 1) % len(self.obstacles_by_sector)
+                        obstacle = False
+                        min_allowed_distance = utils.change_range(
+                            value=self.robot_head.speed_coefficient,
+                            original_min=0.1,
+                            original_max=1.0,
+                            new_min=self.min_allowed_distance[0],
+                            new_max=self.min_allowed_distance[1],
+                        )
+                        if (self.obstacles_by_sector[sector_num] and
+                                self.average_distance_by_sector[sector_num] < min_allowed_distance):
+                            obstacle = True
+                        if (self.obstacles_by_sector[preceding_sector_num] and
+                                self.average_distance_by_sector[preceding_sector_num] < min_allowed_distance):
+                            obstacle = True
+                        if (self.obstacles_by_sector[following_sector_num] and
+                                self.average_distance_by_sector[following_sector_num] < min_allowed_distance):
+                            obstacle = True
+                        if obstacle:
+                            self.robot_body.set_beep(gc.SHORT_BEEP)
+                            # allow only rotation
+                            self.robot_body.set_car_motion(v_x=0, v_y=0, v_z=self.robot_head.speed_z)
+                            if self.verbose >= 2:
+                                print('obstacle detected, stopping the robot')
+                            time.sleep(0.1)
+                            return
+
+            self.robot_head.check_programmed_stop()
+            self.robot_body.set_car_motion(
+                v_x=self.robot_head.speed_x,
+                v_y=self.robot_head.speed_y,
+                v_z=self.robot_head.speed_z,
+            )
+
+            if self.arm.is_rigid:
+                self.arm.update_desired_angles()
+                self.robot_body.set_arm_angle_list(angle_s=self.arm.desired_angle_list, run_time=self.arm.run_time)
 
         else:
             time.sleep(2)
