@@ -380,5 +380,5 @@ class RobotHead:
         if self.stop_timestamp is not None and time.time() >= self.stop_timestamp:
             self.set_movement(speed_x=0, speed_y=0, speed_z=0)
             self.stop_timestamp = None
-            if self.verbose >= 2:
+            if self.verbose >= 3:
                 print('Programmed stop reached, stopping the robot')
