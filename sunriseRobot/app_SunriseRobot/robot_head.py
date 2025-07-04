@@ -380,7 +380,11 @@ class RobotHead:
             duration = min(max(duration, 0.1), 5)
         # inverting values because this function is used by the voice interaction and not the joystick (which already
         # inverts the values)
-        self.set_movement(speed_x=speed_x, speed_y=-speed_y, speed_z=-speed_z)
+        if speed_y is not None:
+            speed_y = -speed_y
+        if speed_z is not None:
+            speed_z = -speed_z
+        self.set_movement(speed_x=speed_x, speed_y=speed_y, speed_z=speed_z)
         self.stop_timestamp = time.time() + duration
 
     def check_programmed_stop(self) -> None:
