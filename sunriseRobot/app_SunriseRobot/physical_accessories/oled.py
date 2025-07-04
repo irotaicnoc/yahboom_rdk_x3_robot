@@ -1,5 +1,7 @@
 import os
 import time
+from logging import exception
+
 import psutil
 from PIL import Image
 from PIL import ImageDraw
@@ -165,7 +167,6 @@ class Oled:
                 self.refresh()
                 time.sleep(2)
             return False
-        except:
-            if self.verbose >= 1:
-                print('oled main_program error')
+        except Exception as e:
+            utils.print_exception(exception=e, message='oled "main_program" error')
             return False
