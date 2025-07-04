@@ -123,7 +123,7 @@ class AvailableFunctions:
         opening_degrees = None
         if opening is not None:
             if opening:
-                opening_degrees = 0
-            else:
                 opening_degrees = 180
+            else:
+                opening_degrees = 0
         self.arm.set_gripper_state(gripper_rotation=rotation, gripper_opening=opening_degrees)
