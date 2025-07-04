@@ -42,7 +42,7 @@ class RobotHead:
         # if it is present, start with the fastest model
         counter = 0
         for vision_model_path in vision_model_folder_path.glob('*.*'):
-            if 'yolo11s_640_480_edgetpu' in vision_model_path:
+            if 'yolo11s_640_480_edgetpu' in vision_model_path.name:
                 self.vision_model_pos = counter
             self.vision_model_list.append(vision_model_path.name)
             counter += 1
