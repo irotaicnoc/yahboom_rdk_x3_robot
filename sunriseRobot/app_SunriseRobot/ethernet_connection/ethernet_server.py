@@ -21,19 +21,23 @@ class ConnectionHandler:
         try:
             data = self.connection.recv(1024)
             if not data:
-                print("No data received.")
+                if self.verbose >= 1:
+                    print("No data received.")
                 return None
-            print(f"server received: {data.decode()}")
+            if self.verbose >= 3:
+                print(f"server received: {data.decode()}")
             return data.decode()
         except Exception as e:
             utils.print_exception(exception=e, message='Ethernet server "receive_data" error')
+            self.close()
 
     def receive_function_call(self) -> dict:
         try:
             # First, receive the 4-byte length prefix
             length_prefix = self.connection.recv(4)
             if not length_prefix:
-                print("Client disconnected unexpectedly during length prefix reception.")
+                if self.verbose >= 1:
+                    print("Client disconnected unexpectedly during length prefix reception.")
                 self.close()
 
             message_length = int.from_bytes(bytes=length_prefix, byteorder='big')
@@ -43,12 +47,14 @@ class ConnectionHandler:
             while len(received_bytes) < message_length:
                 packet = self.connection.recv(message_length - len(received_bytes))
                 if not packet:
-                    print("Client disconnected unexpectedly during data reception.")
+                    if self.verbose >= 1:
+                        print("Client disconnected unexpectedly during data reception.")
                     self.close()
                 received_bytes += packet
 
             if not received_bytes:  # Handle cases where packet was empty
-                print("No data received after length prefix.")
+                if self.verbose >= 1:
+                    print("No data received after length prefix.")
                 self.close()
 
             # Decode the bytes back to a JSON string
@@ -97,7 +103,8 @@ class ConnectionHandler:
 
     def start(self):
         # Start the receiver and sender threads
-        print('Starting Client handler...')
+        if self.verbose >= 2:
+            print('Starting Client handler...')
         if self.number is not None:
             receiver_thread = threading.Thread(target=self.receiver, name=f'ethernet_client_receiver_{self.number}')
             # sender_thread = threading.Thread(target=self.sender, name=f'ethernet_client_sender_{self.number}')
@@ -106,15 +113,18 @@ class ConnectionHandler:
             # sender_thread = threading.Thread(target=self.sender)
 
         receiver_thread.start()
-        print(f'Receiver thread started: "{receiver_thread.name}"')
+        if self.verbose >= 1:
+            print(f'Receiver thread started: "{receiver_thread.name}"')
         # sender_thread.start()
-        # print(f'Sender thread started: "{sender_thread.name}"')
+        # if self.verbose >= 1:
+        #     print(f'Sender thread started: "{sender_thread.name}"')
 
     def close(self) -> None:
         if self.connection:
             self.connection.close()
             self.connection = None
-            print("Connection closed.")
+            if self.verbose >= 1:
+                print("Connection closed.")
 
 
 class EthernetServer:
@@ -150,11 +160,16 @@ class EthernetServer:
         Stops the Ethernet server and closes all active connections.
         """
         self.is_active = False
-        print("Stopping the server...")
+        if self.verbose >= 2:
+            print("Stopping the server...")
         for connection in self.active_connections:
             connection.close()
         self.active_connections = []
-        print("All connections closed.")
+        if self.socket:
+            self.socket.close()
+            self.socket = None
+        if self.verbose >= 1:
+            print("Server stopped. All connections closed.")
 
     def start(self):
         """
@@ -166,7 +181,8 @@ class EthernetServer:
 
     def listen(self) -> None:
         listening = False
-        print(f'Starting server on {self.host}:{self.port}')
+        if self.verbose >= 2:
+            print(f'Starting server on {self.host}:{self.port}')
         while not listening:
             try:
                 self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -174,15 +190,16 @@ class EthernetServer:
                 self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
                 self.socket.bind((self.host, self.port))
                 self.socket.listen()
-                print(f"\tServer listening on {self.host}:{self.port}")
+                if self.verbose >= 2:
+                    print(f"\tServer listening on {self.host}:{self.port}")
                 self.is_active = True
                 listening = True
             except socket.error as e:
                 utils.print_exception(exception=e, message='Error starting server')
-                print(f'\tServer failed starting. Retrying in {self.retry_interval} seconds...')
+                if self.verbose >= 1:
+                    print(f'\tServer failed starting. Retrying in {self.retry_interval} seconds...')
                 listening = False
             time.sleep(self.retry_interval)
-            # TODO: this could be blocking the main thread?
 
     def wait_connections(self):
         self.listen()
@@ -202,4 +219,5 @@ class EthernetServer:
 
         if self.socket:
             self.socket.close()
+        if self.verbose >= 1:
             print("Connection closed.")
