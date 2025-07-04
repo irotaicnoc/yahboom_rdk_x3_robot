@@ -41,6 +41,10 @@ class RobotHead:
         vision_model_folder_path = Path(gc.GENERIC_MODEL_FOLDER_PATH)
         for vision_model_path in vision_model_folder_path.glob('*.*'):
             self.vision_model_list.append(vision_model_path.name)
+        if self.verbose >= 2:
+            print(f'Among vision models: {self.vision_model_list}.')
+            print(f'Selecting position: {self.vision_model_pos}.')
+            print(f'Starting with vision model: "{self.vision_model_list[self.vision_model_pos]}".')
 
         # long processes status
         self.ros2_vr_connection_status = 'inactive'

@@ -173,9 +173,6 @@ def main_loop(**kwargs):
 
     # notify the robot is ready
     robot_body.set_beep(gc.SHORT_BEEP)
-    print(f'robot_head.tracking_target_pos: {robot_head.tracking_target_pos}')
-    print(f'robot_head.tracking_target_list: {robot_head.tracking_target_list}')
-    print(f'target: {robot_head.tracking_target_list[robot_head.tracking_target_pos]}')
 
 
 # USB wireless gamepad
@@ -210,9 +207,6 @@ def task_controller_loop(**kwargs):
 
 def task_vision_agent(**kwargs):
     robot_head = kwargs['robot_head']
-    print(f'VISION robot_head.tracking_target_pos: {robot_head.tracking_target_pos}')
-    print(f'VISION robot_head.tracking_target_list: {robot_head.tracking_target_list}')
-    print(f'VISION target: {robot_head.tracking_target_list[robot_head.tracking_target_pos]}')
     try:
         robot_head.robot_mode_list.append(gc.MODE_AUTONOMOUS_VISION)
         if kwargs['camera_type'] == 'internal':
