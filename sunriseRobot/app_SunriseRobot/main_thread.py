@@ -65,7 +65,7 @@ def main_loop(**kwargs):
     #    with long click: toggle GUI mode
     button_2_pin_rb_listener_kwargs = {
             'control_cable': gc.RED_CABLE_02,
-            'callback_short_click': robot_head.next_mode,
+            'callback_short_click': utils.test_button_rb_short_click,
             'callback_long_click': robot_head.toggle_gui_mode,
             'button_press_required_time': robot_head.button_press_required_time,
     }

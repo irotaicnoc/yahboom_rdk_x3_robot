@@ -262,3 +262,19 @@ def circular_sector_to_degree_angle(sector_number: int, sector_angle: float) -> 
     angle_degrees = sector_number * sector_angle
     angle_degrees = (angle_degrees + 90) % 360
     return angle_degrees
+
+
+def test_button_rb_short_click():
+    print('Detected activation of button RB, short click.')
+
+
+def test_button_rb_long_click():
+    print('Detected activation of button RB, long click.')
+
+
+def test_button_bb_short_click():
+    print('Detected activation of button BB, short click.')
+
+
+def test_button_bb_long_click():
+    print('Detected activation of button BB, long click.')
