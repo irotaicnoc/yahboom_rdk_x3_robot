@@ -50,8 +50,10 @@ def main_loop(**kwargs):
     #    with long click: toggle ros2 vr connection
     button_2_pin_bb_listener_kwargs = {
             'control_cable': gc.BLUE_CABLE_01,
-            'callback_short_click': robot_head.toggle_hotspot,
-            'callback_long_click': robot_head.toggle_ros2_vr_connection,
+            # 'callback_short_click': robot_head.toggle_hotspot,
+            'callback_short_click': utils.test_button_bb_short_click,
+            # 'callback_long_click': robot_head.toggle_ros2_vr_connection,
+            'callback_long_click': utils.test_button_bb_long_click,
             'button_press_required_time': robot_head.button_press_required_time,
     }
     thread_button_2_pin_bb = threading.Thread(
@@ -65,8 +67,10 @@ def main_loop(**kwargs):
     #    with long click: toggle GUI mode
     button_2_pin_rb_listener_kwargs = {
             'control_cable': gc.RED_CABLE_02,
+            # 'callback_short_click': robot_head.next_mode,
             'callback_short_click': utils.test_button_rb_short_click,
-            'callback_long_click': robot_head.toggle_gui_mode,
+            # 'callback_long_click': robot_head.toggle_gui_mode,
+            'callback_long_click': utils.test_button_rb_long_click,
             'button_press_required_time': robot_head.button_press_required_time,
     }
     thread_button_2_pin_rb = threading.Thread(
