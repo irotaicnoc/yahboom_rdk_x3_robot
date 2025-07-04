@@ -41,6 +41,7 @@ class RobotHead:
         vision_model_folder_path = Path(gc.GENERIC_MODEL_FOLDER_PATH)
         for vision_model_path in vision_model_folder_path.glob('*.*'):
             self.vision_model_list.append(vision_model_path.name)
+            counter += 1
         if self.verbose >= 2:
             print(f'Among vision models: {self.vision_model_list}.')
             print(f'Selecting position: {self.vision_model_pos}.')
