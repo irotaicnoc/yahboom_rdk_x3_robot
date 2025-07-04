@@ -113,7 +113,7 @@ class AvailableFunctions:
 
     def control_gripper(self, rotation: float = None, opening: bool = None) -> None:
         """
-        Moves the gripper to the specified opening.
+        Rotates and opens/closes the gripper.
         :param rotation: The rotation of the gripper, between 0 and 180 degrees.
         :param opening: The opening of the gripper. If True, the gripper is fully open, if False, it is fully closed.
         """
