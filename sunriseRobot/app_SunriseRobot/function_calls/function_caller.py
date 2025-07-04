@@ -24,11 +24,14 @@ class FunctionCaller:
         method = getattr(self.available_functions, function_name, None)
         if method is None:
             warnings.warn(f'Method "{function_name}" not found in available functions.')
-        print(f'Calling method: {method.__name__}')
+        if self.verbose >= 2:
+            print(f'Calling method: {method.__name__}')
 
         if kwargs is None or len(kwargs) == 0:
-            print('\twithout arguments.')
+            if self.verbose >= 3:
+                print('\twithout arguments.')
             method()
         else:
-            print(f'\twith arguments {kwargs}.')
+            if self.verbose >= 3:
+                print(f'\twith arguments {kwargs}.')
             method(**kwargs)
