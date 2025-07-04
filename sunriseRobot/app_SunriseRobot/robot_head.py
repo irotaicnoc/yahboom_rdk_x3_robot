@@ -39,7 +39,11 @@ class RobotHead:
         self.vision_model_list = []
         self.vision_model_pos = 0
         vision_model_folder_path = Path(gc.GENERIC_MODEL_FOLDER_PATH)
+        # if it is present, start with the fastest model
+        counter = 0
         for vision_model_path in vision_model_folder_path.glob('*.*'):
+            if 'yolo11s_640_480_edgetpu' in vision_model_path:
+                self.vision_model_pos = counter
             self.vision_model_list.append(vision_model_path.name)
             counter += 1
         if self.verbose >= 2:
