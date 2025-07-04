@@ -378,7 +378,9 @@ class RobotHead:
         if duration < 0.1 or duration > 5:
             warnings.warn(f'Duration must be between 0.1 and 5 seconds. Given: {duration} seconds.')
             duration = min(max(duration, 0.1), 5)
-        self.set_movement(speed_x=speed_x, speed_y=speed_y, speed_z=speed_z)
+        # inverting values because this function is used by the voice interaction and not the joystick (which already
+        # inverts the values)
+        self.set_movement(speed_x=speed_x, speed_y=-speed_y, speed_z=-speed_z)
         self.stop_timestamp = time.time() + duration
 
     def check_programmed_stop(self) -> None:
