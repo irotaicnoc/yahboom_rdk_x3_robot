@@ -26,6 +26,8 @@ class FunctionCaller:
             warnings.warn(f'Method "{function_name}" not found in available functions.')
         if self.verbose >= 2:
             print(f'Calling method: {method.__name__}')
+        if 'next_mode' in method.__name__:
+            warnings.warn('"next_mode()" called from voice interaction!!')
 
         if kwargs is None or len(kwargs) == 0:
             if self.verbose >= 3:

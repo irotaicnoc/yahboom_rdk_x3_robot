@@ -2,6 +2,7 @@ import os
 import cv2
 import time
 import psutil
+import warnings
 import numpy as np
 from ultralytics import YOLO
 
@@ -265,16 +266,16 @@ def circular_sector_to_degree_angle(sector_number: int, sector_angle: float) -> 
 
 
 def test_button_rb_short_click():
-    print('Detected activation of button RB, short click.')
+    warnings.warn('Detected activation of button RB, short click.')
 
 
 def test_button_rb_long_click():
-    print('Detected activation of button RB, long click.')
+    warnings.warn('Detected activation of button RB, long click.')
 
 
 def test_button_bb_short_click():
-    print('Detected activation of button BB, short click.')
+    warnings.warn('Detected activation of button BB, short click.')
 
 
 def test_button_bb_long_click():
-    print('Detected activation of button BB, long click.')
+    warnings.warn('Detected activation of button BB, long click.')
