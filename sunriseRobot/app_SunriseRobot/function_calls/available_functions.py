@@ -104,11 +104,11 @@ class AvailableFunctions:
             raise ValueError('Arm module is not initialized.')
         # the number should be smaller, hence the "/ 5"
         current_gripper_pos = self.arm.get_gripper_position()
-        if x_axis is not None:
-            current_gripper_pos[0] += x_axis / 5
         # left and right are inverted
+        if x_axis is not None:
+            current_gripper_pos[0] -= x_axis / 5
         if y_axis is not None:
-            current_gripper_pos[1] -= y_axis / 5
+            current_gripper_pos[1] += y_axis / 5
         if z_axis is not None:
             current_gripper_pos[2] += z_axis / 5
         self.arm.set_gripper_position(current_gripper_pos)
