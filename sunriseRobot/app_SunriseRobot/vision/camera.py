@@ -4,7 +4,6 @@ import time
 import cv2 as cv
 
 
-# V1.0.1
 class Camera(object):
     def __init__(self, video_id: int = 0, width: int = 640, height: int = 480, debug: bool = False):
         self.__debug = debug
