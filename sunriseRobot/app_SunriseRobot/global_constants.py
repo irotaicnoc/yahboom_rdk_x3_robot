@@ -59,7 +59,7 @@ GREEN = 'green'
 
 # BATTERY VOLTAGE
 MAX_VOLTAGE = 8.4  # 100% battery
-MIN_VOLTAGE = 6.4  # 0% battery
+MIN_VOLTAGE = 6.6  # 0% battery
 
 # COMPUTER VISION MODEL
 YOLO_CLASS_DICT = {
