@@ -32,7 +32,7 @@ To enable the autostart of the application when the robot is turned on, you have
 - remove/disable the original app
 - clone/copy the project on the robot
 - install missing libraries
-- copy/move sunriseRobot/script_launchers/start_robot_control.desktop and sunriseRobot/script_launchers/start_robot_control_no_gui.desktop to the autorun folder (TODO: add path from root).
+- copy/move sunriseRobot/script_launchers/start_robot_control.desktop and sunriseRobot/script_launchers/start_robot_control_no_gui.desktop to the autorun folder.
 - make the files executable (chmod +x start_robot_control.desktop and chmod +x start_robot_control_no_gui.desktop)
 - you can manually start the application by running the script sunriseRobot/script_launchers/start_robot_control.sh or sunriseRobot/script_launchers/start_robot_control_no_gui.sh
 

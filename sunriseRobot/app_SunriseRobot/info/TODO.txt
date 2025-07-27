@@ -1,0 +1,28 @@
+- When the gemini-2.5-flash model (for reasoning) daily calls are exhausted, switch automatically to gemini-2.0-flash.
+- When the gemini-2.5-flash model (for reasoning) daily calls are exhausted, stop the voice interaction entirely.
+- When the gemini-2.5-flash-preview-tts model (for Text-To-Speech) daily calls are exhausted
+    - All the points below are already implemented, but have never been tested. In particular, it is not clear if the
+    code for detecting daily calls limit works or not.
+    - Print responses in the console, in case the user connects remotely to the robot or a screen is connected to the
+     robot
+    - Specifically print to console the last sentence (the one that gave the error/signal of finished usage) because it
+     would otherwise not be played nor written
+    - Play the pre-recorded audio saying to the notifying the user of the situation
+
+- Add hardware for measuring the charge of the battery connected to the Jetson NANO (through the expansion board),
+since they have no ability to do so.
+    - Then add code to monitor and handle the battery level.
+        - Signal user with sound when battery charge is too low.
+        - Power off the Jetson NANO when battery charge is too low.
+
+- Create a site for the robot, explaining all hardware and software components, and the setup required, so that others
+can replicate it. Also explain and illustrate all its capabilities.
+
+- Buy an usb-modem (to pair with the internet sim) so that the robot will have automatic internet access even outside
+a wi-fi network.
+    - Configure the two computers so that both will automatically connect to this network if the default wi-fi is not
+     reachable.
+     - Save the new image of both computers
+
+- The client/server application is only used for sending robot commands from the Jetson NANO to the RDK-X3 pc (commands
+to the robot from voice interaction).

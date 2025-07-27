@@ -1,0 +1,16 @@
+- Callbacks that should be called at the start and end of modes and sub_modes are sometimes not called.
+
+- The code for starting a ROS2 process (for VR and lidar communication) works (it starts the process in a new console).
+The problem is that the code that should kill these processes works only partially: the new console seems to have no
+more running processes, but something is still running, so the resources are not fully released, and the console
+remains open. To stop all the processes the console must be closed (doing so manually by remotely connecting to the
+robot works). But I don't know hot to do it automatically with code.
+
+- The main program launches some ROS2 nodes using as normal python classes instead of the proper ROS2 commands. It
+works, but I imagine this could lead to some unforeseen errors in specific cases. This is done because there is no
+other way that I know of to make a python script and a ROS2 note to communicate. The alternative is to convert all the
+current code into ROS2 code, which would be long, complicated, and potentially slow down the main computer.
+
+- The setup and usage of the ikpy library for the arm inverse kinematics calculations could be not optimized. It is
+possible another joint given as a free parameter is actually fixed, which would significantly speed up the response
+time.
