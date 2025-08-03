@@ -26,3 +26,6 @@ a wi-fi network.
 
 - The client/server application is only used for sending robot commands from the Jetson NANO to the RDK-X3 pc (commands
 to the robot from voice interaction).
+
+- controller interface should be more generic, like only providing functions, while it should be ps2_controller and
+other equivalent classes that associate functions with specific buttons.
