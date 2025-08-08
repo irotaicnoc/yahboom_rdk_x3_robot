@@ -14,3 +14,6 @@ current code into ROS2 code, which would be long, complicated, and potentially s
 - The setup and usage of the ikpy library for the arm inverse kinematics calculations could be not optimized. It is
 possible another joint given as a free parameter is actually fixed, which would significantly speed up the response
 time.
+
+- some of the pin buttons were sending signals even when they were not pressed (es. the button for changing mode). Is
+it just a hardware problem of the buttons/cables, or is there a bug in the code?
