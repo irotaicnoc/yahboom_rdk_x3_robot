@@ -29,3 +29,6 @@ to the robot from voice interaction).
 
 - controller interface should be more generic, like only providing functions, while it should be ps2_controller and
 other equivalent classes that associate functions with specific buttons.
+
+- when in autonomous mode (vision), when the lidar is connected, when the target is found and it is close enough
+(basically when the current robot emits a beep): if the speakers are connected, play a short victory tune.
