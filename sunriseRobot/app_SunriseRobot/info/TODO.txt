@@ -24,6 +24,12 @@ a wi-fi network.
 - add a small touch screen to the robot. It helps find bugs when the robot is not connected to pc
     - make an app for the screen, so the main functions of the robot can be called from the small touch screen even
     in the absence of a controller.
+- add a powerful led that automatically lights up when in autonomous mode (vision) and the light is too low. It should
+also be controllable with the controller.
+- add a motor to control the vertical orientation of the frontal camera
+    - add code to control the motor with the controller.
+    - add code to control the motor in autonomous mode (vision): if the target is found, try to center it. Also try to
+    account for the possible forward movement.
 
 AUTONOMOUS MODE
 - when in autonomous mode (vision), when the lidar is connected, when the target is found and it is close enough
@@ -33,17 +39,33 @@ AUTONOMOUS MODE
 - if autonomous mode (sound) only reacts to voices, it should fix the problem of hearing and going towards its own
 motors. Is it worse for the user if it only reacts to voices?
 - if the lidar is connected, automatically use it for obstacle avoidance in autonomous mode (sound)
+- create a second autonomous mode (sound) in which the robot runs away from sounds (better if it is only voices, because
+at the moment it will just run away from its rear motors, meaning it will run straight into some obstacle.
 
 LIDAR
-- show lidar detections in the VR app.
 - change obstacle avoidance with lidar so that it ignores detections from the back, because that is the robot itself.
 Measure precisely which angle range to ignore.
 
 VR APP
 - the camera stream to the VR can be very slow, try sending jpeg images with "compressed_camera_image" ROS2 messages
+- send sound from the robot to the VR.
+- send sound from the VR microphone to the robot speakers (better if the VR microphone can directly filter and keep
+only voice.
+- make streaming parameters modifiable.
+- add "attached mode" to the menù window, so that it can fix itself to the camera window and become a single window.
+- show lidar detections in the VR app.
+    - change button "activate/deactivate camera" to something more generic, or just "activate/deactivate".
+    - display it in gray and not clickable if no messages are being received on the currently selected topic (no
+    messages, or the last received message is older than n seconds).
+
 
 GENERIC
 - Create a site for the robot, explaining all hardware and software components, and the setup required, so that others
 can replicate it. Also explain and illustrate all its capabilities.
 - controller interface should be more generic, like only providing functions, while it should be ps2_controller and
 other equivalent classes that associate functions with specific buttons.
+- add the option to save log to file, to help debugging.
+- dynamically activate and deactivate hardware components. Es. when the lidar is not used, dont waste battery on it
+(currently it is active and keeps spinning even when not in use).
+- ROS2 messages are exchanged only in local networks (es. for the VR app). Is it possible to make it work via internet?
+Is it useful?
