@@ -35,3 +35,8 @@ other equivalent classes that associate functions with specific buttons.
 
 - if autonomous mode (sound) only reacts to voices, it should fix the problem of hearing and going towards its own
 motors. Is it worse for the user if it only reacts to voices?
+
+- change obstacle avoidance with lidar so that it ignores detections from the back, because that is the robot itself.
+Measure precisely which angle range to ignore.
+
+- if the lidar is connected, automatically use it for obstacle avoidance in autonomous mode (sound)
