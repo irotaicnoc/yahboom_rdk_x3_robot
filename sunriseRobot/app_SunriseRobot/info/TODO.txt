@@ -5,10 +5,10 @@ VOICE INTERACTION
     - All the points below are already implemented, but have never been tested. In particular, it is not clear if the
     code for detecting daily calls limit works or not.
     - Print responses in the console, in case the user connects remotely to the robot or a screen is connected to the
-     robot
+     robot.
     - Specifically print to console the last sentence (the one that gave the error/signal of finished usage) because it
-     would otherwise not be played nor written
-    - Play the pre-recorded audio saying to the notifying the user of the situation
+     would otherwise not be played nor written.
+    - Play the pre-recorded audio saying to the notifying the user of the situation.
 
 HARDWARE
 - Add hardware for measuring the charge of the battery connected to the Jetson NANO (through the expansion board),
@@ -20,8 +20,8 @@ since they have no ability to do so.
 a wi-fi network.
     - Configure the two computers so that both will automatically connect to this network if the default wi-fi is not
      reachable.
-     - Save the new image of both computers
-- add a small touch screen to the robot. It helps find bugs when the robot is not connected to pc
+     - Save the new image of both computers.
+- add a small touch screen to the robot. It helps find bugs when the robot is not connected to pc.
     - make an app for the screen, so the main functions of the robot can be called from the small touch screen even
     in the absence of a controller.
 - add a powerful led that automatically lights up when in autonomous mode (vision) and the light is too low. It should
@@ -31,14 +31,16 @@ also be controllable with the controller.
     - add code to control the motor in autonomous mode (vision): if the target is found, try to center it. Also try to
     account for the possible forward movement.
 
-AUTONOMOUS MODE
-- when in autonomous mode (vision), when the lidar is connected, when the target is found and it is close enough
+AUTONOMOUS MODE (VISION)
+- when in autonomous mode (vision), when the lidar is connected, when the target is found, when it is close enough
 (basically when the current robot emits a beep):
     - if the speakers are connected, play a short victory tune.
-    - exit autonomous mode and return to user controlled mode (wheels)
+    - exit autonomous mode and return to user controlled mode (wheels).
+
+AUTONOMOUS MODE (SOUND)
 - if autonomous mode (sound) only reacts to voices, it should fix the problem of hearing and going towards its own
 motors. Is it worse for the user if it only reacts to voices?
-- if the lidar is connected, automatically use it for obstacle avoidance in autonomous mode (sound)
+- if the lidar is connected, automatically use it for obstacle avoidance in autonomous mode (sound).
 - create a second autonomous mode (sound) in which the robot runs away from sounds (better if it is only voices, because
 at the moment it will just run away from its rear motors, meaning it will run straight into some obstacle.
 
@@ -47,7 +49,7 @@ LIDAR
 Measure precisely which angle range to ignore.
 
 VR APP
-- the camera stream to the VR can be very slow, try sending jpeg images with "compressed_camera_image" ROS2 messages
+- the camera stream to the VR can be very slow, try sending jpeg images with "compressed_camera_image" ROS2 messages.
 - send sound from the robot to the VR.
 - send sound from the VR microphone to the robot speakers (better if the VR microphone can directly filter and keep
 only voice.
