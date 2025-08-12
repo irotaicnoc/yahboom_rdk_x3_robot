@@ -60,7 +60,6 @@ only voice.
     - display it in gray and not clickable if no messages are being received on the currently selected topic (no
     messages, or the last received message is older than n seconds).
 
-
 GENERIC
 - Create a site for the robot, explaining all hardware and software components, and the setup required, so that others
 can replicate it. Also explain and illustrate all its capabilities.
