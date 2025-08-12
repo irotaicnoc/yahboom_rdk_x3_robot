@@ -32,3 +32,6 @@ other equivalent classes that associate functions with specific buttons.
 
 - when in autonomous mode (vision), when the lidar is connected, when the target is found and it is close enough
 (basically when the current robot emits a beep): if the speakers are connected, play a short victory tune.
+
+- if autonomous mode (sound) only reacts to voices, it should fix the problem of hearing and going towards its own
+motors. Is it worse for the user if it only reacts to voices?
