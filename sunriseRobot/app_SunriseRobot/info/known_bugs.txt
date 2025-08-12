@@ -17,3 +17,8 @@ time.
 
 - some of the pin buttons were sending signals even when they were not pressed (es. the button for changing mode). Is
 it just a hardware problem of the buttons/cables, or is there a bug in the code?
+
+- sometimes, after the robot is powered on and ready, the arm does not move. That is because it is in the unlocked state
+(motors are disabled so you can move the arm manually). In this case it is sufficient to press the button for changing
+the arm state (start button by default), while in arm mode. But it is a bug, since in theory the arm should always start
+with motors active.
