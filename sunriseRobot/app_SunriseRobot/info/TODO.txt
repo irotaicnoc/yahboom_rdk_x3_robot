@@ -42,7 +42,7 @@ AUTONOMOUS MODE (SOUND)
 motors. Is it worse for the user if it only reacts to voices?
 - if the lidar is connected, automatically use it for obstacle avoidance in autonomous mode (sound).
 - create a second autonomous mode (sound) in which the robot runs away from sounds (better if it is only voices, because
-at the moment it will just run away from its rear motors, meaning it will run straight into some obstacle.
+at the moment it will just run away from its rear motors, meaning it will run straight into some obstacle).
 
 LIDAR
 - change obstacle avoidance with lidar so that it ignores detections from the back, because that is the robot itself.
@@ -52,7 +52,7 @@ VR APP
 - the camera stream to the VR can be very slow, try sending jpeg images with "compressed_camera_image" ROS2 messages.
 - send sound from the robot to the VR.
 - send sound from the VR microphone to the robot speakers (better if the VR microphone can directly filter and keep
-only voice.
+only voice).
 - make streaming parameters modifiable.
 - add "attached mode" to the menù window, so that it can fix itself to the camera window and become a single window.
 - show lidar detections in the VR app.
@@ -66,7 +66,7 @@ can replicate it. Also explain and illustrate all its capabilities.
 - controller interface should be more generic, like only providing functions, while it should be ps2_controller and
 other equivalent classes that associate functions with specific buttons.
 - add the option to save log to file, to help debugging.
-- dynamically activate and deactivate hardware components. Es. when the lidar is not used, dont waste battery on it
+- dynamically activate and deactivate hardware components. Es. when the lidar is not used, don't waste battery on it
 (currently it is active and keeps spinning even when not in use).
 - ROS2 messages are exchanged only in local networks (es. for the VR app). Is it possible to make it work via internet?
 Is it useful?
