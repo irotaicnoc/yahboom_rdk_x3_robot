@@ -22,3 +22,7 @@ it just a hardware problem of the buttons/cables, or is there a bug in the code?
 (motors are disabled so you can move the arm manually). In this case it is sufficient to press the button for changing
 the arm state (start button by default), while in arm mode. But it is a bug, since in theory the arm should always start
 with motors active.
+
+- the obstacle avoidance with lidar tried to understand in which direction the robot wants to move, to block it if
+necessary. But it does not make good predictions of direction when the robot is simultaneously turning and translating
+(moving forward, backward, sliding left, sliding right, or any combination of those).
