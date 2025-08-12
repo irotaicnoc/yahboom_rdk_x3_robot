@@ -27,7 +27,9 @@ a wi-fi network.
 
 AUTONOMOUS MODE
 - when in autonomous mode (vision), when the lidar is connected, when the target is found and it is close enough
-(basically when the current robot emits a beep): if the speakers are connected, play a short victory tune.
+(basically when the current robot emits a beep):
+    - if the speakers are connected, play a short victory tune.
+    - exit autonomous mode and return to user controlled mode (wheels)
 - if autonomous mode (sound) only reacts to voices, it should fix the problem of hearing and going towards its own
 motors. Is it worse for the user if it only reacts to voices?
 - if the lidar is connected, automatically use it for obstacle avoidance in autonomous mode (sound)
