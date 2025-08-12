@@ -26,3 +26,10 @@ with motors active.
 - the obstacle avoidance with lidar tries to understand in which direction the robot wants to move, to block it if
 necessary. But it does not make good predictions of direction when the robot is simultaneously turning and translating
 (moving forward, backward, sliding left, sliding right, or any combination of those).
+
+- it is possible the VR app and robot try to establish the connection two times: from my understanding of the code it
+should not happen, but from the logs I think it happens.
+
+- in the VR app, when windows are minimized, their interactable are remains the same, and translates toward the bottom
+by half of the window height. The interactable area should conform to the new visible area. POSSIBLE SOLUTION: just
+lower the top anchor by half the window height and raise the bottom anchor y half the window height.
