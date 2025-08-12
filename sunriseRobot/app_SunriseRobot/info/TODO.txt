@@ -1,3 +1,4 @@
+VOICE INTERACTION
 - When the gemini-2.5-flash model (for reasoning) daily calls are exhausted, switch automatically to gemini-2.0-flash.
 - When the gemini-2.5-flash model (for reasoning) daily calls are exhausted, stop the voice interaction entirely.
 - When the gemini-2.5-flash-preview-tts model (for Text-To-Speech) daily calls are exhausted
@@ -9,34 +10,38 @@
      would otherwise not be played nor written
     - Play the pre-recorded audio saying to the notifying the user of the situation
 
+HARDWARE
 - Add hardware for measuring the charge of the battery connected to the Jetson NANO (through the expansion board),
 since they have no ability to do so.
     - Then add code to monitor and handle the battery level.
         - Signal user with sound when battery charge is too low.
         - Power off the Jetson NANO when battery charge is too low.
-
-- Create a site for the robot, explaining all hardware and software components, and the setup required, so that others
-can replicate it. Also explain and illustrate all its capabilities.
-
 - Buy an usb-modem (to pair with the internet sim) so that the robot will have automatic internet access even outside
 a wi-fi network.
     - Configure the two computers so that both will automatically connect to this network if the default wi-fi is not
      reachable.
      - Save the new image of both computers
+- add a small touch screen to the robot. It helps find bugs when the robot is not connected to pc
+    - make an app for the screen, so the main functions of the robot can be called from the small touch screen even
+    in the absence of a controller.
 
-- The client/server application is only used for sending robot commands from the Jetson NANO to the RDK-X3 pc (commands
-to the robot from voice interaction).
-
-- controller interface should be more generic, like only providing functions, while it should be ps2_controller and
-other equivalent classes that associate functions with specific buttons.
-
+AUTONOMOUS MODE
 - when in autonomous mode (vision), when the lidar is connected, when the target is found and it is close enough
 (basically when the current robot emits a beep): if the speakers are connected, play a short victory tune.
-
 - if autonomous mode (sound) only reacts to voices, it should fix the problem of hearing and going towards its own
 motors. Is it worse for the user if it only reacts to voices?
+- if the lidar is connected, automatically use it for obstacle avoidance in autonomous mode (sound)
 
+LIDAR
+- show lidar detections in the VR app.
 - change obstacle avoidance with lidar so that it ignores detections from the back, because that is the robot itself.
 Measure precisely which angle range to ignore.
 
-- if the lidar is connected, automatically use it for obstacle avoidance in autonomous mode (sound)
+VR APP
+- the camera stream to the VR can be very slow, try sending jpeg images with "compressed_camera_image" ROS2 messages
+
+GENERIC
+- Create a site for the robot, explaining all hardware and software components, and the setup required, so that others
+can replicate it. Also explain and illustrate all its capabilities.
+- controller interface should be more generic, like only providing functions, while it should be ps2_controller and
+other equivalent classes that associate functions with specific buttons.
