@@ -33,3 +33,5 @@ should not happen, but from the logs I think it happens.
 - in the VR app, when windows are minimized, their interactable are remains the same, and translates toward the bottom
 by half of the window height. The interactable area should conform to the new visible area. POSSIBLE SOLUTION: just
 lower the top anchor by half the window height and raise the bottom anchor y half the window height.
+
+- The images sent from the frontal camera through ROS2 to the VR app are displayed with red and blue colors inverted.
