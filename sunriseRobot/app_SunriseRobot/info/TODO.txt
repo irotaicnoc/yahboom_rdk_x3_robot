@@ -62,6 +62,8 @@ only voice).
 - with the controller loop, the old ROS2 controller subscriber logic does not work anymore. Create a fake ROS2 node
 launched through python to listen to VR headset's controller input (similar to the lidar listener).
     - update controllers' buttons with all the new functions.
+- change the opening sprite with a new photo of the robot.
+- change the default ip address to the new ip of the robot.
 
 GENERIC
 - Create a site for the robot, explaining all hardware and software components, and the setup required, so that others
