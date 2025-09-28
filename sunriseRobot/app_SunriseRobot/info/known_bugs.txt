@@ -3,35 +3,38 @@
 - The code for starting a ROS2 process (for VR and lidar communication) works (it starts the process in a new console).
 The problem is that the code that should kill these processes works only partially: the new console seems to have no
 more running processes, but something is still running, so the resources are not fully released, and the console
-remains open. To stop all the processes the console must be closed (doing so manually by remotely connecting to the
-robot works). But I don't know hot to do it automatically with code.
+remains open. To stop all the processes the console must be closed (doing so manually, by remotely connecting to the
+robot, works). But I don't know how to do it automatically with code.
 
-- The main program launches some ROS2 nodes using as normal python classes instead of the proper ROS2 commands. It
-works, but I imagine this could lead to some unforeseen errors in specific cases. This is done because there is no
-other way that I know of to make a python script and a ROS2 note to communicate. The alternative is to convert all the
-current code into ROS2 code, which would be long, complicated, and potentially slow down the main computer.
+- The main program launches some ROS2 nodes as normal python classes instead of using the proper ROS2 commands and
+starting them as ROS2 nodes. It works, but I imagine this could lead to some unforeseen errors in specific cases. This
+is done because it is the only way I know for a python script and a ROS2 node to communicate. The alternative is to
+convert all the current code into ROS2 code, which would be long, complicated, and potentially slow down the main
+computer.
 
-- The setup and usage of the ikpy library for the arm inverse kinematics calculations could be not optimized. It is
-possible another joint given as a free parameter is actually fixed, which would significantly speed up the response
-time.
+- The setup and usage of the ikpy library for the arm's inverse kinematics calculations could be not optimized. It is
+possible that one of the joints given as a free parameter is actually fixed, which would significantly speed up the
+response time.
 
-- some of the pin buttons were sending signals even when they were not pressed (es. the button for changing mode). Is
-it just a hardware problem of the buttons/cables, or is there a bug in the code?
+- some of the pin buttons were sending signals even when they were not pressed (es. the button for changing mode).
+    - is it just a hardware problem of the buttons/cables, or is there a bug in the code?
 
-- sometimes, after the robot is powered on and ready, the arm does not move. That is because it is in the unlocked state
+- sometimes, after the robot is powered-on and ready, the arm does not move. That is because it is in the unlocked state
 (motors are disabled so you can move the arm manually). In this case it is sufficient to press the button for changing
-the arm state (start button by default), while in arm mode. But it is a bug, since in theory the arm should always start
-with motors active.
+the arm state (start button by default), while in arm mode.
+    - but it is a bug, since in theory the arm should always start with motors active.
 
-- the obstacle avoidance with lidar tries to understand in which direction the robot wants to move, to block it if
-necessary. But it does not make good predictions of direction when the robot is simultaneously turning and translating
-(moving forward, backward, sliding left, sliding right, or any combination of those).
+- the obstacle avoidance with lidar tries to understand in which direction the robot wants to move, to block it only if
+necessary. In particular, it tries to only block the component of the speed perpendicular to the obstacle, and allow
+the parallel component. But it does not make good predictions of direction when the robot is simultaneously turning AND
+moving simultaneously (moving forward, backward, strafing left, strafing right, or any combination of those).
 
-- it is possible the VR app and robot try to establish the connection two times: from my understanding of the code it
-should not happen, but from the logs I think it happens.
+- it is possible the VR app and robot try to establish the connection two times. From my understanding of the code it
+should not happen, but from the logs it seems to happen.
 
-- in the VR app, when windows are minimized, their interactable are remains the same, and translates toward the bottom
-by half of the window height. The interactable area should conform to the new visible area. POSSIBLE SOLUTION: just
-lower the top anchor by half the window height and raise the bottom anchor y half the window height.
+- in the VR app, when windows are minimized, their interactable area remains the same, and just translates toward the
+bottom by half of the window height. The problem is that the interactable area should conform to the new visible area.
+    - POSSIBLE SOLUTION: just lower the top anchor by half the window height and raise the bottom anchor by half the
+    window height.
 
 - The images sent from the frontal camera through ROS2 to the VR app are displayed with red and blue colors inverted.
