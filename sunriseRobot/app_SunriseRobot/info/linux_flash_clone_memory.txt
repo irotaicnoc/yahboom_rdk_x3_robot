@@ -1,0 +1,24 @@
+for cloning and flashing USB and SD cards
+    identify disk
+        lsblk
+    
+    find currently mounted partitions. "X" depends on the previous command
+        mount | grep /dev/sdX
+        es.
+        mount | grep /dev/sdd
+
+    unmount all partitions without removing the disk. "_LETTER" and "_NUMBER" depend on the previous command
+        sudo umount /dev/sd_LETTER_NUMBER
+        es.
+        sudo umount /dev/sdd1
+
+    clone disk content on pc. "if" is the source. "of" is the destination. Substitute "_LETTER" and "IMAGE_NAME" with correct values
+        sudo dd if=/dev/sd_LETTER of=/media/marco/DATA/robot_system_images/IMAGE_NAME.img status=progress
+        es.         
+        sudo dd if=/dev/sdd of=/media/marco/DATA/robot_system_images/jetson_llm_backup_30_06_2025.img status=progress
+        sudo dd if=/dev/sdd of=/media/marco/DATA/robot_system_images/robot_backup_2_07_2025.img status=progress
+    
+    clone image from pc to USB or SD card. Same command as above, with if and of switched. Substitute "_LETTER" and "IMAGE_NAME" with correct values
+        sudo dd if=/media/marco/DATA/robot_system_images/IMAGE_NAME.img of=/dev/sd_LETTER status=progress
+
+    if you clone a smaller image into a bigger disk, you then have to use the program "Gparted". Right-click on the main partition, select "move/resize" and expand it over the unallocated memory. Otherwise the extra memory will be unaviable.
