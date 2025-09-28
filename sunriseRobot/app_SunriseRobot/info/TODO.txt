@@ -1,9 +1,10 @@
 VOICE INTERACTION
 - When the gemini-2.5-flash model (for reasoning) daily calls are exhausted, switch automatically to gemini-2.0-flash.
-    - If it can't be done, at least stop the voice interaction entirely.
+    - If it can't be done, or when the gemini-2.0-flash model exhausted the daily calls, stop the voice interaction
+    service.
 - When the gemini-2.5-flash-preview-tts model (for Text-To-Speech) daily calls are exhausted execute all the points
 below. All of them are already implemented, but have never been tested. In particular, it is not clear if the code for
- detecting daily-calls limit works or not.
+detecting daily-calls limit works or not.
     - Print responses in the console, in case the user connects remotely to the robot or a screen is connected to the
      robot.
     - Specifically print to console the last sentence (the one that gave the error/signal of finished usage) because it
@@ -21,58 +22,58 @@ a wi-fi network.
     - Configure the two computers so that both will automatically connect to this network if the default wi-fi is not
      reachable.
     - Save the new image of both computers.
-- add a small touch screen to the robot. It helps find bugs when the robot is not connected to pc.
-    - make an app for the screen, so the main functions of the robot can be called from the small touch screen even
+- Add a small touch screen to the robot. It helps find bugs when the robot is not connected to pc.
+    - Make an app for the screen, so the main functions of the robot can be called from the small touch screen even
     in the absence of a controller.
-- add a powerful led that automatically lights up when in autonomous mode (vision) and the light is too low. It should
+- Add a powerful led that automatically lights up when in autonomous mode (vision) and the light is too low. It should
 also be controllable with the controller.
-- add a motor to control the vertical orientation of the frontal camera
-    - add code to control the motor with the controller.
-    - add code to control the motor in autonomous mode (vision): if the target is found, try to center it. Also try to
+- Add a motor to control the vertical orientation of the frontal camera
+    - Add code to control the motor with the controller.
+    - Add code to control the motor in autonomous mode (vision): if the target is found, try to center it. Also try to
     account for the possible forward movement.
 
 AUTONOMOUS MODE (VISION)
-- when in autonomous mode (vision), when the lidar is connected, when the target is found, when it is close enough
+- When in autonomous mode (vision), when the lidar is connected, when the target is found, when it is close enough
 (basically when the current robot emits a beep):
-    - if the speakers are connected, play a short victory tune.
-    - exit autonomous mode and return to user controlled mode (wheels).
+    - If the speakers are connected, play a short victory tune.
+    - Exit autonomous mode and return to user controlled mode (wheels).
 
 AUTONOMOUS MODE (SOUND)
-- if autonomous mode (sound) only reacts to voices, it should fix the problem of hearing and going towards its own
+- If autonomous mode (sound) only reacts to voices, it should fix the problem of hearing and going towards its own
 motors.
-    - is it worse for the user if it only reacts to voices?
-- if the lidar is connected, automatically use it for obstacle avoidance in autonomous mode (sound).
-- create a second autonomous mode (sound) in which the robot runs away from sounds (better if it is only voices, because
+    - Is it worse for the user if it only reacts to voices?
+- If the lidar is connected, automatically use it for obstacle avoidance in autonomous mode (sound).
+- Create a second autonomous mode (sound) in which the robot runs away from sounds (better if it is only voices, because
 at the moment it will just run away from its rear motors, meaning it will run straight into some obstacle).
 
 LIDAR
-- change obstacle avoidance with lidar so that it ignores detections from the back, because that is the robot itself.
+- Change obstacle avoidance with lidar so that it ignores detections from the back, because that is the robot itself.
 Measure precisely which angle range to ignore.
 
 VR APP
-- the camera stream to the VR can be very slow, try sending jpeg images with "compressed_camera_image" ROS2 messages.
-- send sound from the robot to the VR.
-- send sound from the VR microphone to the robot speakers (better if the VR microphone can directly filter and keep
+- The camera stream to the VR can be very slow, try sending jpeg images with "compressed_camera_image" ROS2 messages.
+- Send sound from the robot to the VR.
+- Send sound from the VR microphone to the robot speakers (better if the VR microphone can directly filter and keep
 only voice).
-- make streaming parameters modifiable.
-- add "attached mode" to the menù window, so that it can fix itself to the camera window and become a single window.
-- show lidar detections in the VR app.
-    - change button "activate/deactivate camera" to something more generic, or just "activate/deactivate".
-    - display it in gray and not clickable if no messages are being received on the currently selected topic
-        - no messages, or the last received message is older than n seconds.
-- with the controller loop, the old ROS2 controller subscriber logic does not work anymore. Create a fake ROS2 node
+- Make streaming parameters modifiable.
+- Add "attached mode" to the menù window, so that it can fix itself to the camera window and become a single window.
+- Show lidar detections in the VR app.
+    - Change button "activate/deactivate camera" to something more generic, or just "activate/deactivate".
+    - Display it in gray and not clickable if no messages are being received on the currently selected topic
+        - No messages, or the last received message is older than n seconds.
+- With the controller loop, the old ROS2 controller subscriber logic does not work anymore. Create a fake ROS2 node
 launched through python to listen to VR headset's controller input (similar to the lidar listener).
-    - update controllers' buttons with all the new functions.
-- change the opening sprite with a new photo of the robot.
-- change the old default ip address to the new ip of the robot.
+    - Update controllers' buttons with all the new functions.
+- Change the opening sprite with a new photo of the robot.
+- Change the old default ip address to the new ip of the robot.
 
 GENERIC
 - Create a site for the robot, explaining all hardware and software components, and the setup required, so that others
 can replicate it. Also explain and illustrate all its capabilities.
-- controller interface should be more generic, like only providing functions. It should be ps2_controller and
+- Controller interface should be more generic, like only providing functions. It should be ps2_controller and
 other equivalent classes that associate functions with specific buttons.
-- add the option to save log to file, to help debugging.
-- dynamically activate and deactivate hardware components. Es. when the lidar is not used, don't waste battery on it
+- Add the option to save log to file, to help debugging.
+- Dynamically activate and deactivate hardware components. Es. when the lidar is not used, don't waste battery on it
 (currently it is active and keeps spinning even when not in use).
 - ROS2 messages are exchanged only in local networks (es. for the VR app). Is it possible to make it work via internet?
 Is it useful?

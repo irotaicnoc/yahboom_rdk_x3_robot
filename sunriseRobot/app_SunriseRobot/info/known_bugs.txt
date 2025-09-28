@@ -16,23 +16,23 @@ computer.
 possible that one of the joints given as a free parameter is actually fixed, which would significantly speed up the
 response time.
 
-- some of the pin buttons were sending signals even when they were not pressed (es. the button for changing mode).
+- Some of the pin buttons were sending signals even when they were not pressed (es. the button for changing mode).
     - is it just a hardware problem of the buttons/cables, or is there a bug in the code?
 
-- sometimes, after the robot is powered-on and ready, the arm does not move. That is because it is in the unlocked state
+- Sometimes, after the robot is powered-on and ready, the arm does not move. That is because it is in the unlocked state
 (motors are disabled so you can move the arm manually). In this case it is sufficient to press the button for changing
 the arm state (start button by default), while in arm mode.
-    - but it is a bug, since in theory the arm should always start with motors active.
+    - But it is a bug, since in theory the arm should always start with motors active.
 
-- the obstacle avoidance with lidar tries to understand in which direction the robot wants to move, to block it only if
+- The obstacle avoidance with lidar tries to understand in which direction the robot wants to move, to block it only if
 necessary. In particular, it tries to only block the component of the speed perpendicular to the obstacle, and allow
 the parallel component. But it does not make good predictions of direction when the robot is simultaneously turning AND
 moving simultaneously (moving forward, backward, strafing left, strafing right, or any combination of those).
 
-- it is possible the VR app and robot try to establish the connection two times. From my understanding of the code it
+- It is possible the VR app and robot try to establish the connection two times. From my understanding of the code it
 should not happen, but from the logs it seems to happen.
 
-- in the VR app, when windows are minimized, their interactable area remains the same, and just translates toward the
+- In the VR app, when windows are minimized, their interactable area remains the same, and just translates toward the
 bottom by half of the window height. The problem is that the interactable area should conform to the new visible area.
     - POSSIBLE SOLUTION: just lower the top anchor by half the window height and raise the bottom anchor by half the
     window height.
