@@ -1,4 +1,9 @@
-Overhaul and expansion of the software originally shipped with the RDK X3 Robot (http://www.yahboom.net/study/RDK-X3-Robot) from Yahboom (http://www.yahboom.net/home)
+Overhaul and expansion of the software originally shipped with the RDK X3 Robot (http://www.yahboom.net/study/RDK-X3-Robot).
+
+For the complete list of hardware and software changes, see the project website: https://marco-conciatori-public.github.io/
+
+There you will also find all the robot capabilities with videos and explanations.
+Finally, there is a step-by-step guide on how to recreate the robot from scratch.
 ![robot_rdk_x3.png](sunriseRobot/app_SunriseRobot/info/robot_rdk_x3.png)
 
 # Hardware modifications
