@@ -91,7 +91,7 @@ def pretty_print_dict(data, _level: int = 0) -> None:
 
 
 def print_exception(exception: Exception, message: str = None) -> None:
-    if message is None:
+    if message is not None:
         print(f'{message}:\n\t{exception}\n\t{exception.__traceback__}')
     else:
         print(f'Error:\n\t{exception}\n\t{exception.__traceback__}')
