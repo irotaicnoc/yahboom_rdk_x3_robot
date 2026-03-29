@@ -33,7 +33,7 @@ video_capture_kwargs:
 
 # lidar parameters
 lidar_kwargs:
-  topic_name: scan
+  topic_name: /scan
   queue_size: 3
   response_dist: 2.0
   sector_angle: 20

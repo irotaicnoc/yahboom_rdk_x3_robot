@@ -124,7 +124,7 @@ class LidarListener(Node):
 
 class ThreadedLidarListener:
     def __init__(self,
-                 topic_name: str = 'scan',
+                 topic_name: str = '/scan',
                  queue_size: int = 5,
                  response_dist: float = 0.6,
                  sector_angle: float = 20,

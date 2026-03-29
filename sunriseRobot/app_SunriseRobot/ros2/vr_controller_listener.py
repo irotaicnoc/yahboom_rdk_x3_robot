@@ -45,7 +45,7 @@ class VrControllerListener(Node):
 
 class ThreadedVrControllerListener:
     def __init__(self,
-                 topic_name: str = 'joy',
+                 topic_name: str = '/joy',
                  queue_size: int = 10,
                  input_expiration_time: float = 0.5,
                  verbose: int = 0):

@@ -13,7 +13,7 @@ def obstacle_sensor():
     # Initialize the LidarListener
     response_dist = 1.0
     lidar_listener_node = ThreadedLidarListener(
-        topic_name='scan',
+        topic_name='/scan',
         queue_size=10,
         response_dist=response_dist,
         verbose=3,

@@ -15,7 +15,7 @@ class MetaQuest3Controller(object):
 
         try:
             # Start the ROS2 listener in the background
-            self.controller_listener = ThreadedVrControllerListener(topic_name='joy', verbose=self.verbose)
+            self.controller_listener = ThreadedVrControllerListener(topic_name='/joy', verbose=self.verbose)
             self._is_connected = True
             self.controller_functions.connected(controller_id=self.controller_id)
         except Exception as e:
