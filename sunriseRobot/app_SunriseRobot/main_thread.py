@@ -13,6 +13,7 @@ from physical_accessories.arm import Arm
 from physical_accessories.oled import Oled
 from physical_accessories.light import Light
 from controllers.ps2_controller import PS2Controller
+from controllers.meta_quest_3_controller import MetaQuest3Controller
 from controllers.controller_loop import ControllerLoop
 from controllers.controller_interface import ControllerFunctions
 from ethernet_connection.ethernet_server import EthernetServer
@@ -184,7 +185,12 @@ def task_controller(**kwargs):
             arm=kwargs['arm'],
             verbose=kwargs['verbose'],
         )
-        ps2_controller = PS2Controller(controller_functions=controller_functions, controller_id=kwargs['controller_id'])
+        ps2_controller = PS2Controller(
+            controller_functions=controller_functions,
+            controller_id=kwargs['controller_id'],
+            verbose=kwargs['verbose'],
+        )
+        meta_quest_3_controller = None
         while True:
             state = ps2_controller.event_listener()
             if state != gc.STATE_OK:
@@ -192,6 +198,23 @@ def task_controller(**kwargs):
                     break
                 time.sleep(1)
                 ps2_controller.reconnect()
+            if meta_quest_3_controller is None:
+                if kwargs['robot_head'].ros2_vr_connection_status == 'active':
+                    meta_quest_3_controller = MetaQuest3Controller(
+                        controller_functions=controller_functions,
+                        # differentiate this VR controller from the main one
+                        controller_id=kwargs['controller_id'] + 1,
+                        verbose=kwargs['verbose'],
+                    )
+                    time.sleep(0.5)
+            else:  # meta_quest_3_controller is not None
+                if kwargs['robot_head'].ros2_vr_connection_status == 'active':
+                    meta_quest_3_controller.event_listener()
+                elif kwargs['robot_head'].ros2_vr_connection_status == 'inactive':
+                    del meta_quest_3_controller
+                    meta_quest_3_controller = None
+                    time.sleep(0.5)
+
     except Exception as e:
         utils.print_exception(exception=e, message='Controller error')
 
