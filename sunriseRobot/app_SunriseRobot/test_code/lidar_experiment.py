@@ -4,7 +4,7 @@ import time
 import numpy as np
 
 import utils
-from physical_accessories.lidar_listener import ThreadedLidarListener
+from ros2.lidar_listener import ThreadedLidarListener
 
 
 def obstacle_sensor():

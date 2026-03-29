@@ -7,7 +7,7 @@ import args
 import utils
 import global_constants as gc
 from vision.detector import YoloDetector
-from physical_accessories.lidar_listener import ThreadedLidarListener
+from ros2.lidar_listener import ThreadedLidarListener
 
 
 class VisionAgent(object):
