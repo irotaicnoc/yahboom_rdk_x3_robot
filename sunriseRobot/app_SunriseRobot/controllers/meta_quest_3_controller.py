@@ -3,7 +3,7 @@
 import utils
 
 import global_constants as gc
-from ros2.vr_controller_listener.py import ThreadedVrControllerListener
+from ros2.vr_controller_listener import ThreadedVrControllerListener
 
 
 class MetaQuest3Controller(object):
