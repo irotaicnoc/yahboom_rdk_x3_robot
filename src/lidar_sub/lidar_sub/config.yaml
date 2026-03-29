@@ -1,3 +1,0 @@
-lidar_topic: /scan
-queue_size: 1
-verbose: 1
