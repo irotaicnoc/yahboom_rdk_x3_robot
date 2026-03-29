@@ -4,6 +4,7 @@ import os
 import struct
 
 import utils
+import global_constants as gc
 
 
 class PS2Controller(object):
@@ -14,10 +15,6 @@ class PS2Controller(object):
         self.controller_id = int(controller_id)
         self._is_connected = False
         self._ignore_count = 24
-        self.STATE_OK = 0
-        self.STATE_NO_OPEN = 1
-        self.STATE_DISCONNECT = 2
-        self.STATE_KEY_BREAK = 3
         self.MAX_INPUT_VALUE = 32767
 
         self.controller_functions = controller_functions
@@ -157,7 +154,7 @@ class PS2Controller(object):
         if not self._is_connected:
             if self.verbose >= 2:
                 print('Failed to open controller')
-            return self.STATE_NO_OPEN
+            return gc.STATE_NO_OPEN
         try:
             raw_output = self._controller.read(8)
             if raw_output:
@@ -172,18 +169,18 @@ class PS2Controller(object):
                         self._ignore_count = self._ignore_count - 1
                     if self.verbose >= 2 and self._ignore_count == 0:
                         print(f'The received controller input {func}, is not in "_function_names"')
-            return self.STATE_OK
+            return gc.STATE_OK
         except KeyboardInterrupt as ki:
             self._is_connected = False
             print('Keyboard interrupt')
             print(ki)
             self.controller_functions.disconnected(controller_id=self.controller_id)
-            return self.STATE_KEY_BREAK
+            return gc.STATE_KEY_BREAK
         except Exception as e:
             self._is_connected = False
             utils.print_exception(exception=e, message='Controller disconnected due to error')
             self.controller_functions.disconnected(controller_id=self.controller_id)
-            return self.STATE_DISCONNECT
+            return gc.STATE_DISCONNECT
 
     # reconnect controller
     def reconnect(self):

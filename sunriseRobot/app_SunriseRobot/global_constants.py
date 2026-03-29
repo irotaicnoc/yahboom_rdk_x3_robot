@@ -57,9 +57,15 @@ RED = 'red'
 ORANGE = 'orange'
 GREEN = 'green'
 
-# BATTERY VOLTAGE
+# Battery voltage
 MAX_VOLTAGE = 8.4  # 100% battery
 MIN_VOLTAGE = 6.6  # 0% battery
+
+# Controller states
+STATE_OK = 0
+STATE_NO_OPEN = 1
+STATE_DISCONNECT = 2
+STATE_KEY_BREAK = 3
 
 # COMPUTER VISION MODEL
 YOLO_CLASS_DICT = {

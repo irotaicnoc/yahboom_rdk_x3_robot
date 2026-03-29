@@ -187,8 +187,8 @@ def task_controller(**kwargs):
         ps2_controller = PS2Controller(controller_functions=controller_functions, controller_id=kwargs['controller_id'])
         while True:
             state = ps2_controller.event_listener()
-            if state != ps2_controller.STATE_OK:
-                if state == ps2_controller.STATE_KEY_BREAK:
+            if state != gc.STATE_OK:
+                if state == gc.STATE_KEY_BREAK:
                     break
                 time.sleep(1)
                 ps2_controller.reconnect()
