@@ -36,19 +36,12 @@ def generate_launch_description():
     )
     print('Done')
 
-    # When the server_node reaches the 'active' state, log a message and start the
-    # controller_subscriber_node and camera_publisher_node.
+    # When the server_node reaches the 'active' state, log a message and start the camera_publisher_node.
     register_event_handler_for_server_reaches_active_state = launch.actions.RegisterEventHandler(
         launch_ros.event_handlers.OnStateTransition(
             target_lifecycle_node=server_node, goal_state='active',
             entities=[
                 launch.actions.LogInfo(msg="'server_node' reached the 'active' state. Launching other nodes"),
-                launch_ros.actions.LifecycleNode(
-                    name='controller_subscriber_node',
-                    namespace='',
-                    package='controller_sub',
-                    executable='controller_subscriber_node',
-                    ),
                 launch_ros.actions.LifecycleNode(
                     name='camera_publisher_node',
                     namespace='',
@@ -62,7 +55,6 @@ def generate_launch_description():
     node_list = [
         server_node,
         register_event_handler_for_server_reaches_active_state,
-        # controller_subscriber_node,
         # camera_publisher_node,
     ]
     return LaunchDescription(node_list)

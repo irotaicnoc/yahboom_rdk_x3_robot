@@ -34,13 +34,6 @@ def generate_launch_description():
     )
     print('Done')
 
-    print('Starting controller_subscriber_node...', end='')
-    time.sleep(1)
-    controller_subscriber_node = Node(
-        package='controller_sub',
-        executable='controller_subscriber_node',
-    )
-    print('Done')
     print('Starting camera_publisher_node...', end='')
     time.sleep(1)
     camera_publisher_node = Node(
@@ -51,7 +44,6 @@ def generate_launch_description():
 
     node_list = [
         server_node,
-        controller_subscriber_node,
         camera_publisher_node,
     ]
     return LaunchDescription(node_list)
