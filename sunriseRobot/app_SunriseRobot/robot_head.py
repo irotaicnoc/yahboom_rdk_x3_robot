@@ -287,9 +287,7 @@ class RobotHead:
             print(f'ROS2 is in "{self.ros2_vr_connection_status}" state. Cannot be changed now')
 
     def toggle_lidar_listener(self) -> None:
-        if self.lidar_listener_status == 'inactive':
-            self.lidar_listener_status = 'processing'
-        elif self.lidar_listener_status == 'active':
+        if self.lidar_listener_status == 'active' or self.lidar_listener_status == 'inactive':
             self.lidar_listener_status = 'processing'
         else:
             print(f'Lidar listener is in "{self.lidar_listener_status}" state. Cannot be changed now')
