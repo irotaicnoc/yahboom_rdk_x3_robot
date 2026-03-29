@@ -69,6 +69,7 @@ class PS2Controller(object):
     def __del__(self):
         if self._is_connected:
             self._controller.close()
+            self._is_connected = False
             self.controller_functions.disconnected(controller_id=self.controller_id)
         if self.verbose >= 1:
             print(f'Controller {self.controller_id} closed successfully')
