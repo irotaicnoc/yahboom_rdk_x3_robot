@@ -70,7 +70,7 @@ class CameraPublisherNode(Node):
         # self.get_logger().info(f'time_between_frames {self.time_between_frames}')
         # self.get_logger().info(f'image_width {self.image_width}')
         # self.get_logger().info(f'image_height {self.image_height}')
-        # ros2_image_message = self.cv_bridge.cv2_to_compressed_imgmsg(img, dst_format='jpeg')
+        # ros2_image_message = self.cv_bridge.cv2_to_compressed_imgmsg(frame, dst_format='jpeg')
 
         # ros2_image_message = self.cv_ros_bridge.cv2_to_imgmsg(frame, encoding='rgb8')
         ros2_image_message = utils.jpeg_to_compressed_img_msg(frame)

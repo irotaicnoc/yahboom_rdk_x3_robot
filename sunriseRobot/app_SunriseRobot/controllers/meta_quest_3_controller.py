@@ -36,12 +36,11 @@ class MetaQuest3Controller(object):
 
 
     def __del__(self):
-        if self._is_connected:
-            self._is_connected = False
-            self.controller_listener.delete_listener()
-            self.controller_functions.disconnected(controller_id=self.controller_id)
-            if self.verbose >= 1:
-                print(f'VR Controller {self.controller_id} closed successfully')
+        self._is_connected = False
+        self.controller_listener.delete_listener()
+        self.controller_functions.disconnected(controller_id=self.controller_id)
+        if self.verbose >= 1:
+            print(f'VR Controller {self.controller_id} closed')
 
     def _check_axis_change(self, current_val, prev_val):
         return abs(current_val - prev_val) > self.axis_deadzone
