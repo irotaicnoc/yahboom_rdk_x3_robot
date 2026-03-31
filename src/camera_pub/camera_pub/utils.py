@@ -39,13 +39,13 @@ def format_camera_frames(frame, width: int, height: int):
     # if counter >= 4:
     #     exit()
 
-    return flipped_frame
+    # return flipped_frame
 
     # Convert to JPEG
-    # encode_param = [cv2.IMWRITE_JPEG_QUALITY, 80]
-    # _, jpeg_buffer = cv2.imencode('.jpg', flipped_frame, encode_param)
-    #
-    # return jpeg_buffer.tobytes()
+    encode_param = [cv2.IMWRITE_JPEG_QUALITY, 80]
+    _, jpeg_buffer = cv2.imencode('.jpg', flipped_frame, encode_param)
+
+    return jpeg_buffer.tobytes()
 
 
 # def sensor_reset_shell():
@@ -58,16 +58,16 @@ def format_camera_frames(frame, width: int, height: int):
 #    os.system('echo 1 > /sys/class/vps/mipi_host0/param/stop_check_instart')
 
 
-# def jpeg_to_compressed_img_msg(jpeg_img):
-#     """
-#     Converts an OpenCV image to a ROS image without using the cv_bridge package,
-#     for compatibility purposes.
-#     """
-#
-#     from sensor_msgs.msg import CompressedImage
-#
-#     msg = CompressedImage()
-#     msg.format = 'jpeg'
-#     msg.data = jpeg_img
-#
-#     return msg
+def jpeg_to_compressed_img_msg(jpeg_img):
+    """
+    Converts an OpenCV image to a ROS image without using the cv_bridge package,
+    for compatibility purposes.
+    """
+
+    from sensor_msgs.msg import CompressedImage
+
+    msg = CompressedImage()
+    msg.format = 'jpeg'
+    msg.data = jpeg_img
+
+    return msg

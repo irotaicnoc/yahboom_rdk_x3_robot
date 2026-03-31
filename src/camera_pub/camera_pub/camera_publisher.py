@@ -72,10 +72,10 @@ class CameraPublisherNode(Node):
         # self.get_logger().info(f'image_height {self.image_height}')
         # ros2_image_message = self.cv_bridge.cv2_to_compressed_imgmsg(img, dst_format='jpeg')
 
-        ros2_image_message = self.cv_ros_bridge.cv2_to_imgmsg(frame, encoding='rgb8')
-        # ros2_image_message = utils.jpeg_to_compressed_img_msg(frame)
+        # ros2_image_message = self.cv_ros_bridge.cv2_to_imgmsg(frame, encoding='rgb8')
+        ros2_image_message = utils.jpeg_to_compressed_img_msg(frame)
         # self.get_logger().info(f'image {self.message_counter}, shape {frame.shape}')
-        # self.get_logger().info(f'encoding {ros2_image_message.encoding}')
+        self.get_logger().info(f'encoding {ros2_image_message.encoding}')
         self.publisher.publish(ros2_image_message)
 
         # if self.message_counter % 100 == 0:
