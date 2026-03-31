@@ -2,7 +2,8 @@
 import rclpy
 from rclpy.node import Node
 from cv_bridge import CvBridge
-from sensor_msgs.msg import Image
+# from sensor_msgs.msg import Image
+from sensor_msgs.msg import CompressedImage
 
 # robot libraries
 from hobot_vio import libsrcampy as camera_lib
@@ -44,7 +45,7 @@ class CameraPublisherNode(Node):
         # publisher
         self.topic_name = camera_topic
         self.queue_size = queue_size
-        self.publisher = self.create_publisher(Image, self.topic_name, self.queue_size)
+        self.publisher = self.create_publisher(CompressedImage, self.topic_name, self.queue_size)
 
         # it is the inverse of Frames Per Second
         self.time_between_frames = round(1 / self.video_capture_kwargs['fps'], ndigits=3)
@@ -74,7 +75,7 @@ class CameraPublisherNode(Node):
 
         # ros2_image_message = self.cv_ros_bridge.cv2_to_imgmsg(frame, encoding='rgb8')
         ros2_image_message = utils.jpeg_to_compressed_img_msg(frame)
-        # self.get_logger().info(f'image {self.message_counter}, shape {frame.shape}')
+        self.get_logger().info(f'image {self.message_counter}, shape {frame.shape}')
         self.get_logger().info(f'encoding {ros2_image_message.encoding}')
         self.publisher.publish(ros2_image_message)
 
