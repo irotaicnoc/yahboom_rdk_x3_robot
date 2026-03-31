@@ -1,21 +1,24 @@
 #!/usr/bin/env python3
 # coding=utf-8
-import utils
 
+import args
+import utils
 import global_constants as gc
 from ros2.vr_controller_listener import ThreadedVrControllerListener
 
 
 class MetaQuest3Controller(object):
     def __init__(self, controller_functions, controller_id: int = 1, verbose: int = 0):
-        self.verbose = verbose
+        parameters = args.import_args(yaml_path=gc.CONFIG_FOLDER_PATH + 'meta_quest_3_controller.yaml', verbose=verbose)
+        self.verbose = parameters['verbose']
+        self.topic_name = parameters['topic_name']
         self.controller_id = int(controller_id)
         self.controller_functions = controller_functions
         self._is_connected = False
 
         try:
             # Start the ROS2 listener in the background
-            self.controller_listener = ThreadedVrControllerListener(topic_name='/joy', verbose=self.verbose)
+            self.controller_listener = ThreadedVrControllerListener(topic_name=self.topic_name, verbose=self.verbose)
             self._is_connected = True
             self.controller_functions.connected(controller_id=self.controller_id)
         except Exception as e:
@@ -23,8 +26,8 @@ class MetaQuest3Controller(object):
             print(f'Failed to initialize VR Controller {self.controller_id}:\n\t{e}')
 
         # Thresholds to prevent joystick drift spam and convert analog triggers to buttons
-        self.axis_deadzone = 0.02
-        self.trigger_threshold = 0.5
+        self.axis_deadzone = float(parameters['axis_deadzone'])
+        self.trigger_threshold = float(parameters['trigger_threshold'])
 
         # State tracking to only send commands on state CHANGE (simulating events)
         self._prev_axes = [0.0] * 8

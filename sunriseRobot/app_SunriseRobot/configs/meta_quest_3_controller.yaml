@@ -1,0 +1,7 @@
+# Thresholds to prevent joystick drift spam and convert analog triggers to buttons
+axis_deadzone: 0.02
+trigger_threshold: 0.5
+
+# Ros2 settings
+topic_name: /vr_controller
+queue_size: 10
