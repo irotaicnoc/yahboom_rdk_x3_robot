@@ -58,7 +58,8 @@ class ThreadedVrControllerListener:
         self.verbose = verbose
 
         try:
-            rclpy.init()
+            if not rclpy.ok():
+                rclpy.init()
             self.controller_listener_node = VrControllerListener(
                 topic_name=self.topic_name,
                 queue_size=self.queue_size,

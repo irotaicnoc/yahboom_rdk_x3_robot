@@ -140,7 +140,8 @@ class ThreadedLidarListener:
         self.spin_thread = None
         self.verbose = verbose
         try:
-            rclpy.init()
+            if not rclpy.ok():
+                rclpy.init()
             self.lidar_listener_node = LidarListener(
                 topic_name=topic_name,
                 queue_size=queue_size,
