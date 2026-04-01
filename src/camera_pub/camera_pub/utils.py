@@ -24,6 +24,7 @@ def format_camera_frames(frame, width: int, height: int):
     # flip image horizontally (left and right are inverted for some reason)
     # frame = cv2.flip(src=frame, flipCode=1)
     # Flip the image vertically (upside down)
+    frame = cv2.flip(src=frame, flipCode=0)
     # logger().info(f'flipped frame shape: {frame.shape}')
     return frame
 
