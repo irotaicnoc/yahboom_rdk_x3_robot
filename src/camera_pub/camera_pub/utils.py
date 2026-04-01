@@ -32,14 +32,14 @@ def format_camera_frames(frame, width: int, height: int):
     # logger().info(f'image_orientation: {image_orientation}')
     # logger().info(f'image_orientation type: {type(image_orientation)}')
     # flip image vertically (left and right are inverted for some reason)
-    flipped_frame = cv2.flip(src=frame_rgb, flipCode=1)
+    # flipped_frame = cv2.flip(src=frame_rgb, flipCode=1)
     # if save_img:
     #     cv2.imwrite(f'/root/marco_ros2_ws/src/camera_pub/camera_pub/{counter}_05_flipped_frame.jpg', flipped_frame)
     # logger().info(f'flipped frame shape: {flipped_frame.shape}')
     # if counter >= 4:
     #     exit()
 
-    return flipped_frame
+    return frame_rgb
 
 
 # def sensor_reset_shell():
