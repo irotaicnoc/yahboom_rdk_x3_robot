@@ -4,6 +4,7 @@
 import cv2
 import yaml
 import numpy as np
+from sensor_msgs.msg import CompressedImage
 
 
 def args_from_yaml(config_path: str) -> dict:
@@ -40,6 +41,18 @@ def format_camera_frames(frame, width: int, height: int):
     #     exit()
 
     return frame_rgb
+    frame = np.frombuffer(frame, dtype=np.uint8)
+    # logger().info(f'frame from buffer shape: {frame.shape}')
+    frame = frame.reshape(height * 3 // 2, width)
+    # logger().info(f'frame reshaped shape: {frame.shape}')
+    # frame = cv2.cvtColor(src=frame, code=cv2.COLOR_YUV2RGB_NV12)
+    frame = cv2.cvtColor(src=frame, code=cv2.COLOR_YUV2BGR_NV12)
+    # logger().info(f'frame rgb shape: {frame.shape}')
+    # flip image horizontally (left and right are inverted for some reason)
+    # frame = cv2.flip(src=frame, flipCode=1)
+    # Flip the image vertically (upside down)
+    # logger().info(f'flipped frame shape: {frame.shape}')
+    return frame
 
 
 # def sensor_reset_shell():
@@ -57,15 +70,13 @@ def jpeg_to_compressed_img_msg(frame, timestamp):
     Converts an OpenCV image to a ROS image without using the cv_bridge package,
     for compatibility purposes.
     """
-
-    from sensor_msgs.msg import CompressedImage
-
     # Convert to JPEG
     encode_param = [cv2.IMWRITE_JPEG_QUALITY, 80]
     _, jpeg_buffer = cv2.imencode('.jpg', frame, encode_param)
+    # convert the numpy array to a bytes object, which is what the ROS message expects
     jpeg_buffer = jpeg_buffer.tobytes()
     msg = CompressedImage()
-    msg.header.stamp = timestamp
+    msg.header.stamp = timestamp.to_msg()
     msg.format = 'jpeg'
     msg.data = jpeg_buffer
 

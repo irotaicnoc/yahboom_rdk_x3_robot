@@ -74,8 +74,8 @@ class CameraPublisherNode(Node):
         # ros2_image_message = self.cv_bridge.cv2_to_compressed_imgmsg(frame, dst_format='jpeg')
 
         # ros2_image_message = self.cv_ros_bridge.cv2_to_imgmsg(frame, encoding='rgb8')
-        current_time_msg = self.get_clock().now().to_msg()
-        ros2_image_message = utils.jpeg_to_compressed_img_msg(frame, timestamp=current_time_msg)
+        current_time = self.get_clock().now()
+        ros2_image_message = utils.jpeg_to_compressed_img_msg(frame, timestamp=current_time)
         # self.get_logger().info(f'image {self.message_counter}, shape {frame.shape}')
         # self.get_logger().info(f'encoding {ros2_image_message.encoding}')
         self.publisher.publish(ros2_image_message)
