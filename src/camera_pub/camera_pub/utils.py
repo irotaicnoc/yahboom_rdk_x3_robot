@@ -58,7 +58,7 @@ def format_camera_frames(frame, width: int, height: int):
 #    os.system('echo 1 > /sys/class/vps/mipi_host0/param/stop_check_instart')
 
 
-def jpeg_to_compressed_img_msg(jpeg_img):
+def jpeg_to_compressed_img_msg(jpeg_img, timestamp):
     """
     Converts an OpenCV image to a ROS image without using the cv_bridge package,
     for compatibility purposes.
@@ -67,6 +67,7 @@ def jpeg_to_compressed_img_msg(jpeg_img):
     from sensor_msgs.msg import CompressedImage
 
     msg = CompressedImage()
+    msg.header.stamp = timestamp
     msg.format = 'jpeg'
     msg.data = jpeg_img
 
