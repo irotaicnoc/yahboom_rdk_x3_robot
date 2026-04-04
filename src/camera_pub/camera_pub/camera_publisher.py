@@ -94,7 +94,8 @@ class CameraPublisherNode(Node):
 
 
 def main(args=None):
-    rclpy.init(args=args)
+    if not rclpy.ok():
+        rclpy.init(args=args)
     kwargs = utils.args_from_yaml(config_path='/root/marco_ros2_ws/src/camera_pub/camera_pub/config.yaml')
     camera_publisher_node = CameraPublisherNode(**kwargs)
 
