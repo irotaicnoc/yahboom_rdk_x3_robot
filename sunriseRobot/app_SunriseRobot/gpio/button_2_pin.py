@@ -29,10 +29,7 @@ class Button2Pin:
         self.button_press_required_time = button_press_required_time
         self.is_pressed = False
         self.pressed_time = 0
-        try:
-            GPIO.cleanup(self.control_cable)
-        except Exception:
-            pass
+
         GPIO.setup(self.control_cable, GPIO.IN, pull_up_down='Pull-up')
 
     def press_listener(self):

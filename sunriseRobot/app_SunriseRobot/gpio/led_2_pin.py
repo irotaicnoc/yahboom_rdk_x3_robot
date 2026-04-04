@@ -19,10 +19,6 @@ class Led2Pin:
         except Exception:
             GPIO.setmode(mode)
         self.power_cable = power_cable
-        try:
-            GPIO.cleanup(self.power_cable)
-        except Exception:
-            pass
 
         # start with led turned off
         self.turned_on = False
