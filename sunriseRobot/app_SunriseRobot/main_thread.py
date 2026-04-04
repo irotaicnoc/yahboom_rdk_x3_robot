@@ -1,6 +1,7 @@
 import time
 import warnings
 import threading
+import Hobot.GPIO as GPIO
 
 import args
 import utils
@@ -308,4 +309,7 @@ def task_screen(**kwargs):
 
 
 if __name__ == '__main__':
-    main_loop()
+    try:
+        main_loop()
+    except:
+        GPIO.cleanup()
