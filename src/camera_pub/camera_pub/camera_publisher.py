@@ -1,8 +1,6 @@
 # ros2 libraries
 import rclpy
 from rclpy.node import Node
-from cv_bridge import CvBridge
-# from sensor_msgs.msg import Image
 from sensor_msgs.msg import CompressedImage
 
 # robot libraries
@@ -39,9 +37,6 @@ class CameraPublisherNode(Node):
         if self.is_open != 0:
             self.destroy_node()
 
-        # convert images from cv2 to ros message format
-        self.cv_ros_bridge = CvBridge()
-
         # publisher
         self.topic_name = camera_topic
         self.queue_size = queue_size
@@ -71,13 +66,9 @@ class CameraPublisherNode(Node):
         # self.get_logger().info(f'time_between_frames {self.time_between_frames}')
         # self.get_logger().info(f'image_width {self.image_width}')
         # self.get_logger().info(f'image_height {self.image_height}')
-        # ros2_image_message = self.cv_bridge.cv2_to_compressed_imgmsg(frame, dst_format='jpeg')
 
-        # ros2_image_message = self.cv_ros_bridge.cv2_to_imgmsg(frame, encoding='rgb8')
         current_time = self.get_clock().now()
         ros2_image_message = utils.jpeg_to_compressed_img_msg(frame, timestamp=current_time)
-        # self.get_logger().info(f'image {self.message_counter}, shape {frame.shape}')
-        # self.get_logger().info(f'encoding {ros2_image_message.encoding}')
         self.publisher.publish(ros2_image_message)
 
         # if self.message_counter % 100 == 0:
