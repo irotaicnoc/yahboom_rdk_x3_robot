@@ -273,6 +273,7 @@ class RobotHead:
             return
         self.ros2_vr_connection_status = 'processing'
         utils.start_generic_process(robot_head=self, name='Stopping ROS2')
+        # rclpy.shutdown()
         utils.kill_process_(process_name='ros2', verbose=self.verbose)
         self.led_3_pin.set_color(gc.GREEN)
         self.ros2_vr_connection_status = 'inactive'

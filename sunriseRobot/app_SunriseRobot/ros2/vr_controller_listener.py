@@ -82,7 +82,6 @@ class ThreadedVrControllerListener:
             try:
                 if self.controller_listener_node:
                     self.controller_listener_node.destroy_node()
-                rclpy.shutdown()
             except Exception:
                 pass
 
@@ -103,7 +102,6 @@ class ThreadedVrControllerListener:
     def delete_listener(self):
         if self.spin_thread is not None:
             self.controller_listener_node.destroy_node()
-            rclpy.shutdown()
             self.spin_thread.join()
             if self.verbose >= 2:
                 print('VR Controller listener stopped')

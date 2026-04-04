@@ -166,13 +166,10 @@ class ThreadedLidarListener:
         except Exception as e:
             utils.print_exception(exception=e, message='Lidar listener creation error')
             try:
-                self.lidar_listener_node.destroy_node()
-                rclpy.shutdown()
+                if self.lidar_listener_node:
+                    self.lidar_listener_node.destroy_node()
             except:
-                try:
-                    rclpy.shutdown()
-                except:
-                    pass
+                pass
 
     def get_raw_scan(self) -> LaserScan:
         if self.lidar_listener_node is not None:
@@ -198,7 +195,6 @@ class ThreadedLidarListener:
     def delete_listener(self):
         if self.spin_thread is not None:
             self.lidar_listener_node.destroy_node()
-            rclpy.shutdown()
             self.spin_thread.join()
             if self.verbose >= 2:
                 print('Lidar listener stopped')

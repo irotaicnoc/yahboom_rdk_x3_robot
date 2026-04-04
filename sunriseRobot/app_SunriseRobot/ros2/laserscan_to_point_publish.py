@@ -59,7 +59,6 @@ def main(args=None):
     rclpy.spin(robot_laser_scan_publisher)
 
     robot_laser_scan_publisher.destroy_node()
-    rclpy.shutdown()
 
 
 if __name__ == '__main__':
