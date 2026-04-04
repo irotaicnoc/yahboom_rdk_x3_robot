@@ -12,6 +12,7 @@ class MetaQuest3Controller(object):
         parameters = args.import_args(yaml_path=gc.CONFIG_FOLDER_PATH + 'meta_quest_3_controller.yaml', verbose=verbose)
         self.verbose = parameters['verbose']
         self.topic_name = parameters['topic_name']
+        print(f'VR Controller topic name: {self.topic_name}')
         self.controller_id = int(controller_id)
         self.controller_functions = controller_functions
         self._is_connected = False
@@ -54,6 +55,7 @@ class MetaQuest3Controller(object):
             return gc.STATE_DISCONNECT
 
         axes, buttons = self.controller_listener.get_axes_and_buttons()
+        print(f'From VR controller received axes:\n{axes}\nand buttons:\n{buttons}')
 
         if axes is None or buttons is None:
             # No data received yet, or connection lost
