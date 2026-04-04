@@ -21,10 +21,8 @@ def format_camera_frames(frame, width: int, height: int):
     # frame = cv2.cvtColor(src=frame, code=cv2.COLOR_YUV2RGB_NV12)
     frame = cv2.cvtColor(src=frame, code=cv2.COLOR_YUV2BGR_NV12)
     # logger().info(f'frame rgb shape: {frame.shape}')
-    # flip image horizontally (left and right are inverted for some reason)
-    # frame = cv2.flip(src=frame, flipCode=1)
-    # Flip the image vertically (upside down)
-    frame = cv2.flip(src=frame, flipCode=0)
+    # flip image both horizontally (left and right are inverted for some reason) AND vertically (upside down)
+    frame = cv2.flip(src=frame, flipCode=-1)
     # logger().info(f'flipped frame shape: {frame.shape}')
     return frame
 
