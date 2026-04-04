@@ -2,8 +2,6 @@ import warnings
 
 import Hobot.GPIO as GPIO
 
-import global_constants as gc
-
 
 class Led2Pin:
     def __init__(self, power_cable: int, mode: str = GPIO.BOARD):

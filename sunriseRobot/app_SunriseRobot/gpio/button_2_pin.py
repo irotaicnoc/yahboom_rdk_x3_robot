@@ -3,8 +3,6 @@ import warnings
 
 import Hobot.GPIO as GPIO
 
-import global_constants as gc
-
 
 class Button2Pin:
     def __init__(self,

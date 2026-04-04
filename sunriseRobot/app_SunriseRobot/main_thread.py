@@ -13,10 +13,10 @@ from physical_accessories.arm import Arm
 from physical_accessories.oled import Oled
 from physical_accessories.light import Light
 from controllers.ps2_controller import PS2Controller
-from controllers.meta_quest_3_controller import MetaQuest3Controller
 from controllers.controller_loop import ControllerLoop
-from controllers.controller_interface import ControllerFunctions
 from ethernet_connection.ethernet_server import EthernetServer
+from controllers.controller_interface import ControllerFunctions
+from controllers.meta_quest_3_controller import MetaQuest3Controller
 
 
 def main_loop(**kwargs):
