@@ -192,6 +192,8 @@ def task_controller(**kwargs):
             verbose=kwargs['verbose'],
         )
         meta_quest_3_controller = None
+        controller_iteration_counter = 0
+        print_every_n_iterations = 20
         while True:
             state = ps2_controller.event_listener()
             if state != gc.STATE_OK:
@@ -199,8 +201,13 @@ def task_controller(**kwargs):
                     break
                 time.sleep(1)
                 ps2_controller.reconnect()
+            if controller_iteration_counter % print_every_n_iterations == 0:
+                print(f'robot_head.ros2_vr_connection_status: {kwargs["robot_head"].ros2_vr_connection_status}')
+            if controller_iteration_counter % print_every_n_iterations == 0:
+                print(f'meta_quest_3_controller is None? {meta_quest_3_controller is None}')
             if meta_quest_3_controller is None:
                 if kwargs['robot_head'].ros2_vr_connection_status == 'active':
+                    print('Creating Meta Quest 3 controller...')
                     meta_quest_3_controller = MetaQuest3Controller(
                         controller_functions=controller_functions,
                         # differentiate this VR controller from the main one
@@ -210,11 +217,15 @@ def task_controller(**kwargs):
                     time.sleep(0.5)
             else:  # meta_quest_3_controller is not None
                 if kwargs['robot_head'].ros2_vr_connection_status == 'active':
+                    print('Listening to Meta Quest 3 controller...')
                     meta_quest_3_controller.event_listener()
                 elif kwargs['robot_head'].ros2_vr_connection_status == 'inactive':
+                    print('Deleting Meta Quest 3 controller...')
                     del meta_quest_3_controller
                     meta_quest_3_controller = None
                     time.sleep(0.5)
+
+            controller_iteration_counter += 1
 
     except Exception as e:
         utils.print_exception(exception=e, message='Controller error')

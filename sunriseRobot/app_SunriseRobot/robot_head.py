@@ -269,7 +269,7 @@ class RobotHead:
         # TODO: it does not really kill the process in the separate console
         if self.ros2_vr_connection_status == 'inactive':
             if self.verbose >= 2:
-                print('ROS2 is already inactive')
+                print('ROS2 VR connection is already inactive')
             return
         self.ros2_vr_connection_status = 'processing'
         utils.start_generic_process(robot_head=self, name='Stopping ROS2')
