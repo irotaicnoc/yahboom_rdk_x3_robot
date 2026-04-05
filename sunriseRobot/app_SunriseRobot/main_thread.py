@@ -102,15 +102,26 @@ def main_loop(**kwargs):
         kwargs=controller_loop_kwargs,
     )
     thread_controller_loop.start()
-    controller_kwargs = {
+
+    ps2_controller_kwargs = {
         'controller_id': parameters['controller_id'],
         'robot_head': robot_head,
         'robot_body': robot_body,
         'arm': arm,
         'verbose': parameters['verbose'],
     }
-    thread_controller = threading.Thread(target=task_controller, name='task_controller', kwargs=controller_kwargs)
-    thread_controller.start()
+    thread_ps2_controller = threading.Thread(target=task_ps2_controller, name='task_ps2_controller', kwargs=ps2_controller_kwargs)
+    thread_ps2_controller.start()
+
+    vr_controller_kwargs = {
+        'controller_id': parameters['controller_id'] + 1,
+        'robot_head': robot_head,
+        'robot_body': robot_body,
+        'arm': arm,
+        'verbose': parameters['verbose'],
+    }
+    thread_vr_controller = threading.Thread(target=task_vr_controller, name='task_vr_controller', kwargs=vr_controller_kwargs)
+    thread_vr_controller.start()
 
     # Oled SCREEN
     screen_kwargs = {
@@ -178,7 +189,7 @@ def main_loop(**kwargs):
 
 
 # USB wireless gamepad
-def task_controller(**kwargs):
+def task_ps2_controller(**kwargs):
     try:
         controller_functions = ControllerFunctions(
             robot_head=kwargs['robot_head'],
@@ -191,16 +202,32 @@ def task_controller(**kwargs):
             controller_id=kwargs['controller_id'],
             verbose=kwargs['verbose'],
         )
-        meta_quest_3_controller = None
-        controller_iteration_counter = 0
-        print_every_n_iterations = 20
         while True:
             state = ps2_controller.event_listener()
+            time.sleep(0.01)
             if state != gc.STATE_OK:
                 if state == gc.STATE_KEY_BREAK:
                     break
                 time.sleep(1)
                 ps2_controller.reconnect()
+
+    except Exception as e:
+        utils.print_exception(exception=e, message='PS2 Controller error')
+
+
+# USB wireless gamepad
+def task_vr_controller(**kwargs):
+    try:
+        controller_functions = ControllerFunctions(
+            robot_head=kwargs['robot_head'],
+            robot_body=kwargs['robot_body'],
+            arm=kwargs['arm'],
+            verbose=kwargs['verbose'],
+        )
+        meta_quest_3_controller = None
+        controller_iteration_counter = 0
+        print_every_n_iterations = 20
+        while True:
             if controller_iteration_counter % print_every_n_iterations == 0:
                 print(f'robot_head.ros2_vr_connection_status: {kwargs["robot_head"].ros2_vr_connection_status}')
             if controller_iteration_counter % print_every_n_iterations == 0:
@@ -219,6 +246,7 @@ def task_controller(**kwargs):
                 if kwargs['robot_head'].ros2_vr_connection_status == 'active':
                     print('Listening to Meta Quest 3 controller...')
                     meta_quest_3_controller.event_listener()
+                    time.sleep(0.01)
                 elif kwargs['robot_head'].ros2_vr_connection_status == 'inactive':
                     print('Deleting Meta Quest 3 controller...')
                     del meta_quest_3_controller
@@ -228,7 +256,7 @@ def task_controller(**kwargs):
             controller_iteration_counter += 1
 
     except Exception as e:
-        utils.print_exception(exception=e, message='Controller error')
+        utils.print_exception(exception=e, message='VR Controller error')
 
 
 def task_controller_loop(**kwargs):
