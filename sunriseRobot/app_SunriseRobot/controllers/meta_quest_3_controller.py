@@ -36,7 +36,6 @@ class MetaQuest3Controller(object):
         self._prev_buttons = [0] * 6
         self._prev_triggers_as_buttons = [False] * 4 # L1(grip), R1(grip), L2(index), R2(index)
 
-
     def __del__(self):
         self._is_connected = False
         self.controller_listener.delete_listener()

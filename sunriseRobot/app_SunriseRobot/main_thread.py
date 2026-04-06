@@ -215,7 +215,7 @@ def task_ps2_controller(**kwargs):
         utils.print_exception(exception=e, message='PS2 Controller error')
 
 
-# USB wireless gamepad
+# VR controllers
 def task_vr_controller(**kwargs):
     try:
         controller_functions = ControllerFunctions(
