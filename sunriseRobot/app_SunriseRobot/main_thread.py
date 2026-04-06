@@ -226,7 +226,7 @@ def task_vr_controller(**kwargs):
         )
         meta_quest_3_controller = None
         controller_iteration_counter = 0
-        print_every_n_iterations = 1000
+        print_every_n_iterations = 10000
         while True:
             if controller_iteration_counter % print_every_n_iterations == 0:
                 print(f'robot_head.ros2_vr_connection_status: {kwargs["robot_head"].ros2_vr_connection_status}')
