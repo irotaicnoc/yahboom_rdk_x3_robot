@@ -1,0 +1,7 @@
+verbose: 0
+
+topic_name: /audio_from_vr
+sample_rate: 16000
+channels: 1
+format: pyaudio.paInt16
+queue_size: 10

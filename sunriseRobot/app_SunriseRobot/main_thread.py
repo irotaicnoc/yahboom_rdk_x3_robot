@@ -15,9 +15,11 @@ from physical_accessories.oled import Oled
 from physical_accessories.light import Light
 from controllers.ps2_controller import PS2Controller
 from controllers.controller_loop import ControllerLoop
-from ethernet_connection.ethernet_server import EthernetServer
 from controllers.controller_interface import ControllerFunctions
 from controllers.meta_quest_3_controller import MetaQuest3Controller
+from ros2.vr_audio_publisher import VrAudioPublisher
+from ros2.vr_audio_subscriber import VrAudioSubscriber
+from ethernet_connection.ethernet_server import EthernetServer
 
 
 def main_loop(**kwargs):
@@ -307,6 +309,56 @@ def task_vision_agent(**kwargs):
 #                 robot_head.robot_mode = robot_head.robot_mode_list[0]
 #                 if robot_head.robot_sub_mode_dict[robot_head.robot_mode] is not None:
 #                     robot_head.robot_sub_mode = robot_head.robot_sub_mode_dict[robot_head.robot_mode][0]
+
+
+# Audio from VR
+def task_audio_from_vr(**kwargs):
+    try:
+        audio_from_vr_parameters = args.import_args(
+            yaml_path=gc.CONFIG_FOLDER_PATH + 'vr_audio_subscriber.yaml',
+            read_from_command_line=False,
+            **kwargs,
+        )
+        meta_quest_3_audio_receiver = None
+        while True:
+            if meta_quest_3_audio_receiver is None and kwargs['robot_head'].ros2_vr_connection_status == 'active':
+                meta_quest_3_audio_receiver = VrAudioSubscriber(**audio_from_vr_parameters)
+                time.sleep(0.5)
+            elif (meta_quest_3_audio_receiver is not None
+                  and kwargs['robot_head'].ros2_vr_connection_status == 'inactive'):
+                del meta_quest_3_audio_receiver
+                meta_quest_3_audio_receiver = None
+                time.sleep(0.5)
+            else:
+                time.sleep(0.01)
+
+    except Exception as e:
+        utils.print_exception(exception=e, message='Audio from VR error')
+
+
+# Audio from Robot
+def task_audio_from_robot(**kwargs):
+    try:
+        audio_from_robot_parameters = args.import_args(
+            yaml_path=gc.CONFIG_FOLDER_PATH + 'vr_audio_publisher.yaml',
+            read_from_command_line=False,
+            **kwargs,
+        )
+        meta_quest_3_audio_sender = None
+        while True:
+            if meta_quest_3_audio_sender is None and kwargs['robot_head'].ros2_vr_connection_status == 'active':
+                meta_quest_3_audio_sender = VrAudioPublisher(**audio_from_robot_parameters)
+                time.sleep(0.5)
+            elif (meta_quest_3_audio_sender is not None
+                  and kwargs['robot_head'].ros2_vr_connection_status == 'inactive'):
+                del meta_quest_3_audio_sender
+                meta_quest_3_audio_sender = None
+                time.sleep(0.5)
+            else:
+                time.sleep(0.01)
+
+    except Exception as e:
+        utils.print_exception(exception=e, message='Audio from Robot error')
 
 
 def task_button_2_pin_listener(**kwargs):
