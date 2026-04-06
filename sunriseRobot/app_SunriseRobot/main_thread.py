@@ -251,6 +251,8 @@ def task_vr_controller(**kwargs):
                     del meta_quest_3_controller
                     meta_quest_3_controller = None
                     time.sleep(0.5)
+                else:  # robot_head.ros2_vr_connection_status == 'processing'
+                    time.sleep(0.01)
 
             controller_iteration_counter += 1
 
