@@ -74,8 +74,8 @@ class ThreadedVrControllerListener:
             )
             self.spin_thread.start()
 
-            # if self.verbose >= 1:
-            print(f'VR Controller listener created and listening on {topic_name}')
+            if self.verbose >= 1:
+                print(f'VR Controller listener created and listening on {topic_name}')
 
         except Exception as e:
             utils.print_exception(exception=e, message='VR Controller listener creation error')

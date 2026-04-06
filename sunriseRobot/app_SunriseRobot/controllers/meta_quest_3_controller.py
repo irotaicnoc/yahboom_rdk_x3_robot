@@ -12,11 +12,11 @@ class MetaQuest3Controller(object):
         parameters = args.import_args(yaml_path=gc.CONFIG_FOLDER_PATH + 'meta_quest_3_controller.yaml', verbose=verbose)
         self.verbose = parameters['verbose']
         self.topic_name = parameters['topic_name']
-        print(f'VR Controller topic name: {self.topic_name}')
+        if self.verbose >= 1:
+            print(f'VR Controller topic name: {self.topic_name}')
         self.controller_id = int(controller_id)
         self.controller_functions = controller_functions
         self._is_connected = False
-        self.counter = 0
 
         try:
             # Start the ROS2 listener in the background
@@ -25,7 +25,7 @@ class MetaQuest3Controller(object):
             self.controller_functions.connected(controller_id=self.controller_id)
         except Exception as e:
             self._is_connected = False
-            print(f'Failed to initialize VR Controller {self.controller_id}:\n\t{e}')
+            # print(f'Failed to initialize VR Controller {self.controller_id}:\n\t{e}')
 
         # Thresholds to prevent joystick drift spam and convert analog triggers to buttons
         self.axis_deadzone = float(parameters['axis_deadzone'])
@@ -56,9 +56,6 @@ class MetaQuest3Controller(object):
             return gc.STATE_DISCONNECT
 
         axes, buttons = self.controller_listener.get_axes_and_buttons()
-        self.counter += 1
-        if self.counter % 300 == 0:
-            print(f'\tFrom VR controller received\n\t\taxes: {axes}\n\t\tand buttons: {buttons}')
 
         if axes is None or buttons is None:
             # No data received yet, or connection lost
