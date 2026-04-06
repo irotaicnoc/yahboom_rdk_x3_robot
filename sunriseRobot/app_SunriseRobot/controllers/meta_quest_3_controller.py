@@ -88,8 +88,8 @@ class MetaQuest3Controller(object):
                 self.controller_functions.button_start(bool(buttons[5]))
                 self._prev_buttons[5] = buttons[5]
             # Menu Button
-            if buttons[6] != self._prev_buttons[6]:
-                pass
+            # if buttons[6] != self._prev_buttons[6]:
+            #     pass
 
             # --- PROCESS TRIGGERS AS BUTTONS ---
             # Quest triggers are analog. We threshold them to > 0.5 to act as L1/R1/L2/R2
