@@ -34,7 +34,7 @@ class MetaQuest3Controller(object):
         # State tracking to only send commands on state CHANGE (simulating events)
         self._prev_axes = [0.0] * 8
         self._prev_buttons = [0] * 6
-        self._prev_triggers_as_buttons = [False] * 4 # L1(grip), R1(grip), L2(index), R2(index)
+        self._prev_triggers_as_buttons = [False] * 4  # L2 (grip), r2 (grip), L1 (index), R1 (index)
 
     def __del__(self):
         self._is_connected = False
@@ -92,25 +92,25 @@ class MetaQuest3Controller(object):
 
             # --- PROCESS TRIGGERS AS BUTTONS ---
             # Quest triggers are analog. We threshold them to > 0.5 to act as L1/R1/L2/R2
-            l1_pressed = axes[3] > self.trigger_threshold  # Left Grip
-            if l1_pressed != self._prev_triggers_as_buttons[0]:
-                self.controller_functions.button_l1(l1_pressed)
-                self._prev_triggers_as_buttons[0] = l1_pressed
-
-            r1_pressed = axes[7] > self.trigger_threshold  # Right Grip
-            if r1_pressed != self._prev_triggers_as_buttons[1]:
-                self.controller_functions.button_r1(r1_pressed)
-                self._prev_triggers_as_buttons[1] = r1_pressed
-
-            l2_pressed = axes[2] > self.trigger_threshold  # Left Index
-            if l2_pressed != self._prev_triggers_as_buttons[2]:
+            l2_pressed = axes[3] > self.trigger_threshold  # Left Grip
+            if l2_pressed != self._prev_triggers_as_buttons[0]:
                 self.controller_functions.button_l2(l2_pressed)
-                self._prev_triggers_as_buttons[2] = l2_pressed
+                self._prev_triggers_as_buttons[0] = l2_pressed
 
-            r2_pressed = axes[6] > self.trigger_threshold  # Right Index
-            if r2_pressed != self._prev_triggers_as_buttons[3]:
+            r2_pressed = axes[7] > self.trigger_threshold  # Right Grip
+            if r2_pressed != self._prev_triggers_as_buttons[1]:
                 self.controller_functions.button_r2(r2_pressed)
-                self._prev_triggers_as_buttons[3] = r2_pressed
+                self._prev_triggers_as_buttons[1] = r2_pressed
+
+            l1_pressed = axes[2] > self.trigger_threshold  # Left Index
+            if l1_pressed != self._prev_triggers_as_buttons[2]:
+                self.controller_functions.button_l1(l1_pressed)
+                self._prev_triggers_as_buttons[2] = l1_pressed
+
+            r1_pressed = axes[6] > self.trigger_threshold  # Right Index
+            if r1_pressed != self._prev_triggers_as_buttons[3]:
+                self.controller_functions.button_r1(r1_pressed, from_vr=True)
+                self._prev_triggers_as_buttons[3] = r1_pressed
 
             # --- PROCESS AXES ---
             # they are already thresholded on the VR side
