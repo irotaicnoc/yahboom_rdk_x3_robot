@@ -168,12 +168,14 @@ class ControllerFunctions(object):
                 # servo 6 open gripper
                 self.arm.update_speed_fk(servo_id=5, value=-value)
 
-    def button_r1(self, value: bool) -> None:
+    def button_r1(self, value: bool, from_vr: bool = False) -> None:
         if self.robot_head.robot_mode == gc.MODE_USER_CONTROLLED:
             # activate/deactivate ROS2
             if self.robot_head.robot_sub_mode == gc.SUB_MODE_WHEELS:
                 if value:
-                    self.robot_head.toggle_ros2_vr_connection()
+                    if not from_vr:
+                        self.robot_head.toggle_ros2_vr_connection()
+                        # if pressed from vr ignore, it would disconnect the robot
             elif (self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_FK or
                   self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_IK):
                 # servo 6 close gripper
