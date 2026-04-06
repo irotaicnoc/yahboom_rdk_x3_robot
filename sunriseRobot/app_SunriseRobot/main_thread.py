@@ -233,7 +233,8 @@ def task_vr_controller(**kwargs):
                 print(f'meta_quest_3_controller is None? {meta_quest_3_controller is None}')
             if meta_quest_3_controller is None:
                 if kwargs['robot_head'].ros2_vr_connection_status == 'active':
-                    print('Creating Meta Quest 3 controller...')
+                    if controller_iteration_counter % print_every_n_iterations == 0:
+                        print('Creating Meta Quest 3 controller...')
                     meta_quest_3_controller = MetaQuest3Controller(
                         controller_functions=controller_functions,
                         # differentiate this VR controller from the main one
@@ -243,15 +244,19 @@ def task_vr_controller(**kwargs):
                     time.sleep(0.5)
             else:  # meta_quest_3_controller is not None
                 if kwargs['robot_head'].ros2_vr_connection_status == 'active':
-                    print('Listening to Meta Quest 3 controller...')
+                    if controller_iteration_counter % print_every_n_iterations == 0:
+                        print('Listening to Meta Quest 3 controller...')
                     meta_quest_3_controller.event_listener()
                     time.sleep(0.01)
                 elif kwargs['robot_head'].ros2_vr_connection_status == 'inactive':
-                    print('Deleting Meta Quest 3 controller...')
+                    if controller_iteration_counter % print_every_n_iterations == 0:
+                        print('Deleting Meta Quest 3 controller...')
                     del meta_quest_3_controller
                     meta_quest_3_controller = None
                     time.sleep(0.5)
                 else:  # robot_head.ros2_vr_connection_status == 'processing'
+                    if controller_iteration_counter % print_every_n_iterations == 0:
+                        print('Meta Quest 3 changing state...')
                     time.sleep(0.01)
 
             controller_iteration_counter += 1
