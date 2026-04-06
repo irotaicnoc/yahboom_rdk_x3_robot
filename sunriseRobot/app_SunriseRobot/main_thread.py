@@ -247,7 +247,6 @@ def task_vr_controller(**kwargs):
                     if controller_iteration_counter % print_every_n_iterations == 0:
                         print('\tListening to Meta Quest 3 controller...')
                     meta_quest_3_controller.event_listener()
-                    time.sleep(0.01)
                 elif kwargs['robot_head'].ros2_vr_connection_status == 'inactive':
                     if controller_iteration_counter % print_every_n_iterations == 0:
                         print('\tDeleting Meta Quest 3 controller...')
@@ -257,8 +256,7 @@ def task_vr_controller(**kwargs):
                 else:  # robot_head.ros2_vr_connection_status == 'processing'
                     if controller_iteration_counter % print_every_n_iterations == 0:
                         print('\tMeta Quest 3 changing state...')
-                    time.sleep(0.01)
-
+            time.sleep(0.01)
             controller_iteration_counter += 1
 
     except Exception as e:
