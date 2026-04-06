@@ -12,7 +12,8 @@ class VrControllerListener(Node):
     def __init__(self,
                  topic_name: str,
                  queue_size: int,
-                 input_expiration_time: float = 0.5):
+                 input_expiration_time: float = 0.5,
+                 ):
         super().__init__('vr_controller_listener')
 
         self.subscription = self.create_subscription(
