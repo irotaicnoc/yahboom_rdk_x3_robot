@@ -16,6 +16,7 @@ class MetaQuest3Controller(object):
         self.controller_id = int(controller_id)
         self.controller_functions = controller_functions
         self._is_connected = False
+        self.counter = 0
 
         try:
             # Start the ROS2 listener in the background
@@ -55,7 +56,9 @@ class MetaQuest3Controller(object):
             return gc.STATE_DISCONNECT
 
         axes, buttons = self.controller_listener.get_axes_and_buttons()
-        print(f'From VR controller received axes:\n{axes}\nand buttons:\n{buttons}')
+        self.counter += 1
+        if self.counter % 300 == 0:
+            print(f'\tFrom VR controller received\n\t\taxes: {axes}\n\t\tand buttons: {buttons}')
 
         if axes is None or buttons is None:
             # No data received yet, or connection lost
