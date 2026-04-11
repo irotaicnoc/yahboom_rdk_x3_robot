@@ -15,6 +15,7 @@ class VrAudioPublisher(Node):
                  format: str,
                  ):
         super().__init__('vr_audio_publisher')
+        print(f'VrAudioPublisher starting...')
         self.publisher = self.create_publisher(UInt8MultiArray, topic_name, 10)
         self._running = True
 
