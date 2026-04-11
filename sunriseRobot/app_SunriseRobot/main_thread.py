@@ -347,11 +347,12 @@ def task_audio_from_vr(**kwargs):
         audio_from_vr_parameters = args.import_args(
             yaml_path=gc.CONFIG_FOLDER_PATH + 'vr_audio_subscriber.yaml',
             read_from_command_line=False,
+            kwargs={'verbose': kwargs['verbose']},
         )
         meta_quest_3_audio_receiver = None
         while True:
             if meta_quest_3_audio_receiver is None and kwargs['robot_head'].ros2_vr_connection_status == 'active':
-                meta_quest_3_audio_receiver = VrAudioSubscriber(**audio_from_vr_parameters, verbose=kwargs['verbose'])
+                meta_quest_3_audio_receiver = VrAudioSubscriber(**audio_from_vr_parameters)
                 time.sleep(0.5)
             elif (meta_quest_3_audio_receiver is not None
                   and kwargs['robot_head'].ros2_vr_connection_status == 'inactive'):
@@ -371,11 +372,12 @@ def task_audio_from_robot(**kwargs):
         audio_from_robot_parameters = args.import_args(
             yaml_path=gc.CONFIG_FOLDER_PATH + 'vr_audio_publisher.yaml',
             read_from_command_line=False,
+            kwargs={'verbose': kwargs['verbose']},
         )
         meta_quest_3_audio_sender = None
         while True:
             if meta_quest_3_audio_sender is None and kwargs['robot_head'].ros2_vr_connection_status == 'active':
-                meta_quest_3_audio_sender = VrAudioPublisher(**audio_from_robot_parameters, verbose=kwargs['verbose'])
+                meta_quest_3_audio_sender = VrAudioPublisher(**audio_from_robot_parameters)
                 time.sleep(0.5)
             elif (meta_quest_3_audio_sender is not None
                   and kwargs['robot_head'].ros2_vr_connection_status == 'inactive'):
