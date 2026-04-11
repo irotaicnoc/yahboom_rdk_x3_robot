@@ -34,6 +34,7 @@ class VrAudioSubscriber(Node):
         print('VrAudioSubscriber started, listening on ' + topic_name)
 
     def _audio_callback(self, msg: UInt8MultiArray):
+        print('Received audio from vr')
         self.stream.write(bytes(msg.data))
 
     def destroy(self):
