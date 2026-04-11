@@ -133,7 +133,10 @@ def main_loop(**kwargs):
     )
     thread_vr_controller.start()
 
-    audio_from_vr_kwargs = {'verbose': parameters['verbose']}
+    audio_from_vr_kwargs = {
+        'robot_head': robot_head,
+        'verbose': parameters['verbose'],
+    }
     thread_audio_from_vr = threading.Thread(
         target=task_audio_from_vr,
         name='task_audio_from_vr',
@@ -141,7 +144,10 @@ def main_loop(**kwargs):
     )
     thread_audio_from_vr.start()
 
-    audio_from_robot_kwargs = {'verbose': parameters['verbose']}
+    audio_from_robot_kwargs = {
+        'robot_head': robot_head,
+        'verbose': parameters['verbose'],
+    }
     thread_audio_from_robot = threading.Thread(
         target=task_audio_from_robot,
         name='task_audio_from_robot',
