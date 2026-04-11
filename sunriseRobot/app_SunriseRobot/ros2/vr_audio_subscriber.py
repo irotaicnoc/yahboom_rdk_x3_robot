@@ -34,7 +34,7 @@ class VrAudioSubscriber(Node):
         )
         self.pa = pyaudio.PyAudio()
         self.stream = self.pa.open(
-            format=format,
+            format=parameters['format'],
             channels=parameters['channels'],
             rate=parameters['sample_rate'],
             output=True,
@@ -81,7 +81,7 @@ class ThreadedVrAudioSubscriber:
                 sample_rate=parameters['sample_rate'],
                 channels=parameters['channels'],
                 chunk_size=parameters['chunk_size'],
-                format=format,
+                format=parameters['format'],
                 input_expiration_time=parameters['input_expiration_time'],
             )
             self._thread = threading.Thread(

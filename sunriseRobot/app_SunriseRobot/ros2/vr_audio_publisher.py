@@ -31,7 +31,7 @@ class VrAudioPublisher(Node):
         device_index = self._find_respeaker_device()
 
         self.stream = self.pa.open(
-            format=format,
+            format=parameters['format'],
             channels=parameters['channels'],
             rate=parameters['sample_rate'],
             input=True,
