@@ -125,6 +125,22 @@ def main_loop(**kwargs):
     thread_vr_controller = threading.Thread(target=task_vr_controller, name='task_vr_controller', kwargs=vr_controller_kwargs)
     thread_vr_controller.start()
 
+    audio_from_vr_kwargs = {'verbose': parameters['verbose']}
+    thread_audio_from_vr = threading.Thread(
+        target=task_audio_from_vr,
+        name='task_audio_from_vr',
+        kwargs=audio_from_vr_kwargs,
+    )
+    thread_audio_from_vr.start()
+
+    audio_from_robot_kwargs = {'verbose': parameters['verbose']}
+    thread_audio_from_robot = threading.Thread(
+        target=task_audio_from_robot,
+        name='task_audio_from_robot',
+        kwargs=audio_from_robot_kwargs,
+    )
+    thread_audio_from_robot.start()
+
     # Oled SCREEN
     screen_kwargs = {
         'robot_body': robot_body,
