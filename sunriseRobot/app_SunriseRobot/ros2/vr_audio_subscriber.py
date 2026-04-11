@@ -15,6 +15,7 @@ class VrAudioSubscriber(Node):
                  channels: int,
                  format: str,
                  input_expiration_time: float = 0.5,
+                 verbose: int = 0,
                  ):
         super().__init__('vr_audio_subscriber')
         self.subscription = self.create_subscription(

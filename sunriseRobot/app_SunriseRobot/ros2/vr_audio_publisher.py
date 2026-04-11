@@ -13,6 +13,7 @@ class VrAudioPublisher(Node):
                  channels: int,
                  chunk_size: int,
                  format: str,
+                 verbose: int = 0,
                  ):
         super().__init__('vr_audio_publisher')
         self.publisher = self.create_publisher(UInt8MultiArray, topic_name, 10)
