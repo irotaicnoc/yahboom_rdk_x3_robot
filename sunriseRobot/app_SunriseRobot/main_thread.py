@@ -233,7 +233,7 @@ def task_vr_controller(**kwargs):
                     meta_quest_3_controller = MetaQuest3Controller(
                         controller_functions=controller_functions,
                         # differentiate this VR controller from the main one
-                        controller_id=kwargs['controller_id'] + 1,
+                        controller_id=kwargs['controller_id'],
                         verbose=kwargs['verbose'],
                     )
                     time.sleep(0.5)
