@@ -3,20 +3,28 @@ import threading
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import UInt8MultiArray
+
+import args
 import utils
+import global_constants as gc
 
 
 class VrAudioPublisher(Node):
-    def __init__(self,
-                 topic_name: str,
-                 sample_rate: int,
-                 channels: int,
-                 chunk_size: int,
-                 format: str,
-                 verbose: int = 0,
-                 ):
+    def __init__(self, **kwargs):
+        # topic_name: str,
+        # sample_rate: int,
+        # channels: int,
+        # chunk_size: int,
+        # format: str,
+        # verbose: int = 0,
+        parameters = args.import_args(
+            yaml_path=gc.CONFIG_FOLDER_PATH + 'vr_audio_publisher.yaml',
+            read_from_command_line=False,
+            **kwargs,
+        )
+
         super().__init__('vr_audio_publisher')
-        self.publisher = self.create_publisher(UInt8MultiArray, topic_name, 10)
+        self.publisher = self.create_publisher(UInt8MultiArray, parameters['topic_name'], 10)
         self._running = True
 
         self.pa = pyaudio.PyAudio()
@@ -24,11 +32,11 @@ class VrAudioPublisher(Node):
 
         self.stream = self.pa.open(
             format=format,
-            channels=channels,
-            rate=sample_rate,
+            channels=parameters['channels'],
+            rate=parameters['sample_rate'],
             input=True,
             input_device_index=device_index,
-            frames_per_buffer=chunk_size,
+            frames_per_buffer=parameters['chunk_size'],
             stream_callback=self._audio_callback,
         )
         self.stream.start_stream()
@@ -60,26 +68,31 @@ class VrAudioPublisher(Node):
 
 
 class ThreadedVrAudioPublisher:
-    def __init__(self,
-                 topic_name: str,
-                 sample_rate: int,
-                 channels: int,
-                 chunk_size: int,
-                 format: str,
-                 verbose: int = 0,
-                 ):
-        self.verbose = verbose
+    def __init__(self, **kwargs):
+        # topic_name: str,
+        # sample_rate: int,
+        # channels: int,
+        # chunk_size: int,
+        # format: str,
+        # verbose: int = 0,
+        parameters = args.import_args(
+            yaml_path=gc.CONFIG_FOLDER_PATH + 'vr_audio_publisher.yaml',
+            read_from_command_line=False,
+            **kwargs,
+        )
+
+        self.verbose = parameters['verbose']
         self._node = None
         self._thread = None
         try:
             if not rclpy.ok():
                 rclpy.init()
             self._node = VrAudioPublisher(
-                topic_name=topic_name,
-                sample_rate=sample_rate,
-                channels=channels,
-                chunk_size=chunk_size,
-                format=format,
+                topic_name=parameters['topic_name'],
+                sample_rate=parameters['sample_rate'],
+                channels=parameters['channels'],
+                chunk_size=parameters['chunk_size'],
+                format=parameters['format'],
             )
             self._thread = threading.Thread(
                 target=rclpy.spin,
