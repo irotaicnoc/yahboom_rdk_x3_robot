@@ -11,6 +11,7 @@ class VrAudioSubscriber(Node):
                  topic_name: str,
                  queue_size: int,
                  sample_rate: int,
+                 chunk_size: int,
                  channels: int,
                  format: str,
                  input_expiration_time: float = 0.5,
@@ -28,7 +29,7 @@ class VrAudioSubscriber(Node):
             channels=channels,
             rate=sample_rate,
             output=True,
-            frames_per_buffer=1024,
+            frames_per_buffer=chunk_size,
         )
         print('VrAudioSubscriber started, listening on ' + topic_name)
 
@@ -48,6 +49,7 @@ class ThreadedVrAudioSubscriber:
                  queue_size: int,
                  sample_rate: int,
                  channels: int,
+                 chunk_size: int,
                  format: str,
                  input_expiration_time: float = 0.5,
                  verbose: int = 0,
@@ -63,6 +65,7 @@ class ThreadedVrAudioSubscriber:
                 queue_size=queue_size,
                 sample_rate=sample_rate,
                 channels=channels,
+                chunk_size=chunk_size,
                 format=format,
                 input_expiration_time=input_expiration_time,
             )
