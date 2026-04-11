@@ -322,15 +322,17 @@ def task_audio_from_vr(**kwargs):
         meta_quest_3_audio_receiver = None
         while True:
             if meta_quest_3_audio_receiver is None and kwargs['robot_head'].ros2_vr_connection_status == 'active':
+                print('Starting VR audio receiver...')
                 meta_quest_3_audio_receiver = VrAudioSubscriber(**audio_from_vr_parameters)
                 time.sleep(0.5)
             elif (meta_quest_3_audio_receiver is not None
                   and kwargs['robot_head'].ros2_vr_connection_status == 'inactive'):
+                print('Stopping VR audio receiver...')
                 del meta_quest_3_audio_receiver
                 meta_quest_3_audio_receiver = None
                 time.sleep(0.5)
             else:
-                time.sleep(0.01)
+                time.sleep(0.05)
 
     except Exception as e:
         utils.print_exception(exception=e, message='Audio from VR error')
@@ -347,15 +349,17 @@ def task_audio_from_robot(**kwargs):
         meta_quest_3_audio_sender = None
         while True:
             if meta_quest_3_audio_sender is None and kwargs['robot_head'].ros2_vr_connection_status == 'active':
+                print('Starting VR audio sender...')
                 meta_quest_3_audio_sender = VrAudioPublisher(**audio_from_robot_parameters)
                 time.sleep(0.5)
             elif (meta_quest_3_audio_sender is not None
                   and kwargs['robot_head'].ros2_vr_connection_status == 'inactive'):
+                print('Stopping VR audio sender...')
                 del meta_quest_3_audio_sender
                 meta_quest_3_audio_sender = None
                 time.sleep(0.5)
             else:
-                time.sleep(0.01)
+                time.sleep(0.05)
 
     except Exception as e:
         utils.print_exception(exception=e, message='Audio from Robot error')
