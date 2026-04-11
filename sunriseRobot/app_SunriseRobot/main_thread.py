@@ -347,7 +347,7 @@ def task_audio_from_vr(**kwargs):
         audio_from_vr_parameters = args.import_args(
             yaml_path=gc.CONFIG_FOLDER_PATH + 'vr_audio_subscriber.yaml',
             read_from_command_line=False,
-            **kwargs,
+            kwargs=kwargs['verbose'],
         )
         meta_quest_3_audio_receiver = None
         while True:
@@ -372,7 +372,7 @@ def task_audio_from_robot(**kwargs):
         audio_from_robot_parameters = args.import_args(
             yaml_path=gc.CONFIG_FOLDER_PATH + 'vr_audio_publisher.yaml',
             read_from_command_line=False,
-            **kwargs,
+            kwargs=kwargs['verbose'],
         )
         meta_quest_3_audio_sender = None
         while True:
