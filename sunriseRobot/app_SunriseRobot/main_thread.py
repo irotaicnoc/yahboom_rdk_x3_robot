@@ -112,7 +112,11 @@ def main_loop(**kwargs):
         'arm': arm,
         'verbose': parameters['verbose'],
     }
-    thread_ps2_controller = threading.Thread(target=task_ps2_controller, name='task_ps2_controller', kwargs=ps2_controller_kwargs)
+    thread_ps2_controller = threading.Thread(
+        target=task_ps2_controller,
+        name='task_ps2_controller',
+        kwargs=ps2_controller_kwargs,
+    )
     thread_ps2_controller.start()
 
     vr_controller_kwargs = {
@@ -122,7 +126,11 @@ def main_loop(**kwargs):
         'arm': arm,
         'verbose': parameters['verbose'],
     }
-    thread_vr_controller = threading.Thread(target=task_vr_controller, name='task_vr_controller', kwargs=vr_controller_kwargs)
+    thread_vr_controller = threading.Thread(
+        target=task_vr_controller,
+        name='task_vr_controller',
+        kwargs=vr_controller_kwargs,
+    )
     thread_vr_controller.start()
 
     audio_from_vr_kwargs = {'verbose': parameters['verbose']}
