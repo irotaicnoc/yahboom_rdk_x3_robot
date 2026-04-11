@@ -34,7 +34,7 @@ class VrAudioPublisher(Node):
         self.stream.start_stream()
         print(f'VrAudioPublisher started on device index {device_index}')
 
-    def _find_respeaker_device(self) -> int | None:
+    def _find_respeaker_device(self) -> int:
         """Find the ReSpeaker device index automatically."""
         for i in range(self.pa.get_device_count()):
             info = self.pa.get_device_info_by_index(i)
