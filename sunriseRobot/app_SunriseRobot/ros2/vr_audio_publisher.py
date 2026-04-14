@@ -1,11 +1,9 @@
 import pyaudio
-import threading
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import UInt8MultiArray
 
 import args
-import utils
 import global_constants as gc
 
 
@@ -65,45 +63,3 @@ class VrAudioPublisher(Node):
         self.stream.close()
         self.pa.terminate()
         self.destroy_node()
-
-
-class ThreadedVrAudioPublisher:
-    def __init__(self, **kwargs):
-        # topic_name: str,
-        # sample_rate: int,
-        # channels: int,
-        # chunk_size: int,
-        # format: str,
-        # verbose: int = 0,
-        parameters = args.import_args(
-            yaml_path=gc.CONFIG_FOLDER_PATH + 'vr_audio_publisher.yaml',
-            read_from_command_line=False,
-            **kwargs,
-        )
-
-        self.verbose = parameters['verbose']
-        self._node = None
-        self._thread = None
-        try:
-            if not rclpy.ok():
-                rclpy.init()
-            self._node = VrAudioPublisher(
-                topic_name=parameters['topic_name'],
-                sample_rate=parameters['sample_rate'],
-                channels=parameters['channels'],
-                chunk_size=parameters['chunk_size'],
-                format=parameters['format'],
-            )
-            self._thread = threading.Thread(
-                target=rclpy.spin,
-                name='vr_audio_publisher_thread',
-                args=(self._node,),
-                daemon=True,
-            )
-            self._thread.start()
-        except Exception as e:
-            utils.print_exception(exception=e, message='VrAudioPublisher init error')
-
-    def __del__(self):
-        if self._node:
-            self._node.destroy()
