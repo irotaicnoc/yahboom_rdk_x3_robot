@@ -7,6 +7,7 @@ import args
 import global_constants as gc
 
 
+# ReSpeaker Mic Array v2.0 (Seeed Studio)
 class VrAudioPublisher(Node):
     def __init__(self, **kwargs):
         # topic_name: str,
