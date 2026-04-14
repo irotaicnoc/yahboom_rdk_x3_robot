@@ -46,8 +46,7 @@ class VrAudioPublisher(Node):
             if 'ReSpeaker' in info['name'] and info['maxInputChannels'] > 0:
                 print(f'Found ReSpeaker at index {i}: {info["name"]}')
                 return i
-        print('ReSpeaker not found, using default input device')
-        return None  # falls back to system default
+        raise RuntimeError('ReSpeaker device not found. Check USB connection.')
 
     def _audio_callback(self, in_data, frame_count, time_info, status):
         if self._running:
