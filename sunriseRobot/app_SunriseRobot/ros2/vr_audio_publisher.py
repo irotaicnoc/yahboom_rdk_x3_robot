@@ -1,4 +1,6 @@
 import pyaudio
+import numpy as np
+
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import UInt8MultiArray
@@ -51,8 +53,11 @@ class VrAudioPublisher(Node):
 
     def _audio_callback(self, in_data, frame_count, time_info, status):
         if self._running:
+            # in_data is interleaved 6-channel int16, extract channel 0
+            audio = np.frombuffer(in_data, dtype=np.int16)
+            mono = audio[0::6].tobytes()
             msg = UInt8MultiArray()
-            msg.data = list(in_data)
+            msg.data = list(mono)
             self.publisher.publish(msg)
         return (None, pyaudio.paContinue)
 
