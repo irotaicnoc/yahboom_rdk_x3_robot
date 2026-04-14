@@ -361,7 +361,6 @@ def task_audio_from_vr(**kwargs):
                 rclpy.spin_once(meta_quest_3_audio_receiver, timeout_sec=0.05)
             else:
                 time.sleep(0.05)
-
     except Exception as e:
         utils.print_exception(exception=e, message='Audio from VR error')
 
@@ -383,7 +382,6 @@ def task_audio_from_robot(**kwargs):
                 time.sleep(0.5)
             else:
                 time.sleep(0.05)
-
     except Exception as e:
         utils.print_exception(exception=e, message='Audio from Robot error')
 

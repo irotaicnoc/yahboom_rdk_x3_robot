@@ -24,7 +24,6 @@ class VrAudioPublisher(Node):
         super().__init__('vr_audio_publisher')
         self.publisher = self.create_publisher(UInt8MultiArray, parameters['topic_name'], 10)
         self._running = True
-
         self.pa = pyaudio.PyAudio()
         device_index = self._find_respeaker_device()
 
