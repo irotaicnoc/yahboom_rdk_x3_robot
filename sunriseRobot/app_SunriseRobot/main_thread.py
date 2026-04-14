@@ -357,6 +357,8 @@ def task_audio_from_vr(**kwargs):
                 meta_quest_3_audio_receiver.destroy()
                 meta_quest_3_audio_receiver = None
                 time.sleep(0.5)
+            elif meta_quest_3_audio_receiver is not None:
+                rclpy.spin_once(meta_quest_3_audio_receiver, timeout_sec=0.05)
             else:
                 time.sleep(0.05)
 
