@@ -354,7 +354,7 @@ def task_audio_from_vr(**kwargs):
                 time.sleep(0.5)
             elif (meta_quest_3_audio_receiver is not None
                   and kwargs['robot_head'].ros2_vr_connection_status == 'inactive'):
-                del meta_quest_3_audio_receiver
+                meta_quest_3_audio_receiver.destroy()
                 meta_quest_3_audio_receiver = None
                 time.sleep(0.5)
             else:
@@ -376,7 +376,7 @@ def task_audio_from_robot(**kwargs):
                 time.sleep(0.5)
             elif (meta_quest_3_audio_sender is not None
                   and kwargs['robot_head'].ros2_vr_connection_status == 'inactive'):
-                del meta_quest_3_audio_sender
+                meta_quest_3_audio_sender.destroy()
                 meta_quest_3_audio_sender = None
                 time.sleep(0.5)
             else:
