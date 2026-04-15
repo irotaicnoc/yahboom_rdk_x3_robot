@@ -62,6 +62,7 @@ class MetaQuest3Controller(object):
 
         try:
             # --- PROCESS BUTTONS ---
+            # Buttons 3 (Y) and 6 (Menu) are used by the VR app
             # A (South)
             if buttons[0] != self._prev_buttons[0]:
                 self.controller_functions.button_south(bool(buttons[0]))
@@ -75,18 +76,17 @@ class MetaQuest3Controller(object):
                 self.controller_functions.button_west(bool(buttons[2]))
                 self._prev_buttons[2] = buttons[2]
             # Y (North)
-            if buttons[3] != self._prev_buttons[3]:
-                self.controller_functions.button_north(bool(buttons[3]))
-                self._prev_buttons[3] = buttons[3]
+            # if buttons[3] != self._prev_buttons[3]:
+            #     self.controller_functions.button_north(bool(buttons[3]))
+            #     self._prev_buttons[3] = buttons[3]
             # Left Stick Click
             if buttons[4] != self._prev_buttons[4]:
                 self.controller_functions.button_select(bool(buttons[4]))
                 self._prev_buttons[4] = buttons[4]
-            # Buttons 5 and 6 are used by the VR app
             # Right Stick Click
-            # if buttons[5] != self._prev_buttons[5]:
-            #     self.controller_functions.button_start(bool(buttons[5]))
-            #     self._prev_buttons[5] = buttons[5]
+            if buttons[5] != self._prev_buttons[5]:
+                self.controller_functions.button_start(bool(buttons[5]))
+                self._prev_buttons[5] = buttons[5]
             # Menu Button
             # if buttons[6] != self._prev_buttons[6]:
             #     pass
