@@ -260,6 +260,8 @@ class RobotHead:
         if self.gui_mode:
             os.system('gnome-terminal -- bash -c "source /opt/ros/foxy/setup.bash;cd /root/marco_ros2_ws/;'
                       'source install/local_setup.bash;ros2 launch ros_tcp_endpoint endpoint_launch.py;exec bash"')
+            os.system('gnome-terminal -- bash -c "source /opt/ros/foxy/setup.bash;cd /root/marco_ros2_ws/;'
+                      'source install/local_setup.bash;ros2 launch oradar_lidar ms200_scan.launch.py;exec bash"')
         else:
             os.system(f'{gc.SCRIPT_FOLDER_PATH}start_ros2_no_gui.sh')
         self.ros2_vr_connection_status = 'active'
@@ -275,6 +277,7 @@ class RobotHead:
         utils.start_generic_process(robot_head=self, name='Stopping ROS2')
         # rclpy.shutdown()
         utils.kill_process_(process_name='ros2', verbose=self.verbose)
+        utils.kill_process_(process_name='lidar', verbose=self.verbose)
         self.led_3_pin.set_color(gc.GREEN)
         self.ros2_vr_connection_status = 'inactive'
         utils.finish_generic_process(robot_head=self)
