@@ -8,7 +8,6 @@
 # - import project
 # - execute launch file:
 #   - start tcp server
-#   - start controller subscriber (listener)
 #   - start camera publisher (sender)
 
 ###############################################################################
