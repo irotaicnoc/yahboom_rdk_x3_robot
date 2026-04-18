@@ -6,3 +6,4 @@ channels: 1
 format: 8  # paInt16
 queue_size: 10
 chunk_size: 1024
+gain: 2.0

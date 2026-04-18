@@ -1,5 +1,6 @@
 import pyaudio
 import threading
+import numpy as np
 
 import rclpy
 from rclpy.node import Node
@@ -9,6 +10,14 @@ import args
 import utils
 import global_constants as gc
 
+_FORMAT_DTYPE = {
+    pyaudio.paInt16:   (np.int16,   -2**15, 2**15 - 1),
+    pyaudio.paInt32:   (np.int32,   -2**31, 2**31 - 1),
+    pyaudio.paInt8:    (np.int8,    -2**7,  2**7 - 1),
+    pyaudio.paUInt8:   (np.uint8,    0,     2**8 - 1),   # center is 128
+    pyaudio.paFloat32: (np.float32, -1.0,   1.0),
+}
+
 
 class VrAudioSubscriber(Node):
     def __init__(self, **kwargs):
@@ -17,16 +26,22 @@ class VrAudioSubscriber(Node):
         # sample_rate: int,
         # chunk_size: int,
         # channels: int,
-        # format: str,
+        # format: int,
         # input_expiration_time: float = 0.5,
+        # gain: float = 1.0,
         # verbose: int = 0,
         parameters = args.import_args(
             yaml_path=gc.CONFIG_FOLDER_PATH + 'vr_audio_subscriber.yaml',
             read_from_command_line=False,
             **kwargs,
         )
-
         super().__init__('vr_audio_subscriber')
+
+        self.gain = parameters['gain']
+        fmt = parameters['format']
+        self.dtype, self.sample_min, self.sample_max = _FORMAT_DTYPE[fmt]
+        self.is_unsigned = fmt == pyaudio.paUInt8
+
         self.subscription = self.create_subscription(
             UInt8MultiArray,
             parameters['topic_name'],
@@ -44,7 +59,25 @@ class VrAudioSubscriber(Node):
         print(f'VrAudioSubscriber started, listening on {parameters["topic_name"]}')
 
     def _audio_callback(self, msg: UInt8MultiArray):
-        self.stream.write(bytes(msg.data))
+        if self.gain == 1.0:
+            self.stream.write(bytes(msg.data))
+            return
+
+        samples = np.frombuffer(bytes(msg.data), dtype=self.dtype)
+
+        if self.is_unsigned:
+            # uint8 PCM is centered at 128
+            centered = samples.astype(np.float32) - 128.0
+            amplified = np.clip(centered * self.gain, -128.0, 127.0) + 128.0
+            out = amplified.astype(self.dtype)
+        elif np.issubdtype(self.dtype, np.integer):
+            # promote to int64 so the multiply can't overflow before clipping
+            amplified = samples.astype(np.int64) * self.gain
+            out = np.clip(amplified, self.sample_min, self.sample_max).astype(self.dtype)
+        else:  # float32
+            out = np.clip(samples * self.gain, -1.0, 1.0).astype(self.dtype)
+
+        self.stream.write(out.tobytes())
 
     def destroy(self):
         self.stream.stop_stream()
@@ -62,6 +95,7 @@ class ThreadedVrAudioSubscriber:
         # chunk_size: int,
         # format: str,
         # input_expiration_time: float = 0.5,
+        # gain: float = 1.0,
         # verbose: int = 0,
         parameters = args.import_args(
             yaml_path=gc.CONFIG_FOLDER_PATH + 'vr_audio_subscriber.yaml',
@@ -82,6 +116,7 @@ class ThreadedVrAudioSubscriber:
                 channels=parameters['channels'],
                 chunk_size=parameters['chunk_size'],
                 format=parameters['format'],
+                gain=parameters['gain'],
                 input_expiration_time=parameters['input_expiration_time'],
             )
             self._thread = threading.Thread(
