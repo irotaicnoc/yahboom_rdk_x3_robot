@@ -73,7 +73,7 @@ class MetaQuest3Controller(object):
                 self._prev_buttons[1] = buttons[1]
             # X (West)
             if buttons[2] != self._prev_buttons[2]:
-                self.controller_functions.button_west(bool(buttons[2]))
+                self.controller_functions.button_west(bool(buttons[2]), from_vr=True)
                 self._prev_buttons[2] = buttons[2]
             # Y (North)
             # if buttons[3] != self._prev_buttons[3]:

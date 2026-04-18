@@ -132,12 +132,13 @@ class ControllerFunctions(object):
                     or self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_IK):
                 self.memorize_or_set_arm_position(button='button_east', value=value)
 
-    def button_west(self, value: bool) -> None:
+    def button_west(self, value: bool, from_vr=True) -> None:
         if self.robot_head.robot_mode == gc.MODE_USER_CONTROLLED:
             if self.robot_head.robot_sub_mode == gc.SUB_MODE_WHEELS:
                 if value:
-                    if self.cooldown_ended(button='button_west'):
-                        self.robot_head.toggle_lidar_listener()
+                    if not from_vr:
+                        if self.cooldown_ended(button='button_west'):
+                            self.robot_head.toggle_lidar_listener()
             if (self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_FK
                     or self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_IK):
                 self.memorize_or_set_arm_position(button='button_west', value=value)
