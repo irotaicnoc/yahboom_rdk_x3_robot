@@ -157,12 +157,13 @@ class ControllerFunctions(object):
             if value:
                 self.internal_light.next_light_effect()
 
-    def button_l1(self, value: bool) -> None:
+    def button_l1(self, value: bool, from_vr: bool = False) -> None:
         if self.robot_head.robot_mode == gc.MODE_USER_CONTROLLED:
             # activate/deactivate hotspot
             if self.robot_head.robot_sub_mode == gc.SUB_MODE_WHEELS:
                 if value:
-                    self.robot_head.toggle_hotspot()
+                    if not from_vr:
+                        self.robot_head.toggle_hotspot()
             elif (self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_FK or
                   self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_IK):
                 # servo 6 open gripper

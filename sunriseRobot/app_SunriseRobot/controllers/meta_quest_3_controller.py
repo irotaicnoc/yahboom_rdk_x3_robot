@@ -105,7 +105,7 @@ class MetaQuest3Controller(object):
 
             l1_pressed = axes[2] > self.trigger_threshold  # Left Index
             if l1_pressed != self._prev_triggers_as_buttons[2]:
-                self.controller_functions.button_l1(l1_pressed)
+                self.controller_functions.button_l1(l1_pressed, from_vr=True)
                 self._prev_triggers_as_buttons[2] = l1_pressed
 
             r1_pressed = axes[6] > self.trigger_threshold  # Right Index
