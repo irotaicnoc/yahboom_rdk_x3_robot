@@ -38,4 +38,5 @@ lidar_kwargs:
   response_dist: 2.0
   sector_angle: 20
   scan_expiration_time: 0.5
+  min_response_dist: 0.1
 target_reached_distance: 0.4

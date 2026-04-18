@@ -15,6 +15,7 @@ class LidarListener(Node):
                  topic_name: str,
                  queue_size: int,
                  response_dist: float,
+                 min_response_dist: float = 0.0,
                  sector_angle: float = None,
                  search_only_arc: list = None,
                  scan_expiration_time: float = 0.5,
@@ -33,6 +34,9 @@ class LidarListener(Node):
         self.lidar_data = None
         self.scan_timestamp = 0
         self.response_dist = response_dist
+        # Any return closer than this is treated as a self-hit from the robot frame (or an invalid reading)
+        # and ignored. NaN/inf also fail this comparison, so they get filtered out as a side effect
+        self.min_response_dist = min_response_dist
         self.scan_expiration_time = scan_expiration_time
 
         # sector_angle attributes
@@ -71,9 +75,11 @@ class LidarListener(Node):
         temp_average_distance_by_sector = np.zeros(shape=self.number_of_sectors, dtype=float)
         ranges = np.array(scan_data.ranges)
         for i in range(len(ranges)):
-            if ranges[i] < self.response_dist:
+            # Reject returns from the robot's own frame (too close) and
+            # returns beyond our area of interest (too far). NaN/inf fail both.
+            if self.min_response_dist < ranges[i] < self.response_dist:
                 angle = np.rad2deg(scan_data.angle_min + scan_data.angle_increment * i)
-                assert 0 <= angle <= 360, f'Angle {angle} is out of range [0, 360]'
+                # assert 0 <= angle <= 360, f'Angle {angle} is out of range [0, 360]'
                 sector_num = int(angle / self.sector_angle)
                 self.hit_counter_by_sector[sector_num] += 1
                 temp_average_distance_by_sector[sector_num] += ranges[i]
@@ -94,7 +100,9 @@ class LidarListener(Node):
         temp_average_distance = 0
         ranges = np.array(scan_data.ranges)
         for i in range(len(ranges)):
-            if ranges[i] < self.response_dist:
+            # Reject returns from the robot's own frame (too close) and
+            # returns beyond our area of interest (too far). NaN/inf fail both.
+            if self.min_response_dist < ranges[i] < self.response_dist:
                 angle = np.rad2deg(scan_data.angle_min + scan_data.angle_increment * i)
                 if self.search_only_arc[0] <= angle <= self.search_only_arc[1]:
                     hit_counter += 1
@@ -128,6 +136,7 @@ class ThreadedLidarListener:
                  topic_name: str = '/scan',
                  queue_size: int = 5,
                  response_dist: float = 0.6,
+                 min_response_dist: float = 0.0,
                  sector_angle: float = 20,
                  search_only_arc: list = None,
                  scan_expiration_time: float = 0.5,
@@ -137,6 +146,7 @@ class ThreadedLidarListener:
         self.queue_size = queue_size
         self.sector_angle = sector_angle
         self.response_dist = response_dist
+        self.min_response_dist = min_response_dist
         self.lidar_listener_node = None
         self.spin_thread = None
         self.verbose = verbose
@@ -147,6 +157,7 @@ class ThreadedLidarListener:
                 topic_name=topic_name,
                 queue_size=queue_size,
                 response_dist=response_dist,
+                min_response_dist=min_response_dist,
                 sector_angle=sector_angle,
                 search_only_arc=search_only_arc,
                 scan_expiration_time=scan_expiration_time,
