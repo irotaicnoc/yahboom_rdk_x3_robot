@@ -37,7 +37,7 @@ class LidarListener(Node):
 
         # sector_angle attributes
         self.sector_angle = sector_angle
-        self.number_of_sectors = int(360 / sector_angle)
+        self.number_of_sectors = int(360 / sector_angle) if sector_angle else 0
         self.obstacles_by_sector = np.zeros(shape=self.number_of_sectors, dtype=bool)
         self.hit_counter_by_sector = np.zeros(shape=self.number_of_sectors, dtype=int)
         self.average_distance_by_sector = np.zeros(shape=self.number_of_sectors, dtype=float)
@@ -52,7 +52,8 @@ class LidarListener(Node):
         if sector_angle is not None:
             self.obstacle_found_threshold = int(sector_angle / 4)
         elif search_only_arc is not None:
-            self.obstacle_found_threshold = int(search_only_arc[1] - search_only_arc[0] / 4)
+            # self.obstacle_found_threshold = int(search_only_arc[1] - search_only_arc[0] / 4)
+            self.obstacle_found_threshold = int((search_only_arc[1] - search_only_arc[0]) / 4)
 
     def lidar_scan_callback(self, msg: LaserScan) -> None:
         # self.get_logger().info('Published processed lidar data')
@@ -99,7 +100,7 @@ class LidarListener(Node):
                     hit_counter += 1
                     temp_average_distance += ranges[i]
 
-        if self.hit_counter > self.obstacle_found_threshold:
+        if hit_counter > self.obstacle_found_threshold:
             self.obstacle_in_arc = True
             self.average_distance_in_arc = temp_average_distance / hit_counter
         else:
