@@ -92,7 +92,7 @@ class MetaQuest3Controller(object):
             #     pass
 
             # --- PROCESS TRIGGERS AS BUTTONS ---
-            # Quest triggers are analog. We threshold them to > 0.5 to act as L1/R1/L2/R2
+            # Quest triggers are analog. With threshold > 0.5 they act as L1/R1/L2/R2
             l2_pressed = axes[3] > self.trigger_threshold  # Left Grip
             if l2_pressed != self._prev_triggers_as_buttons[0]:
                 self.controller_functions.button_l2(l2_pressed)
