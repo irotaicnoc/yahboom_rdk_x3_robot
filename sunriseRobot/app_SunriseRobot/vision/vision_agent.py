@@ -46,8 +46,11 @@ class VisionAgent(object):
         # lidar initialization
         self.lidar_listener = None
         self.lidar_is_active = False
-        self.lidar_kwargs = parameters['lidar_kwargs']
-        self.target_distance = self.lidar_kwargs['response_dist']
+        self.lidar_parameters = args.import_args(
+            yaml_path=gc.CONFIG_FOLDER_PATH + 'lidar_listener.yaml',
+            verbose=self.verbose,
+        )
+        self.target_distance = self.lidar_parameters['response_dist']
         self.target_reached_distance = parameters['target_reached_distance']
 
         # tri cable led
@@ -103,8 +106,8 @@ class VisionAgent(object):
 
         # start lidar listener
         try:
-            self.lidar_listener = ThreadedLidarListener(**self.lidar_kwargs, verbose=self.verbose)
-            self.target_distance = self.lidar_kwargs['response_dist']
+            self.lidar_listener = ThreadedLidarListener(**self.lidar_parameters)
+            self.target_distance = self.lidar_parameters['response_dist']
             self.lidar_is_active = True
         # if there is an error, run vision agent without lidar
         except Exception as e:
@@ -195,7 +198,7 @@ class VisionAgent(object):
                 self.speed_z = 0
 
                 if self.lidar_is_active:
-                    self.target_distance = self.lidar_kwargs['response_dist']
+                    self.target_distance = self.lidar_parameters['response_dist']
                     obstacles_by_sector, average_distance_by_sector = self.lidar_listener.get_obstacles_by_sector()
                     if obstacles_by_sector is not None:
                         # check if there are obstacles in the front
@@ -212,7 +215,7 @@ class VisionAgent(object):
                             if self.use_led_3_pin:
                                 self.led_3_pin.set_color(gc.GREEN)
                             self.robot_body.set_beep(gc.LONG_BEEP)
-                    if self.target_distance == self.lidar_kwargs['response_dist']:
+                    if self.target_distance == self.lidar_parameters['response_dist']:
                         print(f'Target farther than {self.target_distance} m')
                     else:
                         print(f'Target distance: {int(self.target_distance * 100)} cm')

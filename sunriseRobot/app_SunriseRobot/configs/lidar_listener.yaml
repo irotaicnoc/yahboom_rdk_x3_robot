@@ -1,0 +1,7 @@
+topic_name: /scan
+queue_size: 3
+response_dist: 2.0
+sector_angle: 20
+scan_expiration_time: 0.5
+min_response_dist: 0.3
+verbose: 0

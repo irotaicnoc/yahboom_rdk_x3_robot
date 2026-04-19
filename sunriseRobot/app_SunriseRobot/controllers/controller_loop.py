@@ -24,7 +24,10 @@ class ControllerLoop(object):
         # lidar initialization
         self.lidar_listener = None
         self.lidar_is_active = False
-        self.lidar_kwargs = parameters['lidar_kwargs']
+        self.lidar_parameters = args.import_args(
+            yaml_path=gc.CONFIG_FOLDER_PATH + 'lidar_listener.yaml',
+            verbose=verbose,
+        )
         self.min_allowed_distance = parameters['min_allowed_distance']
         assert self.min_allowed_distance[0] < self.min_allowed_distance[1], (f'min_allowed_distance[0] ('
                                                         f'{self.min_allowed_distance[0]}) must be smaller than '
@@ -34,7 +37,7 @@ class ControllerLoop(object):
         # print lidar and direction to console
         # self.circle_radius = 15
         # self.circle_diameter = self.circle_radius * 2
-        # self.dist_proportion = self.circle_radius / self.lidar_kwargs['response_dist']
+        # self.dist_proportion = self.circle_radius / self.lidar_parameters['response_dist']
         # self.base_canvas = [[' ' for _ in range(self.circle_diameter)] for _ in range(self.circle_diameter)]
         # #   add detection area (circle)
         # for i in range(self.circle_diameter):
@@ -196,7 +199,7 @@ class ControllerLoop(object):
     def start_lidar_listener(self) -> None:
         if self.lidar_listener is None:
             try:
-                self.lidar_listener = ThreadedLidarListener(**self.lidar_kwargs, verbose=self.verbose)
+                self.lidar_listener = ThreadedLidarListener(**self.lidar_parameters)
                 self.lidar_is_active = True
                 self.robot_head.lidar_listener_status = 'active'
                 if self.verbose >= 2:
