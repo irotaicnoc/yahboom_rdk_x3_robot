@@ -4,4 +4,4 @@ topic_name: /audio_from_robot
 sample_rate: 16000
 channels: 6
 format: 8  # paInt16
-chunk_size: 1024
+chunk_size: 4096

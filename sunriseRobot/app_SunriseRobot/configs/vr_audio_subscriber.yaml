@@ -5,5 +5,5 @@ sample_rate: 16000
 channels: 1
 format: 8  # paInt16
 queue_size: 10
-chunk_size: 1024
+chunk_size: 4096
 gain: 2.0
