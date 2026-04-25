@@ -53,9 +53,9 @@ class VrAudioPublisher(Node):
 
     def _audio_callback(self, in_data, frame_count, time_info, status):
         if self._running:
-            # in_data is interleaved 6-channel int16, extract channel 0
+            # in_data is interleaved 6-channel int16, extract channel 5 (processed channel)
             audio = np.frombuffer(in_data, dtype=np.int16)
-            mono = audio[0::6].tobytes()
+            mono = audio[5::6].tobytes()
             msg = UInt8MultiArray()
             msg.data = list(mono)
             self.publisher.publish(msg)
