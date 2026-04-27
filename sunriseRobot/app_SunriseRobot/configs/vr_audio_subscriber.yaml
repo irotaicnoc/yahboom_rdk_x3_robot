@@ -3,7 +3,7 @@ verbose: 0
 topic_name: /audio_from_vr
 sample_rate: 16000
 channels: 1
-format: 8  # paInt16
+format: S16_LE
 queue_size: 10
 chunk_size: 4096
 gain: 2.0

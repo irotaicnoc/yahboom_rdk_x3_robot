@@ -1,4 +1,4 @@
-import pyaudio
+import alsaaudio
 import threading
 import numpy as np
 
@@ -10,12 +10,12 @@ import args
 import utils
 import global_constants as gc
 
-_FORMAT_DTYPE = {
-    pyaudio.paInt16:   (np.int16,   -2**15, 2**15 - 1),
-    pyaudio.paInt32:   (np.int32,   -2**31, 2**31 - 1),
-    pyaudio.paInt8:    (np.int8,    -2**7,  2**7 - 1),
-    pyaudio.paUInt8:   (np.uint8,    0,     2**8 - 1),   # center is 128
-    pyaudio.paFloat32: (np.float32, -1.0,   1.0),
+_FORMAT_INFO = {
+    'S16_LE':   (alsaaudio.PCM_FORMAT_S16_LE,   np.int16,   -2**15, 2**15 - 1),
+    'S32_LE':   (alsaaudio.PCM_FORMAT_S32_LE,   np.int32,   -2**31, 2**31 - 1),
+    'S8':       (alsaaudio.PCM_FORMAT_S8,       np.int8,    -2**7,  2**7 - 1),
+    'U8':       (alsaaudio.PCM_FORMAT_U8,       np.uint8,    0,     2**8 - 1),   # center is 128
+    'FLOAT_LE': (alsaaudio.PCM_FORMAT_FLOAT_LE, np.float32, -1.0,   1.0),
 }
 
 
@@ -26,7 +26,7 @@ class VrAudioSubscriber(Node):
         # sample_rate: int,
         # chunk_size: int,
         # channels: int,
-        # format: int,
+        # format: str,
         # input_expiration_time: float = 0.5,
         # gain: float = 1.0,
         # verbose: int = 0,
@@ -38,9 +38,9 @@ class VrAudioSubscriber(Node):
         super().__init__('vr_audio_subscriber')
 
         self.gain = parameters['gain']
-        fmt = parameters['format']
-        self.dtype, self.sample_min, self.sample_max = _FORMAT_DTYPE[fmt]
-        self.is_unsigned = fmt == pyaudio.paUInt8
+        fmt_name = parameters['format']
+        alsa_fmt, self.dtype, self.sample_min, self.sample_max = _FORMAT_INFO[fmt_name]
+        self.is_unsigned = fmt_name == 'U8'
 
         self.subscription = self.create_subscription(
             UInt8MultiArray,
@@ -48,41 +48,51 @@ class VrAudioSubscriber(Node):
             self._audio_callback,
             parameters['queue_size'],
         )
-        self.pa = pyaudio.PyAudio()
-        self.stream = self.pa.open(
-            format=parameters['format'],
-            channels=parameters['channels'],
+        self.pcm = alsaaudio.PCM(
+            type=alsaaudio.PCM_PLAYBACK,
+            mode=alsaaudio.PCM_NORMAL,
+            device='default',
             rate=parameters['sample_rate'],
-            output=True,
-            frames_per_buffer=parameters['chunk_size'],
+            channels=parameters['channels'],
+            format=alsa_fmt,
+            periodsize=parameters['chunk_size'],
         )
         print(f'VrAudioSubscriber started, listening on {parameters["topic_name"]}')
 
     def _audio_callback(self, msg: UInt8MultiArray):
         if self.gain == 1.0:
-            self.stream.write(bytes(msg.data))
-            return
+            data = bytes(msg.data)
+        else:
+            samples = np.frombuffer(bytes(msg.data), dtype=self.dtype)
 
-        samples = np.frombuffer(bytes(msg.data), dtype=self.dtype)
+            if self.is_unsigned:
+                # uint8 PCM is centered at 128
+                centered = samples.astype(np.float32) - 128.0
+                amplified = np.clip(centered * self.gain, -128.0, 127.0) + 128.0
+                out = amplified.astype(self.dtype)
+            elif np.issubdtype(self.dtype, np.integer):
+                # promote to int64 so the multiply can't overflow before clipping
+                amplified = samples.astype(np.int64) * self.gain
+                out = np.clip(amplified, self.sample_min, self.sample_max).astype(self.dtype)
+            else:  # float32
+                out = np.clip(samples * self.gain, -1.0, 1.0).astype(self.dtype)
 
-        if self.is_unsigned:
-            # uint8 PCM is centered at 128
-            centered = samples.astype(np.float32) - 128.0
-            amplified = np.clip(centered * self.gain, -128.0, 127.0) + 128.0
-            out = amplified.astype(self.dtype)
-        elif np.issubdtype(self.dtype, np.integer):
-            # promote to int64 so the multiply can't overflow before clipping
-            amplified = samples.astype(np.int64) * self.gain
-            out = np.clip(amplified, self.sample_min, self.sample_max).astype(self.dtype)
-        else:  # float32
-            out = np.clip(samples * self.gain, -1.0, 1.0).astype(self.dtype)
+            data = out.tobytes()
 
-        self.stream.write(out.tobytes())
+        try:
+            self.pcm.write(data)
+        except alsaaudio.ALSAAudioError:
+            # Recover from underrun (EPIPE) and drop this chunk.
+            try:
+                self.pcm.prepare()
+            except alsaaudio.ALSAAudioError:
+                pass
 
     def destroy(self):
-        self.stream.stop_stream()
-        self.stream.close()
-        self.pa.terminate()
+        try:
+            self.pcm.close()
+        except Exception:
+            pass
         self.destroy_node()
 
 

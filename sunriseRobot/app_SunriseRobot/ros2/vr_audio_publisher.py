@@ -1,12 +1,20 @@
-import pyaudio
+import threading
+import alsaaudio
 import numpy as np
 
-import rclpy
 from rclpy.node import Node
 from std_msgs.msg import UInt8MultiArray
 
 import args
 import global_constants as gc
+
+_FORMAT_TO_ALSA = {
+    'S16_LE':   alsaaudio.PCM_FORMAT_S16_LE,
+    'S32_LE':   alsaaudio.PCM_FORMAT_S32_LE,
+    'S8':       alsaaudio.PCM_FORMAT_S8,
+    'U8':       alsaaudio.PCM_FORMAT_U8,
+    'FLOAT_LE': alsaaudio.PCM_FORMAT_FLOAT_LE,
+}
 
 
 # ReSpeaker Mic Array v2.0 (Seeed Studio)
@@ -27,43 +35,59 @@ class VrAudioPublisher(Node):
         super().__init__('vr_audio_publisher')
         self.publisher = self.create_publisher(UInt8MultiArray, parameters['topic_name'], 10)
         self._running = True
-        self.pa = pyaudio.PyAudio()
-        device_index = self._find_respeaker_device()
+        self._thread = None
+        self.pcm = None
 
-        self.stream = self.pa.open(
-            format=parameters['format'],
-            channels=parameters['channels'],
+        card_short_name = self._find_respeaker_card()
+        self.pcm = alsaaudio.PCM(
+            type=alsaaudio.PCM_CAPTURE,
+            mode=alsaaudio.PCM_NORMAL,
+            device=f'hw:CARD={card_short_name},DEV=0',
             rate=parameters['sample_rate'],
-            input=True,
-            input_device_index=device_index,
-            frames_per_buffer=parameters['chunk_size'],
-            stream_callback=self._audio_callback,
+            channels=parameters['channels'],
+            format=_FORMAT_TO_ALSA[parameters['format']],
+            periodsize=parameters['chunk_size'],
         )
-        self.stream.start_stream()
-        print(f'VrAudioPublisher started on device index {device_index}')
+        self._thread = threading.Thread(
+            target=self._capture_loop,
+            name='vr_audio_publisher_capture',
+            daemon=True,
+        )
+        self._thread.start()
+        print(f'VrAudioPublisher started on ALSA card "{card_short_name}"')
 
-    def _find_respeaker_device(self) -> int:
-        """Find the ReSpeaker device index automatically."""
-        for i in range(self.pa.get_device_count()):
-            info = self.pa.get_device_info_by_index(i)
-            if 'ReSpeaker' in info['name'] and info['maxInputChannels'] > 0:
-                print(f'Found ReSpeaker at index {i}: {info["name"]}')
-                return i
+    @staticmethod
+    def _find_respeaker_card() -> str:
+        """Find the ReSpeaker ALSA card short name (e.g. 'ArrayUAC10')."""
+        for idx in alsaaudio.card_indexes():
+            short_name, long_name = alsaaudio.card_name(idx)
+            if 'ReSpeaker' in long_name or 'ReSpeaker' in short_name or 'ArrayUAC' in short_name:
+                return short_name
         raise RuntimeError('ReSpeaker device not found. Check USB connection.')
 
-    def _audio_callback(self, in_data, frame_count, time_info, status):
-        if self._running:
-            # in_data is interleaved 6-channel int16, extract channel 5 (processed channel)
-            audio = np.frombuffer(in_data, dtype=np.int16)
-            mono = audio[5::6].tobytes()
-            msg = UInt8MultiArray()
-            msg.data = list(mono)
-            self.publisher.publish(msg)
-        return (None, pyaudio.paContinue)
+    def _capture_loop(self):
+        try:
+            while self._running:
+                length, data = self.pcm.read()
+                if not self._running or length <= 0:
+                    continue
+                # interleaved 6-channel int16, extract channel 5 (processed channel)
+                audio = np.frombuffer(data, dtype=np.int16)
+                mono = audio[5::6].tobytes()
+                msg = UInt8MultiArray()
+                msg.data = list(mono)
+                self.publisher.publish(msg)
+        except alsaaudio.ALSAAudioError as e:
+            if self._running:
+                print(f'VrAudioPublisher capture error: {e}')
 
     def destroy(self):
         self._running = False
-        self.stream.stop_stream()
-        self.stream.close()
-        self.pa.terminate()
+        if self._thread is not None:
+            self._thread.join(timeout=2.0)
+        if self.pcm is not None:
+            try:
+                self.pcm.close()
+            except Exception:
+                pass
         self.destroy_node()
