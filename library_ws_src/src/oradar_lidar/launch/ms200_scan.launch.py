@@ -36,7 +36,7 @@ def generate_launch_description():
             {'baudrate': 230400},
             {'angle_min': 0.0},
             {'angle_max': 360.0},
-            {'range_min': 0.05},
+            {'range_min': 0.15},
             {'range_max': 20.0},
             {'clockwise': False},
             {'motor_speed': 10}
