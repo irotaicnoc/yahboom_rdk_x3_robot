@@ -9,5 +9,5 @@ min_response_dist: 0.3
 # Arc (degrees, same convention as scan.angle_min) where the lidar has a clear view of the world.
 # Wrap-around supported when low > high (e.g. [330, 30] = 60° centred on 0°). Set to null to
 # disable the feature and apply min_response_dist uniformly.
-front_arc: [-30, 30]
+front_arc: [-45, 45]
 verbose: 0
