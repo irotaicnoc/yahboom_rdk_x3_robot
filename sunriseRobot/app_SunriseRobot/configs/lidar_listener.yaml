@@ -3,5 +3,11 @@ queue_size: 3
 response_dist: 2.0
 sector_angle: 20
 scan_expiration_time: 0.5
+# min_response_dist applies only OUTSIDE front_arc (the robot's body blocks the lidar there).
+# Inside front_arc the lidar is unobstructed, so any positive return is accepted.
 min_response_dist: 0.3
+# Arc (degrees, same convention as scan.angle_min) where the lidar has a clear view of the world.
+# Wrap-around supported when low > high (e.g. [330, 30] = 60° centred on 0°). Set to null to
+# disable the feature and apply min_response_dist uniformly.
+front_arc: [-30, 30]
 verbose: 0

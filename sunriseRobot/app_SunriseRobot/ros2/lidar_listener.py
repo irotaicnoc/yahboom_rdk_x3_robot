@@ -16,6 +16,7 @@ class LidarListener(Node):
                  queue_size: int,
                  response_dist: float = 12.0,
                  min_response_dist: float = 0.0,
+                 front_arc: list = None,
                  sector_angle: float = None,
                  search_only_arc: list = None,
                  scan_expiration_time: float = 0.5,
@@ -35,8 +36,13 @@ class LidarListener(Node):
         self.scan_timestamp = 0
         self.response_dist = response_dist
         # Any return closer than this is treated as a self-hit from the robot frame (or an invalid reading)
-        # and ignored. NaN/inf also fail this comparison, so they get filtered out as a side effect
+        # and ignored. NaN/inf also fail this comparison, so they get filtered out as a side effect.
+        # When front_arc is set, this threshold is only applied to angles OUTSIDE the front arc — front
+        # readings pass through with no minimum, since the lidar's front is unobstructed.
         self.min_response_dist = min_response_dist
+        # [low_deg, high_deg] (in the same convention as scan_data.angle_min). Wrap-around supported when
+        # low > high (e.g., [330, 30] covers the 60° arc that crosses 0°). None disables the feature.
+        self.front_arc = front_arc
         self.scan_expiration_time = scan_expiration_time
 
         # sector_angle attributes
@@ -68,6 +74,24 @@ class LidarListener(Node):
         elif self.search_only_arc:
             self.scan_arc(msg)
 
+    def _is_in_front_arc(self, angle_deg: float) -> bool:
+        if self.front_arc is None:
+            return False
+        low, high = self.front_arc
+        if high - low >= 360:
+            return True
+        a = angle_deg % 360
+        low_n = low % 360
+        high_n = high % 360
+        if low_n <= high_n:
+            return low_n <= a <= high_n
+        return a >= low_n or a <= high_n
+
+    def _effective_min_dist(self, angle_deg: float) -> float:
+        # Front of the lidar is unobstructed: accept any positive return.
+        # Sides/back: enforce min_response_dist to drop the robot's own frame.
+        return 0.0 if self._is_in_front_arc(angle_deg) else self.min_response_dist
+
     def search_obstacles(self, scan_data: LaserScan) -> None:
         if not isinstance(scan_data, LaserScan):
             return
@@ -75,10 +99,10 @@ class LidarListener(Node):
         temp_average_distance_by_sector = np.zeros(shape=self.number_of_sectors, dtype=float)
         ranges = np.array(scan_data.ranges)
         for i in range(len(ranges)):
-            # Reject returns from the robot's own frame (too close) and
+            angle = np.rad2deg(scan_data.angle_min + scan_data.angle_increment * i)
+            # Reject returns from the robot's own frame (too close, sides/back only) and
             # returns beyond our area of interest (too far). NaN/inf fail both.
-            if self.min_response_dist < ranges[i] < self.response_dist:
-                angle = np.rad2deg(scan_data.angle_min + scan_data.angle_increment * i)
+            if self._effective_min_dist(angle) < ranges[i] < self.response_dist:
                 # assert 0 <= angle <= 360, f'Angle {angle} is out of range [0, 360]'
                 sector_num = int(angle / self.sector_angle)
                 self.hit_counter_by_sector[sector_num] += 1
@@ -100,10 +124,10 @@ class LidarListener(Node):
         temp_average_distance = 0
         ranges = np.array(scan_data.ranges)
         for i in range(len(ranges)):
-            # Reject returns from the robot's own frame (too close) and
+            angle = np.rad2deg(scan_data.angle_min + scan_data.angle_increment * i)
+            # Reject returns from the robot's own frame (too close, sides/back only) and
             # returns beyond our area of interest (too far). NaN/inf fail both.
-            if self.min_response_dist < ranges[i] < self.response_dist:
-                angle = np.rad2deg(scan_data.angle_min + scan_data.angle_increment * i)
+            if self._effective_min_dist(angle) < ranges[i] < self.response_dist:
                 if self.search_only_arc[0] <= angle <= self.search_only_arc[1]:
                     hit_counter += 1
                     temp_average_distance += ranges[i]
@@ -137,6 +161,7 @@ class ThreadedLidarListener:
                  queue_size: int = 5,
                  response_dist: float = 12.0,
                  min_response_dist: float = 0.0,
+                 front_arc: list = None,
                  sector_angle: float = 20,
                  search_only_arc: list = None,
                  scan_expiration_time: float = 0.5,
@@ -147,6 +172,7 @@ class ThreadedLidarListener:
         self.sector_angle = sector_angle
         self.response_dist = response_dist
         self.min_response_dist = min_response_dist
+        self.front_arc = front_arc
         self.lidar_listener_node = None
         self.spin_thread = None
         self.verbose = verbose
@@ -158,6 +184,7 @@ class ThreadedLidarListener:
                 queue_size=queue_size,
                 response_dist=response_dist,
                 min_response_dist=min_response_dist,
+                front_arc=front_arc,
                 sector_angle=sector_angle,
                 search_only_arc=search_only_arc,
                 scan_expiration_time=scan_expiration_time,
