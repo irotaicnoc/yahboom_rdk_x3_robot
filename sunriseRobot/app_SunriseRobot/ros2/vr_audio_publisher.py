@@ -38,11 +38,11 @@ class VrAudioPublisher(Node):
         self._thread = None
         self.pcm = None
 
-        card_short_name = self._find_respeaker_card()
+        card_idx = self._find_respeaker_card_index()
         self.pcm = alsaaudio.PCM(
             type=alsaaudio.PCM_CAPTURE,
             mode=alsaaudio.PCM_NORMAL,
-            device=f'hw:CARD={card_short_name},DEV=0',
+            device=f'hw:{card_idx},0',
             rate=parameters['sample_rate'],
             channels=parameters['channels'],
             format=_FORMAT_TO_ALSA[parameters['format']],
@@ -54,16 +54,16 @@ class VrAudioPublisher(Node):
             daemon=True,
         )
         self._thread.start()
-        print(f'VrAudioPublisher started on ALSA card "{card_short_name}"')
+        print(f'VrAudioPublisher started on ALSA card index {card_idx}')
 
     @staticmethod
-    def _find_respeaker_card() -> str:
-        """Find the ReSpeaker ALSA card short name (e.g. 'ArrayUAC10')."""
+    def _find_respeaker_card_index() -> int:
+        """Find the ReSpeaker ALSA card index."""
         for idx in alsaaudio.card_indexes():
             short_name, long_name = alsaaudio.card_name(idx)
             print(f'Found ALSA card: index={idx}, short_name="{short_name}", long_name="{long_name}"')
             if 'ReSpeaker' in long_name or 'ReSpeaker' in short_name or 'ArrayUAC' in short_name:
-                return short_name
+                return idx
         raise RuntimeError('ReSpeaker device not found. Check USB connection.')
 
     def _capture_loop(self):
