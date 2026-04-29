@@ -6,7 +6,7 @@ There you will also find all the robot capabilities with videos and explanations
 Finally, there is a step-by-step guide on how to recreate the robot from scratch.
 ![robot_rdk_x3.png](sunriseRobot/app_SunriseRobot/info/robot_rdk_x3.png)
 
-# Hardware modifications
+# Hardware Modifications
 - My current robot uses a bigger chassis "Pendulous Mecanum wheel chassis (L)" (https://category.yahboom.net/collections/a-chassis-bracket/products/ros-chassis), which allows for more space for the components. It is also necessary to fit the robotic arm. 
 - the robotic arm DOFBOT-JetsonNANO (http://www.yahboom.net/study/Dofbot-Jetson_nano).
 - the Nvidia Jetson Nano 4GB (https://developer.nvidia.com/embedded/jetson-nano-developer-kit) that comes with the robotic arm.
@@ -31,7 +31,7 @@ Finally, there is a step-by-step guide on how to recreate the robot from scratch
 - The connection allows the user to control the robot using the VR gamepads, as well as view the robot's camera feed in AR.
 - The VR-side connection is implemented in Unity (the "RobotVR.apk" file). It can be directly installed on the VR device. It was built and tested only for Meta Quest 3 (https://www.meta.com/it/en/quest/quest-3/).
 
-# Main application
+# Main Application
 The "sunriseRobot" folder contains the main application for controlling the robot. It is built in python, and it has been greatly changed from the original.
 To enable the autostart of the application when the robot is turned on, you have to
 - remove/disable the original app
@@ -51,7 +51,7 @@ To enable the autostart of the application when the robot is turned on, you have
 - The robot can switch between connecting to Wi-Fi or creating a hotspot, so that other devices can find it even if there are no networks in the area.
 - Control the robotic arm to grab things.
 
-## modes and sub-modes:
+## Modes and Sub-modes:
 - MODE "user_controlled": the robot does nothing by itself, it only waits for commands from the user.
   - SUB-MODE "wheels": the user moves the robot around. with the Mecanum wheels, it can rotate in place and translate perpendicularly to its orientation.
   - SUB-MODE "arm_fk": (Forward Kinematics) the user can control the robotic arm by commanding each joint directly. With a 6-DOF arm, it is not easy.
