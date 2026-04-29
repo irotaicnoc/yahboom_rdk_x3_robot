@@ -12,7 +12,7 @@ add_definitions(-O3)
 
 #ROS#
 find_package(roscpp 1.12 QUIET)
-if(roscpp_FOUND)
+if(roscpp_FOUND AND ${COMPILE_METHOD} STREQUAL "CATKIN")
   message(=============================================================)
   message("-- ROS Found. ROS Support is turned On!")
   message(=============================================================)
@@ -21,11 +21,11 @@ if(roscpp_FOUND)
   #configure_file(${CMAKE_CURRENT_SOURCE_DIR}/package_ros1.xml ${CMAKE_CURRENT_SOURCE_DIR}/package.xml COPYONLY)
   include_directories(${roscpp_INCLUDE_DIRS})
 
-else(roscpp_FOUND)
+else(roscpp_FOUND AND ${COMPILE_METHOD} STREQUAL "CATKIN")
   message(=============================================================)
   message("-- ROS Not Found, Ros Support is turned Off!")
   message(=============================================================)
-endif(roscpp_FOUND)
+endif(roscpp_FOUND AND ${COMPILE_METHOD} STREQUAL "CATKIN")
 
 #ROS2#
 find_package(rclcpp QUIET)
@@ -88,7 +88,7 @@ include_directories(
 add_executable(oradar_scan  ${CMAKE_CURRENT_SOURCE_DIR}/src/oradar_scan_node.cpp)
 
 #Ros#
-if(roscpp_FOUND)
+if(roscpp_FOUND AND ${COMPILE_METHOD} STREQUAL "CATKIN")
   add_dependencies(oradar_scan
     ${${PROJECT_NAME}_EXPORTED_TARGETS}
   )
@@ -107,7 +107,7 @@ if(roscpp_FOUND)
     DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
     USE_SOURCE_PERMISSIONS
   )
-endif(roscpp_FOUND)
+endif(roscpp_FOUND AND ${COMPILE_METHOD} STREQUAL "CATKIN")
 
 #Ros2#
 if(rclcpp_FOUND AND ${COMPILE_METHOD} STREQUAL "COLCON")
