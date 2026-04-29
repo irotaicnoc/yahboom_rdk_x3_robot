@@ -138,8 +138,8 @@ void publish_msg(rclcpp::Publisher<sensor_msgs::msg::LaserScan>::SharedPtr &pub,
 
     if ((range > max_range) || (range < min_range))
     {
-      range = 0.0;
-      intensity = 0.0;
+      range = std::numeric_limits<float>::quiet_NaN();
+      intensity = std::numeric_limits<float>::quiet_NaN();
     }
 
     if (!clockwise)
@@ -151,11 +151,10 @@ void publish_msg(rclcpp::Publisher<sensor_msgs::msg::LaserScan>::SharedPtr &pub,
       dir_angle = scan_frame->data[i].angle;
     }
 
-    //if ((dir_angle < angle_min) || (dir_angle > angle_max))
-    if ((angle_min < dir_angle) && (angle_max > dir_angle))
+    if ((dir_angle < angle_min) || (dir_angle > angle_max))
     {
-      range = 0;
-      intensity = 0;
+      range = std::numeric_limits<float>::quiet_NaN();
+      intensity = std::numeric_limits<float>::quiet_NaN();
     }
 
     float angle = Degree2Rad(dir_angle);
