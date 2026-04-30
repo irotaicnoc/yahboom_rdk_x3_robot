@@ -199,8 +199,9 @@ class ThreadedLidarListener:
             if self.verbose >= 1:
                 print('Lidar listener created and listening')
 
-            os.system('gnome-terminal -- bash -c "source /opt/ros/foxy/setup.bash;cd /root/marco_ros2_ws/;'
-                      'source install/local_setup.bash;ros2 launch oradar_lidar ms200_scan.launch.py;exec bash"')
+            os.system('gnome-terminal -- bash -c "source /opt/ros/foxy/setup.bash;'
+                      'source /root/marco_ros2_ws/install/setup.bash;'
+                      'ros2 launch lidar_pub ms200_scan.launch.py;exec bash"')
 
         except Exception as e:
             utils.print_exception(exception=e, message='Lidar listener creation error')

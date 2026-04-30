@@ -27,7 +27,7 @@ ros2
 		ros2 launch ros_tcp_endpoint endpoint_launch.py
 		
 	launch lidar publisher
-	    ros2 launch oradar_lidar ms200_scan.launch.py
+	    ros2 launch lidar_pub ms200_scan.launch.py
 
 ssh
     username: root

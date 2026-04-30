@@ -262,8 +262,9 @@ class RobotHead:
             os.system('gnome-terminal -- bash -c "source /opt/ros/foxy/setup.bash;cd /root/marco_ros2_ws/;'
                       'source install/local_setup.bash;ros2 launch ros_tcp_endpoint endpoint_launch.py;exec bash"')
             # activate lidar publisher
-            os.system('gnome-terminal -- bash -c "source /opt/ros/foxy/setup.bash;cd /root/marco_ros2_ws/;'
-                      'source install/local_setup.bash;ros2 launch oradar_lidar ms200_scan.launch.py;exec bash"')
+            os.system('gnome-terminal -- bash -c "source /opt/ros/foxy/setup.bash;'
+                      'source /root/marco_ros2_ws/install/setup.bash;'
+                      'ros2 launch lidar_pub ms200_scan.launch.py;exec bash"')
         else:
             os.system(f'{gc.SCRIPT_FOLDER_PATH}start_ros2_no_gui.sh')
         self.ros2_vr_connection_status = 'active'
