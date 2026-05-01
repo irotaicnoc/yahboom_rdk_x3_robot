@@ -72,9 +72,10 @@ class VrAudioPublisher(Node):
                 length, data = self.pcm.read()
                 if not self._running or length <= 0:
                     continue
-                # interleaved 6-channel int16, extract channel 5 (processed channel)
+                # interleaved 6-channel int16; channel 0 is the processed channel (AEC + beamforming
+                # + NS). Channel 5 is the speaker loopback reference, not a mic — do not use it.
                 audio = np.frombuffer(data, dtype=np.int16)
-                mono = audio[5::6].tobytes()
+                mono = audio[0::6].tobytes()
                 msg = UInt8MultiArray()
                 msg.data = list(mono)
                 self.publisher.publish(msg)
