@@ -61,7 +61,7 @@ class VrAudioPublisher(Node):
         """Find the ReSpeaker ALSA card index."""
         for idx in alsaaudio.card_indexes():
             short_name, long_name = alsaaudio.card_name(idx)
-            print(f'Found ALSA card: index={idx}, short_name="{short_name}", long_name="{long_name}"')
+            # print(f'Found ALSA card: index={idx}, short_name="{short_name}", long_name="{long_name}"')
             if 'ReSpeaker' in long_name or 'ReSpeaker' in short_name or 'ArrayUAC' in short_name:
                 return idx
         raise RuntimeError('ReSpeaker device not found. Check USB connection.')
