@@ -24,13 +24,17 @@ def get_local_ip():
 
 def generate_launch_description():
     ip_address = get_local_ip()
-    print(f'Local IP {ip_address}')
+    print(f'Local IP {ip_address} (server will bind on all interfaces)')
     print('Starting server_node...', end='')
     server_node = Node(
         package="ros_tcp_endpoint",
         executable="default_server_endpoint",
         emulate_tty=True,
-        parameters=[{"ROS_IP": ip_address}, {"ROS_TCP_PORT": 10000}],
+        # Bind on 0.0.0.0 so the server is reachable on every interface
+        # (eth0, wlan0, hotspot, tailscale0, ...). Without this the bind
+        # is pinned to the eth0/wlan0 address and remote-network clients
+        # (e.g. VR/mobile over Tailscale) cannot connect.
+        parameters=[{"ROS_IP": "0.0.0.0"}, {"ROS_TCP_PORT": 10000}],
     )
     print('Done')
 

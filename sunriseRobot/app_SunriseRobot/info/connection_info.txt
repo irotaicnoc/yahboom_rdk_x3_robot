@@ -16,10 +16,30 @@ ROBOT main PC
 	Remote SSH login
 		account name: root
 		password: yahboom
-		
+
 	ROS	2
 		printenv | grep -i ROS
 		ros_domain_id = 32
+
+	Tailscale (Internet access, VPN)
+		install on the robot (one-off):
+			sudo bash sunriseRobot/script_launchers/install_tailscale.sh
+			open the printed URL and authenticate
+		stable hostname: robot   (MagicDNS: robot.<tailnet-name>.ts.net)
+		check IP / status:
+			tailscale ip -4
+			tailscale status
+		ports exposed (bind 0.0.0.0, same as on LAN):
+			ROS-TCP-Endpoint (Unity/VR):   10000
+			(mobile app: use its own existing port; the Jetson-cable
+			 EthernetServer on 192.168.10.11:65432 is intra-robot only)
+		client install:
+			Android phone:  Google Play -> "Tailscale"
+			Quest 3:        sideload APK from https://pkgs.tailscale.com/stable/#android
+			                (Meta Horizon store does not list VPN apps)
+			Windows/Mac:    https://tailscale.com/download
+		clients connect to the robot via its Tailscale IP or MagicDNS name
+		instead of 192.168.8.88. Works from any network, no port forwarding.
 
 virtual box
 	hostname: VM
