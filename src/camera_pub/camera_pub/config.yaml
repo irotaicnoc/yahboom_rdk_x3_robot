@@ -1,5 +1,5 @@
 camera_topic: camera_stream
-queue_size: 3
+queue_size: 1
 video_capture_kwargs:
   pipe_id: 1
   video_index: -1

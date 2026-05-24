@@ -101,6 +101,10 @@ class TcpServer(Node):
 
             try:
                 (conn, (ip, port)) = tcp_server.accept()
+                # Disable Nagle on the client connection. Without this, small writes
+                # (audio chunks, joystick samples) get coalesced and can add tens of
+                # milliseconds of latency per packet over a high-RTT link like Tailscale.
+                conn.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
                 ClientThread(conn, self, ip, port).start()
             except socket.timeout as err:
                 self.logerr("ros_tcp_endpoint.TcpServer: socket timeout")

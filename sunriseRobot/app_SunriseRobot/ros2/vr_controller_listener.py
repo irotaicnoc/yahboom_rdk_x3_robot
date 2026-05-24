@@ -3,6 +3,7 @@ import threading
 
 import rclpy
 from rclpy.node import Node
+from rclpy.qos import QoSProfile, QoSReliabilityPolicy, QoSHistoryPolicy
 from sensor_msgs.msg import Joy
 
 import utils
@@ -16,11 +17,19 @@ class VrControllerListener(Node):
                  ):
         super().__init__('vr_controller_listener')
 
+        # BEST_EFFORT + depth=1: for live control input, the latest stick/button state is
+        # the only one that matters. Dropping stale samples beats reacting to old input.
+        # BEST_EFFORT subscriber is compatible with the endpoint's RELIABLE publisher.
+        controller_qos = QoSProfile(
+            reliability=QoSReliabilityPolicy.BEST_EFFORT,
+            history=QoSHistoryPolicy.KEEP_LAST,
+            depth=1,
+        )
         self.subscription = self.create_subscription(
             Joy,
             topic_name,
             self.input_callback,
-            queue_size
+            controller_qos,
         )
         self.controller_input_data = None
         self.msg_timestamp = 0
