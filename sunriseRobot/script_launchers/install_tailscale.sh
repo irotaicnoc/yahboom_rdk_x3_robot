@@ -55,6 +55,5 @@ echo "  MagicDNS name:  $(tailscale status --self --json 2>/dev/null | grep -oP 
 echo ""
 echo "Clients (Unity/VR, mobile app) should connect to one of the above"
 echo "instead of the LAN/hotspot IP. Ports unchanged:"
-echo "  ROS-TCP-Endpoint (Unity/VR):   10000"
-echo "  (mobile app uses its own existing port)"
+echo "  ROS-TCP-Endpoint (Unity/VR, likely mobile app too):  10000"
 echo "============================================================"

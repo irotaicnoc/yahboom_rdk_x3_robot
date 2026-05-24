@@ -30,9 +30,9 @@ ROBOT main PC
 			tailscale ip -4
 			tailscale status
 		ports exposed (bind 0.0.0.0, same as on LAN):
-			ROS-TCP-Endpoint (Unity/VR):   10000
-			(mobile app: use its own existing port; the Jetson-cable
-			 EthernetServer on 192.168.10.11:65432 is intra-robot only)
+			ROS-TCP-Endpoint:   10000   (Unity/VR, likely mobile app too)
+			(the EthernetServer on 192.168.10.11:65432 is the wired
+			 link to the on-robot Jetson Nano, intra-robot only)
 		client install:
 			Android phone:  Google Play -> "Tailscale"
 			Quest 3:        sideload APK from https://pkgs.tailscale.com/stable/#android
