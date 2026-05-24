@@ -4,6 +4,7 @@ import numpy as np
 
 import rclpy
 from rclpy.node import Node
+from rclpy.qos import QoSProfile, QoSReliabilityPolicy, QoSHistoryPolicy
 from std_msgs.msg import UInt8MultiArray
 
 import args
@@ -42,11 +43,19 @@ class VrAudioSubscriber(Node):
         alsa_fmt, self.dtype, self.sample_min, self.sample_max = _FORMAT_INFO[fmt_name]
         self.is_unsigned = fmt_name == 'U8'
 
+        # BEST_EFFORT + depth=1: for live audio, dropping a stale chunk is always better
+        # than waiting for it. BEST_EFFORT is compatible with the endpoint's RELIABLE
+        # publisher (a BEST_EFFORT sub accepts both RELIABLE and BEST_EFFORT pubs).
+        audio_qos = QoSProfile(
+            reliability=QoSReliabilityPolicy.BEST_EFFORT,
+            history=QoSHistoryPolicy.KEEP_LAST,
+            depth=parameters['queue_size'],
+        )
         self.subscription = self.create_subscription(
             UInt8MultiArray,
             parameters['topic_name'],
             self._audio_callback,
-            parameters['queue_size'],
+            audio_qos,
         )
         self.pcm = alsaaudio.PCM(
             type=alsaaudio.PCM_PLAYBACK,

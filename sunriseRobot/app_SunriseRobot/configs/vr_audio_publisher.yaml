@@ -4,4 +4,4 @@ topic_name: /audio_from_robot
 sample_rate: 16000
 channels: 6
 format: S16_LE
-chunk_size: 4096
+chunk_size: 1024

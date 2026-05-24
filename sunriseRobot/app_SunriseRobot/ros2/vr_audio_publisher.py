@@ -1,3 +1,4 @@
+import array
 import threading
 import alsaaudio
 import numpy as np
@@ -33,7 +34,9 @@ class VrAudioPublisher(Node):
         )
 
         super().__init__('vr_audio_publisher')
-        self.publisher = self.create_publisher(UInt8MultiArray, parameters['topic_name'], 10)
+        # depth=1 keeps only the newest chunk in the DDS queue, so we never accumulate
+        # backlog when the ROS-TCP-Endpoint forwarder briefly falls behind.
+        self.publisher = self.create_publisher(UInt8MultiArray, parameters['topic_name'], 1)
         self._running = True
         self._thread = None
         self.pcm = None
@@ -77,7 +80,10 @@ class VrAudioPublisher(Node):
                 audio = np.frombuffer(data, dtype=np.int16)
                 mono = audio[0::6].tobytes()
                 msg = UInt8MultiArray()
-                msg.data = list(mono)
+                # array.array('B', ...) is the fast path for UInt8MultiArray.data: it copies
+                # raw bytes in C. list(mono) builds a Python int per byte, which on the RDK X3
+                # costs tens of ms per chunk and was a major source of audio latency.
+                msg.data = array.array('B', mono)
                 self.publisher.publish(msg)
         except alsaaudio.ALSAAudioError as e:
             if self._running:
