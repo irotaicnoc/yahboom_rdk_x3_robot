@@ -2,8 +2,29 @@ import launch
 from launch import LaunchDescription
 import launch_ros.events.lifecycle
 
+import os
+
+
+# Read the local IP address
+def get_local_ip():
+    ip = os.popen(
+        "/sbin/ifconfig eth0 | grep 'inet' | awk '{print $2}'").read()
+    ip = ip[0: ip.find('\n')]
+    # ip = ''
+    if ip == '' or len(ip) > 15:
+        ip = os.popen(
+            "/sbin/ifconfig wlan0 | grep 'inet' | awk '{print $2}'").read()
+        ip = ip[0: ip.find('\n')]
+        if ip == '':
+            ip = 'x.x.x.x'
+    if len(ip) > 15:
+        ip = 'x.x.x.x'
+    return ip
+
 
 def generate_launch_description():
+    ip_address = get_local_ip()
+    print(f'Local IP {ip_address}')
     print('Starting server_node...', end='')
     server_node = launch_ros.actions.LifecycleNode(
         name='server_node',
@@ -11,7 +32,7 @@ def generate_launch_description():
         package='ros_tcp_endpoint',
         executable='default_server_endpoint',
         emulate_tty=True,
-        parameters=[{'ROS_TCP_PORT': 10000}],
+        parameters=[{'ROS_IP': ip_address}, {'ROS_TCP_PORT': 10000}],
     )
     print('Done')
 
@@ -37,3 +58,4 @@ def generate_launch_description():
         # camera_publisher_node,
     ]
     return LaunchDescription(node_list)
+
