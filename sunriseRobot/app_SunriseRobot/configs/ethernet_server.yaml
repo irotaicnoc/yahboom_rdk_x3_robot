@@ -1,5 +1,8 @@
 verbose: 0
 
+# Wired link to the on-robot Jetson Nano. Bound to the static IP of the
+# direct ethernet cable between the RDK X3 and the Jetson, so it is NOT
+# exposed on wlan0 / hotspot / tailscale0.
 host: '192.168.10.11'
 port: 65432
 
