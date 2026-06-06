@@ -58,6 +58,15 @@ def format_camera_frames(frame,
 #    os.system('echo 1 > /sys/class/vps/mipi_host0/param/stop_check_instart')
 
 
+def y_plane_mean_brightness(frame, width: int, height: int) -> float:
+    """
+    Mean luminance (0-255) of a raw NV12 camera buffer.
+    In NV12 the first width*height bytes are the Y (luma) plane, which is a cheap, accurate
+    brightness proxy without having to decode the whole frame.
+    """
+    return float(np.frombuffer(frame, dtype=np.uint8)[:width * height].mean())
+
+
 def get_class_id_from_name(class_name: str, class_dict: dict) -> int:
     for class_id, name in class_dict.items():
         if name == class_name:

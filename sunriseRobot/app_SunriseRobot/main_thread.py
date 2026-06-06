@@ -14,6 +14,7 @@ from gpio.button_2_pin import Button2Pin
 from physical_accessories.arm import Arm
 from physical_accessories.oled import Oled
 from physical_accessories.light import Light
+from physical_accessories.headlight import Headlight
 from controllers.ps2_controller import PS2Controller
 from controllers.controller_loop import ControllerLoop
 from controllers.controller_interface import ControllerFunctions
@@ -40,11 +41,18 @@ def main_loop(**kwargs):
     # LIGHTS
     internal_light = Light(verbose=parameters['verbose'])
     led_3_pin = Led3Pin(red_power_cable=gc.RED_CABLE_01, green_power_cable=gc.GREEN_CABLE_01)
+    # external RC LED light bar, to illuminate the scene for the camera in low light
+    try:
+        headlight = Headlight(control_cable=gc.HEADLIGHT_CONTROL_CABLE, verbose=parameters['verbose'])
+    except Exception as e:
+        utils.print_exception(exception=e, message='Headlight error')
+        headlight = None
 
     robot_head = RobotHead(
         robot_body=robot_body,
         internal_light=internal_light,
         led_3_pin=led_3_pin,
+        headlight=headlight,
         gui_mode=parameters['gui_mode'],
         verbose=parameters['verbose'],
     )

@@ -71,6 +71,8 @@ class RobotHead:
         self.buzzer_state_changed = True
         self.internal_light = parameters['internal_light']
         self.led_3_pin = parameters['led_3_pin']
+        # external RC LED light bar (headlight for the camera). May be None if unavailable.
+        self.headlight = parameters.get('headlight')
 
     def next_mode(self) -> None:
         if self.verbose >= 3:
@@ -300,6 +302,33 @@ class RobotHead:
             self.lidar_listener_status = 'processing'
         else:
             print(f'Lidar listener is in "{self.lidar_listener_status}" state. Cannot be changed now')
+
+    def toggle_headlight(self) -> None:
+        """Toggle the external RC LED light bar on/off. Entry point for the mobile app and controllers."""
+        if self.headlight is None:
+            if self.verbose >= 1:
+                print('Headlight not available.')
+            return
+        self.headlight.toggle()
+        self.robot_body.set_beep(gc.SHORT_BEEP)
+        if self.verbose >= 1:
+            print(f'Headlight turned {"on" if self.headlight.is_on else "off"}')
+
+    def turn_on_headlight(self) -> None:
+        """Turn the external RC LED light bar on. Entry point for the mobile app."""
+        if self.headlight is None:
+            if self.verbose >= 1:
+                print('Headlight not available.')
+            return
+        self.headlight.turn_on()
+
+    def turn_off_headlight(self) -> None:
+        """Turn the external RC LED light bar off. Entry point for the mobile app."""
+        if self.headlight is None:
+            if self.verbose >= 1:
+                print('Headlight not available.')
+            return
+        self.headlight.turn_off()
 
     def add_mode_callback(self, mode: str, callback: callable, start: bool) -> None:
         assert mode in self.robot_mode_list, (f'Mode "{mode}" is not in the list of available'

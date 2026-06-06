@@ -49,6 +49,12 @@ GREEN_CABLE_01 = 13  # GPIO CABLE
 # BLACK_CABLE = 14 GROUND CABLE !!!IMPORTANT!!!
 RED_CABLE_01 = 15  # GPIO CABLE
 
+# RC LED light bar (external headlight to illuminate the scene for the camera in low light)
+# the control cable is driven with a standard RC servo PWM signal. Power and ground are wired
+# directly to the battery. Hobot.GPIO supports hardware PWM ONLY on BOARD pins 32 (PWM1) and
+# 33 (PWM0), so the control cable must connect to one of those.
+HEADLIGHT_CONTROL_CABLE = 33  # GPIO CABLE (hardware PWM0)
+
 # led colors
 POWER_OFF = 'off'
 RED = 'red'

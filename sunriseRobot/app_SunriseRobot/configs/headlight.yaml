@@ -1,0 +1,35 @@
+# Verbosity levels
+# 0: errors only
+# 1: errors and important information
+# 2: more information
+# 3: debug
+verbose: 2
+
+# --- RC LED light bar (external headlight for the camera) ---
+# Power and ground are wired directly to the battery; only the control cable is driven by the robot
+# with a standard RC servo PWM signal. The BOARD pin is set in global_constants.py
+# (HEADLIGHT_CONTROL_CABLE). Hobot.GPIO supports hardware PWM ONLY on BOARD pins 32 (PWM1) and
+# 33 (PWM0), so the control cable must connect to one of those.
+
+# Frequency of the RC servo signal. Standard RC is 50 Hz (20 ms period).
+pwm_frequency_hz: 50
+
+# Pulse widths (microseconds) for each light state. Index 0 is ALWAYS the OFF state; the remaining
+# entries are the "on" states the light can cycle through (turn_on() uses index 1, next_level()
+# cycles through all of them). The exact pulse-width -> behavior mapping depends on your specific
+# light bar, so tune these on the robot. Standard RC range is ~1000-2000 us
+# (e.g. 1000 = off, 2000 = full brightness). To add brightness steps, list more values, e.g.:
+#   [1000, 1500, 2000]  -> off, half, full
+pulse_us_levels:
+  - 1000   # OFF
+  - 2000   # ON (full)
+
+# --- Automatic control in autonomous vision mode ---
+# When True, the headlight turns on automatically if the camera image is dark while the robot is in
+# MODE_AUTONOMOUS_VISION. It then stays on until the robot leaves vision mode (latched on purpose:
+# once the light is on it brightens its own view, so re-evaluating each frame would make it flicker).
+# Manual controls (mobile app / controller) work at any time. Auto control is supported on the
+# internal and usb_v1 cameras (the usb_v2 pipeline does not expose the frame to the agent).
+auto_in_vision_mode: True
+# Mean image brightness (0-255). Below this value the scene is considered dark and the light turns on.
+auto_brightness_threshold: 50

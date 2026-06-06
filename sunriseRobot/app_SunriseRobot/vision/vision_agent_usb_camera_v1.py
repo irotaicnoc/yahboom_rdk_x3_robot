@@ -46,6 +46,16 @@ class VisionAgent(object):
         self.led_3_pin = robot_head.led_3_pin
         self.use_led_3_pin = parameters['use_led_3_pin']
 
+        # external headlight (RC LED light bar): turn it on automatically when the scene is dark
+        headlight_parameters = args.import_args(
+            yaml_path=gc.CONFIG_FOLDER_PATH + 'headlight.yaml',
+            verbose=self.verbose,
+        )
+        self.headlight = robot_head.headlight
+        self.auto_headlight = headlight_parameters['auto_in_vision_mode'] and self.headlight is not None
+        self.auto_brightness_threshold = headlight_parameters['auto_brightness_threshold']
+        self._auto_headlight_on = False
+
     def set_zero_speed(self):
         self.speed_x = 0
         self.speed_z = 0
@@ -65,6 +75,11 @@ class VisionAgent(object):
         # turn off tri cable led
         if self.use_led_3_pin:
             self.led_3_pin.set_color(gc.POWER_OFF)
+
+        # hand the headlight back when leaving vision mode (turn off only what auto control turned on)
+        if self._auto_headlight_on:
+            self.headlight.turn_off()
+            self._auto_headlight_on = False
 
     def activate_agent(self):
         if self.verbose >= 1:
@@ -127,6 +142,8 @@ class VisionAgent(object):
                 print('Could not read frame.')
             time.sleep(0.5)
             return
+
+        self._update_auto_headlight(frame)
 
         target_info = self.detector.find_target(
             frame=frame,
@@ -197,6 +214,21 @@ class VisionAgent(object):
         time.sleep(move_duration)
         # stop_moving = time.time()
         # print(f'moving time AI: {round(stop_moving - start_moving, 3)}')
+
+    def _update_auto_headlight(self, frame) -> None:
+        # turn the external headlight on automatically when the scene is dark. Latched: once on it
+        # stays on until vision mode ends (deactivate_agent), to avoid it flickering off as soon as
+        # its own light brightens the view.
+        if not self.auto_headlight or self._auto_headlight_on:
+            return
+        # frame is a BGR image, its mean is a good cheap brightness proxy
+        brightness = float(frame.mean())
+        if brightness < self.auto_brightness_threshold:
+            self.headlight.turn_on()
+            self._auto_headlight_on = True
+            if self.verbose >= 1:
+                print(f'Dark scene (brightness {brightness:.0f} < {self.auto_brightness_threshold}); '
+                      f'turning headlight on.')
 
     def __del__(self):
         self.deactivate_agent()

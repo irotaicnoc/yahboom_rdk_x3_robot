@@ -123,10 +123,10 @@ class ControllerFunctions(object):
 
     def button_east(self, value: bool) -> None:
         if self.robot_head.robot_mode == gc.MODE_USER_CONTROLLED:
-            # move robot
+            # toggle the external headlight (RC LED light bar)
             if self.robot_head.robot_sub_mode == gc.SUB_MODE_WHEELS:
                 if value:
-                    self.led_3_pin.next_color()
+                    self.robot_head.toggle_headlight()
             # memorize current arm position or reach memorized arm position
             elif (self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_FK
                     or self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_IK):
