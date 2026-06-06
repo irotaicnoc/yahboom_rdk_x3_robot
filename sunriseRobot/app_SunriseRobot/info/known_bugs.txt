@@ -6,12 +6,6 @@ more running processes, but something is still running, so the resources are not
 remains open. To stop all the processes the console must be closed (doing so manually, by remotely connecting to the
 robot, works). But I don't know how to do it automatically with code.
 
-- The main program launches some ROS2 nodes as normal python classes instead of using the proper ROS2 commands and
-starting them as ROS2 nodes. It works, but I imagine this could lead to some unforeseen errors in specific cases. This
-is done because it is the only way I know for a python script and a ROS2 node to communicate. The alternative is to
-convert all the current code into ROS2 code, which would be long, complicated, and potentially slow down the main
-computer.
-
 - The setup and usage of the ikpy library for the arm's inverse kinematics calculations could be suboptimal. It is
 possible that one of the joints given as a free parameter is actually fixed, which would significantly speed up the
 response time.
@@ -36,5 +30,3 @@ should not happen, but from the logs it seems to happen.
 bottom by half of the window height. The problem is that the interactable area should conform to the new visible area.
     - POSSIBLE SOLUTION: just lower the top anchor by half the window height and raise the bottom anchor by half the
     window height.
-
-- The images sent from the frontal camera through ROS2 to the VR app are displayed with red and blue colors inverted.

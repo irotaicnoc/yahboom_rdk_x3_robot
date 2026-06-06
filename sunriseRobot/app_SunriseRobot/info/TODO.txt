@@ -48,9 +48,6 @@ at the moment it will just run away from its rear motors, meaning it will just r
 
 VR APP
 - Make streaming parameters modifiable.
-- The app shows an image while loading, but with warning on Unity "Compressed texture robot_v2 is used as icon.
-This might compromise visual quality of the final image. Uncompressed format might be considered as better import
-option. UnityEditor.GenericMenu:CatchMenu (object,string[],int)".
 - The app has no icon in the VR bottom bar.
 - Add "attached mode" to the menù window, so that it can fix itself to the camera window and become a single window.
 - button "activate/deactivate": display it in gray and not clickable if no messages are being received on the
@@ -58,11 +55,7 @@ currently selected topic
     - No messages, or the last received message is older than n seconds.
 
 GENERIC
-- Finish the website.a
+- Finish the website.
 - Controller interface should be more generic, like only providing functions. It should be ps2_controller and
 other equivalent classes that associate functions with specific buttons.
 - Add the option to save log to file, to help debugging.
-- Dynamically activate and deactivate hardware components. Es. when the lidar is not used, don't waste battery on it
-(currently it is active and keeps spinning even when not in use).
-- ROS2 messages are exchanged only in local networks (es. for the VR app). Is it possible to make it work via internet?
-Is it useful?
