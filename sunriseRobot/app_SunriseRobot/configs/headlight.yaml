@@ -6,23 +6,20 @@
 verbose: 2
 
 # --- RC LED light bar (external headlight for the camera) ---
-# Power and ground are wired directly to the battery; only the control cable is driven by the robot
-# with a standard RC servo PWM signal. The BOARD pin is set in global_constants.py
-# (HEADLIGHT_CONTROL_CABLE). Hobot.GPIO supports hardware PWM ONLY on BOARD pins 32 (PWM1) and
-# 33 (PWM0), so the control cable must connect to one of those.
+# The light bar plugs into one of the expansion board's "PWM servo" ports (3-pin G/V/S connector).
+# Those ports are driven by the onboard STM32, so the light is controlled over the serial protocol
+# via robot_body.set_pwm_servo(servo_id, angle). The port is set in global_constants.py
+# (HEADLIGHT_SERVO_ID). Power can come from the port's V pin (match the board's "6V8 / Choose 5V"
+# jumper to the bar) or directly from the battery (then connect only the signal wire).
 
-# Frequency of the RC servo signal. Standard RC is 50 Hz (20 ms period).
-pwm_frequency_hz: 50
-
-# Pulse widths (microseconds) for each light state. Index 0 is ALWAYS the OFF state; the remaining
-# entries are the "on" states the light can cycle through (turn_on() uses index 1, next_level()
-# cycles through all of them). The exact pulse-width -> behavior mapping depends on your specific
-# light bar, so tune these on the robot. Standard RC range is ~1000-2000 us
-# (e.g. 1000 = off, 2000 = full brightness). To add brightness steps, list more values, e.g.:
-#   [1000, 1500, 2000]  -> off, half, full
-pulse_us_levels:
-  - 1000   # OFF
-  - 2000   # ON (full)
+# Angles (0-180) for each light state. Index 0 is ALWAYS the OFF state; the remaining entries are the
+# "on" states the light can cycle through (turn_on() uses index 1, next_level() cycles through all of
+# them). The STM32 maps angle to an RC servo pulse, but the exact angle -> behavior mapping depends on
+# your specific light bar, so tune these on the robot. To add brightness steps, list more values, e.g.:
+#   [0, 90, 180]  -> off, half, full
+angle_levels:
+  - 0     # OFF
+  - 180   # ON (full)
 
 # --- Automatic control in autonomous vision mode ---
 # When True, the headlight turns on automatically if the camera image is dark while the robot is in

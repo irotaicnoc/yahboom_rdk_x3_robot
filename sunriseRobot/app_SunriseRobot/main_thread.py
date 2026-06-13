@@ -43,7 +43,7 @@ def main_loop(**kwargs):
     led_3_pin = Led3Pin(red_power_cable=gc.RED_CABLE_01, green_power_cable=gc.GREEN_CABLE_01)
     # external RC LED light bar, to illuminate the scene for the camera in low light
     try:
-        headlight = Headlight(control_cable=gc.HEADLIGHT_CONTROL_CABLE, verbose=parameters['verbose'])
+        headlight = Headlight(robot_body=robot_body, servo_id=gc.HEADLIGHT_SERVO_ID, verbose=parameters['verbose'])
     except Exception as e:
         utils.print_exception(exception=e, message='Headlight error')
         headlight = None

@@ -1,7 +1,3 @@
-import warnings
-
-import Hobot.GPIO as GPIO
-
 import args
 import global_constants as gc
 
@@ -10,67 +6,49 @@ class Headlight:
     """
     Controls an external RC LED light bar used to illuminate the scene for the camera in low light.
 
-    The light bar has three wires: power and ground go directly to the battery, while the control
-    cable is driven by the robot with a standard RC servo PWM signal (~50 Hz). The light bar's
-    onboard controller reads the pulse width to switch on/off (and, depending on the unit, set
-    brightness or cycle modes).
+    The light bar has three wires and a standard 3-pin RC servo connector (Ground / Voltage / Signal).
+    It plugs into one of the expansion board's "PWM servo" ports. Those ports are driven by the
+    onboard STM32 microcontroller (the robot body), so the light is controlled over the existing
+    serial protocol via robot_body.set_pwm_servo(servo_id, angle), NOT via the RDK X3 GPIO. The
+    STM32 turns the angle into a real RC servo PWM pulse and keeps emitting it, so we only need to
+    send a command when the state changes.
 
-    On the RDK X3, Hobot.GPIO supports hardware PWM ONLY on BOARD pins 32 (PWM1) and 33 (PWM0), so
-    the control cable must be wired to one of those (see gc.HEADLIGHT_CONTROL_CABLE).
+    Power: the light can be powered from the port's V pin (set the board's "6V8 / Choose 5V" jumper to
+    match the bar) or directly from the battery (then run only the signal wire and leave the port's V
+    pin disconnected). Either way the code is identical.
 
-    Pulse widths are configurable in configs/headlight.yaml because the exact pulse-width -> behavior
-    mapping depends on the specific light bar and must be tuned on the robot. `pulse_us_levels[0]` is
-    always the OFF state; the remaining entries are the "on" states the light can cycle through.
+    Angles are configurable in configs/headlight.yaml because the exact angle -> behavior mapping
+    depends on the specific light bar and must be tuned on the robot. `angle_levels[0]` is always the
+    OFF state; the remaining entries are the "on" states the light can cycle through.
     """
 
-    def __init__(self, control_cable: int, mode: str = GPIO.BOARD, **kwargs):
+    def __init__(self, robot_body, servo_id: int, **kwargs):
         parameters = args.import_args(yaml_path=gc.CONFIG_FOLDER_PATH + 'headlight.yaml', **kwargs)
         self.verbose = parameters['verbose']
-        self.control_cable = control_cable
-        self.pwm_frequency_hz = parameters['pwm_frequency_hz']
-        self.period_us = 1_000_000 / self.pwm_frequency_hz
-        self.pulse_us_levels = parameters['pulse_us_levels']
-        assert len(self.pulse_us_levels) >= 1, 'pulse_us_levels must contain at least the OFF pulse.'
+        self.robot_body = robot_body
+        self.servo_id = servo_id
+        self.angle_levels = parameters['angle_levels']
+        assert len(self.angle_levels) >= 1, 'angle_levels must contain at least the OFF angle.'
 
-        # make sure the GPIO library is in the expected pin-numbering mode (mirrors the gpio/ classes)
-        try:
-            gpio_mode = GPIO.getmode()
-            if gpio_mode is None:
-                GPIO.setmode(mode)
-            elif gpio_mode != mode:
-                warnings.warn(f'GPIO was in mode {gpio_mode}, but it should be in mode {mode}.'
-                              f' Setting GPIO mode to {mode}.')
-                GPIO.setmode(mode)
-        except Exception:
-            GPIO.setmode(mode)
-
-        GPIO.setup(self.control_cable, GPIO.OUT, initial=GPIO.LOW)
-        self.pwm = GPIO.PWM(self.control_cable, self.pwm_frequency_hz)
-
-        # start turned off, but keep emitting the OFF pulse so the light bar always sees a valid signal
+        # start turned off (the STM32 holds the last commanded pulse on its own)
         self.current_level = 0
         self.is_on = False
-        self.pwm.start(self._pulse_us_to_duty(self.pulse_us_levels[0]))
+        self.robot_body.set_pwm_servo(self.servo_id, self.angle_levels[0])
         if self.verbose >= 2:
-            print(f'Headlight ready on BOARD pin {self.control_cable} '
-                  f'({self.pwm_frequency_hz} Hz, levels {self.pulse_us_levels} us).')
-
-    def _pulse_us_to_duty(self, pulse_us: float) -> float:
-        """Convert an RC pulse width (microseconds) to a PWM duty cycle (0-100 %)."""
-        return max(0.0, min(100.0, pulse_us / self.period_us * 100.0))
+            print(f'Headlight ready on PWM servo port S{self.servo_id} (angle levels {self.angle_levels}).')
 
     def _apply_level(self, level: int) -> None:
-        level = level % len(self.pulse_us_levels)
+        level = level % len(self.angle_levels)
         self.current_level = level
         self.is_on = level != 0
-        duty = self._pulse_us_to_duty(self.pulse_us_levels[level])
-        self.pwm.ChangeDutyCycle(duty)
+        angle = self.angle_levels[level]
+        self.robot_body.set_pwm_servo(self.servo_id, angle)
         if self.verbose >= 3:
-            print(f'Headlight level {level} -> {self.pulse_us_levels[level]} us ({duty:.1f} % duty).')
+            print(f'Headlight level {level} -> angle {angle}.')
 
     def turn_on(self) -> None:
         # turn on at the first non-off level if there is one, otherwise stay off
-        self._apply_level(1 if len(self.pulse_us_levels) > 1 else 0)
+        self._apply_level(1 if len(self.angle_levels) > 1 else 0)
 
     def turn_off(self) -> None:
         self._apply_level(0)
@@ -94,7 +72,5 @@ class Headlight:
     def __del__(self):
         try:
             self.turn_off()
-            self.pwm.stop()
-            GPIO.cleanup(self.control_cable)
         except Exception:
             pass
