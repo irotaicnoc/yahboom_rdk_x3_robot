@@ -49,11 +49,11 @@ GREEN_CABLE_01 = 13  # GPIO CABLE
 # BLACK_CABLE = 14 GROUND CABLE !!!IMPORTANT!!!
 RED_CABLE_01 = 15  # GPIO CABLE
 
-# RC LED light bar (external headlight to illuminate the scene for the camera in low light)
-# the light bar plugs into one of the expansion board's "PWM servo" ports (3-pin G/V/S connector),
-# which are driven by the onboard STM32. It is controlled over the serial protocol via
-# robot_body.set_pwm_servo(servo_id, angle), so this is the servo port number (S1-S4), not a GPIO pin.
-HEADLIGHT_SERVO_ID = 1  # PWM servo port S1
+# COB LED strip (external headlight to illuminate the scene for the camera in low light)
+# the strip is a passive 5V load switched by a MOSFET module whose trigger is driven by this GPIO pin
+# (BOARD numbering). The pin uses hardware PWM for brightness control, so it must be a PWM-capable pin
+# (the RDK X3 exposes hardware PWM on pins 32 and 33).
+HEADLIGHT_PIN = 33  # hardware-PWM-capable GPIO pin (BOARD numbering)
 
 # led colors
 POWER_OFF = 'off'
