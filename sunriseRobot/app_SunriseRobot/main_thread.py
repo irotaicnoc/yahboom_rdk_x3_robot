@@ -22,6 +22,7 @@ from controllers.meta_quest_3_controller import MetaQuest3Controller
 from ros2.vr_audio_publisher import VrAudioPublisher
 from ros2.vr_audio_subscriber import VrAudioSubscriber
 from ethernet_connection.ethernet_server import EthernetServer
+from ethernet_connection.audio_bridge_server import AudioBridgeServer
 
 
 def main_loop(**kwargs):
@@ -224,6 +225,14 @@ def main_loop(**kwargs):
         ethernet_server.start()
     except Exception as e:
         utils.print_exception(exception=e, message='Ethernet server error')
+
+    # intra-robot audio bridge to the Jetson Nano: streams the ReSpeaker microphone (processed channel + VAD)
+    # out to the Jetson, and plays the Jetson's TTS audio back through the ReSpeaker speakers.
+    try:
+        audio_bridge_server = AudioBridgeServer(verbose=parameters['verbose'])
+        audio_bridge_server.start()
+    except Exception as e:
+        utils.print_exception(exception=e, message='Audio bridge server error')
 
     # notify the robot is ready
     robot_body.set_beep(gc.SHORT_BEEP)
