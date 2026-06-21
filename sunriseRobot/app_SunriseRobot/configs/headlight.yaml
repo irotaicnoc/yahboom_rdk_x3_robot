@@ -20,9 +20,11 @@ brightness_levels:
   - 50    # ON (half)
   - 100   # ON (full)
 
-# PWM carrier frequency in Hz for the MOSFET gate. A few hundred Hz to a few kHz avoids visible flicker;
-# 1000 Hz is a safe default. If the strip buzzes or the MOSFET runs hot, adjust this.
-pwm_frequency: 1000
+# PWM carrier frequency in Hz for the MOSFET gate. The RDK X3 hardware PWM only supports 48 kHz to
+# 192 MHz (it has no software PWM), so the value must stay in that range; values below 48000 are
+# rejected. 48000 Hz is well above the flicker/audible range and is the documented minimum, so it is a
+# safe default for switching a MOSFET. If the MOSFET runs hot or switches poorly, adjust within range.
+pwm_frequency: 48000
 
 # --- Automatic control in autonomous vision mode ---
 # When True, the headlight turns on automatically if the camera image is dark while the robot is in

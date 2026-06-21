@@ -44,10 +44,12 @@ class Headlight:
         except Exception:
             GPIO.setmode(mode)
 
-        # start turned off (duty 0). The pin must be set up as an output before creating the PWM.
+        # Hobot.GPIO has no software PWM: a hardware-PWM pin is driven by GPIO.PWM() directly, and the
+        # PWM object owns the pin. We must NOT call GPIO.setup() on it first; doing so claims the channel
+        # as a plain GPIO output and GPIO.PWM() then raises "This channel is in use".
+        # Start turned off: brightness_levels[0] is duty 0, so the strip is dark until a level is applied.
         self.current_level = 0
         self.is_on = False
-        GPIO.setup(self.pin, GPIO.OUT, initial=GPIO.LOW)
         self.pwm = GPIO.PWM(self.pin, self.pwm_frequency)
         self.pwm.start(self.brightness_levels[0])
         if self.verbose >= 2:
