@@ -46,9 +46,19 @@ def generate_launch_description():
     )
     print('Done.')
 
+    print('Starting arm_camera_relay_node...', end='')
+    time.sleep(1)
+    # Relays the Jetson-attached arm camera over the wired link and republishes it as 'arm_camera_stream'.
+    arm_camera_relay_node = Node(
+        package='camera_pub',
+        executable='arm_camera_relay_node',
+    )
+    print('Done.')
+
     node_list = [
         server_node,
         camera_publisher_node,
+        arm_camera_relay_node,
     ]
     return LaunchDescription(node_list)
 

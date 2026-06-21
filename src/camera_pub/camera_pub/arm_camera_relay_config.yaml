@@ -1,0 +1,18 @@
+verbose: 1
+
+# Wired intra-robot link to the Jetson Nano. This node is the TCP server; the Jetson connects out to it.
+# Bound to the static IP of the direct ethernet cable between the RDK X3 and the Jetson, so it is NOT
+# exposed on wlan0 / hotspot / tailscale0. This is a different port from the JSON command channel (65432).
+host: '192.168.10.11'
+port: 65433
+
+# ROS2 topic the VR/mobile apps subscribe to (mirrors 'camera_stream' for the front camera).
+topic_name: arm_camera_stream
+queue_size: 1
+
+# Frames are only pulled from the Jetson while at least one app is subscribed to the topic.
+fps: 5
+# How often to re-check for subscribers while idle, in seconds.
+no_subscriber_poll_interval: 0.3
+# If the listening socket cannot bind (e.g. wired link not up yet), retry after this interval, in seconds.
+accept_retry_interval: 5

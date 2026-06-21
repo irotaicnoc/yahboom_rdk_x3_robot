@@ -24,6 +24,7 @@ setup(
     entry_points={
         'console_scripts': [
             'camera_publisher_node = camera_pub.camera_publisher:main',
+            'arm_camera_relay_node = camera_pub.arm_camera_relay:main',
         ],
     },
 )
