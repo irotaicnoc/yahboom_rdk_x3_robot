@@ -2,7 +2,7 @@ verbose: 0
 
 # when True, print a per-frame timing breakdown (camera grab + detector inference/NMS split) to find
 # where the autonomous-vision latency goes. Set this to True to diagnose, then back to False.
-profile: False
+profile: True
 
 move_duration: 0.5
 
