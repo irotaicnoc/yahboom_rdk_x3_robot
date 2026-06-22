@@ -4,6 +4,7 @@ import numpy as np
 import args
 import utils
 import global_constants as gc
+from physical_accessories.arm_kinematics import ArmKinematics
 
 
 class Arm:
@@ -65,21 +66,11 @@ class Arm:
             start=True,
         )
 
-        try:
-            from ikpy.inverse_kinematics import inverse_kinematic_optimization
-            from ikpy.chain import Chain
-        except ImportError:
-            raise ImportError('The ikpy library for inverse kinematics is not installed.'
-                              ' Mode "user_controlled (arm_ik)" will not be available')
-
         self.arm_speed_proportion_ik = parameters['arm_speed_proportion_ik']
-        self.servo_chain = Chain.from_urdf_file(
-            urdf_file=gc.URDF_FOLDER_PATH + 'arm.urdf',
-            base_elements=['base_link'],
-            name='arm',
-            active_links_mask=[False, True, True, True, True, False],
-        )
-        self.inverse_kinematics = inverse_kinematic_optimization
+        # Analytical inverse/forward kinematics tailored to this exact arm. Replaces the previous generic
+        # ikpy numerical optimiser (which searched iteratively on every call and made IK mode laggy); the
+        # geometry is read from the same urdf/arm.urdf ikpy used. See arm_kinematics.py.
+        self.kinematics = ArmKinematics(urdf_path=gc.URDF_FOLDER_PATH + 'arm.urdf', verbose=self.verbose)
         robot_head.robot_sub_mode_dict[gc.MODE_USER_CONTROLLED].append(gc.SUB_MODE_ARM_IK)
         robot_head.add_sub_mode_callback(
             sub_mode=gc.SUB_MODE_ARM_IK,
@@ -102,7 +93,6 @@ class Arm:
         self.gripper_speed = [0, 0, 0]
         # initializes gripper position and speed, and desired angles
         self.sub_mode_ik_start_callback()
-        self.target_frame = np.zeros(shape=(3, 3))
 
     def toggle_rigid(self, rigid: bool = None) -> None:
         if rigid is not None:
@@ -127,10 +117,7 @@ class Arm:
         # the first value (x) controls the left-right position of the gripper,
         # the second value (y) controls the forward-backward position of the gripper,
         # the third value (z) controls the up-down position of the gripper
-
-        # intermediate value to calculate initial gripper coordinates
-        ikpy_angle_list = self.degree_to_ikpy_conversion(self.desired_angle_list)
-        return self.servo_chain.forward_kinematics(joints=ikpy_angle_list)[:3, 3]
+        return self.kinematics.forward_kinematics(self.desired_angle_list[:4])
 
     def set_gripper_position(self, gripper_pos: list) -> None:
         self.run_time = utils.change_range(
@@ -141,15 +128,11 @@ class Arm:
             new_max=self.arm_automated_speed[0],
         )
         self.gripper_pos = gripper_pos
-        self.target_frame[:, -1] = self.gripper_pos
-        ikpy_angle_list = self.inverse_kinematics(
-            chain=self.servo_chain,
-            target_frame=self.target_frame,
-            starting_nodes_angles=self.degree_to_ikpy_conversion(self.desired_angle_list),
-            # max_iter=None,
-        )
         self.desired_angle_list[:4] = self.clamp_angle_list(
-            angle_list=self.ikpy_to_degree_conversion(ikpy_angle_list),
+            angle_list=self.kinematics.inverse_kinematics(
+                target=self.gripper_pos,
+                current_angles=self.desired_angle_list[:4],
+            ),
             default_value=90,
         )
 
@@ -223,29 +206,21 @@ class Arm:
             # update the gripper position in the robot's coordinate system
             # the gripper position is used in place of the desired angles for motors 0, 1, 2, 3
 
-            # calling the inverse kinematics function is very slow, so we call it only when the gripper position
-            # changes
+            # only recompute when the gripper is actually moving (the analytical IK is cheap, but there is
+            # no point solving for an unchanged pose)
             if self.gripper_speed[0] != 0 or self.gripper_speed[1] != 0 or self.gripper_speed[2] != 0:
                 self.gripper_pos[0] += self.gripper_speed[0]
                 self.gripper_pos[1] += self.gripper_speed[1]
                 self.gripper_pos[2] += self.gripper_speed[2]
 
-                # update the desired angles
-                # the function returns 6 angle_list, but we don't need the first and last ones, they should be the
-                # gripper rotation and opening. But the 2 excluded angles are the last 2 angles in the list
-                # ikpy_angle_list = self.servo_chain.inverse_kinematics(target_position=self.gripper_pos)
-                # alternative implementation of the inverse kinematics function, with a different run time
-                # the function for IK requires in input a 3X3 transformation matrix, but in this case will only use the
-                # last column of the matrix, which is the position of the gripper
-                self.target_frame[:, -1] = self.gripper_pos
-                ikpy_angle_list = self.inverse_kinematics(
-                    chain=self.servo_chain,
-                    target_frame=self.target_frame,
-                    starting_nodes_angles=self.degree_to_ikpy_conversion(self.desired_angle_list),
-                    # max_iter=None,
-                )
+                # update the desired angles for motors 0-3 from the new gripper point (motors 4 and 5,
+                # gripper rotation and opening, are handled separately below). The analytical solver holds
+                # the current gripper pitch while it repositions.
                 self.desired_angle_list[:4] = self.clamp_angle_list(
-                    angle_list=self.ikpy_to_degree_conversion(ikpy_angle_list),
+                    angle_list=self.kinematics.inverse_kinematics(
+                        target=self.gripper_pos,
+                        current_angles=self.desired_angle_list[:4],
+                    ),
                     default_value=90,
                 )
 
@@ -304,23 +279,6 @@ class Arm:
                         print(f'Substituting missing angles with default value ({default_value}), angles: {angle_list}')
                 break
         return angle_list
-
-    @staticmethod
-    def ikpy_to_degree_conversion(angle_list: list) -> list:
-        new_angle_list = []
-        for value in angle_list[1:5]:
-            new_angle_list.append(np.rad2deg(value) + 90)
-        return new_angle_list
-
-    @staticmethod
-    def degree_to_ikpy_conversion(angle_list: list) -> list:
-        # converts from degrees to radians, and subtracts 90 degrees
-        # also, all the elements are shifted by one position, because the first element is ignored, and the last
-        # element is excluded (it would have been ignored anyway) to keep the same length as the input list
-        new_angle_list = [0]
-        for value in angle_list[:-1]:
-            new_angle_list.append(np.deg2rad(value - 90))
-        return new_angle_list
 
     def sub_mode_ik_start_callback(self) -> None:
         # this function is called when the arm is switched to inverse kinematics sub mode
