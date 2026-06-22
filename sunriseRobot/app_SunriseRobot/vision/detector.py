@@ -1,3 +1,4 @@
+import time
 import warnings
 
 from ultralytics import YOLO
@@ -14,6 +15,9 @@ class YoloDetector(object):
         self.camera_image_size = parameters['camera_image_size']
         self.verbose = parameters['verbose']
         self.confidence_threshold = parameters['confidence_threshold']
+        # when True, print a per-frame timing breakdown (model load, preprocessing, inference, NMS) so the
+        # vision bottleneck can be diagnosed (e.g. whether the Coral EdgeTPU is actually doing the work).
+        self.profile = parameters['profile']
         self.model_name = None
         self.model_path = None
         self.model = None
@@ -37,6 +41,7 @@ class YoloDetector(object):
             print(f'Loading vision model: {self.model_name}')
 
         # load YOLO model
+        load_start = time.perf_counter()
         try:
             self.model = YOLO(model=self.model_path, task='detect', verbose=self.verbose)
             self.model_class_dict = self.model.names
@@ -50,6 +55,9 @@ class YoloDetector(object):
                 print(f'Switching to backup model {self.model_path}...')
             self.model = YOLO(model=self.model_path, task='detect', verbose=self.verbose)
             self.model_class_dict = self.model.names
+        if self.profile:
+            print(f'[profile] vision model "{self.model_name}" loaded in '
+                  f'{(time.perf_counter() - load_start) * 1000:.0f} ms')
 
     def select_target(self, target_name: str) -> None:
         if self.target_class_name != target_name:
@@ -73,6 +81,8 @@ class YoloDetector(object):
                 self.target_class_name = old_target_class_name
 
     def find_target(self, frame, model_name: str, target_name: str, save: bool = False) -> dict:
+        if self.profile:
+            t_start = time.perf_counter()
         self.select_model(model_name=model_name)
         self.select_target(target_name=target_name)
         # output:
@@ -89,6 +99,8 @@ class YoloDetector(object):
             original_width=self.camera_image_size[0],
             original_height=self.camera_image_size[1],
         )
+        if self.profile:
+            t_pre = time.perf_counter()
 
         if self.target_class_name is None:
             warnings.warn(f'Target_class_name is None.')
@@ -108,6 +120,17 @@ class YoloDetector(object):
             classes=[self.target_class_id],
             verbose=False,
         )
+        if self.profile:
+            t_post = time.perf_counter()
+            # ultralytics measures itself per call: speed = {preprocess, inference, postprocess} in ms.
+            # If 'inference' dominates, the model is running on CPU (EdgeTPU not engaged / only partial);
+            # if 'postprocess' dominates, NMS on the CPU is the bottleneck.
+            speed = (getattr(results[0], 'speed', None) or {}) if results else {}
+            print(f'[profile] detect total={(t_post - t_start) * 1000:.0f}ms  '
+                  f'format={(t_pre - t_start) * 1000:.0f}ms  predict_wall={(t_post - t_pre) * 1000:.0f}ms  |  '
+                  f"ultralytics preprocess={speed.get('preprocess', 0):.0f} "
+                  f"inference={speed.get('inference', 0):.0f} "
+                  f"postprocess={speed.get('postprocess', 0):.0f} (ms)")
         try:
             confidence = results[0].boxes.conf
             if len(confidence) > 0:

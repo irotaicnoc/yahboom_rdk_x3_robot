@@ -17,6 +17,9 @@ class VisionAgent(object):
         self.robot_body = robot_body
         self.robot_head = robot_head
         self.verbose = parameters['verbose']
+        # when True, print a per-frame timing breakdown (camera grab + detector stages) to diagnose the
+        # ~3 s vision latency. Passed down to the detector so its inference/NMS split is printed too.
+        self.profile = parameters['profile']
         self.agent_active = False
         self.think_steps_if_no_target = parameters['think_steps_if_no_target']
         self.no_target_counter = 0
@@ -32,6 +35,7 @@ class VisionAgent(object):
         self.detector = YoloDetector(
             camera_image_size=(self.frame_width, self.frame_height),
             verbose=self.verbose,
+            profile=self.profile,
         )
         self.save_images = parameters['save_images']
 
@@ -153,9 +157,13 @@ class VisionAgent(object):
             start_thinking = time.time()
         self.set_zero_speed()
 
+        if self.profile:
+            grab_start = time.perf_counter()
         self.camera.get_img(2)
         self.camera.get_img(2)
         frame = self.camera.get_img(2)
+        if self.profile:
+            print(f'[profile] camera grab (3x get_img)={(time.perf_counter() - grab_start) * 1000:.0f} ms')
         if frame is None:
             if self.verbose >= 1:
                 print('Frame is None.')

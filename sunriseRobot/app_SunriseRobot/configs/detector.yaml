@@ -1,3 +1,9 @@
 verbose: 0
 backup_model_name: yolo11s.pt
 confidence_threshold: 0.25
+
+# when True, print a per-frame timing breakdown (model load, preprocessing, ultralytics
+# preprocess/inference/postprocess) to diagnose the vision latency. Leave False for normal use.
+# Note: vision_agent.yaml passes its own 'profile' down to the detector, so turning it on there
+# enables this too; this default is for running the detector on its own.
+profile: False
