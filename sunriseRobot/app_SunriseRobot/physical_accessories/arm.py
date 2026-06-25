@@ -1,3 +1,4 @@
+import time
 import warnings
 import numpy as np
 
@@ -91,6 +92,11 @@ class Arm:
         self.gripper_pos = [0, 0, 0]
         # # speed of the gripper in the x, y, z directions
         self.gripper_speed = [0, 0, 0]
+        # IK motion is integrated against real elapsed time (see update_desired_angles) so the gripper speed
+        # does not depend on the control-loop rate. last_ik_update_time is the previous integration instant;
+        # max_ik_dt caps a single step so a stall (mode switch / hitch) cannot turn into one big jump.
+        self.last_ik_update_time = time.time()
+        self.max_ik_dt = 0.1
         # initializes gripper position and speed, and desired angles
         self.sub_mode_ik_start_callback()
 
@@ -206,12 +212,21 @@ class Arm:
             # update the gripper position in the robot's coordinate system
             # the gripper position is used in place of the desired angles for motors 0, 1, 2, 3
 
+            # advance the target by the commanded velocity scaled by the real elapsed time, so the motion
+            # speed is independent of the control-loop rate (gripper_speed is a velocity in m/s). Without
+            # the dt term the gripper moved a fixed step per iteration, so it sped up drastically when the
+            # slow ikpy solver was replaced by the instant analytical one and the loop rate jumped.
+            now = time.time()
+            dt = now - self.last_ik_update_time
+            self.last_ik_update_time = now
+            dt = min(max(dt, 0.0), self.max_ik_dt)   # guard against a stall producing a big jump
+
             # only recompute when the gripper is actually moving (the analytical IK is cheap, but there is
             # no point solving for an unchanged pose)
             if self.gripper_speed[0] != 0 or self.gripper_speed[1] != 0 or self.gripper_speed[2] != 0:
-                self.gripper_pos[0] += self.gripper_speed[0]
-                self.gripper_pos[1] += self.gripper_speed[1]
-                self.gripper_pos[2] += self.gripper_speed[2]
+                self.gripper_pos[0] += self.gripper_speed[0] * dt
+                self.gripper_pos[1] += self.gripper_speed[1] * dt
+                self.gripper_pos[2] += self.gripper_speed[2] * dt
 
                 # update the desired angles for motors 0-3 from the new gripper point (motors 4 and 5,
                 # gripper rotation and opening, are handled separately below). The analytical solver holds
@@ -223,6 +238,16 @@ class Arm:
                     ),
                     default_value=90,
                 )
+
+                # Pull the stored target back onto what the arm can actually reach, by reading back the
+                # gripper point of the (clamped) angles we just committed. This is the cheap analytical
+                # forward kinematics in software, NOT a hardware query, so it is fine every iteration: in
+                # the reachable range it is a no-op (FK(IK(p)) == p), and only at the workspace / servo
+                # limits does it act, stopping gripper_pos from running away past the arm. That runaway is
+                # what made the arm feel stuck: you had to unwind all the phantom travel before it would
+                # move back. (If ever too costly, this could be throttled to every Nth iteration, at the
+                # price of letting the target drift up to N steps beyond reach.)
+                self.gripper_pos = self.kinematics.forward_kinematics(self.desired_angle_list[:4])
 
             # the last two angles (4 and 5) are updated normally
             temp_angle_4 = self.desired_angle_list[4] + self.servo_speed_list[4]
@@ -291,6 +316,8 @@ class Arm:
         self.servo_speed_list = [0, 0, 0, 0, 0, 0]
         self.gripper_speed = [0, 0, 0]
         self.gripper_pos = self.get_gripper_position()
+        # start the dt clock fresh so the first integration step after entering IK mode is not a stale jump
+        self.last_ik_update_time = time.time()
 
     def sub_mode_fk_start_callback(self) -> None:
         self.toggle_rigid(rigid=True)

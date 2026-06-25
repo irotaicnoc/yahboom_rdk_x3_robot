@@ -3,7 +3,11 @@ verbose: 0
 # the speed of the arm is a proportion of the wheel speed. This is used when the user is moving the arm with
 # forward kinematics
 arm_speed_proportion_fk: 2
-arm_speed_proportion_ik: 0.01
+# Gripper speed in inverse-kinematics mode. Since IK motion became time-based, this is a velocity in
+# metres/second (per unit of joystick deflection, scaled by the global speed coefficient), no longer a
+# fixed per-iteration step, so it does not depend on the control-loop rate. The arm reaches ~0.24 m, so
+# ~0.1 m/s is a brisk but controllable full-speed traverse; lower it for finer control.
+arm_speed_proportion_ik: 0.1
 # This is used when setting an arbitrary position for the arm. Allowed range is [0, 2000], with 0 beeing the maximum
 # speed and 2000 being the minimum speed. This range is used to convert the current robot speed to the arm speed.
 # arm_automated_speed=0 is too fast, so the maximum allowed is higher (which mean a lower speed)

@@ -33,7 +33,7 @@ class ArmKinematics:
     Forward and inverse kinematics use the same simplified planar model, so they are exact inverses of each
     other (entering IK mode causes no snap, and there is no drift). The model drops sub-degree URDF
     calibration offsets (a small base roll and < 1 mm link offsets); the resulting deviation from the raw
-    URDF is below 2 mm, well under the arm's servo resolution, and invisible since the gripper position is an
+    URDF is a few millimetres (about 3 mm worst case), well under the arm's servo resolution, and invisible since the gripper position is an
     internal coordinate the user drives by hand.
     """
 
@@ -118,6 +118,15 @@ class ArmKinematics:
         else:
             q1 = math.atan2(-px, py)
             wy = math.hypot(px, py)
+            # The (q1, wy) split is two-to-one: spinning the base yaw by 180 deg and negating the radial
+            # reach lands on the same gripper point. atan2/hypot always pick wy >= 0, which forces the base
+            # to flip whenever the target sits behind the vertical axis (e.g. dragging the gripper from in
+            # front of the base, across the centre, to behind it) -> the whole arm swings around. Instead
+            # keep the base yaw continuous with the current pose and let wy carry the sign (the planar arm
+            # leans to the far side). Without this the IK is not the inverse of the FK for wy < 0.
+            if math.cos(q1 - q1c) < 0:
+                q1 = q1 + math.pi if q1 < 0 else q1 - math.pi   # rotate by 180 deg, kept within [-pi, pi]
+                wy = -wy
         wx = self.h - pz
 
         # the gripper pitch we hold: absolute in-plane angle of the final segment, from the current pose
