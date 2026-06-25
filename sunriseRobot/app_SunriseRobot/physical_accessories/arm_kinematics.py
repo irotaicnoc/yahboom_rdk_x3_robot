@@ -1,6 +1,8 @@
 import math
 import xml.etree.ElementTree as ET
 
+import numpy as np
+
 import global_constants as gc
 
 
@@ -27,8 +29,11 @@ class ArmKinematics:
         i.e. s = 90 deg is the joint's zero/reference. Inversely, s = degrees(q) + 90.
 
     Redundancy: four joints positioning a 3D point leaves one extra degree of freedom, the gripper's pitch
-    (tilt). It is resolved by HOLDING the current gripper pitch: as the gripper is translated, its tilt stays
-    put and the shoulder/elbow do the repositioning.
+    (tilt). inverse_kinematics() resolves it by HOLDING the current gripper pitch, which suits one-shot
+    absolute moves (e.g. driving to a detected object). For live joystick teleop, resolved_rate() instead
+    spreads the commanded motion across all four joints through the Jacobian and lets the pitch float, so the
+    arm re-poses itself (flattens out, lifts the elbow) to keep following the stick. Holding the pitch
+    rigidly traps the arm at full extension, where it jams a joint against its limit instead of rearranging.
 
     Forward and inverse kinematics use the same simplified planar model, so they are exact inverses of each
     other (entering IK mode causes no snap, and there is no drift). The model drops sub-degree URDF
@@ -39,6 +44,11 @@ class ArmKinematics:
 
     # Geometry measured from urdf/arm.urdf (metres / radians). Used only if the URDF cannot be read.
     _FALLBACK_GEOMETRY = {'h': 0.10750, 'a2': 0.08285, 'a3': 0.08285, 'a4': 0.07385, 'delta4': 0.0083081}
+
+    # Joint rotation limits (radians). Servos run 0..180 deg and q = servo - 90 deg, so q is in [-90, 90] deg
+    # (which also matches the URDF joint limits of +-1.5708 rad). Used to clip resolved-rate motion.
+    _Q_MIN = -math.pi / 2
+    _Q_MAX = math.pi / 2
 
     def __init__(self, urdf_path: str = None, verbose: int = 0):
         self.verbose = verbose
@@ -90,7 +100,12 @@ class ArmKinematics:
         Position (x, y, z) in metres of the gripper point, from the first four servo angles (degrees).
         Only motors 0..3 affect the gripper point, so servo_angles needs at least four entries.
         """
-        q1, q2, q3, q4 = self._servos_to_q(servo_angles)
+        return self._fk_from_joints(self._servos_to_q(servo_angles))
+
+    def _fk_from_joints(self, joint_angles) -> list:
+        # Gripper point (x, y, z) in metres from the joint rotations q1..q4 (radians). Shared by the public
+        # forward kinematics and by the Jacobian for resolved-rate control (which perturbs the joint angles).
+        q1, q2, q3, q4 = joint_angles
         # absolute in-plane angle of each segment (the final segment carries the small joint4 mounting yaw)
         angle_a2 = q2
         angle_a3 = q2 + q3
@@ -146,3 +161,52 @@ class ArmKinematics:
         q2 = math.atan2(dy, dx) - math.atan2(self.a3 * math.sin(q3), self.a2 + self.a3 * math.cos(q3))
         q4 = pitch - q2 - q3 - self.delta4              # set the wrist to maintain the held pitch
         return self._q_to_servos([q1, q2, q3, q4])
+
+    def resolved_rate(self, servo_angles, cartesian_velocity, dt,
+                      base_damping: float = 0.01, max_damping: float = 0.08,
+                      singularity_threshold: float = 0.02, limit_avoidance_gain: float = 0.6) -> list:
+        """
+        One step of resolved-rate (Jacobian) control for driving the gripper point with the joystick.
+
+        Inputs: the current servo angles (degrees) for motors 0..3, the desired gripper-point velocity
+        cartesian_velocity = (vx, vy, vz) in metres/second, and the timestep dt in seconds. Returns the next
+        servo angles (degrees) for motors 0..3 (already within the servo range; the caller may still clamp).
+
+        Unlike inverse_kinematics, which pins the gripper pitch and so jams a joint against its limit when a
+        motion needs the arm to re-pose itself, this distributes the commanded velocity across all four joints
+        via the damped-least-squares inverse of the Jacobian. A null-space term gently pulls the joints toward
+        the centre of their range to keep clear of the limits without disturbing the gripper motion, and the
+        damping is raised near singular (fully extended) configurations so the joint speeds stay bounded. This
+        is what lets the arm flatten out / re-arrange to keep following the stick instead of getting stuck.
+        """
+        q = np.array([math.radians(servo_angles[i] - 90) for i in range(4)])
+        jacobian = self._jacobian(q)                                   # 3x4: d(gripper point) / d(joints)
+        jjt = jacobian @ jacobian.T                                    # 3x3
+        # raise the damping as the arm nears a singularity (manipulability -> 0) so q_dot cannot blow up
+        manipulability = math.sqrt(max(float(np.linalg.det(jjt)), 0.0))
+        if manipulability >= singularity_threshold:
+            damping = base_damping
+        else:
+            damping = base_damping + max_damping * (1.0 - manipulability / singularity_threshold)
+        damped_inverse = jacobian.T @ np.linalg.inv(jjt + (damping ** 2) * np.eye(3))   # 4x3
+        velocity = np.asarray(cartesian_velocity, dtype=float)
+        # primary task: follow the commanded gripper-point velocity
+        q_dot = damped_inverse @ velocity
+        # secondary task in the Jacobian's null space: drift the joints toward the centre of their range
+        # (q = 0, i.e. servo 90) to stay away from the limits, without perturbing the gripper-point motion
+        null_space_projector = np.eye(4) - damped_inverse @ jacobian
+        q_dot = q_dot + null_space_projector @ (-limit_avoidance_gain * q)
+        q = np.clip(q + q_dot * dt, self._Q_MIN, self._Q_MAX)
+        return [math.degrees(q[i]) + 90 for i in range(4)]
+
+    def _jacobian(self, joint_angles, eps: float = 1e-6):
+        # Numeric central-difference Jacobian (3x4) of the gripper point w.r.t. the four joint rotations.
+        # The closed-form forward kinematics is exact and cheap, so finite differences are accurate and fast.
+        jacobian = np.zeros((3, 4))
+        for i in range(4):
+            delta = np.zeros(4)
+            delta[i] = eps
+            p_plus = np.array(self._fk_from_joints(joint_angles + delta))
+            p_minus = np.array(self._fk_from_joints(joint_angles - delta))
+            jacobian[:, i] = (p_plus - p_minus) / (2 * eps)
+        return jacobian

@@ -8,6 +8,18 @@ arm_speed_proportion_fk: 2
 # fixed per-iteration step, so it does not depend on the control-loop rate. The arm reaches ~0.24 m, so
 # ~0.1 m/s is a brisk but controllable full-speed traverse; lower it for finer control.
 arm_speed_proportion_ik: 0.1
+# Resolved-rate (Jacobian) control for the IK-mode joystick teleop: the stick sets the gripper-point
+# velocity and all four arm joints move together to follow it, re-posing the arm as needed instead of
+# jamming a joint at its limit. These rarely need changing; tune on the robot if the arm oscillates near
+# full extension (raise the dampings) or feels sluggish/imprecise (lower base_damping, raise tracking_gain).
+resolved_rate_ik:
+  base_damping: 0.01            # least-squares damping in the well-conditioned interior (smaller = more exact)
+  max_damping: 0.08             # extra damping blended in near singularities (full extension) for stability
+  singularity_threshold: 0.02   # manipulability below which the extra damping ramps up
+  limit_avoidance_gain: 0.6     # how strongly joints are pulled toward mid-range to stay off their limits
+  tracking_leash: 0.01          # max distance (m) the steered target may lead the actual gripper point
+  tracking_gain: 8.0            # how hard the gripper is pulled back onto the commanded path
+
 # This is used when setting an arbitrary position for the arm. Allowed range is [0, 2000], with 0 beeing the maximum
 # speed and 2000 being the minimum speed. This range is used to convert the current robot speed to the arm speed.
 # arm_automated_speed=0 is too fast, so the maximum allowed is higher (which mean a lower speed)

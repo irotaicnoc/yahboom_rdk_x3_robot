@@ -68,6 +68,18 @@ class Arm:
         )
 
         self.arm_speed_proportion_ik = parameters['arm_speed_proportion_ik']
+        # Resolved-rate (Jacobian) control tunables for IK-mode teleop. The four solver knobs are passed
+        # straight to ArmKinematics.resolved_rate; the leash/gain shape how tightly the gripper tracks the
+        # commanded path (see update_desired_angles). All defined in arm.yaml.
+        resolved_rate_ik = parameters['resolved_rate_ik']
+        self.resolved_rate_params = {
+            'base_damping': resolved_rate_ik['base_damping'],
+            'max_damping': resolved_rate_ik['max_damping'],
+            'singularity_threshold': resolved_rate_ik['singularity_threshold'],
+            'limit_avoidance_gain': resolved_rate_ik['limit_avoidance_gain'],
+        }
+        self.ik_tracking_leash = resolved_rate_ik['tracking_leash']
+        self.ik_tracking_gain = resolved_rate_ik['tracking_gain']
         # Analytical inverse/forward kinematics tailored to this exact arm. Replaces the previous generic
         # ikpy numerical optimiser (which searched iteratively on every call and made IK mode laggy); the
         # geometry is read from the same urdf/arm.urdf ikpy used. See arm_kinematics.py.
@@ -212,42 +224,40 @@ class Arm:
             # update the gripper position in the robot's coordinate system
             # the gripper position is used in place of the desired angles for motors 0, 1, 2, 3
 
-            # advance the target by the commanded velocity scaled by the real elapsed time, so the motion
-            # speed is independent of the control-loop rate (gripper_speed is a velocity in m/s). Without
-            # the dt term the gripper moved a fixed step per iteration, so it sped up drastically when the
-            # slow ikpy solver was replaced by the instant analytical one and the loop rate jumped.
+            # Integrate against real elapsed time so the speed is independent of the control-loop rate
+            # (gripper_speed is a velocity in m/s). Without the dt term the gripper moved a fixed step per
+            # iteration, so it sped up drastically when the slow ikpy solver was replaced by the instant
+            # analytical one and the loop rate jumped.
             now = time.time()
             dt = now - self.last_ik_update_time
             self.last_ik_update_time = now
             dt = min(max(dt, 0.0), self.max_ik_dt)   # guard against a stall producing a big jump
 
-            # only recompute when the gripper is actually moving (the analytical IK is cheap, but there is
-            # no point solving for an unchanged pose)
+            # only do work when the gripper is actually being driven
             if self.gripper_speed[0] != 0 or self.gripper_speed[1] != 0 or self.gripper_speed[2] != 0:
-                self.gripper_pos[0] += self.gripper_speed[0] * dt
-                self.gripper_pos[1] += self.gripper_speed[1] * dt
-                self.gripper_pos[2] += self.gripper_speed[2] * dt
-
-                # update the desired angles for motors 0-3 from the new gripper point (motors 4 and 5,
-                # gripper rotation and opening, are handled separately below). The analytical solver holds
-                # the current gripper pitch while it repositions.
+                # Resolved-rate (Jacobian) control: the joystick sets the gripper-point velocity and all four
+                # joints move together to follow it, re-posing the arm as needed instead of pinning a joint
+                # at its limit (see ArmKinematics.resolved_rate). gripper_pos is the steered target; we keep
+                # it on a short leash to the actual gripper point so it can never race off into unreachable
+                # space (which used to make the arm feel stuck), and feed back the small remaining error so
+                # the gripper tracks the commanded path tightly.
+                actual = np.array(self.kinematics.forward_kinematics(self.desired_angle_list[:4]))
+                target = np.array(self.gripper_pos) + np.array(self.gripper_speed) * dt
+                error = target - actual
+                distance = float(np.linalg.norm(error))
+                if distance > self.ik_tracking_leash:
+                    target = actual + error * (self.ik_tracking_leash / distance)
+                self.gripper_pos = target.tolist()
+                cartesian_velocity = np.array(self.gripper_speed) + self.ik_tracking_gain * (target - actual)
                 self.desired_angle_list[:4] = self.clamp_angle_list(
-                    angle_list=self.kinematics.inverse_kinematics(
-                        target=self.gripper_pos,
-                        current_angles=self.desired_angle_list[:4],
+                    angle_list=self.kinematics.resolved_rate(
+                        servo_angles=self.desired_angle_list[:4],
+                        cartesian_velocity=cartesian_velocity,
+                        dt=dt,
+                        **self.resolved_rate_params,
                     ),
                     default_value=90,
                 )
-
-                # Pull the stored target back onto what the arm can actually reach, by reading back the
-                # gripper point of the (clamped) angles we just committed. This is the cheap analytical
-                # forward kinematics in software, NOT a hardware query, so it is fine every iteration: in
-                # the reachable range it is a no-op (FK(IK(p)) == p), and only at the workspace / servo
-                # limits does it act, stopping gripper_pos from running away past the arm. That runaway is
-                # what made the arm feel stuck: you had to unwind all the phantom travel before it would
-                # move back. (If ever too costly, this could be throttled to every Nth iteration, at the
-                # price of letting the target drift up to N steps beyond reach.)
-                self.gripper_pos = self.kinematics.forward_kinematics(self.desired_angle_list[:4])
 
             # the last two angles (4 and 5) are updated normally
             temp_angle_4 = self.desired_angle_list[4] + self.servo_speed_list[4]
