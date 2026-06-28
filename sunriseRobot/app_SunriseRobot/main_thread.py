@@ -14,7 +14,7 @@ from gpio.button_2_pin import Button2Pin
 from physical_accessories.arm import Arm
 from physical_accessories.oled import Oled
 from physical_accessories.light import Light
-from physical_accessories.headlight import Headlight
+from physical_accessories.remote_headlight import RemoteHeadlight
 from controllers.ps2_controller import PS2Controller
 from controllers.controller_loop import ControllerLoop
 from controllers.controller_interface import ControllerFunctions
@@ -42,12 +42,11 @@ def main_loop(**kwargs):
     # LIGHTS
     internal_light = Light(verbose=parameters['verbose'])
     led_3_pin = Led3Pin(red_power_cable=gc.RED_CABLE_01, green_power_cable=gc.GREEN_CABLE_01)
-    # external COB LED strip, to illuminate the scene for the camera in low light
-    try:
-        headlight = Headlight(pin=gc.HEADLIGHT_PIN, verbose=parameters['verbose'])
-    except Exception as e:
-        utils.print_exception(exception=e, message='Headlight error')
-        headlight = None
+    # External COB LED strip (camera headlight). It now physically lives on the Jetson Nano (wired to a
+    # Jetson GPIO pin via the MOSFET). RobotHead stays the single control surface: this proxy forwards the
+    # on/off/brightness intents to the Jetson over the command channel, where the real Headlight drives the
+    # pin. The command sender is bound once the ethernet server exists (see below).
+    headlight = RemoteHeadlight(verbose=parameters['verbose'])
 
     robot_head = RobotHead(
         robot_body=robot_body,
@@ -222,6 +221,8 @@ def main_loop(**kwargs):
             light=internal_light,
             verbose=parameters['verbose'],
         )
+        # The headlight is on the Jetson; let the proxy actuate it over the command channel.
+        headlight.bind_sender(ethernet_server.send_command)
         ethernet_server.start()
     except Exception as e:
         utils.print_exception(exception=e, message='Ethernet server error')
