@@ -9,6 +9,7 @@ import args
 import utils
 import global_constants as gc
 from sound import tuning
+from robot_link import protocol
 
 _FORMAT_TO_ALSA = {
     'S16_LE':   alsaaudio.PCM_FORMAT_S16_LE,
@@ -26,20 +27,6 @@ _FORMAT_WIDTH = {
     'U8':       1,
     'FLOAT_LE': 4,
 }
-
-
-def _recv_exactly(connection, num_bytes: int):
-    """
-    Receive exactly num_bytes from the socket. Returns the bytes, or None if the peer closed the connection
-    before all bytes arrived.
-    """
-    buffer = b''
-    while len(buffer) < num_bytes:
-        chunk = connection.recv(num_bytes - len(buffer))
-        if not chunk:
-            return None
-        buffer += chunk
-    return buffer
 
 
 class AudioBridgeServer:
@@ -222,8 +209,7 @@ class AudioBridgeServer:
                 audio = np.frombuffer(data, dtype=np.int16)
                 mono = audio[self.mic_processed_channel::self.mic_capture_channels].tobytes()
                 vad = self._read_vad(microphone) if microphone is not None else 0
-                header = bytes([vad]) + len(mono).to_bytes(length=4, byteorder='big')
-                connection.sendall(header + mono)
+                protocol.send_audio_frame(connection, mono, is_voice=bool(vad))
         finally:
             if capture is not None:
                 try:
@@ -285,15 +271,11 @@ class AudioBridgeServer:
         try:
             playback = self._open_playback()
             while self.is_active:
-                length_prefix = _recv_exactly(connection, 4)
-                if length_prefix is None:
-                    return  # peer closed the connection
-                pcm_length = int.from_bytes(length_prefix, byteorder='big')
-                if pcm_length == 0:
-                    continue
-                pcm_bytes = _recv_exactly(connection, pcm_length)
+                pcm_bytes = protocol.recv_message(connection)
                 if pcm_bytes is None:
-                    return  # peer closed mid-frame
+                    return  # peer closed the connection
+                if pcm_bytes == b'':
+                    continue  # zero-length frame, nothing to play
                 for offset in range(0, len(pcm_bytes), period_bytes):
                     period = pcm_bytes[offset:offset + period_bytes]
                     if len(period) < period_bytes:

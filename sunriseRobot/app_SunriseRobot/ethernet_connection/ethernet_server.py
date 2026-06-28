@@ -1,11 +1,12 @@
-import json
 import time
+import queue
 import socket
 import threading
 
 import args
 import utils
 import global_constants as gc
+from robot_link import protocol
 from function_calls.function_caller import FunctionCaller
 
 
@@ -16,108 +17,54 @@ class ConnectionHandler:
         self.address = address
         self.number = number
         self.verbose = verbose
+        # commands to send to this client (RDK X3 -> Jetson direction), drained by sender()
+        self.outgoing = queue.Queue()
 
-    def receive_data(self):
-        try:
-            data = self.connection.recv(1024)
-            if not data:
-                if self.verbose >= 1:
-                    print("No data received.")
-                return None
-            if self.verbose >= 3:
-                print(f"server received: {data.decode()}")
-            return data.decode()
-        except Exception as e:
-            utils.print_exception(exception=e, message='Ethernet server "receive_data" error')
-            self.close()
+    def enqueue_command(self, name: str, args=None) -> None:
+        """Queue a command to be sent to this client (RDK X3 -> Jetson direction)."""
+        self.outgoing.put((name, args))
 
-    def receive_function_call(self) -> dict:
-        try:
-            # First, receive the 4-byte length prefix
-            length_prefix = self.connection.recv(4)
-            if not length_prefix:
-                if self.verbose >= 1:
-                    print("Client disconnected unexpectedly during length prefix reception.")
-                self.close()
-
-            message_length = int.from_bytes(bytes=length_prefix, byteorder='big')
-
-            # Receive the actual JSON data based on the length
-            received_bytes = b''
-            while len(received_bytes) < message_length:
-                packet = self.connection.recv(message_length - len(received_bytes))
-                if not packet:
-                    if self.verbose >= 1:
-                        print("Client disconnected unexpectedly during data reception.")
-                    self.close()
-                received_bytes += packet
-
-            if not received_bytes:  # Handle cases where packet was empty
-                if self.verbose >= 1:
-                    print("No data received after length prefix.")
-                self.close()
-
-            # Decode the bytes back to a JSON string
-            json_string = received_bytes.decode('utf-8')
-
-            # Deserialize the JSON string back into a Python dictionary
-            received_data = json.loads(json_string)
-
-            # Now you have the function call data as a dictionary:
-            function_call = {
-                "name": received_data.get("name"),
-                "args": received_data.get("args"),
-            }
-            # utils.pretty_print_dict(function_call)
-
-            # Send an acknowledgment back to the client if needed
-            # self.connection.sendall(b'ACK received function call')
-            return function_call
-
-        except Exception as e:
-            utils.print_exception(exception=e, message='Ethernet server "receive_data" error')
-            self.close()
-
-    def receiver(self) :
+    def receiver(self):
+        """Receive JSON commands from the client and dispatch them via the FunctionCaller."""
         while self.connection:
-            decoded_data = self.receive_function_call()
-            if decoded_data is not None:
-                try:
-                    self.function_caller.call_function(function_name=decoded_data['name'], kwargs=decoded_data['args'])
-                except Exception as e:
-                    utils.print_exception(exception=e, message='Error when executing received function')
-                    self.close()
-            else:
-                time.sleep(0.3)
+            command = protocol.recv_command(self.connection)
+            if command is None:
+                # the client closed the connection (or framed an empty message)
+                self.close()
+                break
+            try:
+                self.function_caller.call_function(function_name=command['name'], kwargs=command['args'])
+            except Exception as e:
+                utils.print_exception(exception=e, message='Error when executing received function')
 
     def sender(self):
+        """Send queued commands to the client (RDK X3 -> Jetson direction)."""
         while self.connection:
-            # TODO: send messages
-            message_to_send = None
-            if message_to_send is None:
-                time.sleep(0.3)
+            try:
+                name, command_args = self.outgoing.get(timeout=0.3)
+            except queue.Empty:
                 continue
-            else:
-                self.connection.sendall(message_to_send.encode())
-                time.sleep(0.01)
+            try:
+                protocol.send_command(self.connection, name, command_args)
+            except Exception as e:
+                utils.print_exception(exception=e, message='Ethernet server sender error')
+                self.close()
+                break
 
     def start(self):
-        # Start the receiver and sender threads
+        # Start the receiver and sender threads (the channel is full-duplex on one socket)
         if self.verbose >= 2:
-            print('Starting Client handler...')
-        if self.number is not None:
-            receiver_thread = threading.Thread(target=self.receiver, name=f'ethernet_client_receiver_{self.number}')
-            # sender_thread = threading.Thread(target=self.sender, name=f'ethernet_client_sender_{self.number}')
-        else:
-            receiver_thread = threading.Thread(target=self.receiver)
-            # sender_thread = threading.Thread(target=self.sender)
-
+            print('Starting client handler...')
+        suffix = f'_{self.number}' if self.number is not None else ''
+        receiver_thread = threading.Thread(
+            target=self.receiver, name=f'ethernet_server_receiver{suffix}', daemon=True)
+        sender_thread = threading.Thread(
+            target=self.sender, name=f'ethernet_server_sender{suffix}', daemon=True)
         receiver_thread.start()
+        sender_thread.start()
         if self.verbose >= 1:
             print(f'Receiver thread started: "{receiver_thread.name}"')
-        # sender_thread.start()
-        # if self.verbose >= 1:
-        #     print(f'Sender thread started: "{sender_thread.name}"')
+            print(f'Sender thread started: "{sender_thread.name}"')
 
     def close(self) -> None:
         if self.connection:
@@ -170,6 +117,17 @@ class EthernetServer:
             self.socket = None
         if self.verbose >= 1:
             print("Server stopped. All connections closed.")
+
+    def send_command(self, name: str, args=None) -> None:
+        """
+        Send a command to the connected client(s) (RDK X3 -> Jetson direction), e.g. to actuate the
+        Jetson-side headlight. Prunes any connections that have since closed.
+        """
+        for handler in list(self.active_connections):
+            if handler.connection is None:
+                self.active_connections.remove(handler)
+            else:
+                handler.enqueue_command(name, args)
 
     def start(self):
         """
