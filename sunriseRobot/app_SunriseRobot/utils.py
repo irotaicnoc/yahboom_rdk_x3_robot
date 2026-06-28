@@ -7,6 +7,9 @@ import numpy as np
 from ultralytics import YOLO
 
 import global_constants as gc
+# pretty_print_dict / print_exception are shared with the Jetson via robot_link; re-exported
+# here so existing utils.pretty_print_dict(...) / utils.print_exception(...) call sites keep working.
+from robot_link.common import pretty_print_dict, print_exception
 
 
 def format_camera_frames(frame,
@@ -84,26 +87,6 @@ def print_known_classes(model=None, yolo_model_name: str = None) -> None:
 
     for class_id, class_name in enumerate(model.names):
         print(f'{model.names[class_id]}, ID: {class_id}')
-
-
-def pretty_print_dict(data, _level: int = 0) -> None:
-    if isinstance(data, dict):
-        if _level > 0:
-            print()
-        for key in data:
-            for i in range(_level + 1):
-                print('\t', end='')
-            print(f'{key}: ', end='')
-            pretty_print_dict(data[key], _level=_level + 1)
-    else:
-        print(data)
-
-
-def print_exception(exception: Exception, message: str = None) -> None:
-    if message is not None:
-        print(f'{message}:\n\t{exception}\n\t{exception.__traceback__}')
-    else:
-        print(f'Error:\n\t{exception}\n\t{exception.__traceback__}')
 
 
 def change_range(value, original_min, original_max, new_min, new_max):

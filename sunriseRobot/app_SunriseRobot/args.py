@@ -1,53 +1,25 @@
-import yaml
-import copy
-import argparse
+"""
+Thin shim over the shared config loader in robot_link.
 
-import utils
+The real implementation lives in robot_link/config.py (shared with the Jetson via the
+git submodule). This module is kept only so existing ``import args`` /
+``args.import_args(...)`` call sites keep working unchanged. It injects this repo's
+CONFIG_FOLDER_PATH so robot_link.config stays repo-agnostic.
+"""
 
-
-def import_args(yaml_path: str, read_from_command_line: bool = False, **kwargs) -> dict:
-    # read data from yaml config file
-    with open(yaml_path) as f:
-        data_dict = yaml.safe_load(f)
-
-    if read_from_command_line:
-        # command line arguments have priority over yaml arguments
-        data_dict = from_command_line(default_data_dict=data_dict)
-
-    # function arguments have priority over yaml AND command line arguments
-    data_dict = from_function_arguments(default_data_dict=data_dict, **kwargs)
-
-    try:
-        verbose = data_dict['verbose']
-    except AttributeError:
-        verbose = 0
-    if verbose >= 3:
-        print(f'Yaml config file: "{yaml_path}"')
-        print('Imported parameters:')
-        utils.pretty_print_dict(data_dict)
-
-    return data_dict
+import global_constants as gc
+from robot_link import config as _config
+from robot_link.config import from_command_line, from_function_arguments  # re-exported for callers
 
 
-def from_command_line(default_data_dict: dict) -> dict:
-    parser = argparse.ArgumentParser()
-    for key in default_data_dict:
-        value = default_data_dict[key]
-        parser.add_argument(f'--{key}', dest=key, type=type(value))
-
-    updated_data_dict = copy.deepcopy(default_data_dict)
-    args = parser.parse_args()
-    args_dict = vars(args)
-    for key in args_dict:
-        if args_dict[key] is not None:
-            updated_data_dict[key] = args_dict[key]
-
-    return updated_data_dict
-
-
-def from_function_arguments(default_data_dict: dict, **kwargs) -> dict:
-    updated_data_dict = copy.deepcopy(default_data_dict)
-    for key in kwargs:
-        updated_data_dict[key] = kwargs[key]
-
-    return updated_data_dict
+def import_args(yaml_path: str = None,
+                caller_name: str = None,
+                read_from_command_line: bool = False,
+                **kwargs) -> dict:
+    return _config.import_args(
+        yaml_path=yaml_path,
+        caller_name=caller_name,
+        config_folder=gc.CONFIG_FOLDER_PATH,
+        read_from_command_line=read_from_command_line,
+        **kwargs,
+    )
