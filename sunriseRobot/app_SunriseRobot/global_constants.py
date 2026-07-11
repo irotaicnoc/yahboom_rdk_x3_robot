@@ -51,9 +51,10 @@ RED_CABLE_01 = 15  # GPIO CABLE
 
 # COB LED strip (external headlight to illuminate the scene for the camera in low light)
 # the strip is a passive 5V load switched by a MOSFET module whose trigger is driven by this GPIO pin
-# (BOARD numbering). The pin uses hardware PWM for brightness control, so it must be a PWM-capable pin
-# (the RDK X3 exposes hardware PWM on pins 32 and 33).
-HEADLIGHT_PIN = 33  # hardware-PWM-capable GPIO pin (BOARD numbering)
+# (BOARD numbering). The drive mode is set in configs/headlight.yaml: the default 'onoff' (and 'software'
+# PWM) work on any output pin; only 'hardware' PWM requires a PWM-capable pin (the RDK X3 exposes hardware
+# PWM on pins 32 and 33). 33 is kept as the default because it is valid for every mode.
+HEADLIGHT_PIN = 33  # GPIO pin (BOARD numbering); PWM-capable (32/33) so 'hardware' mode also works
 
 # led colors
 POWER_OFF = 'off'

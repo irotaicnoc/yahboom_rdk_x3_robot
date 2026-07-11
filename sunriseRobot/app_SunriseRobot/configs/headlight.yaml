@@ -8,23 +8,38 @@ verbose: 2
 # --- COB LED strip (external headlight for the camera) ---
 # The strip is a passive 5V load (two wires, no signal input). It is powered from the expansion board's
 # 5V output and switched by a MOSFET module whose trigger is driven by an RDK X3 GPIO pin (set in
-# global_constants.py as HEADLIGHT_PIN). The pin uses hardware PWM, so the MOSFET passes a variable duty
-# cycle to the strip and the brightness is adjustable. Tie the MOSFET trigger ground to the RDK ground.
+# global_constants.py as HEADLIGHT_PIN). Tie the MOSFET trigger ground to the RDK ground (common ground).
+
+# How the pin drives the MOSFET gate:
+#   onoff    -> plain digital output (steady 3.3V when on), no brightness control. DEFAULT. Cheap MOSFET
+#               trigger modules switch a steady 3.3V reliably; the RDK X3 hardware PWM has a 48 kHz minimum
+#               that is often too fast for such a module's gate to fully charge, leaving the strip dark
+#               even at a correct-looking duty. On/off reproduces the steady-DC gate signal that tested OK.
+#   software -> best-effort software PWM (a background thread toggles the pin). Gives brightness control at
+#               a low, MOSFET-friendly frequency, but uses CPU and can flicker. Any output pin works.
+#   hardware -> RDK X3 hardware PWM via GPIO.PWM (PWM-capable pins 32/33 only, min 48 kHz). No CPU cost, but
+#               many MOSFET modules cannot switch that fast, so the strip may stay dark. See pwm_frequency.
+# Note: onoff and software work on any GPIO pin; only hardware requires HEADLIGHT_PIN to be 32 or 33.
+pwm_mode: onoff
 
 # PWM duty cycle (0-100) for each light state. Index 0 is ALWAYS the OFF state (duty 0); the remaining
 # entries are the "on" states the light can cycle through (turn_on() uses index 1, next_level() cycles
-# through all of them). Perceived brightness vs duty depends on the strip, so tune these on the robot.
+# through all of them). In 'onoff' mode any non-zero level is simply "full on". Perceived brightness vs
+# duty depends on the strip, so tune these on the robot (relevant for 'software'/'hardware' modes).
 # To change the number of steps, list more/fewer values, e.g. [0, 25, 50, 100] -> off, low, half, full.
 brightness_levels:
   - 0     # OFF
   - 50    # ON (half)
   - 100   # ON (full)
 
-# PWM carrier frequency in Hz for the MOSFET gate. The RDK X3 hardware PWM only supports 48 kHz to
-# 192 MHz (it has no software PWM), so the value must stay in that range; values below 48000 are
-# rejected. 48000 Hz is well above the flicker/audible range and is the documented minimum, so it is a
-# safe default for switching a MOSFET. If the MOSFET runs hot or switches poorly, adjust within range.
+# Carrier frequency in Hz for 'hardware' mode only. The RDK X3 hardware PWM supports 48 kHz to 192 MHz
+# (values below 48000 are rejected), so it must stay in that range. Unused in 'onoff' / 'software' modes.
 pwm_frequency: 48000
+
+# Carrier frequency in Hz for 'software' mode only. Python software PWM cannot reach the hardware rate, so
+# keep this low (about 100-200 Hz) to limit CPU use and flicker while still being fast enough not to
+# visibly blink. Unused in 'onoff' / 'hardware' modes.
+software_pwm_frequency: 200
 
 # --- Automatic control in autonomous vision mode ---
 # When True, the headlight turns on automatically if the camera image is dark while the robot is in
