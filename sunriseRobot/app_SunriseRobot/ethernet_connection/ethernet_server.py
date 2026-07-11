@@ -120,8 +120,8 @@ class EthernetServer:
 
     def send_command(self, name: str, args=None) -> None:
         """
-        Send a command to the connected client(s) (RDK X3 -> Jetson direction), e.g. to actuate the
-        Jetson-side headlight. Prunes any connections that have since closed.
+        Send a command to the connected client(s) (RDK X3 -> Jetson direction). Prunes any
+        connections that have since closed.
         """
         for handler in list(self.active_connections):
             if handler.connection is None:
