@@ -19,6 +19,12 @@ class RobotBody(object):
         # com = '/dev/myserial'
 
         self.ser = serial.Serial(com, baud_rate)
+        # Several threads share this one UART (control loop streaming arm-angle frames, the PS2/VR controller
+        # threads, the ethernet server relaying commands from the Jetson, ...). serial.Serial.write is not
+        # atomic across threads, so without a lock two command frames could interleave at the byte level and
+        # corrupt each other. A corrupted arm-angle frame made the arm jump when another command (e.g. a beep)
+        # was sent mid-stream. All writes go through _write_cmd(), guarded by this lock.
+        self._serial_lock = threading.Lock()
         self._delay_time = delay
         self.verbose = verbose
 
@@ -132,6 +138,13 @@ class RobotBody(object):
         self.ser.close()
         self._uart_state = 0
         print('serial closed')
+
+    # Single choke point for every outgoing command frame. The lock serializes writes from all threads so
+    # frames are never interleaved on the wire (see the note in __init__). Reads happen on the dedicated
+    # receive thread and do not take this lock (full-duplex UART), so a slow read never blocks a write.
+    def _write_cmd(self, cmd) -> None:
+        with self._serial_lock:
+            self._write_cmd(cmd)
 
     # According to the type of data frame to make the corresponding parsing
     def _parse_data(self, ext_type, ext_data) -> None:
@@ -269,7 +282,7 @@ class RobotBody(object):
         cmd = [self._HEAD, self._DEVICE_ID, 0x05, self.FUNC_REQUEST_DATA, int(function) & 0xff, int(param) & 0xff]
         checksum = sum(cmd, self._COMPLEMENT) & 0xff
         cmd.append(checksum)
-        self.ser.write(cmd)
+        self._write_cmd(cmd)
         if self.verbose >= 3:
             print('request:', cmd)
         time.sleep(self._delay_time)
@@ -347,7 +360,7 @@ class RobotBody(object):
             cmd = [self._HEAD, self._DEVICE_ID, 0x05, self.FUNC_AUTO_REPORT, state1, state2]
             checksum = sum(cmd, self._COMPLEMENT) & 0xff
             cmd.append(checksum)
-            self.ser.write(cmd)
+            self._write_cmd(cmd)
             if self.verbose >= 3:
                 print('report:', cmd)
             time.sleep(self._delay_time)
@@ -366,7 +379,7 @@ class RobotBody(object):
             cmd = [self._HEAD, self._DEVICE_ID, 0x05, self.FUNC_BEEP, value[0], value[1]]
             checksum = sum(cmd, self._COMPLEMENT) & 0xff
             cmd.append(checksum)
-            self.ser.write(cmd)
+            self._write_cmd(cmd)
             if self.verbose >= 3:
                 print('beep:', cmd)
             time.sleep(self._delay_time)
@@ -389,7 +402,7 @@ class RobotBody(object):
             cmd[2] = len(cmd) - 1
             checksum = sum(cmd, self._COMPLEMENT) & 0xff
             cmd.append(checksum)
-            self.ser.write(cmd)
+            self._write_cmd(cmd)
             if self.verbose >= 3:
                 print('pwmServo:', cmd)
             time.sleep(self._delay_time)
@@ -419,7 +432,7 @@ class RobotBody(object):
             cmd[2] = len(cmd) - 1
             checksum = sum(cmd, self._COMPLEMENT) & 0xff
             cmd.append(checksum)
-            self.ser.write(cmd)
+            self._write_cmd(cmd)
             if self.verbose >= 3:
                 print('all Servo:', cmd)
             time.sleep(self._delay_time)
@@ -442,7 +455,7 @@ class RobotBody(object):
             cmd[2] = len(cmd) - 1
             checksum = sum(cmd, self._COMPLEMENT) & 0xff
             cmd.append(checksum)
-            self.ser.write(cmd)
+            self._write_cmd(cmd)
             if self.verbose >= 3:
                 print('rgb:', cmd)
             time.sleep(self._delay_time)
@@ -463,7 +476,7 @@ class RobotBody(object):
             cmd[2] = len(cmd) - 1
             checksum = sum(cmd, self._COMPLEMENT) & 0xff
             cmd.append(checksum)
-            self.ser.write(cmd)
+            self._write_cmd(cmd)
             if self.verbose >= 3:
                 print('rgb_effect:', cmd)
             time.sleep(self._delay_time)
@@ -482,7 +495,7 @@ class RobotBody(object):
             cmd[2] = len(cmd) - 1
             checksum = sum(cmd, self._COMPLEMENT) & 0xff
             cmd.append(checksum)
-            self.ser.write(cmd)
+            self._write_cmd(cmd)
             if self.verbose >= 3:
                 print('motor:', cmd)
             time.sleep(self._delay_time)
@@ -513,7 +526,7 @@ class RobotBody(object):
             cmd[2] = len(cmd) - 1
             checksum = sum(cmd, self._COMPLEMENT) & 0xff
             cmd.append(checksum)
-            self.ser.write(cmd)
+            self._write_cmd(cmd)
             if self.verbose >= 3:
                 print('car_run:', cmd)
             time.sleep(self._delay_time)
@@ -545,7 +558,7 @@ class RobotBody(object):
             cmd[2] = len(cmd) - 1
             checksum = sum(cmd, self._COMPLEMENT) & 0xff
             cmd.append(checksum)
-            self.ser.write(cmd)
+            self._write_cmd(cmd)
             if self.verbose >= 3:
                 print('motion:', cmd)
             time.sleep(self._delay_time)
@@ -587,7 +600,7 @@ class RobotBody(object):
             cmd.append(state)
             checksum = sum(cmd, self._COMPLEMENT) & 0xff
             cmd.append(checksum)
-            self.ser.write(cmd)
+            self._write_cmd(cmd)
             if self.verbose >= 3:
                 print('pid:', cmd)
             time.sleep(self._delay_time)
@@ -635,7 +648,7 @@ class RobotBody(object):
             cmd[2] = len(cmd) - 1
             checksum = sum(cmd, self._COMPLEMENT) & 0xff
             cmd.append(checksum)
-            self.ser.write(cmd)
+            self._write_cmd(cmd)
             if self.verbose >= 3:
                 print('car_type:', cmd)
             time.sleep(.1)
@@ -678,7 +691,7 @@ class RobotBody(object):
             cmd[2] = len(cmd) - 1
             checksum = sum(cmd, self._COMPLEMENT) & 0xff
             cmd.append(checksum)
-            self.ser.write(cmd)
+            self._write_cmd(cmd)
             if self.verbose >= 3:
                 print('uartServo:', servo_id, int(pulse_value), cmd)
             time.sleep(self._delay_time)
@@ -717,7 +730,7 @@ class RobotBody(object):
             cmd = [self._HEAD, self._DEVICE_ID, 0x04, self.FUNC_UART_SERVO_ID, int(servo_id)]
             checksum = sum(cmd, self._COMPLEMENT) & 0xff
             cmd.append(checksum)
-            self.ser.write(cmd)
+            self._write_cmd(cmd)
             if self.verbose >= 3:
                 print('uartServo_id:', cmd)
             time.sleep(self._delay_time)
@@ -735,7 +748,7 @@ class RobotBody(object):
             cmd = [self._HEAD, self._DEVICE_ID, 0x04, self.FUNC_UART_SERVO_TORQUE, on]
             checksum = sum(cmd, self._COMPLEMENT) & 0xff
             cmd.append(checksum)
-            self.ser.write(cmd)
+            self._write_cmd(cmd)
             if self.verbose >= 3:
                 print('uartServo_torque:', cmd)
             time.sleep(self._delay_time)
@@ -786,7 +799,7 @@ class RobotBody(object):
                 cmd[2] = len(cmd) - 1
                 checksum = sum(cmd, self._COMPLEMENT) & 0xff
                 cmd.append(checksum)
-                self.ser.write(cmd)
+                self._write_cmd(cmd)
                 if self.verbose >= 3:
                     print('arm:', cmd)
                     print('value:', temp_val)
@@ -807,7 +820,7 @@ class RobotBody(object):
             cmd[2] = len(cmd) - 1
             checksum = sum(cmd, self._COMPLEMENT) & 0xff
             cmd.append(checksum)
-            self.ser.write(cmd)
+            self._write_cmd(cmd)
             if self.verbose >= 3:
                 print('uartServo_offset:', cmd)
             time.sleep(self._delay_time)
@@ -830,7 +843,7 @@ class RobotBody(object):
             cmd = [self._HEAD, self._DEVICE_ID, 0x04, self.FUNC_RESET_FLASH, 0x5F]
             checksum = sum(cmd, self._COMPLEMENT) & 0xff
             cmd.append(checksum)
-            self.ser.write(cmd)
+            self._write_cmd(cmd)
             if self.verbose >= 3:
                 print('flash:', cmd)
             time.sleep(self._delay_time)
@@ -844,7 +857,7 @@ class RobotBody(object):
             cmd = [self._HEAD, self._DEVICE_ID, 0x04, self.FUNC_RESET_STATE, 0x5F]
             checksum = sum(cmd, self._COMPLEMENT) & 0xff
             cmd.append(checksum)
-            self.ser.write(cmd)
+            self._write_cmd(cmd)
             if self.verbose >= 3:
                 print('reset_car_state:', cmd)
             time.sleep(self._delay_time)
