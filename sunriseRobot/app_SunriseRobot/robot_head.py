@@ -310,7 +310,6 @@ class RobotHead:
                 print('Headlight not available.')
             return
         self.headlight.toggle()
-        self.robot_body.set_beep(gc.SHORT_BEEP)
         if self.verbose >= 1:
             print(f'Headlight turned {"on" if self.headlight.is_on else "off"}')
 
