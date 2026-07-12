@@ -154,7 +154,10 @@ class ControllerLoop(object):
                 v_z=self.robot_head.speed_z,
             )
 
-            if self.arm.is_rigid:
+            # Only drive the arm while an arm sub-mode is active. In wheels sub-mode the arm is already
+            # folded and held rigid by sub_mode_wheel_start_callback, so re-sending its angles every loop is
+            # redundant and just puts arm frames on the shared UART for no reason.
+            if self.arm.is_rigid and self.robot_head.robot_sub_mode != gc.SUB_MODE_WHEELS:
                 self.arm.update_desired_angles()
                 self.robot_body.set_arm_angle_list(angle_s=self.arm.desired_angle_list, run_time=self.arm.run_time)
 
