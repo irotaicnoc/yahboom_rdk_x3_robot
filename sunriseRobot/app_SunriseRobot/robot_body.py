@@ -144,7 +144,7 @@ class RobotBody(object):
     # receive thread and do not take this lock (full-duplex UART), so a slow read never blocks a write.
     def _write_cmd(self, cmd) -> None:
         with self._serial_lock:
-            self._write_cmd(cmd)
+            self.ser.write(cmd)
 
     # According to the type of data frame to make the corresponding parsing
     def _parse_data(self, ext_type, ext_data) -> None:
