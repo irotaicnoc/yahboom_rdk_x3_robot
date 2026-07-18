@@ -229,7 +229,7 @@ def main_loop(**kwargs):
     # intra-robot audio bridge to the Jetson Nano: streams the ReSpeaker microphone (processed channel + VAD)
     # out to the Jetson, and plays the Jetson's TTS audio back through the ReSpeaker speakers.
     try:
-        audio_bridge_server = AudioBridgeServer(verbose=parameters['verbose'])
+        audio_bridge_server = AudioBridgeServer(robot_head=robot_head, verbose=parameters['verbose'])
         audio_bridge_server.start()
     except Exception as e:
         utils.print_exception(exception=e, message='Audio bridge server error')
@@ -367,7 +367,8 @@ def task_audio_from_vr(**kwargs):
         meta_quest_3_audio_receiver = None
         while True:
             if meta_quest_3_audio_receiver is None and kwargs['robot_head'].ros2_vr_connection_status == 'active':
-                meta_quest_3_audio_receiver = VrAudioSubscriber(verbose=kwargs['verbose'])
+                meta_quest_3_audio_receiver = VrAudioSubscriber(
+                    robot_head=kwargs['robot_head'], verbose=kwargs['verbose'])
                 time.sleep(0.5)
             elif (meta_quest_3_audio_receiver is not None
                   and kwargs['robot_head'].ros2_vr_connection_status == 'inactive'):

@@ -8,7 +8,6 @@ import numpy as np
 import args
 import utils
 import global_constants as gc
-from sound import tuning
 from robot_link import protocol
 
 _FORMAT_TO_ALSA = {
@@ -39,12 +38,16 @@ class AudioBridgeServer:
     both; the Jetson connects out, so it only ever needs the RDK X3 address.
 
       - Microphone stream (mic_stream_port), RDK X3 -> Jetson:
-        on connect, the RDK X3 opens the ReSpeaker ALSA capture (6 interleaved int16 channels; channel 0 is
-        the processed AEC + beamforming + noise-suppressed channel) and the USB tuning interface (hardware
-        VAD). It then pushes one frame per audio chunk:
-            [1 byte VAD flag][4-byte big-endian PCM length][mono int16 PCM bytes]
-        The ReSpeaker capture is opened only while the Jetson is connected and released on disconnect, so the
-        device is left free for the VR audio nodes whenever the voice interaction is not in use ("on demand").
+        the audio is push-to-talk gated. While a voice session is held on the robot_head (South button), the
+        RDK X3 streams the selected source to the Jetson, one frame per audio chunk:
+            [1 byte is_voice flag][4-byte big-endian PCM length][mono int16 PCM bytes]
+          * 'robot' source (joystick South): the ReSpeaker ALSA capture (6 interleaved int16 channels; channel
+            0 is the processed AEC + beamforming + noise-suppressed channel), opened on demand and released
+            when idle so the device stays free for the VR audio nodes.
+          * 'app' source (app button A): the phone/headset mic the app streams to /audio_from_vr, handed over
+            by VrAudioSubscriber through robot_head.app_mic_frames; the ReSpeaker is not touched.
+        Frames captured while held carry is_voice=True; between sessions a tick of is_voice=False keepalive
+        frames keeps the Jetson recorder's silence timer advancing so it can close a finished utterance.
 
       - Speaker playback (speaker_playback_port), Jetson -> RDK X3:
         the Jetson sends TTS audio as framed PCM ([4-byte big-endian length][PCM bytes]) and the RDK X3 plays
@@ -59,20 +62,19 @@ class AudioBridgeServer:
     both consumers. TODO: refactor to a shared capturer if simultaneous use becomes a requirement.
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, robot_head=None, **kwargs):
         parameters = args.import_args(
             yaml_path=gc.CONFIG_FOLDER_PATH + 'audio_bridge_server.yaml',
             read_from_command_line=False,
             **kwargs,
         )
+        # robot_head carries the push-to-talk session state (which source, if any, is active).
+        self.robot_head = robot_head
         self.enabled = parameters['enabled']
         self.verbose = parameters['verbose']
         self.host = parameters['host']
         self.mic_stream_port = parameters['mic_stream_port']
         self.speaker_playback_port = parameters['speaker_playback_port']
-
-        self.vendor_id = parameters['vendor_id']
-        self.product_id = parameters['product_id']
 
         self.mic_sample_rate = parameters['mic_sample_rate']
         self.mic_capture_channels = parameters['mic_capture_channels']
@@ -84,6 +86,9 @@ class AudioBridgeServer:
         self.speaker_channels = parameters['speaker_channels']
         self.speaker_format = parameters['speaker_format']
         self.speaker_chunk_size = parameters['speaker_chunk_size']
+
+        # Cadence (seconds) of the is_voice=False keepalive frames sent while no push-to-talk session is held.
+        self.idle_frame_interval = parameters['idle_frame_interval']
 
         self.retry_interval = parameters['retry_interval']
         self.is_active = False
@@ -135,15 +140,36 @@ class AudioBridgeServer:
                 return idx
         raise RuntimeError('ReSpeaker device not found. Check USB connection.')
 
-    def _read_vad(self, microphone) -> int:
-        """Read the hardware VAD flag (0/1). Returns 0 on any USB error so the stream keeps flowing."""
+    def _ensure_capture(self, capture):
+        """Open the ReSpeaker capture if it is not already open. Returns the PCM, or None if it could not be
+        opened (most likely the VR audio publisher already holds the exclusive hw: capture)."""
+        if capture is not None:
+            return capture
         try:
-            value = microphone.is_voice()
-            return 1 if value else 0
+            card_idx = self._find_respeaker_card_index()
+            return alsaaudio.PCM(
+                type=alsaaudio.PCM_CAPTURE,
+                mode=alsaaudio.PCM_NORMAL,
+                device=f'hw:{card_idx},0',
+                rate=self.mic_sample_rate,
+                channels=self.mic_capture_channels,
+                format=_FORMAT_TO_ALSA[self.mic_format],
+                periodsize=self.mic_chunk_size,
+            )
         except Exception as e:
-            if self.verbose >= 3:
-                utils.print_exception(exception=e, message='Audio bridge VAD read error')
-            return 0
+            utils.print_exception(exception=e, message='Mic stream could not open ReSpeaker capture '
+                                                        '(is a VR session using it?)')
+            return None
+
+    @staticmethod
+    def _close_capture(capture):
+        """Close the ReSpeaker capture if open and return None, freeing the device for the VR audio nodes."""
+        if capture is not None:
+            try:
+                capture.close()
+            except Exception:
+                pass
+        return None
 
     # ------------------------------------------------------------------ microphone stream (RDK X3 -> Jetson)
 
@@ -175,52 +201,59 @@ class AudioBridgeServer:
             pass
 
     def _serve_mic_stream(self, connection) -> None:
+        """
+        Push-to-talk producer loop. The audio source is selected per session on the robot_head:
+          - 'robot': the ReSpeaker capture (joystick South press), opened on demand and released when idle.
+          - 'app':   the phone/headset mic frames arriving on /audio_from_vr (app button A), handed over by
+                     VrAudioSubscriber through robot_head.app_mic_frames.
+        Audio captured while a session is held is sent with is_voice=True. When no session is active a steady
+        tick of is_voice=False keepalive frames is sent so the Jetson recorder's silence timer keeps advancing
+        and can close a finished utterance (it only advances while frames keep arriving).
+        """
         capture = None
-        microphone = None
-        try:
-            card_idx = self._find_respeaker_card_index()
-            capture = alsaaudio.PCM(
-                type=alsaaudio.PCM_CAPTURE,
-                mode=alsaaudio.PCM_NORMAL,
-                device=f'hw:{card_idx},0',
-                rate=self.mic_sample_rate,
-                channels=self.mic_capture_channels,
-                format=_FORMAT_TO_ALSA[self.mic_format],
-                periodsize=self.mic_chunk_size,
-            )
-        except Exception as e:
-            # Most likely the device is busy because the VR audio publisher already holds the capture.
-            utils.print_exception(exception=e, message='Mic stream could not open ReSpeaker capture '
-                                                        '(is a VR session using it?). Dropping connection.')
-            return
-
-        # The tuning (VAD) interface is a separate USB interface from the audio stream, so opening both at once
-        # is fine. If it is unavailable we still stream audio, just with VAD pinned to 0.
-        microphone = tuning.find(vid=self.vendor_id, pid=self.product_id)
-        if microphone is None and self.verbose >= 1:
-            print('Mic stream: ReSpeaker tuning interface not found, VAD will be reported as 0.')
-
         try:
             while self.is_active:
-                length, data = capture.read()
-                if length <= 0:
-                    continue
-                # interleaved int16; keep only the processed channel (channel 0).
-                audio = np.frombuffer(data, dtype=np.int16)
-                mono = audio[self.mic_processed_channel::self.mic_capture_channels].tobytes()
-                vad = self._read_vad(microphone) if microphone is not None else 0
-                protocol.send_audio_frame(connection, mono, is_voice=bool(vad))
+                source = None
+                if self.robot_head is not None and self.robot_head.voice_session_active:
+                    source = self.robot_head.voice_session_source
+
+                if source == 'robot':
+                    capture = self._ensure_capture(capture)
+                    if capture is None:
+                        # device busy (a VR session holds it); behave as idle until it frees up
+                        self._send_keepalive(connection)
+                        continue
+                    length, data = capture.read()
+                    if length <= 0:
+                        continue
+                    # interleaved int16; keep only the processed channel (channel 0).
+                    audio = np.frombuffer(data, dtype=np.int16)
+                    mono = audio[self.mic_processed_channel::self.mic_capture_channels].tobytes()
+                    protocol.send_audio_frame(connection, mono, is_voice=True)
+
+                elif source == 'app':
+                    # never hold the ReSpeaker during an app session (the app mic is used instead)
+                    capture = self._close_capture(capture)
+                    try:
+                        frame = self.robot_head.app_mic_frames.popleft()
+                    except IndexError:
+                        frame = None
+                    if frame:
+                        protocol.send_audio_frame(connection, frame, is_voice=True)
+                    else:
+                        # session held but no app audio has arrived yet; keep the Jetson recorder ticking
+                        self._send_keepalive(connection)
+
+                else:  # no active session
+                    capture = self._close_capture(capture)
+                    self._send_keepalive(connection)
         finally:
-            if capture is not None:
-                try:
-                    capture.close()
-                except Exception:
-                    pass
-            if microphone is not None:
-                try:
-                    microphone.close()
-                except Exception:
-                    pass
+            self._close_capture(capture)
+
+    def _send_keepalive(self, connection) -> None:
+        """Send one is_voice=False frame and pace the idle loop, so the Jetson recorder keeps advancing."""
+        protocol.send_audio_frame(connection, b'', is_voice=False)
+        time.sleep(self.idle_frame_interval)
 
     # ------------------------------------------------------------------ speaker playback (Jetson -> RDK X3)
 

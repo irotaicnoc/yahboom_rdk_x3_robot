@@ -2,6 +2,7 @@ import os
 import time
 import warnings
 from pathlib import Path
+from collections import deque
 
 import args
 import utils
@@ -69,10 +70,43 @@ class RobotHead:
         # buzzer, leds, and lights
         self.buzzer_is_active = False
         self.buzzer_state_changed = True
+
+        # voice interaction push-to-talk session (South button). While a session is active the RDK X3
+        # forwards mic audio to the Jetson voice interaction: the robot's ReSpeaker for a joystick press
+        # ('robot'), or the app phone/headset mic (arriving on /audio_from_vr) for an app press ('app').
+        self.voice_session_active = False
+        self.voice_session_source = None  # 'robot' | 'app' while a session is active, else None
+        # App mic frames handed over by VrAudioSubscriber, waiting to be forwarded to the Jetson during an
+        # app session. Bounded so a stalled bridge cannot grow it without limit (oldest frames are dropped).
+        self.app_mic_frames = deque(maxlen=64)
+
         self.internal_light = parameters['internal_light']
         self.led_3_pin = parameters['led_3_pin']
         # external RC LED light bar (headlight for the camera). May be None if unavailable.
         self.headlight = parameters.get('headlight')
+
+    def start_voice_session(self, source: str) -> None:
+        # Push-to-talk pressed (South button / app button A). First-one-wins: if a session from another
+        # source is already active, ignore this one so a joystick and an app press cannot fight over the
+        # single mic bridge to the Jetson.
+        if self.voice_session_active:
+            return
+        self.voice_session_source = source
+        self.voice_session_active = True
+        if self.verbose >= 2:
+            print(f'Voice session started (source: {source})')
+
+    def stop_voice_session(self, source: str) -> None:
+        # Only the source that owns the active session may end it, so releasing the other button (e.g. an
+        # app button-A release while the joystick owns the session) does not cut the session short.
+        if not self.voice_session_active or self.voice_session_source != source:
+            return
+        self.voice_session_active = False
+        self.voice_session_source = None
+        # Drop any app audio that was not forwarded so it cannot leak into the next session.
+        self.app_mic_frames.clear()
+        if self.verbose >= 2:
+            print('Voice session stopped')
 
     def next_mode(self) -> None:
         if self.verbose >= 3:

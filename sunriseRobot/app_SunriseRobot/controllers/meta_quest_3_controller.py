@@ -65,7 +65,7 @@ class MetaQuest3Controller(object):
             # Buttons 3 (Y) and 6 (Menu) are used by the VR app
             # A (South)
             if buttons[0] != self._prev_buttons[0]:
-                self.controller_functions.button_south(bool(buttons[0]))
+                self.controller_functions.button_south(bool(buttons[0]), from_vr=True)
                 self._prev_buttons[0] = buttons[0]
             # B (East)
             if buttons[1] != self._prev_buttons[1]:

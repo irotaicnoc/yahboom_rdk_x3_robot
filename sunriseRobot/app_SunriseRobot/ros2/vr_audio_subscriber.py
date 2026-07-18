@@ -21,7 +21,7 @@ _FORMAT_INFO = {
 
 
 class VrAudioSubscriber(Node):
-    def __init__(self, **kwargs):
+    def __init__(self, robot_head=None, **kwargs):
         # topic_name: str,
         # queue_size: int,
         # sample_rate: int,
@@ -38,6 +38,10 @@ class VrAudioSubscriber(Node):
         )
         super().__init__('vr_audio_subscriber')
 
+        # robot_head carries the push-to-talk session state. During an app session (button A held) the
+        # incoming audio is the remote user talking to the AI, so it is handed to the mic bridge instead of
+        # being played on the speakers.
+        self.robot_head = robot_head
         self.gain = parameters['gain']
         fmt_name = parameters['format']
         alsa_fmt, self.dtype, self.sample_min, self.sample_max = _FORMAT_INFO[fmt_name]
@@ -87,6 +91,14 @@ class VrAudioSubscriber(Node):
                 out = np.clip(samples * self.gain, -1.0, 1.0).astype(self.dtype)
 
             data = out.tobytes()
+
+        # During an app push-to-talk session (button A held) route the audio to the Jetson voice interaction
+        # (via the mic bridge) instead of playing it on the speakers, so the remote user's voice becomes a
+        # command to the AI rather than an intercom broadcast.
+        if (self.robot_head is not None and self.robot_head.voice_session_active
+                and self.robot_head.voice_session_source == 'app'):
+            self.robot_head.app_mic_frames.append(data)
+            return
 
         try:
             self.pcm.write(data)

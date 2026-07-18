@@ -9,17 +9,18 @@ enabled: True
 # (65432) and the arm camera relay (65433).
 host: '192.168.10.11'
 
-# Microphone stream: RDK X3 -> Jetson. The RDK X3 owns the ReSpeaker; it captures the processed mic channel
-# plus the hardware VAD flag and streams them to the Jetson, but only while the Jetson is connected (the
-# ReSpeaker capture is opened on connect and released on disconnect).
+# Microphone stream: RDK X3 -> Jetson. Push-to-talk gated (South button). While a voice session is held the
+# RDK X3 streams the selected source with is_voice=True: the ReSpeaker processed channel for a joystick press
+# (opened on demand, released when idle), or the app mic frames from /audio_from_vr for an app press. Between
+# sessions it sends is_voice=False keepalive frames (see idle_frame_interval).
 mic_stream_port: 65434
 # Speaker playback: Jetson -> RDK X3. The Jetson sends its TTS audio; the RDK X3 plays it through the ReSpeaker
 # output, so the ReSpeaker's echo canceller has it as a reference and the microphone does not re-record it.
 speaker_playback_port: 65435
 
-# ReSpeaker Mic Array v2.0 identification (same device as sound_agent / vr_audio).
-vendor_id: 0x2886
-product_id: 0x0018
+# Cadence (seconds) of the is_voice=False keepalive frames sent while no push-to-talk session is held, so the
+# Jetson recorder's silence timer keeps advancing and can close a finished utterance.
+idle_frame_interval: 0.05
 
 # Microphone capture parameters. These mirror the VR audio publisher: the ReSpeaker exposes 6 interleaved
 # int16 channels and channel 0 is the processed one (AEC + beamforming + noise suppression). 16 kHz mono is

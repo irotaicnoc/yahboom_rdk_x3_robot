@@ -27,8 +27,8 @@ class ControllerFunctions(object):
 
         # memorize and go-to arm positions
         # start with some predefined positions that can be overwritten
+        # South is no longer a memory button: it is the push-to-talk voice button now, so it is not seeded here.
         self.memorized_arm_position = {
-            'button_south': copy.deepcopy(self.arm.VERTICAL_POSITION),
             'button_east': copy.deepcopy(self.arm.FOLDED_POSITION),
             'button_west': copy.deepcopy(self.arm.FORWARD_POSITION),
         }
@@ -107,19 +107,17 @@ class ControllerFunctions(object):
             if value < 0:
                 self.robot_head.previous_vision_model()
 
-    def button_south(self, value: bool) -> None:
-        # memorize current arm position or reach memorized arm position
-        if self.robot_head.robot_mode == gc.MODE_USER_CONTROLLED:
-            if (self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_FK
-                    or self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_IK):
-                self.memorize_or_set_arm_position(button='button_south', value=value)
-        # activate buzzer
-            elif self.robot_head.robot_sub_mode == gc.SUB_MODE_WHEELS:
-                self.robot_head.buzzer_is_active = value
-                self.robot_head.buzzer_state_changed = True
+    def button_south(self, value: bool, from_vr: bool = False) -> None:
+        # Push-to-talk voice interaction, active in every mode/sub-mode. A press from the physical joystick
+        # records the robot's ReSpeaker mic; a press from an app (button A, from_vr=True) records the app's
+        # phone/headset mic, which the app streams to /audio_from_vr. The RDK X3 routes the right source to
+        # the Jetson while the button is held (see robot_head.start/stop_voice_session, audio_bridge_server
+        # and vr_audio_subscriber).
+        source = 'app' if from_vr else 'robot'
+        if value:
+            self.robot_head.start_voice_session(source)
         else:
-            self.robot_head.buzzer_is_active = value
-            self.robot_head.buzzer_state_changed = True
+            self.robot_head.stop_voice_session(source)
 
     def button_east(self, value: bool) -> None:
         if self.robot_head.robot_mode == gc.MODE_USER_CONTROLLED:
