@@ -18,8 +18,8 @@ mic_stream_port: 65434
 # output, so the ReSpeaker's echo canceller has it as a reference and the microphone does not re-record it.
 speaker_playback_port: 65435
 
-# Cadence (seconds) of the is_voice=False keepalive frames sent while no push-to-talk session is held, so the
-# Jetson recorder's silence timer keeps advancing and can close a finished utterance.
+# Cadence (seconds) of the is_voice=False frames sent while no push-to-talk session is held. The first such
+# frame after a hold is the Jetson's release signal (it then finalizes the clip); the rest are idle keepalive.
 idle_frame_interval: 0.05
 
 # Microphone capture parameters. These mirror the VR audio publisher: the ReSpeaker exposes 6 interleaved

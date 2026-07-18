@@ -46,8 +46,8 @@ class AudioBridgeServer:
             when idle so the device stays free for the VR audio nodes.
           * 'app' source (app button A): the phone/headset mic the app streams to /audio_from_vr, handed over
             by VrAudioSubscriber through robot_head.app_mic_frames; the ReSpeaker is not touched.
-        Frames captured while held carry is_voice=True; between sessions a tick of is_voice=False keepalive
-        frames keeps the Jetson recorder's silence timer advancing so it can close a finished utterance.
+        Frames captured while held carry is_voice=True; between sessions is_voice=False frames are sent, and
+        the first one after a hold tells the Jetson the button was released, so it finalizes the clip.
 
       - Speaker playback (speaker_playback_port), Jetson -> RDK X3:
         the Jetson sends TTS audio as framed PCM ([4-byte big-endian length][PCM bytes]) and the RDK X3 plays
@@ -206,9 +206,10 @@ class AudioBridgeServer:
           - 'robot': the ReSpeaker capture (joystick South press), opened on demand and released when idle.
           - 'app':   the phone/headset mic frames arriving on /audio_from_vr (app button A), handed over by
                      VrAudioSubscriber through robot_head.app_mic_frames.
-        Audio captured while a session is held is sent with is_voice=True. When no session is active a steady
-        tick of is_voice=False keepalive frames is sent so the Jetson recorder's silence timer keeps advancing
-        and can close a finished utterance (it only advances while frames keep arriving).
+        Audio captured while a session is held is sent with is_voice=True (an empty is_voice=True heartbeat
+        covers momentary gaps in the app source so a hold is never split). When no session is active
+        is_voice=False frames are sent; the first one after a hold tells the Jetson the button was released,
+        so it finalizes the clip.
         """
         capture = None
         try:
@@ -241,8 +242,10 @@ class AudioBridgeServer:
                     if frame:
                         protocol.send_audio_frame(connection, frame, is_voice=True)
                     else:
-                        # session held but no app audio has arrived yet; keep the Jetson recorder ticking
-                        self._send_keepalive(connection)
+                        # session held but no app audio has arrived yet: send an empty 'held' heartbeat
+                        # (is_voice=True) so the Jetson keeps the clip open until the button is released.
+                        protocol.send_audio_frame(connection, b'', is_voice=True)
+                        time.sleep(self.idle_frame_interval)
 
                 else:  # no active session
                     capture = self._close_capture(capture)
@@ -251,7 +254,8 @@ class AudioBridgeServer:
             self._close_capture(capture)
 
     def _send_keepalive(self, connection) -> None:
-        """Send one is_voice=False frame and pace the idle loop, so the Jetson recorder keeps advancing."""
+        """Send one is_voice=False frame (button not held) and pace the idle loop. The first such frame after
+        a hold is the Jetson's signal that the button was released."""
         protocol.send_audio_frame(connection, b'', is_voice=False)
         time.sleep(self.idle_frame_interval)
 
