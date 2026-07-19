@@ -21,6 +21,7 @@ from controllers.controller_interface import ControllerFunctions
 from controllers.meta_quest_3_controller import MetaQuest3Controller
 from ros2.vr_audio_publisher import VrAudioPublisher
 from ros2.vr_audio_subscriber import VrAudioSubscriber
+from ros2.tts_to_app_publisher import TtsToAppPublisher
 from ethernet_connection.ethernet_server import EthernetServer
 from ethernet_connection.audio_bridge_server import AudioBridgeServer
 
@@ -164,6 +165,17 @@ def main_loop(**kwargs):
         kwargs=audio_from_robot_kwargs,
     )
     thread_audio_from_robot.start()
+
+    audio_to_app_kwargs = {
+        'robot_head': robot_head,
+        'verbose': parameters['verbose'],
+    }
+    thread_audio_to_app = threading.Thread(
+        target=task_audio_to_app,
+        name='task_audio_to_app',
+        kwargs=audio_to_app_kwargs,
+    )
+    thread_audio_to_app.start()
 
     # Oled SCREEN
     screen_kwargs = {
@@ -402,6 +414,30 @@ def task_audio_from_robot(**kwargs):
                 time.sleep(0.05)
     except Exception as e:
         utils.print_exception(exception=e, message='Audio from Robot error')
+
+
+# TTS to app: publishes app-originated AI responses to the connected app (/audio_to_app) so the robot stays
+# silent for them. Only meaningful while an app is connected (an app voice session requires the ROS2 VR link),
+# so it is created and destroyed with the connection like the other VR audio nodes.
+def task_audio_to_app(**kwargs):
+    try:
+        if not rclpy.ok():
+            rclpy.init()
+        tts_to_app_publisher = None
+        while True:
+            if tts_to_app_publisher is None and kwargs['robot_head'].ros2_vr_connection_status == 'active':
+                tts_to_app_publisher = TtsToAppPublisher(
+                    robot_head=kwargs['robot_head'], verbose=kwargs['verbose'])
+                time.sleep(0.5)
+            elif (tts_to_app_publisher is not None
+                  and kwargs['robot_head'].ros2_vr_connection_status == 'inactive'):
+                tts_to_app_publisher.destroy()
+                tts_to_app_publisher = None
+                time.sleep(0.5)
+            else:
+                time.sleep(0.05)
+    except Exception as e:
+        utils.print_exception(exception=e, message='Audio to app error')
 
 
 def task_button_2_pin_listener(**kwargs):

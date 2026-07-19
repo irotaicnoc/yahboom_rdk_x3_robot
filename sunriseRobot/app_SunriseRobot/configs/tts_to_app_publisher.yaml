@@ -1,0 +1,16 @@
+verbose: 1
+
+# Dedicated topic the RDK X3 publishes app-originated TTS responses on, so they play on the connected app only
+# and the robot itself stays silent (see robot_head.last_voice_source / audio_bridge_server.py). The app must
+# subscribe to this topic and play it back. Payload: raw mono int16 little-endian PCM, one chunk per message.
+topic_name: /audio_to_app
+
+# Must match the Jetson TTS output (24 kHz mono int16; see audio_bridge_server.yaml speaker_* params and the
+# Jetson main_thread TTS playback). The app-side player must be configured for the same rate and format.
+sample_rate: 24000
+format: S16_LE
+chunk_size: 1024  # samples per published message; also paces publishing at real time
+
+# RELIABLE queue depth. A TTS clip is a discrete message where every chunk matters (unlike the live mic
+# streams, which drop stale chunks), so publishing is reliable and paced at real time.
+queue_size: 64

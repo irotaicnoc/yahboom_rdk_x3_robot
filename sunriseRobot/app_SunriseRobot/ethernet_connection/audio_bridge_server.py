@@ -50,9 +50,13 @@ class AudioBridgeServer:
         the first one after a hold tells the Jetson the button was released, so it finalizes the clip.
 
       - Speaker playback (speaker_playback_port), Jetson -> RDK X3:
-        the Jetson sends TTS audio as framed PCM ([4-byte big-endian length][PCM bytes]) and the RDK X3 plays
-        it through the ReSpeaker output, so the ReSpeaker echo canceller has it as a loopback reference and the
-        microphone does not re-record the robot's own voice.
+        the Jetson (source-agnostic) sends every TTS response here as framed PCM ([4-byte big-endian length]
+        [PCM bytes]); the RDK X3 routes it by where the request came from (robot_head.last_voice_source):
+          * 'robot' (or unknown): played through the ReSpeaker output, so the echo canceller has it as a
+            loopback reference and the microphone does not re-record the robot's own voice.
+          * 'app': handed to TtsToAppPublisher (robot_head.tts_to_app_clips) to play on the connected app only
+            (/audio_to_app); the robot stays silent, so a remote user talking through the app does not make it
+            speak the answer out loud.
 
     KNOWN LIMITATION: the ALSA hw: capture of the ReSpeaker is exclusive. The VR audio publisher
     (ros2/vr_audio_publisher.py) opens the same device while a VR headset is connected, so the microphone
@@ -288,6 +292,11 @@ class AudioBridgeServer:
         except OSError:
             pass
 
+    def _route_to_app(self) -> bool:
+        """True if the most recent voice session came from the app, so its TTS response is delivered to the
+        connected app (via /audio_to_app) instead of the robot's own speaker."""
+        return self.robot_head is not None and self.robot_head.last_voice_source == 'app'
+
     def _open_playback(self):
         # 'default' (not hw:) so playback is mixed through the ReSpeaker output alongside the VR audio.
         return alsaaudio.PCM(
@@ -313,6 +322,14 @@ class AudioBridgeServer:
                     return  # peer closed the connection
                 if pcm_bytes == b'':
                     continue  # zero-length frame, nothing to play
+
+                # Route by where the request came from. An app-originated response is delivered to the connected
+                # app only (via TtsToAppPublisher) and not played on the robot speaker, so a remote user talking
+                # through the app does not make the robot announce the answer out loud in the room.
+                if self._route_to_app():
+                    self.robot_head.tts_to_app_clips.append(pcm_bytes)
+                    continue
+
                 for offset in range(0, len(pcm_bytes), period_bytes):
                     period = pcm_bytes[offset:offset + period_bytes]
                     if len(period) < period_bytes:

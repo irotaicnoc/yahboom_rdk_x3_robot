@@ -79,6 +79,18 @@ class RobotHead:
         # App mic frames handed over by VrAudioSubscriber, waiting to be forwarded to the Jetson during an
         # app session. Bounded so a stalled bridge cannot grow it without limit (oldest frames are dropped).
         self.app_mic_frames = deque(maxlen=64)
+        # Latched source of the most recent voice session, kept after the session ends. The TTS response comes
+        # back from the Jetson (source-agnostic) seconds later on the speaker bridge, and this is what tells the
+        # RDK X3 where to send it: 'robot' -> the robot's own speaker, 'app' -> the connected app only. Unlike
+        # voice_session_source it is NOT cleared on stop; it stays until the next session latches a new value.
+        # Robust to short taps the Jetson silently drops (they make no TTS to misroute); the only imperfect case
+        # is a second, different-source session before the first answer returns, rare for a single user.
+        self.last_voice_source = None  # 'robot' | 'app'
+        # Whole TTS clips (24 kHz mono int16 PCM) routed to the connected app instead of the robot speaker.
+        # Filled by AudioBridgeServer when an app-originated response arrives; drained by TtsToAppPublisher,
+        # which chunks and publishes them on /audio_to_app. A response is a single clip, so this only ever holds
+        # one (rarely a couple); the cap just guards against growth if the app vanishes mid-playback.
+        self.tts_to_app_clips = deque(maxlen=8)
 
         self.internal_light = parameters['internal_light']
         self.led_3_pin = parameters['led_3_pin']
@@ -92,6 +104,8 @@ class RobotHead:
         if self.voice_session_active:
             return
         self.voice_session_source = source
+        # Latch the source for the whole interaction so the eventual TTS response is routed back to it.
+        self.last_voice_source = source
         self.voice_session_active = True
         if self.verbose >= 2:
             print(f'Voice session started (source: {source})')
