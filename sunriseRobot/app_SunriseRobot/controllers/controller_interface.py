@@ -28,9 +28,11 @@ class ControllerFunctions(object):
         # memorize and go-to arm positions
         # start with some predefined positions that can be overwritten
         # South is no longer a memory button: it is the push-to-talk voice button now, so it is not seeded here.
+        # The vertical position it used to hold moved to North.
         self.memorized_arm_position = {
             'button_east': copy.deepcopy(self.arm.FOLDED_POSITION),
             'button_west': copy.deepcopy(self.arm.FORWARD_POSITION),
+            'button_north': copy.deepcopy(self.arm.VERTICAL_POSITION),
         }
 
     # value is True or False for buttons
@@ -143,7 +145,8 @@ class ControllerFunctions(object):
 
     def button_north(self, value: bool) -> None:
         # memorize current arm position or reach memorized arm position
-        # this is the only button without a predefined position already memorized
+        # starts with the vertical position memorized (it used to be on the south button, now taken by
+        # push-to-talk voice interaction)
         if self.robot_head.robot_mode == gc.MODE_USER_CONTROLLED:
             if (self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_FK
                     or self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_IK):
