@@ -346,12 +346,9 @@ def task_vision_agent(**kwargs):
             vision_agent.autonomous_behavior()
     except Exception as e:
         utils.print_exception(exception=e, message='Vision agent error')
-        if gc.MODE_AUTONOMOUS_VISION in robot_head.robot_mode_list:
-            robot_head.robot_mode_list.remove(gc.MODE_AUTONOMOUS_VISION)
-            if robot_head.robot_mode == gc.MODE_AUTONOMOUS_VISION:
-                robot_head.robot_mode = robot_head.robot_mode_list[0]
-                if robot_head.robot_sub_mode_dict[robot_head.robot_mode] is not None:
-                    robot_head.robot_sub_mode = robot_head.robot_sub_mode_dict[robot_head.robot_mode][0]
+        # goes through robot_head so the removal is serialized with next_mode(), which reads an index into
+        # robot_mode_list and then indexes back into it (a removal landing between the two raises IndexError)
+        robot_head.remove_mode(mode=gc.MODE_AUTONOMOUS_VISION)
 
 
 # def task_sound_agent(**kwargs):
@@ -363,12 +360,7 @@ def task_vision_agent(**kwargs):
 #             sound_agent.autonomous_behavior()
 #     except Exception as e:
 #         utils.print_exception(exception=e, message='Sound agent error')
-#         if gc.MODE_AUTONOMOUS_SOUND in robot_head.robot_mode_list:
-#             robot_head.robot_mode_list.remove(gc.MODE_AUTONOMOUS_SOUND)
-#             if robot_head.robot_mode == gc.MODE_AUTONOMOUS_SOUND:
-#                 robot_head.robot_mode = robot_head.robot_mode_list[0]
-#                 if robot_head.robot_sub_mode_dict[robot_head.robot_mode] is not None:
-#                     robot_head.robot_sub_mode = robot_head.robot_sub_mode_dict[robot_head.robot_mode][0]
+#         robot_head.remove_mode(mode=gc.MODE_AUTONOMOUS_SOUND)
 
 
 # Audio from VR

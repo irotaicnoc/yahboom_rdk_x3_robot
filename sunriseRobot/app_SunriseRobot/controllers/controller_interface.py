@@ -223,9 +223,9 @@ class ControllerFunctions(object):
             warnings.warn(f'Unknown button input received (name: {name}, value: {value})')
 
     def connected(self, controller_id: int) -> None:
-        if controller_id not in self.robot_head.controller_id_list:
-            self.robot_head.connected_controllers += 1
-            self.robot_head.controller_id_list.append(controller_id)
+        # the bookkeeping itself lives in RobotHead so the id list and the counter are updated as one atomic
+        # step: this runs on the PS2 thread and on the VR controller thread, which can connect at the same time
+        if self.robot_head.register_controller(controller_id=controller_id):
             if self.verbose >= 2:
                 print(f'Controller {controller_id} connected')
         else:
@@ -233,9 +233,7 @@ class ControllerFunctions(object):
                 print(f'Controller with id {controller_id} tried to connect, but this id is already connected')
 
     def disconnected(self, controller_id: int) -> None:
-        if controller_id in self.robot_head.controller_id_list:
-            self.robot_head.connected_controllers -= 1
-            self.robot_head.controller_id_list.remove(controller_id)
+        if self.robot_head.unregister_controller(controller_id=controller_id):
             if self.verbose >= 2:
                 print(f'Controller {controller_id} disconnected')
         else:
@@ -278,6 +276,10 @@ class ControllerFunctions(object):
             return False
 
     def start_counting(self, button: str) -> None:
+        # Order matters: the control loop iterates over button_press_timestamp and, for every button it finds
+        # there, reads one_time_check[button]. Populating one_time_check first guarantees the entry exists by
+        # the time the button becomes visible in button_press_timestamp. Swapping these two lines would let the
+        # loop see the button before its one_time_check entry exists and raise KeyError.
         self.robot_head.one_time_check[button] = True
         self.robot_head.button_press_timestamp[button] = time.time()
 

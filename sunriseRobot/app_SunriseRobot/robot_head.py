@@ -1,6 +1,7 @@
 import os
 import time
 import warnings
+import threading
 from pathlib import Path
 from collections import deque
 
@@ -15,6 +16,20 @@ class RobotHead:
         parameters = args.import_args(yaml_path=gc.CONFIG_FOLDER_PATH + 'robot_head.yaml', **kwargs)
         self.gui_mode = parameters['gui_mode']
         self.verbose = parameters['verbose']
+
+        # Serializes the *compound* state changes on this object: mode/sub-mode switching, controller
+        # registration and voice-session start/stop. Those are read-modify-write or check-then-act sequences
+        # (read a value, decide, write it back) reachable from several threads at once: the PS2 controller
+        # thread, the VR controller thread, the GPIO button threads and the ethernet server. The GIL makes a
+        # single attribute access atomic but not a sequence of them, so without this lock two overlapping
+        # calls can interleave (a lost controller count, or start/end callbacks fired for a mode that is no
+        # longer current).
+        # Plain single-attribute reads (robot_mode, speed_x, ...) are atomic on their own and deliberately
+        # stay lock-free, so the hot control loop never blocks on this.
+        # Reentrant (RLock) because the mode callbacks are fired while holding it and may call back in here.
+        # Lock ordering: this lock is always taken *before* RobotBody._serial_lock (mode callbacks send UART
+        # frames), never the other way round, so the two cannot deadlock.
+        self._state_lock = threading.RLock()
 
         # controller parameters
         self.controller_id_list = []
@@ -101,111 +116,178 @@ class RobotHead:
         # Push-to-talk pressed (South button / app button A). First-one-wins: if a session from another
         # source is already active, ignore this one so a joystick and an app press cannot fight over the
         # single mic bridge to the Jetson.
-        if self.voice_session_active:
-            return
-        self.voice_session_source = source
-        # Latch the source for the whole interaction so the eventual TTS response is routed back to it.
-        self.last_voice_source = source
-        self.voice_session_active = True
+        # Locked: the joystick press arrives on the PS2 thread and the app press on the VR controller thread,
+        # so without it both could pass the "is a session already active?" check and each set its own source,
+        # leaving voice_session_source disagreeing with what the mic bridge is actually streaming.
+        with self._state_lock:
+            if self.voice_session_active:
+                return
+            self.voice_session_source = source
+            # Latch the source for the whole interaction so the eventual TTS response is routed back to it.
+            self.last_voice_source = source
+            self.voice_session_active = True
         if self.verbose >= 2:
             print(f'Voice session started (source: {source})')
 
     def stop_voice_session(self, source: str) -> None:
         # Only the source that owns the active session may end it, so releasing the other button (e.g. an
         # app button-A release while the joystick owns the session) does not cut the session short.
-        if not self.voice_session_active or self.voice_session_source != source:
-            return
-        self.voice_session_active = False
-        self.voice_session_source = None
-        # Drop any app audio that was not forwarded so it cannot leak into the next session.
-        self.app_mic_frames.clear()
+        # Locked for the same reason as start_voice_session: the ownership check and the clearing of the
+        # three pieces of session state have to happen as one step.
+        with self._state_lock:
+            if not self.voice_session_active or self.voice_session_source != source:
+                return
+            self.voice_session_active = False
+            self.voice_session_source = None
+            # Drop any app audio that was not forwarded so it cannot leak into the next session.
+            self.app_mic_frames.clear()
         if self.verbose >= 2:
             print('Voice session stopped')
+
+    def register_controller(self, controller_id: int) -> bool:
+        """
+        Record a controller as connected.
+        The membership check and the counter increment have to be a single atomic step: both the PS2 thread
+        and the VR controller thread call this, and "connected_controllers += 1" is a read-modify-write that
+        can lose an update. A lost increment leaves the counter drifting, and once it reaches 0 the control
+        loop concludes no controller is attached and stops driving the robot (see ControllerLoop).
+        :param controller_id: id of the controller that connected.
+        :return: True if the controller was registered, False if that id was already registered.
+        """
+        with self._state_lock:
+            if controller_id in self.controller_id_list:
+                return False
+            self.controller_id_list.append(controller_id)
+            self.connected_controllers += 1
+            return True
+
+    def unregister_controller(self, controller_id: int) -> bool:
+        """
+        Record a controller as disconnected. Counterpart of register_controller, atomic for the same reason.
+        :param controller_id: id of the controller that disconnected.
+        :return: True if the controller was removed, False if that id was not registered.
+        """
+        with self._state_lock:
+            if controller_id not in self.controller_id_list:
+                return False
+            self.controller_id_list.remove(controller_id)
+            self.connected_controllers -= 1
+            return True
+
+    def remove_mode(self, mode: str) -> None:
+        """
+        Remove a mode from the list of available modes, falling back to the first remaining mode if the robot
+        was currently in it. Used when a subsystem fails at runtime and its mode can no longer be entered
+        (e.g. the vision agent crashing removes MODE_AUTONOMOUS_VISION).
+        Takes the same lock as next_mode: that method reads an index into robot_mode_list and then indexes
+        back into it, so a removal landing between the two would raise IndexError.
+        :param mode: the mode to remove. Does nothing if it is not in the list.
+        """
+        with self._state_lock:
+            if mode not in self.robot_mode_list:
+                return
+            self.robot_mode_list.remove(mode)
+            if self.robot_mode == mode:
+                self.robot_mode = self.robot_mode_list[0]
+                if self.robot_sub_mode_dict[self.robot_mode] is not None:
+                    self.robot_sub_mode = self.robot_sub_mode_dict[self.robot_mode][0]
 
     def next_mode(self) -> None:
         if self.verbose >= 3:
             print(f'Switching from {self.robot_mode} ({self.robot_sub_mode}) mode')
-        self.led_3_pin.set_color(gc.POWER_OFF)
-        self.internal_light.stop()
-        previous_mode = self.robot_mode
-        previous_sub_mode = self.robot_sub_mode
-        self.robot_mode = self.robot_mode_list[
-            (self.robot_mode_list.index(self.robot_mode) + 1) % len(self.robot_mode_list)
-        ]
-        if self.robot_mode in self.robot_sub_mode_dict:
-            self.robot_sub_mode = self.robot_sub_mode_dict[self.robot_mode][0]
-        else:
-            self.robot_sub_mode = None
+        # The whole transition is held under the lock, callbacks included, not just the assignment of
+        # robot_mode. Mode switching is reachable from the PS2 thread, the VR controller thread and the GPIO
+        # button thread; if two calls interleaved, one could fire the start callbacks of a mode the other has
+        # already left, leaving the hardware (arm rigid state, lights) configured for the wrong mode. The
+        # callbacks are short (they set fields and send a few UART frames), so the lock is never held long.
+        with self._state_lock:
+            self.led_3_pin.set_color(gc.POWER_OFF)
+            self.internal_light.stop()
+            previous_mode = self.robot_mode
+            previous_sub_mode = self.robot_sub_mode
+            self.robot_mode = self.robot_mode_list[
+                (self.robot_mode_list.index(self.robot_mode) + 1) % len(self.robot_mode_list)
+            ]
+            if self.robot_mode in self.robot_sub_mode_dict:
+                self.robot_sub_mode = self.robot_sub_mode_dict[self.robot_mode][0]
+            else:
+                self.robot_sub_mode = None
 
-        # mode callbacks
-        # if the previous mode has callbacks to call at the end, call them. But only if the mode has actually changed.
-        # For example if the list has only 1 element, the callback should not be called, because the robot was already
-        # in the same mode. Or if the new mode fails to be set and the previous mode is set again
-        if previous_mode != self.robot_mode:
-            if previous_mode in self.mode_end_callbacks:
-                for callback in self.mode_end_callbacks[previous_mode]:
-                    callback()
-            # if the new mode has callbacks to call at the start, call them. But only if the mode has actually changed
-            if self.robot_mode in self.mode_start_callbacks:
-                for callback in self.mode_start_callbacks[self.robot_mode]:
-                    callback()
+            # mode callbacks
+            # if the previous mode has callbacks to call at the end, call them. But only if the mode has actually
+            # changed. For example if the list has only 1 element, the callback should not be called, because the
+            # robot was already in the same mode. Or if the new mode fails to be set and the previous mode is set
+            # again
+            if previous_mode != self.robot_mode:
+                if previous_mode in self.mode_end_callbacks:
+                    for callback in self.mode_end_callbacks[previous_mode]:
+                        callback()
+                # if the new mode has callbacks to call at the start, call them. But only if the mode has actually
+                # changed
+                if self.robot_mode in self.mode_start_callbacks:
+                    for callback in self.mode_start_callbacks[self.robot_mode]:
+                        callback()
 
-        # sub mode callbacks
-        # if the sub mode also have callbacks to call at the start and end, call them. But only if the mode current
-        # mode has a sub mode, and the sub mode actually changed
-        # end callbacks
-        if previous_sub_mode is not None and self.robot_sub_mode != previous_sub_mode:
-            if previous_sub_mode in self.sub_mode_end_callbacks:
-                for callback in self.sub_mode_end_callbacks[previous_sub_mode]:
-                    callback()
-        # start callbacks
-        if self.robot_sub_mode is not None and self.robot_sub_mode != previous_sub_mode:
-            if self.robot_sub_mode in self.sub_mode_start_callbacks:
-                for callback in self.sub_mode_start_callbacks[self.robot_sub_mode]:
-                    callback()
+            # sub mode callbacks
+            # if the sub mode also have callbacks to call at the start and end, call them. But only if the mode
+            # current mode has a sub mode, and the sub mode actually changed
+            # end callbacks
+            if previous_sub_mode is not None and self.robot_sub_mode != previous_sub_mode:
+                if previous_sub_mode in self.sub_mode_end_callbacks:
+                    for callback in self.sub_mode_end_callbacks[previous_sub_mode]:
+                        callback()
+            # start callbacks
+            if self.robot_sub_mode is not None and self.robot_sub_mode != previous_sub_mode:
+                if self.robot_sub_mode in self.sub_mode_start_callbacks:
+                    for callback in self.sub_mode_start_callbacks[self.robot_sub_mode]:
+                        callback()
 
-        # notify the user about the mode change
-        self.robot_body.set_beep(gc.MEDIUM_BEEP)
+            # notify the user about the mode change
+            self.robot_body.set_beep(gc.MEDIUM_BEEP)
         if self.verbose >= 1:
             print(f'Switching to {self.robot_mode} ({self.robot_sub_mode}) mode')
 
     def next_sub_mode(self) -> None:
         if self.verbose >= 3:
             print(f'Switching from {self.robot_sub_mode} sub mode')
-        if self.robot_mode not in self.robot_sub_mode_dict:
-            assert self.robot_sub_mode is None, f'Robot mode {self.robot_mode} does not have sub modes, ' \
-                f'but current sub mode is {self.robot_sub_mode}'
-            if self.verbose >= 3:
-                print(f'No sub modes available for {self.robot_mode} mode')
-            return
+        # Held under the same lock as next_mode, and for the same reason: this is a read-modify-write on
+        # robot_sub_mode followed by callbacks that reconfigure the hardware. It also has to be mutually
+        # exclusive with next_mode itself, which writes both robot_mode and robot_sub_mode.
+        with self._state_lock:
+            if self.robot_mode not in self.robot_sub_mode_dict:
+                assert self.robot_sub_mode is None, f'Robot mode {self.robot_mode} does not have sub modes, ' \
+                    f'but current sub mode is {self.robot_sub_mode}'
+                if self.verbose >= 3:
+                    print(f'No sub modes available for {self.robot_mode} mode')
+                return
 
-        self.led_3_pin.set_color(gc.POWER_OFF)
-        self.internal_light.stop()
+            self.led_3_pin.set_color(gc.POWER_OFF)
+            self.internal_light.stop()
 
-        current_sub_mode_list = self.robot_sub_mode_dict[self.robot_mode]
-        if current_sub_mode_list is not None and len(current_sub_mode_list) > 0:
-            previous_sub_mode = self.robot_sub_mode
-            self.robot_sub_mode = current_sub_mode_list[
-                (current_sub_mode_list.index(self.robot_sub_mode) + 1) % len(current_sub_mode_list)
-            ]
-            # if the sub mode also have callbacks to call at the start and end, call them. But only if the sub mode has
-            # actually changed. For example if the list has only 1 element, the callbacks should not be called, because
-            # the robot was already in the same sub mode. Or if the new sub mode fails to be set and the previous sub
-            # mode is set again.
-            if previous_sub_mode != self.robot_sub_mode:
-                # end callbacks
-                if previous_sub_mode in self.sub_mode_end_callbacks:
-                    for callback in self.sub_mode_end_callbacks[previous_sub_mode]:
-                        callback()
-                if self.robot_sub_mode in self.sub_mode_start_callbacks:
-                    for callback in self.sub_mode_start_callbacks[self.robot_sub_mode]:
-                        callback()
-        else:
-            assert self.robot_sub_mode is None, f'Robot mode {self.robot_mode} does not have sub modes, ' \
-                                                f'but current sub mode is {self.robot_sub_mode}'
+            current_sub_mode_list = self.robot_sub_mode_dict[self.robot_mode]
+            if current_sub_mode_list is not None and len(current_sub_mode_list) > 0:
+                previous_sub_mode = self.robot_sub_mode
+                self.robot_sub_mode = current_sub_mode_list[
+                    (current_sub_mode_list.index(self.robot_sub_mode) + 1) % len(current_sub_mode_list)
+                ]
+                # if the sub mode also have callbacks to call at the start and end, call them. But only if the sub
+                # mode has actually changed. For example if the list has only 1 element, the callbacks should not be
+                # called, because the robot was already in the same sub mode. Or if the new sub mode fails to be set
+                # and the previous sub mode is set again.
+                if previous_sub_mode != self.robot_sub_mode:
+                    # end callbacks
+                    if previous_sub_mode in self.sub_mode_end_callbacks:
+                        for callback in self.sub_mode_end_callbacks[previous_sub_mode]:
+                            callback()
+                    if self.robot_sub_mode in self.sub_mode_start_callbacks:
+                        for callback in self.sub_mode_start_callbacks[self.robot_sub_mode]:
+                            callback()
+            else:
+                assert self.robot_sub_mode is None, f'Robot mode {self.robot_mode} does not have sub modes, ' \
+                                                    f'but current sub mode is {self.robot_sub_mode}'
 
-        # notify the user about the sub mode change
-        self.robot_body.set_beep(gc.SHORT_BEEP)
+            # notify the user about the sub mode change
+            self.robot_body.set_beep(gc.SHORT_BEEP)
         if self.verbose >= 1:
             print(f'Switching to {self.robot_sub_mode} sub mode')
 

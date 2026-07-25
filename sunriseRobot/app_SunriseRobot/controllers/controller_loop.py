@@ -88,7 +88,12 @@ class ControllerLoop(object):
             # arm buttons
             if (self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_FK
                     or self.robot_head.robot_sub_mode == gc.SUB_MODE_ARM_IK):
-                for button in self.robot_head.button_press_timestamp:
+                # Iterate over a snapshot of the keys, not the live dict. The controller threads insert into
+                # button_press_timestamp the first time each button is pressed (ControllerFunctions
+                # .start_counting), and a dict that changes size while it is being iterated raises
+                # RuntimeError. That exception would escape update_robot_loop and task_controller_loop and
+                # kill this thread for good, leaving the robot unresponsive to the joystick until a restart.
+                for button in list(self.robot_head.button_press_timestamp):
                     timestamp = self.robot_head.button_press_timestamp[button]
                     if timestamp != 0:
                         if button in self.arm.memorizable_button_list:
