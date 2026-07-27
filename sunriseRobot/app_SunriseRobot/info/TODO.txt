@@ -25,8 +25,6 @@ a wi-fi network.
 - Add a small touch screen to the robot. It helps find bugs when the robot is not connected to pc.
     - Make an app for the screen, so the main functions of the robot can be called from the small touch screen even
     in the absence of a controller.
-- Add a powerful led that automatically lights up when in autonomous mode (vision) and the light is too low. It should
-also be controllable with the controller.
 - Add a motor to control the vertical orientation of the frontal camera
     - Add code to control the motor with the controller.
     - Add code to control the motor in autonomous mode (vision): if the target is found, try to center it. Also try to
